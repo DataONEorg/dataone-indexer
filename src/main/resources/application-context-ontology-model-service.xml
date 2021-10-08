@@ -70,7 +70,7 @@
 
 				SELECT ?annotation_property_uri
 				WHERE {
-						<$CONCEPT_URI> rdfs:subPropertyOf* ?annotation_property_uri .
+						<$CONCEPT_URI> (owl:equivalentProperty|^owl:equivalentProperty)*/rdfs:subPropertyOf* ?annotation_property_uri .
 				 	}
 				 ]]>
 			</value>
