@@ -87,10 +87,11 @@
 				PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
 				SELECT ?annotation_value_uri
-				WHERE {
-						<$CONCEPT_URI> rdfs:subClassOf* ?annotation_value_uri .
-				 	}
-				 ]]>
+				WHERE
+				{
+					<$CONCEPT_URI> (rdf:type|owl:equivalentClass*|(owl:sameAs|^owl:sameAs)*)/rdfs:subClassOf* ?annotation_value_uri  .
+				}
+				]]>
 			</value>
 		</constructor-arg>
 	</bean>
