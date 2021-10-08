@@ -85,11 +85,12 @@
 				PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 				PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 				PREFIX owl: <http://www.w3.org/2002/07/owl#>
+				PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
 				SELECT ?annotation_value_uri
 				WHERE
 				{
-					<$CONCEPT_URI> (rdf:type|owl:equivalentClass*|(owl:sameAs|^owl:sameAs)*)/rdfs:subClassOf* ?annotation_value_uri  .
+					<$CONCEPT_URI> (rdf:type|(owl:equivalentClass|^owl:equivalentClass)*|(owl:sameAs|^owl:sameAs)*|(skos:exactMatch|^skos:exactMatch)*)/rdfs:subClassOf* ?annotation_value_uri  .
 				}
 				]]>
 			</value>
