@@ -200,4 +200,21 @@ public class OntologyModelServiceTest {
 			fail(e.getMessage());
 		}
 	}
+
+	@Test
+	public void testEquivalentPropertyExpansion() {
+		try {
+			Map<String, Set<String>> concepts = OntologyModelService.getInstance().expandConcepts("https://purl.dataone.org/odo/MOSAIC_00002250");
+
+			Set<String> values = new HashSet<String>();
+			values.add("http://www.w3.org/ns/ssn/deployedSystem");
+			values.add("https://purl.dataone.org/odo/MOSAIC_00002250");
+
+			assertEquals(values, concepts.get("annotation_property_uri"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
 }
