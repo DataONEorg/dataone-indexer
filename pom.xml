@@ -2,10 +2,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.dataone</groupId>
-    <artifactId>d1_cn_index_processor</artifactId>
-    <version>2.3.14</version>
+    <artifactId>dataone-index-worker</artifactId>
+    <version>2.4.0</version>
     <packaging>jar</packaging>
-    <name>d1_cn_index_processor</name>
+    <name>dataone-index-worker</name>
     <url>http://maven.apache.org</url>
 
     <properties>
