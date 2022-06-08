@@ -15,8 +15,18 @@ See LICENSE.txt for the details of distributing this software.
 
 ## Building Docker image
 
+The image can be built with either `docker` or `nerdctl` depending on which container environment you have installed. Here I show the example using
+Racher Desktop configured to use `nerdctl`.
+
 ```bash
+mvn clean package -DskipTests
 nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 .
+```
+
+## Running the IndexWorker in the docker container
+
+```bash
+nerdctl run --rm dataone-index-worker:2.4.0
 ```
 
 ## History
