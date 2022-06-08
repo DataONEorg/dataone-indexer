@@ -1,146 +1,141 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
- <modelVersion>4.0.0</modelVersion>
- <groupId>org.dataone</groupId>
- <artifactId>d1_cn_index_processor</artifactId>
- <version>2.3.14</version>
- <packaging>jar</packaging>
- <name>d1_cn_index_processor</name>
- <url>http://maven.apache.org</url>
- 
-	<properties>
-	  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <compiler.target.version>1.7</compiler.target.version>
-	  	<spring.version>3.1.4.RELEASE</spring.version>
-	  	<hazelcast.version>2.4.1</hazelcast.version>
-	  	<solr.version>5.2.1</solr.version>
-	  	<d1_cn_common.version>2.3.0</d1_cn_common.version>
-	  	<d1_libclient_java.version>2.3.1</d1_libclient_java.version>
-	  	<d1_cn_index_common.version>2.3.2</d1_cn_index_common.version>
-	  	<d1_cn_index_generator.version>2.3.3</d1_cn_index_generator.version>
- 	</properties>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.dataone</groupId>
+    <artifactId>d1_cn_index_processor</artifactId>
+    <version>2.3.14</version>
+    <packaging>jar</packaging>
+    <name>d1_cn_index_processor</name>
+    <url>http://maven.apache.org</url>
 
- <repositories>
-    <repository>
-        <id>sonatype.org</id>
-        <url>https://repository.sonatype.org/content/shadows/centralm1</url>
-        <releases>
-            <enabled>true</enabled>
-        </releases>
-        <snapshots>
-            <enabled>false</enabled>
-        </snapshots>
-    </repository>
-	<repository>
-		<id>dataone.org</id>
-		<url>https://maven.dataone.org</url>
-		<releases>
-		    <enabled>true</enabled>
-		</releases>
-		<snapshots>
-		    <enabled>true</enabled>
-		</snapshots>
-	</repository>
-	<!--
-		2021-09-24 <mecum@nceas.ucsb.edu>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <compiler.target.version>1.7</compiler.target.version>
+        <spring.version>3.1.4.RELEASE</spring.version>
+        <hazelcast.version>2.4.1</hazelcast.version>
+        <solr.version>5.2.1</solr.version>
+        <d1_cn_common.version>2.3.0</d1_cn_common.version>
+        <d1_libclient_java.version>2.3.1</d1_libclient_java.version>
+        <d1_cn_index_common.version>2.3.2</d1_cn_index_common.version>
+        <d1_cn_index_generator.version>2.3.3</d1_cn_index_generator.version>
+    </properties>
 
-		Remove this eventually: http->https mirror for maven.restlet that we can
-		remove once we update solr-core to a version that doesn't have the http
-		repository for restlet.
-	-->
-	<repository>
-		<id>maven-restlet</id>
-		<url>https://maven.restlet.org</url>
-		<releases>
-			<enabled>true</enabled>
-		</releases>
-		<snapshots>
-			<enabled>true</enabled>
-		</snapshots>
-	</repository>
- </repositories>
+    <repositories>
+        <repository>
+            <id>sonatype.org</id>
+            <url>https://repository.sonatype.org/content/shadows/centralm1</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>dataone.org</id>
+            <url>https://maven.dataone.org</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <!--
+        2021-09-24 <mecum@nceas.ucsb.edu>
 
- <dependencies>
-		 <dependency>
-		  <groupId>xerces</groupId>
-		  <artifactId>xercesImpl</artifactId>
-		  <version>2.9.1</version>
-		</dependency>
- 
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.3.3</version>
-		</dependency>
- 
-		<dependency>
-			 <groupId>junit</groupId>
-			 <artifactId>junit</artifactId>
-			 <version>4.10</version>
-			 <scope>test</scope>
-		</dependency> 
-		
-		<dependency>
-		    <groupId>org.apache.solr</groupId>
-		    <artifactId>solr-core</artifactId>
-		    <version>${solr.version}</version>
-		    <scope>test</scope>
-		</dependency>
-		
-		<dependency>
-		    <groupId>org.apache.solr</groupId>
-		    <artifactId>solr-test-framework</artifactId>
-		    <version>${solr.version}</version>
-		    <scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-			<version>1.8.3</version>
-		</dependency>
+        Remove this eventually: http->https mirror for maven.restlet that we can
+        remove once we update solr-core to a version that doesn't have the http
+        repository for restlet.
+    -->
+        <repository>
+            <id>maven-restlet</id>
+            <url>https://maven.restlet.org</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.3.163</version>
-			<scope>test</scope>
-		</dependency>
- 	
- <dependency>
-	<groupId>commons-codec</groupId>
-	<artifactId>commons-codec</artifactId>
-	<version>1.10</version>
-</dependency>
- 	  
- 		<dependency>
-			<groupId>org.dataone</groupId>
-			<artifactId>d1_cn_common</artifactId>
-			<version>${d1_cn_common.version}</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-        	<groupId>org.dataone</groupId>
-        	<artifactId>d1_libclient_java</artifactId>
-        	<version>${d1_libclient_java.version}</version>
-        	<type>jar</type>
-        	<exclusions>
-        		<exclusion>
-					<groupId>com.hp.hpl.jena</groupId>
-					<artifactId>jena</artifactId>
-				</exclusion>
-        	</exclusions>	
+    <dependencies>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.9.1</version>
         </dependency>
-		<dependency>
-			<groupId>org.dataone</groupId>
-			<artifactId>d1_cn_index_common</artifactId>
-			<version>${d1_cn_index_common.version}</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.dataone</groupId>
-			<artifactId>d1_cn_index_generator</artifactId>
-			<version>${d1_cn_index_generator.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-core</artifactId>
+            <version>${solr.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-test-framework</artifactId>
+            <version>${solr.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.3.163</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.10</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.dataone</groupId>
+            <artifactId>d1_cn_common</artifactId>
+            <version>${d1_cn_common.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.dataone</groupId>
+            <artifactId>d1_libclient_java</artifactId>
+            <version>${d1_libclient_java.version}</version>
+            <type>jar</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.hp.hpl.jena</groupId>
+                    <artifactId>jena</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.dataone</groupId>
+            <artifactId>d1_cn_index_common</artifactId>
+            <version>${d1_cn_index_common.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.dataone</groupId>
+            <artifactId>d1_cn_index_generator</artifactId>
+            <version>${d1_cn_index_generator.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast</artifactId>
@@ -153,33 +148,32 @@
             <version>${hazelcast.version}</version>
             <scope>compile</scope>
         </dependency>
-		<dependency>
-		    <groupId>org.quartz-scheduler</groupId>
-		    <artifactId>quartz</artifactId>
-		    <version>2.1.1</version>
-		</dependency>
-		
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>2.1.1</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
             <version>1.4.5.RELEASE</version>
         </dependency>
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-commons</artifactId>
-			<version>1.6.5.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>3.6.10.Final</version>
-			<exclusions>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+            <version>1.6.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>3.6.10.Final</version>
+            <exclusions>
                 <exclusion>
                     <groupId>javassist</groupId>
                     <artifactId>javassist</artifactId>
                 </exclusion>
-             </exclusions>
-		</dependency>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
@@ -195,84 +189,81 @@
             <artifactId>postgresql</artifactId>
             <version>8.4-702.jdbc4</version>
         </dependency>
-		
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		 <dependency>
-		   <groupId>org.springframework</groupId>
-		   <artifactId>spring-beans</artifactId>
-		   <version>${spring.version}</version>
-		 </dependency>
-		 <dependency>
-		   <groupId>org.springframework</groupId>
-		   <artifactId>spring-context</artifactId>
-		   <version>${spring.version}</version>
-		 </dependency>
-		 <dependency>
-		   <groupId>org.springframework</groupId>
-		   <artifactId>spring-aop</artifactId>
-		   <version>${spring.version}</version>
-		 </dependency>
-		 <dependency>
-		   <groupId>org.springframework</groupId>
-		   <artifactId>spring-context-support</artifactId>
-		   <version>${spring.version}</version>
-		 </dependency>
-		 <dependency>
-		   <groupId>org.springframework</groupId>
-		   <artifactId>spring-tx</artifactId>
-		   <version>${spring.version}</version>
-		 </dependency>
-		 <dependency>
-		   <groupId>org.springframework</groupId>
-		   <artifactId>spring-orm</artifactId>
-		   <version>${spring.version}</version>
-		 </dependency>
-		 <dependency>
-		   <groupId>org.springframework</groupId>
-		   <artifactId>spring-jdbc</artifactId>
-		   <version>${spring.version}</version>
-		 </dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		 <dependency>
-		   <groupId>org.springframework</groupId>
-		   <artifactId>spring-test</artifactId>
-		   <version>${spring.version}</version>
-		 </dependency>
-
-		<dependency>
-			<groupId>commons-daemon</groupId>
-			<artifactId>commons-daemon</artifactId>
-			<version>1.0.1</version>
-		</dependency>
-		<dependency>
-		 	<groupId>commons-io</groupId>
-		 	<artifactId>commons-io</artifactId>
-		 	<version>2.0.1</version>
-		</dependency>
-		<dependency>
-		 	<groupId>org.apache.commons</groupId>
-		 	<artifactId>commons-lang3</artifactId>
-		 	<version>3.4</version>
-		</dependency>
-		<dependency>
-		 	<groupId>commons-cli</groupId>
-		 	<artifactId>commons-cli</artifactId>
-		 	<version>1.2</version>
-		</dependency>
-		<dependency>
-		 	<groupId>commons-logging</groupId>
-		 	<artifactId>commons-logging</artifactId>
-		 	<version>1.1.1</version>
-		</dependency>
-  
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-daemon</groupId>
+            <artifactId>commons-daemon</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.4</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -283,74 +274,72 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.5</version>
         </dependency>
-        
         <dependency>
-			<groupId>net.minidev</groupId>
-			<artifactId>json-smart</artifactId>
-			<version>1.0.9</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>jena-tdb</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-        
-		<dependency>
-		  <groupId>commons-collections</groupId>
-		  <artifactId>commons-collections</artifactId>
-		  <version>3.2.1</version>
-		</dependency>
-	<dependency>
-		<groupId>ch.hsr</groupId>
-		<artifactId>geohash</artifactId>
-		<version>1.0.10</version>
-	</dependency>
-	<dependency>
-        <groupId>net.sf.saxon</groupId>
-        <artifactId>Saxon-HE</artifactId>
-        <version>9.9.1-3</version>
-    </dependency>
-    <dependency>
-        <groupId>org.javassist</groupId>
-        <artifactId>javassist</artifactId>
-        <version>3.18.2-GA</version>
-     </dependency>
-     <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>1.0.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-tdb</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.hsr</groupId>
+            <artifactId>geohash</artifactId>
+            <version>1.0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+            <version>9.9.1-3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.18.2-GA</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.jsonld-java</groupId>
             <artifactId>jsonld-java</artifactId>
             <version>0.13.2</version>
-     </dependency>
-     <dependency>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.8.0</version>
-     </dependency>
- </dependencies>
- <build>
-    <plugins>
-    <plugin>
-	    <groupId>org.apache.maven.plugins</groupId>
-	    <artifactId>maven-surefire-plugin</artifactId>
-	    <version>2.16</version>
-	    <configuration>
-	        <enableAssertions>true</enableAssertions>
-	    </configuration>
-  	</plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.7</source>
-          <target>${compiler.target.version}</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.mycila.maven-license-plugin</groupId>
-        <artifactId>maven-license-plugin</artifactId>
-        <configuration>
-          <header>src/license-header.txt</header>
-        </configuration>
-      </plugin>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.16</version>
+                <configuration>
+                    <enableAssertions>true</enableAssertions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>${compiler.target.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <configuration>
+                    <header>src/license-header.txt</header>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
@@ -366,8 +355,8 @@
                     <doCheck>false</doCheck>
                     <doUpdate>false</doUpdate>
                 </configuration>
-            </plugin>      
-           <plugin>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>1.7.1</version>
@@ -410,35 +399,35 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>      
-    </plugins>
-		<resources>
-	      <resource>
-	        <directory>src/main/resources</directory>
-	        <filtering>true</filtering>
-	        <includes>
-	          <include>buildInfo/buildInfo.properties</include>
-	        </includes>
-	      </resource>
-	      <resource>
-	        <directory>src/main/resources</directory>
-	        <filtering>false</filtering>
-	        <includes>
-	          <include>**/*.*</include>
-	        </includes>
-	      </resource>
-		</resources>
-  </build>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>buildInfo/buildInfo.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
     <scm>
-	    <url>https://repository.dataone.org/software/cicore</url>
-	    <connection>scm:svn:https://repository.dataone.org/software/cicore</connection>
-	    <developerConnection>scm:svn:https://repository.dataone.org/software/cicore</developerConnection>
-	    <tag>HEAD</tag>
+        <url>https://repository.dataone.org/software/cicore</url>
+        <connection>scm:svn:https://repository.dataone.org/software/cicore</connection>
+        <developerConnection>scm:svn:https://repository.dataone.org/software/cicore</developerConnection>
+        <tag>HEAD</tag>
     </scm>
-  <licenses>
-    <license>
-      <name>Apache License, Version 2.0</name>
-      <url>LICENSE.txt</url>
-    </license>
-  </licenses>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>LICENSE.txt</url>
+        </license>
+    </licenses>
 </project>
