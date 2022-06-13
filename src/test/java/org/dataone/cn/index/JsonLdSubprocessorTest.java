@@ -86,7 +86,10 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
     /* Store a map of expected Solr fields and their values for testing */
     private HashMap<String, String> expectedFields = new HashMap<String, String>();
 
-    private static final int SLEEPTIME = 5000;
+    private static final int SLEEPTIME = 8000;
+    private static final int SLEEP = 2000;
+    private static final int TIMES = 10;
+    
 
     /**
      * For each test, set up the Solr service and test data
@@ -146,8 +149,15 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         Thread.sleep(SLEEPTIME);
         // now process the tasks
         processor.processIndexTaskQueue();
-        Thread.sleep(SLEEPTIME);
-        assertPresentInSolrIndex(id);
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(id);
+                break;
+            } catch (Throwable e) {
+                
+            }
+        }
         assertTrue(compareFieldValue(id, "title", "Neodymium isotopes, B/Ca and δ¹³C, and fresh sand volcanic glass count data from ODP Site 208-1267 and IODP Site 306-U1313 for MIS M2, MIS 100 and the Last Glacial-Holocene"));
         assertTrue(compareFieldValue(id, "abstract", "Marine Isotope Stage (MIS) M2, 3.3 Ma, is an isolated cold stage punctuating the benthic oxygen isotope (\u03b4\u00b9\u2078O)"));
         assertTrue(compareFieldValue(id, "label", "Neodymium isotopes"));
@@ -227,8 +237,15 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         Thread.sleep(SLEEPTIME);
         // now process the tasks
         processor.processIndexTaskQueue();
-        Thread.sleep(SLEEPTIME);
-        assertPresentInSolrIndex(id);
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(id);
+                break;
+            } catch (Throwable e) {
+                
+            }
+        }
         assertTrue(compareFieldValue(id, "title", new String [] {"Context-dependent costs and benefits of a heterospecific nesting association"}));
         assertTrue(compareFieldValue(id, "author", new String [] {"Rose J Swift"}));
         assertTrue(compareFieldValue(id, "abstract", new String [] {"The costs and benefits of interactions among species"}));
@@ -273,8 +290,15 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         Thread.sleep(SLEEPTIME);
         // now process the tasks
         processor.processIndexTaskQueue();
-        Thread.sleep(SLEEPTIME);
-        assertPresentInSolrIndex(id);
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(id);
+                break;
+            } catch (Throwable e) {
+                
+            }
+        }
         assertTrue(compareFieldValue(id, "title", new String[] {"Larval krill studies - fluorescence and clearance from ARSV Laurence M. Gould LMG0106, LMG0205 in the Southern Ocean from 2001-2002 (SOGLOBEC project)"}));
         assertTrue(compareFieldValue(id, "abstract", new String[] {"Winter ecology of larval krill: quantifying their interaction with the pack ice habitat."}));
         String [] urls = {"https://www.example-data-repository.org/dataset/3300/data/larval-krill.tsv",
@@ -348,9 +372,15 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
             Thread.sleep(SLEEPTIME);
             // now process the tasks
             processor.processIndexTaskQueue();
-            Thread.sleep(SLEEPTIME);
-            assertPresentInSolrIndex(thisId);
-
+            for (int j=0; j<TIMES; j++) {
+                try {
+                    Thread.sleep(SLEEP);
+                    assertPresentInSolrIndex(thisId);
+                    break;
+                } catch (Throwable e) {
+                    
+                }
+            }
             assertTrue(compareFieldValue(thisId, "title", new String [] {"test of context normalization"}));
             assertTrue(compareFieldValue(thisId, "author", new String [] {"creator_03"}));
             String[] origins = {"creator_03", "creator_02", "creator_01"};
@@ -391,8 +421,15 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         Thread.sleep(SLEEPTIME);
         // now process the tasks
         processor.processIndexTaskQueue();
-        Thread.sleep(SLEEPTIME);
-        assertPresentInSolrIndex(thisId);
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(thisId);
+                break;
+            } catch (Throwable e) {
+                
+            }
+        }
         assertTrue(compareFieldValue(thisId, "title", new String [] {"Mate choice and the operational sex ratio: an experimental test with robotic crabs"}));
         assertTrue(compareFieldValue(thisId, "abstract", new String [] {"The operational sex ratio (OSR) in robotic crabs)."}));
         assertTrue(compareFieldValue(thisId, "author", new String [] {"Catherine L. Hayes"}));
@@ -406,8 +443,15 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         Thread.sleep(SLEEPTIME);
         // now process the tasks
         processor.processIndexTaskQueue();
-        Thread.sleep(SLEEPTIME);
-        assertPresentInSolrIndex(thisId);
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(thisId);
+                break;
+            } catch (Throwable e) {
+                
+            }
+        }
         assertTrue(compareFieldValue(thisId, "title", new String [] {"Flow of CO2 from soil may not correspond with CO2 concentration in soil"}));
         assertTrue(compareFieldValue(thisId, "abstract", new String [] {"Soil CO2 concentration was investigated in the northwest of the Czechia."}));
         assertTrue(compareFieldValue(thisId, "author", new String [] {"Jan Frouz"}));
@@ -541,8 +585,15 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         Thread.sleep(2*SLEEPTIME);
         // now process the tasks
         processor.processIndexTaskQueue();
-        Thread.sleep(2*SLEEPTIME);
-        assertPresentInSolrIndex(id);
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(id);
+                break;
+            } catch (Throwable e) {
+                
+            }
+        }
         assertTrue(compareFieldValue(id, "title", "Salmon Blood Analyses from the 2020 Gulf of Alaska International Year of the Salmon Expedition"));
         assertTrue(compareFieldValue(id, "abstract", "Salmon blood analyses from salmon collected in the Northeast Pacific Ocean. These data were collected as part of the International Year of the Salmon (IYS) Gulf of Alaska High Seas Expedition conducted in March and April 2020, to further improve the understanding of factors impacting salmon early marine winter survival. Blood was collected for assessment of IGF-1 (growth), stress indices (cortisol, glucose, lactate), ionoregulation (osmolality, ions)."));
         assertTrue(compareFieldValue(id, "author", "Chrys Neville"));
