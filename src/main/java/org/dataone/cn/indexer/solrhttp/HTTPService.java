@@ -326,6 +326,26 @@ public class HTTPService {
         
         return doc;
     }
+    
+    /**
+     * Get a single solr doc for a given id
+     * @param uir  the query url
+     * @param id  the id to identify the solr doc
+     * @return  the solr doc associated with the given id. Return null if nothing was found.
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws EncoderException
+     */
+    public SolrDoc getSolrDocumentById(String uir, String id) throws XPathExpressionException, 
+                                                                IOException, EncoderException {
+        int targetIndex = 0;
+        SolrDoc doc = null;
+        List<SolrDoc> list = getDocumentById(uir, id);
+        if(list != null && !list.isEmpty()) {
+            doc = list.get(targetIndex);
+        }
+        return doc;
+    }
 
     public List<SolrDoc> getDocumentById(String uir, String id) throws IOException,
             XPathExpressionException, EncoderException {
