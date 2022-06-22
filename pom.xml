@@ -295,6 +295,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.36</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId> 
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.minidev</groupId>
@@ -351,6 +357,21 @@
             <artifactId>amqp-client</artifactId>
             <version>5.14.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+            <version>2.17.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.17.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jcl</artifactId>
+            <version>2.17.1</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -404,8 +425,13 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputFile>${basedir}/target/d1_index_task_processor_daemon.jar</outputFile>
+                            <outputFile>${basedir}/target/${name}-${version}-shaded.jar</outputFile>
                             <outputDirectory>${basedir}</outputDirectory>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>*:reload4j:*</exclude>
+                                </excludes>
+                            </artifactSet>
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
@@ -416,12 +442,13 @@
                                         <exclude>META-INF/*.INF</exclude>
                                         <exclude>META-INF/eclipse.inf</exclude>
                                         <exclude>module-info.class</exclude>
+                                        <exclude>**/Log4j2Plugins.dat</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.dataone.cn.index.processor.IndexTaskProcessorDaemon</mainClass>
+                                    <mainClass>org.dataone.cn.index.IndexWorker</mainClass>
                                 </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>META-INF/spring.handlers</resource>
