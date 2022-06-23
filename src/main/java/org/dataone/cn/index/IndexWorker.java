@@ -28,6 +28,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.dataone.configuration.Settings;
+import org.dataone.service.types.v1.Identifier;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -77,7 +78,9 @@ public class IndexWorker {
     private static String docRootDir = Settings.getConfiguration().getString("index.document.root.directory", "/var/metacat/");
     private static Connection RabbitMQconnection = null;
     private static Channel RabbitMQchannel = null;
+    private static SolrIndex solrIndex = null;
     private static Logger logger = Logger.getLogger(IndexWorker.class.getName());
+    
 
     /**
      * Commandline main for the IndexWorker to be started.
@@ -86,9 +89,9 @@ public class IndexWorker {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException, TimeoutException {
-
         System.out.println("Starting index worker...");
-        IndexWorker worker = new IndexWorker();
+        SolrIndex solrIndex = null;
+        IndexWorker worker = new IndexWorker(solrIndex);
         worker.start();
         //worker.handleIndexTask("123");
         System.out.println("Done.");
@@ -99,7 +102,8 @@ public class IndexWorker {
      * @throws IOException
      * @throws TimeoutException
      */
-    public IndexWorker() throws IOException, TimeoutException {
+    public IndexWorker(SolrIndex solrIndex) throws IOException, TimeoutException {
+        this.solrIndex = solrIndex;
         init();
     }
     /**
@@ -169,18 +173,46 @@ public class IndexWorker {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) 
                                        throws IOException {
-                Map<String, Object> headers = properties.getHeaders();
-                String identifier = ((LongString)headers.get(HEADER_ID)).toString();
-                String indexType = ((LongString)headers.get(HEADER_INDEX_TYPE)).toString();
-                String filePath = null;
-                Object pathObject = headers.get(HEADER_PATH);
-                if (pathObject != null) {
-                    filePath = ((LongString)pathObject).toString();
+                String identifier = null;
+                try {
+                    Map<String, Object> headers = properties.getHeaders();
+                    identifier = ((LongString)headers.get(HEADER_ID)).toString();
+                    if (identifier == null || identifier.trim().equals("")) {
+                        throw new Exception("The identifier cannot be null or blank in the index task");
+                    }
+                    Identifier pid = new Identifier();
+                    pid.setValue(identifier);
+                    String filePath = null;
+                    Object pathObject = headers.get(HEADER_PATH);
+                    if (pathObject != null) {
+                        filePath = ((LongString)pathObject).toString();
+                    }
+                    if (filePath == null || filePath.trim().equals("")) {
+                        throw new Exception("The file path cannot be null or blank in the index task");
+                    }
+                    String indexType = ((LongString)headers.get(HEADER_INDEX_TYPE)).toString();
+                    if (indexType == null || indexType.trim().equals("")) {
+                        throw new Exception("The index type cannot be null or blank in the index task");
+                    }
+                    if (indexType.equals(CREATE_INDEXT_TYPE)) {
+                        boolean sysmetaOnly = false;
+                        solrIndex.update(pid, filePath, sysmetaOnly);
+                    } else if (indexType.equals(SYSMETA_CHANGE_TYPE)) {
+                        boolean sysmetaOnly = true;
+                        solrIndex.update(pid, filePath, sysmetaOnly);
+                    } else if (indexType.equals(DELETE_INDEX_TYPE)) {
+                        solrIndex.remove(pid);
+                    } else {
+                        throw new Exception("DataONE indexer does not know the index type: " + indexType + " in the index task");
+                    }
+                    int priority = properties.getPriority();
+                    logger.info("IndexWorker.consumer.handleDelivery - Received the index task from the index queue with the identifier: "+
+                                identifier + " , the index type: " + indexType + ", the file path (null means not to have): " + filePath + 
+                                ", the priotity: " + priority);
+                } catch (Exception e) {
+                    logger.error("ndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                 identifier + " since " + e.getMessage());
                 }
-                int priority = properties.getPriority();
-                logger.info("IndexWorker.consumer.handleDelivery - Received the index task from the index queue with the identifier: "+
-                            identifier + " , the index type: " + indexType + ", the file path (null means not to have): " + filePath + 
-                            ", the priotity: " + priority);
                 RabbitMQchannel.basicAck(envelope.getDeliveryTag(), false);
             }
          };
