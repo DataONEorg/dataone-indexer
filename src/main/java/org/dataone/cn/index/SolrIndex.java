@@ -59,6 +59,7 @@ import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrField;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
+import org.dataone.cn.indexer.solrhttp.SolrElementAdd;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
 import org.dataone.exceptions.MarshallingException;
@@ -93,14 +94,13 @@ public class SolrIndex {
     private static final List<String> copyFields = Settings.getConfiguration().getList("index.solr.copyFields");//list of solr copy fields
     private List<IDocumentSubprocessor> subprocessors = null;
     private List<IDocumentDeleteSubprocessor> deleteSubprocessors = null;
+    private static SolrClient solrServer = null;
     
     @Autowired
-    private HTTPService httpService;
-
+    private HTTPService httpService = null;
     @Autowired
-    private String solrQueryUri;
-
-    private static SolrClient solrServer = null;
+    private String solrQueryUri = null;
+    private String solrIndexUri = null;
     private XMLNamespaceConfig xmlNamespaceConfig = null;
     private BaseXPathDocumentSubprocessor systemMetadataProcessor = null;
     private List<ISolrField> sysmetaSolrFields = null;
@@ -123,9 +123,6 @@ public class SolrIndex {
         sysmetaSolrFields = systemMetadataProcessor.getFieldList();
     }
 
-   
-    
-    
     /**
      * Get the list of the Subprocessors in this index.
      * @return the list of the Subprocessors.
@@ -422,6 +419,14 @@ public class SolrIndex {
      * Insert a SolrDoc to the solr server.
      */
     private void insertToIndex(SolrDoc doc) throws SolrServerException, IOException {
+        Vector<SolrDoc> docs = new Vector<SolrDoc>();
+        docs.add(doc);
+        SolrElementAdd addCommand = new SolrElementAdd(docs);
+        httpService.sendUpdate(solrIndexUri, addCommand, "UTF-8");
+    }
+
+  
+    /*private void insertToIndex(SolrDoc doc) throws SolrServerException, IOException {
         if(doc != null ) {
             SolrInputDocument solrDoc = new SolrInputDocument();
             List<SolrElementField> list = doc.getFieldList();
@@ -450,7 +455,7 @@ public class SolrIndex {
                 //System.out.println("=================the response is:\n"+response.toString());
             }
         }
-    }
+    }*/
     
     /**
      * Update the solr index. This method handles the three scenarios:
@@ -939,10 +944,11 @@ public class SolrIndex {
     private void deleteDocFromIndex(String pid) throws Exception {
         if (pid != null && !pid.trim().equals("")) {
             try {
-                solrServer.deleteById(pid);
-                solrServer.commit();
-            } catch (SolrServerException e) {
-                throw e;
+                //solrServer.deleteById(pid);
+                //solrServer.commit();
+                httpService.sendSolrDelete(pid);
+            //} catch (SolrServerException e) {
+                //throw e;
                 
             } catch (IOException e) {
                 throw e;
@@ -952,21 +958,6 @@ public class SolrIndex {
     
     }
 
-    /**
-     * Get the solrServer
-     * @return
-     */
-    public SolrClient getSolrServer() {
-        return solrServer;
-    }
-
-    /**
-     * Set the solrServer. 
-     * @param solrServer
-     */
-    public void setSolrServer(SolrClient solrServer) {
-        this.solrServer = solrServer;
-    }
     
     /**
      * Set the http service
@@ -998,5 +989,21 @@ public class SolrIndex {
      */
     public void setSolrQueryUri(String solrQueryUri) {
         this.solrQueryUri = solrQueryUri;
+    }
+    
+    /**
+     * Get the the update solr uri
+     * @return
+     */
+    public String getSolrIndexUri() {
+        return solrIndexUri;
+    }
+
+    /**
+     * Set the update solr uri
+     * @param solrindexUri
+     */
+    public void setSolrIndexUri(String solrIndexUri) {
+        this.solrIndexUri = solrIndexUri;
     }
 }

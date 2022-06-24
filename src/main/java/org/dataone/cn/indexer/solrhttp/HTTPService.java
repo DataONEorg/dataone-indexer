@@ -175,7 +175,7 @@ public class HTTPService {
         }
     }
 
-    public void sendSolrDelete(String pid) {
+    public void sendSolrDelete(String pid) throws IOException {
         // generate request to solr server to remove index record for task.pid
         OutputStream outputStream = new ByteArrayOutputStream();
         try {
@@ -185,7 +185,8 @@ public class HTTPService {
             IOUtils.write("<delete><id>" + escapedId + "</id></delete>", outputStream, CHAR_ENCODING);
             sendPost(getSolrIndexUri(), outputStream.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            throw e;
         }
     }
 

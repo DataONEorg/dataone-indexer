@@ -347,7 +347,7 @@ public class SolrIndexService {
         return new SolrElementAdd(docs);
     }
 
-    private void deleteDocFromIndex(String identifier) {
+    private void deleteDocFromIndex(String identifier) throws IOException {
         httpService.sendSolrDelete(identifier);
     }
 

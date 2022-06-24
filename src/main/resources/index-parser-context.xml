@@ -15,6 +15,7 @@
      <constructor-arg name="xmlNamespaceConfig" ref="xmlNamespaceConfig" />
      <constructor-arg name="systemMetadataProcessor" ref="systemMetadata200Subprocessor"/>
      <property name="solrQueryUri" value="${solr.query.uri}" />
+     <property name="solrIndexUri" value="${solr.index.uri}" />
      <property name="httpService" ref="httpService" />
      <property name="subprocessors">
       <list>
