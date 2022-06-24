@@ -6,53 +6,51 @@
     	http://www.springframework.org/schema/context  
     	http://www.springframework.org/schema/context/spring-context-3.0.xsd">
  		
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-resourcemap.xml" />
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-systemmeta200.xml" />
-	<import resource="file:/etc/dataone/index/index-generation-context/application-context-delete-subprocessors.xml" />
-	<import resource="file:/etc/dataone/index/index-generation-context/application-context-reprocess-subprocessors.xml" />
-	
-	<import resource="file:/etc/dataone/index/index-generation-context/application-context-eml-base.xml" />
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-eml200.xml" />
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-eml201.xml" />
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-eml210.xml" />
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-eml211.xml" />
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-eml220.xml" />
- 	
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-fgdc-base.xml" />
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-fgdc-std-001-1998.xml" />
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-fgdc-std-0011-1999.xml" />
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-fgdc-std-0012-1999.xml" />
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-fgdc-esri-csdg-80.xml" />
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-ornl-mercury10.xml" />
+ 	    <import resource="application-context-eml-base.xml" />
+    <import resource="application-context-eml200.xml" />
+    <import resource="application-context-eml201.xml" />
+    <import resource="application-context-eml210.xml" />
+    <import resource="application-context-eml211.xml" />
+    <import resource="application-context-eml220.xml" />
 
-	<import resource="file:/etc/dataone/index/index-generation-context/application-context-dryad-base.xml" />
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-dryad30.xml" />
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-dryad31.xml" />
- 	
- 	<import resource="file:/etc/dataone/index/index-generation-context/application-context-dc-base.xml" />
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-qdc.xml" />
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-dcx.xml" />
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-dc-oai.xml" />
-    
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-datacite-base.xml" />
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-datacite-3.xml" />
+    <import resource="application-context-fgdc-base.xml" />
+    <import resource="application-context-fgdc-std-001-1998.xml" />
+    <import resource="application-context-fgdc-std-0011-1999.xml" />
+    <import resource="application-context-fgdc-std-0012-1999.xml" />
+    <import resource="application-context-fgdc-esri-csdg-80.xml" />
 
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-isotc211-base.xml" />
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-isotc211.xml" />
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-isotc211-noaa.xml" />
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-isotc211-pangaea.xml" />
+    <import resource="application-context-dryad-base.xml" />
+    <import resource="application-context-dryad30.xml" />
+    <import resource="application-context-dryad31.xml" />
 
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-prov-base.xml" />
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-rdfxml.xml" />
+    <import resource="application-context-resourcemap.xml" />
+    <import resource="application-context-systemmeta200.xml" />
+
+    <import resource="application-context-annotator.xml" />
+
+    <import resource="application-context-delete-subprocessors.xml" />
+
+    <import resource="application-context-dc-base.xml" />
+    <import resource="application-context-dcx.xml" />
+    <import resource="application-context-dc-oai.xml" />
+
+    <import resource="application-context-isotc211-base.xml" />
+    <import resource="application-context-isotc211.xml" />
+    <import resource="application-context-isotc211-noaa.xml" />
+    <import resource="application-context-isotc211-pangaea.xml" />
+
+    <import resource="application-context-prov-base.xml" />
+
+    <import resource="application-context-isPartOf.xml" />
+
+    <import resource="application-context-rdfxml.xml" />
+
+    <import resource="application-context-collections.xml" />
+    <import resource="application-context-portals.xml" />
+
+    <import resource="application-context-eml-annotation.xml" />
+    <import resource="application-context-ontology-model-service.xml" />
     
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-annotator.xml" />  
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-eml-annotation.xml" />  
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-ontology-model-service.xml" />  
-    
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-isPartOf.xml" />  
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-collections.xml" />  
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-portals.xml" /> 
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-schema-org.xml" /> 
-    <import resource="file:/etc/dataone/index/index-generation-context/application-context-json-ld.xml" /> 
-    
+    <import resource="application-context-json-ld.xml" />
+    <import resource="application-context-schema-org.xml" />
 </beans>
