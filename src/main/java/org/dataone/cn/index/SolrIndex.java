@@ -26,9 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -48,17 +46,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
 //import org.apache.solr.schema.IndexSchema;
 import org.dataone.cn.indexer.XMLNamespaceConfig;
-import org.dataone.cn.indexer.convert.SolrDateConverter;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.BaseXPathDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.IDocumentDeleteSubprocessor;
@@ -69,14 +62,14 @@ import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
 import org.dataone.exceptions.MarshallingException;
+import org.dataone.service.exceptions.InvalidToken;
+import org.dataone.service.exceptions.NotAuthorized;
 import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.exceptions.UnsupportedType;
-import org.dataone.service.types.v1.Event;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v2.SystemMetadata;
-import org.dataone.service.util.DateTimeMarshaller;
 import org.dataone.service.util.TypeMarshaller;
 import org.dspace.foresite.OREParserException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -465,51 +458,45 @@ public class SolrIndex {
      *    remove the index for the previous version(s) and generate new index for the doc.
      * 2. Add a new doc - if the system metadata shows the value of the archive is false, generate the
      *    index for the doc.
+     * @throws Exception 
      */
-    public void update(Identifier pid, String relativePath, boolean isSysmetaChangeOnly) {
+    public void update(Identifier pid, String relativePath, boolean isSysmetaChangeOnly) throws Exception {
         log.debug("SolrIndex.update - trying to update(insert or remove) solr index of object "+pid.getValue());
         String objectPath = null;
+        SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
+        objectPath = ObjectManager.getInstance().getFilePath(relativePath, systemMetadata.getFormatId().getValue());
         try {
-            SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
-            objectPath = ObjectManager.getInstance().getFilePath(relativePath, systemMetadata.getFormatId().getValue());
-            try {
-                update(pid, systemMetadata, objectPath, isSysmetaChangeOnly);
-            } catch (SolrException e) {
-                if (e.getMessage().contains(VERSION_CONFLICT) && VERSION_CONFLICT_MAX_ATTEMPTS > 0) {
-                    log.info("SolrIndex.update - Indexer grabbed an older verion of the solr doc for object " + 
-                            pid.getValue() + ". It will try " + VERSION_CONFLICT_MAX_ATTEMPTS + " to fix the issues");
-                    for (int i=0; i<VERSION_CONFLICT_MAX_ATTEMPTS; i++) {
-                        try {
-                            Thread.sleep(VERSION_CONFICT_WAITING);
-                            systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
-                            update(pid, systemMetadata, objectPath, isSysmetaChangeOnly);
-                            break;
-                        } catch (SolrException ee) {
-                            if (ee.getMessage().contains(VERSION_CONFLICT)) {
+            update(pid, systemMetadata, objectPath, isSysmetaChangeOnly);
+        } catch (SolrException e) {
+            if (e.getMessage().contains(VERSION_CONFLICT) && VERSION_CONFLICT_MAX_ATTEMPTS > 0) {
+                log.info("SolrIndex.update - Indexer grabbed an older verion of the solr doc for object " + 
+                        pid.getValue() + ". It will try " + VERSION_CONFLICT_MAX_ATTEMPTS + " to fix the issues");
+                for (int i=0; i<VERSION_CONFLICT_MAX_ATTEMPTS; i++) {
+                    try {
+                        Thread.sleep(VERSION_CONFICT_WAITING);
+                        systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
+                        update(pid, systemMetadata, objectPath, isSysmetaChangeOnly);
+                        break;
+                    } catch (SolrException ee) {
+                        if (ee.getMessage().contains(VERSION_CONFLICT)) {
+                            log.info("SolrIndex.update - Indexer grabbed an older verion of the solr doc for object " + 
+                                    pid.getValue() + ". It will process it again in oder to get the new solr doc copy. This is the " + 
+                                    (i+1) + " time to re-try.");
+                            if (i == (VERSION_CONFLICT_MAX_ATTEMPTS -1)) {
                                 log.info("SolrIndex.update - Indexer grabbed an older verion of the solr doc for object " + 
-                                        pid.getValue() + ". It will process it again in oder to get the new solr doc copy. This is the " + 
-                                        (i+1) + " time to re-try.");
-                                if (i == (VERSION_CONFLICT_MAX_ATTEMPTS -1)) {
-                                    log.info("SolrIndex.update - Indexer grabbed an older verion of the solr doc for object " + 
-                                            pid.getValue() + ". However, Metacat already tried the max times and still can't fix the issue.");
-                                    throw ee;
-                                }
-                            } else {
+                                        pid.getValue() + ". However, Metacat already tried the max times and still can't fix the issue.");
                                 throw ee;
                             }
+                        } else {
+                            throw ee;
                         }
                     }
-                } else {
-                    throw e;
                 }
+            } else {
+                throw e;
             }
-            log.info("SolrIndex.update - successfully inserted the solr index of the object " + pid.getValue());
-        } catch (Exception e) {
-            String error = "SolrIndex.update - could not update the solr index for the object "+pid.getValue()+" since " + e.getMessage();
-            boolean deleteEvent = false;
-            log.error(error, e);
         }
-        
+        log.info("SolrIndex.update - successfully inserted the solr index of the object " + pid.getValue());
     }
    
     
@@ -576,20 +563,15 @@ public class SolrIndex {
      * @param pid  the pid whose solr index will be removed
      * @throws Exception
      */
-    public void remove(Identifier pid) {
+    public void remove(Identifier pid) throws Exception {
         if(pid != null ) {
-            try {
-                SystemMetadata sysmeta = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
-                if (sysmeta == null) {
-                    throw new NotFound("0000", "DataONE indexer cannot find the system metadata for the pid " + pid.getValue());
-                }
-                log.debug("SorIndex.remove - start to remove the solr index for the pid "+pid.getValue());
-                remove(pid.getValue(), sysmeta);
-                log.debug("SorIndex.remove - finished to remove the solr index for the pid "+pid.getValue());
-            } catch (Exception e) {
-                String error = "SolrIndex.remove - could not remove the solr index for the object "+pid.getValue()+" since " + e.getMessage();
-                log.error(error, e);
+            SystemMetadata sysmeta = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
+            if (sysmeta == null) {
+                throw new NotFound("0000", "DataONE indexer cannot find the system metadata for the pid " + pid.getValue());
             }
+            log.debug("SorIndex.remove - start to remove the solr index for the pid "+pid.getValue());
+            remove(pid.getValue(), sysmeta);
+            log.debug("SorIndex.remove - finished to remove the solr index for the pid "+pid.getValue());
             log.info("SorIndex.remove - successfully removed the solr index for the pid " + pid.getValue());
         }
     }
@@ -986,5 +968,35 @@ public class SolrIndex {
         this.solrServer = solrServer;
     }
     
+    /**
+     * Set the http service
+     * @param service
+     */
+    public void setHttpService(HTTPService service) {
+        this.httpService = service;
+    }
+
+    /**
+     * Get the http service
+     * @return  the http service
+     */
+    public HTTPService getHttpService() {
+        return httpService;
+    }
     
+    /**
+     * Get the solr query url
+     * @return  the solr query url
+     */
+    public String getSolrQueryUri() {
+        return solrQueryUri;
+    }
+
+    /**
+     * Set the solr query url
+     * @param solrQueryUri
+     */
+    public void setSolrQueryUri(String solrQueryUri) {
+        this.solrQueryUri = solrQueryUri;
+    }
 }
