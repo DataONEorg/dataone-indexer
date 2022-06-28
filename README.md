@@ -25,7 +25,11 @@ nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG
 
 ## Running the IndexWorker in the docker container
 
+The docker image assumes that the deployment configuration file exists to configure endpoint addresses and credentials. To run the indexer, ensure that the 
+`DATAONE_INDEXER_CONFIG` is set in the environment and contains the absolute path to the configuration file for the indexer. You can then run it using a command like:
+
 ```bash
+export DATAONE_INDEXER_CONFIG=/etc/dataone/dataone-indexer.properties
 nerdctl run --rm dataone-index-worker:2.4.0
 ```
 
