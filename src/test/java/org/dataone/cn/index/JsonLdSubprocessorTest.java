@@ -183,6 +183,8 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         // "box": "-28.09816 -32.95731 41.000022722222 1.71098"
         // i.e. "south west north east" - lat, long of southwest corner ; lat, long of northeast corner
         assertTrue(compareFieldValue(id, "keywords", keywords));
+        String[] license = { "http://spdx.org/licenses/CC0-1.0", "https://creativecommons.org/publicdomain/zero/1.0"};
+        assertTrue(compareFieldValue(id, "license", license));
         String [] coord = {"-28.09816"};
         assertTrue(compareFieldValue(id, "southBoundCoord", coord));
         coord[0] = "-32.95731";
@@ -256,6 +258,8 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         String[] keywords = {"Mew Gull", "Larus canus", "Limosa haemastica", "predation", "Hudsonian Godwit",
                 "protective nesting association"};
         assertTrue(compareFieldValue(id, "keywords", keywords));
+        String license = "https://spdx.org/licenses/Apache-2.0";
+        assertTrue(compareFieldValue(id, "license", license));
         assertTrue(compareFieldValue(id, "namedLocation", new String [] {"Beluga River", "Alaska"}));
         assertTrue(compareFieldValue(id, "beginDate", new String [] {"2018-03-05T15:54:47.000Z"}));
         assertTrue(compareFieldValue(id, "edition", new String [] {"1"}));
@@ -330,6 +334,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         assertTrue(compareFieldValue(id, "geohash_8", new String [] {"4khsjfyj"}));
         assertTrue(compareFieldValue(id, "geohash_9", new String [] {"4khsjfyj7"}));
         assertTrue(compareFieldLength(id, "text", 3681));
+        assertTrue(compareFieldValue(id, "license", "https://creativecommons.org/licenses/by/4.0/"));
     }
 
     /**

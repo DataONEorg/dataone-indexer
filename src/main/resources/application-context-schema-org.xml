@@ -393,6 +393,25 @@
         </constructor-arg>
     </bean>
 
+    <bean id="schema_org_license" class="org.dataone.cn.indexer.annotation.SparqlField">
+        <constructor-arg name="name" value="license" />
+        <constructor-arg name="query">
+            <value>
+                <![CDATA[
+                    PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                    PREFIX SO:   <http://schema.org/>
+
+                    SELECT ?license
+                      WHERE {
+                        ?datasetId rdf:type    SO:Dataset .
+                        ?datasetId SO:license ?license .
+                      }
+                ]]>
+            </value>
+        </constructor-arg>
+    </bean>
+
     <!-- Extract bounding box coordinates from a 'SO:spatialCoverage' property. -->
     <bean id="schema_org_geoShape_box_south" class="org.dataone.cn.indexer.annotation.SparqlField">
         <constructor-arg name="name" value="southBoundCoord" />
