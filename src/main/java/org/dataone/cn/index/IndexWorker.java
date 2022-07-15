@@ -21,13 +21,11 @@
 
 package org.dataone.cn.index;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.dataone.configuration.Settings;
 import org.dataone.service.types.v1.Identifier;
@@ -72,18 +70,20 @@ public class IndexWorker {
     private final static String INDEX_ROUTING_KEY = "index";
     
     private static final String springConfigFileURL = "/index-parser-context.xml";
-    private static final String ENV_NAME_OF_PROPERTIES_FILE = "DATAONE_INDEXER_CONFIG";
-   
-    private static String RabbitMQhost = null;
-    private static int RabbitMQport = 0;
-    private static String RabbitMQusername = null;
-    private static String RabbitMQpassword = null;
-    private static int RabbitMQMaxPriority = 10;
-    private static String dataRootDir = null;
-    private static String docRootDir = null;
+    
+    // Default values for the RabbitMQ message broker server. The value of 'localhost' is valid for
+    // a RabbitMQ server running on a 'bare metal' server, inside a VM, or within a Kubernetes
+    // where Mmetacat and the RabbitMQ server are running in containers that belong
+    // to the same Pod. These defaults will be used if the properties file cannot be read.
+    private static String RabbitMQhost = Settings.getConfiguration().getString("index.rabbitmq.hostname", "localhost");
+    private static int RabbitMQport = Settings.getConfiguration().getInt("index.rabbitmq.hostport", 5672);
+    private static String RabbitMQusername = Settings.getConfiguration().getString("index.rabbitmq.username", "guest");
+    private static String RabbitMQpassword = Settings.getConfiguration().getString("index.rabbitmq.password", "guest");
+    private static int RabbitMQMaxPriority = Settings.getConfiguration().getInt("index.rabbitmq.max.priority");
+    private static String dataRootDir = Settings.getConfiguration().getString("index.data.root.directory", "/var/metacat/");
+    private static String docRootDir = Settings.getConfiguration().getString("index.document.root.directory", "/var/metacat/");
     private static Connection RabbitMQconnection = null;
     private static Channel RabbitMQchannel = null;
-    private static String defaultExternalPropertiesFile = "/etc/dataone/dataone-indexer.properties";
     
     private static ApplicationContext context = null;
     private static SolrIndex solrIndex = null;
@@ -99,54 +99,8 @@ public class IndexWorker {
      */
     public static void main(String[] args) throws IOException, TimeoutException {
         logger.info("IndexWorker.main - Starting index worker...");
-        loadExternalPropertiesFile();
         IndexWorker worker = new IndexWorker();
         worker.start();
-    }
-    
-    /**
-     * Load properties from an external file.  
-     * DataONE-indexer first tries to read it from an env variable - DATAONE_INDEXER_CONFIG.
-     * If the attempt fails, it will try to use the default path - /etc/dataone/dataone-indexer.properties
-     * If it fails again, it will give up
-     */
-    private static void loadExternalPropertiesFile() {
-        String path = System.getenv(ENV_NAME_OF_PROPERTIES_FILE);
-        logger.debug("IndexWorker.loadExternalPropertiesFile - the configuration path from the env variable is " + path);
-        if (path != null && !path.trim().equals("")) {
-            File defaultFile = new File (path);
-            if (defaultFile.exists() && defaultFile.canRead()) {
-                logger.info("IndexWorker.loadExternalPropertiesFile - the configuration path can be read from the env variable " + ENV_NAME_OF_PROPERTIES_FILE +
-                           " and its value is " + path + ". The file exists and it will be used.");
-            } else {
-                logger.info("IndexWorker.loadExternalPropertiesFile - the configuration path can be read from the env variable " + ENV_NAME_OF_PROPERTIES_FILE +
-                        " and its value is " + path + ". But the file does NOT exist or be readable. So it will NOT be used.");
-                path = null;
-            }
-          
-        }
-        if (path == null || path.trim().equals("")) {
-            //The attempt to read the configuration file from the env variable failed. We will try the default external path
-            File defaultFile = new File (defaultExternalPropertiesFile);
-            if (defaultFile.exists() && defaultFile.canRead()) {
-                logger.info("IndexWorker.loadExternalPropertiesFile - the configure path can't be read from the env variable " + ENV_NAME_OF_PROPERTIES_FILE +
-                           ". However, the default external file " + defaultExternalPropertiesFile + " exists and it will be used.");
-                path = defaultExternalPropertiesFile;
-            }
-        }
-        if (path != null && !path.trim().equals("")) {
-            try {
-                //Settings.getConfiguration();
-                Settings.augmentConfiguration(path);
-                logger.info("IndexWorker.loadExternalPropertiesFile - loaded the properties from the file " + path);
-            } catch (ConfigurationException e) {
-               logger.error("IndexWorker.loadExternalPropertiesFile - can't load any properties from the file " + path + 
-                            " since " + e.getMessage() + ". It will use the default properties in the jar file.");
-            }
-        } else {
-            logger.info("IndexWorker.loadExternalPropertiesFile - can't load an external properties file from the env variable " +
-                    ENV_NAME_OF_PROPERTIES_FILE + " or from the default path " + defaultExternalPropertiesFile);
-        }
     }
     
     /**
@@ -165,13 +119,6 @@ public class IndexWorker {
      * @throws ServiceException
      */
     private void initIndexQueue() throws IOException, TimeoutException {
-        RabbitMQhost = Settings.getConfiguration().getString("index.rabbitmq.hostname", "localhost");
-        RabbitMQport = Settings.getConfiguration().getInt("index.rabbitmq.hostport", 5672);
-        RabbitMQusername = Settings.getConfiguration().getString("index.rabbitmq.username", "guest");
-        RabbitMQpassword = Settings.getConfiguration().getString("index.rabbitmq.password", "guest");
-        RabbitMQMaxPriority = Settings.getConfiguration().getInt("index.rabbitmq.max.priority");
-        dataRootDir = Settings.getConfiguration().getString("index.data.root.directory", "/var/metacat/");
-        docRootDir = Settings.getConfiguration().getString("index.document.root.directory", "/var/metacat/");
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(RabbitMQhost);
         factory.setPort(RabbitMQport);
