@@ -601,7 +601,7 @@ public class SolrIndex {
         } else if (isPartOfDataPackage(pid)) {
             removeFromDataPackage(pid);
         } else {
-            deleteDocFromIndex(pid);
+            removeFromIndex(pid);
         }
     }
     
@@ -610,13 +610,13 @@ public class SolrIndex {
      * remove the relationship for the related metadata and data objects.
      */
     private void removeDataPackage(String pid) throws Exception {
-        deleteDocFromIndex(pid);
+        removeFromIndex(pid);
         List<SolrDoc> docsToUpdate = getUpdatedSolrDocsByRemovingResourceMap(pid);
         if (docsToUpdate != null && !docsToUpdate.isEmpty()) {
             //SolrElementAdd addCommand = new SolrElementAdd(docsToUpdate);
             //httpService.sendUpdate(solrIndexUri, addCommand);
             for(SolrDoc doc : docsToUpdate) {
-                deleteDocFromIndex(doc.getIdentifier());
+                removeFromIndex(doc.getIdentifier());
                 insertToIndex(doc);
             }
         }
@@ -873,14 +873,14 @@ public class SolrIndex {
      */
     private void removeFromDataPackage(String pid) throws Exception  {
         SolrDoc indexedDoc = httpService.getSolrDocumentById(solrQueryUri, pid);
-        deleteDocFromIndex(pid);
+        removeFromIndex(pid);
         List<SolrDoc> docsToUpdate = new ArrayList<SolrDoc>();
 
         List<String> documents = indexedDoc.getAllFieldValues(SolrElementField.FIELD_DOCUMENTS);
         for (String documentsValue : documents) {
             SolrDoc solrDoc = httpService.getSolrDocumentById(solrQueryUri, documentsValue);
             solrDoc.removeFieldsWithValue(SolrElementField.FIELD_ISDOCUMENTEDBY, pid);
-            deleteDocFromIndex(documentsValue);
+            removeFromIndex(documentsValue);
             insertToIndex(solrDoc);
         }
 
@@ -890,7 +890,7 @@ public class SolrIndex {
             SolrDoc solrDoc = httpService.getSolrDocumentById(solrQueryUri, documentedByValue);
             solrDoc.removeFieldsWithValue(SolrElementField.FIELD_DOCUMENTS, pid);
             //docsToUpdate.add(solrDoc);
-            deleteDocFromIndex(documentedByValue);
+            removeFromIndex(documentedByValue);
             insertToIndex(solrDoc);
         }
 
@@ -901,7 +901,7 @@ public class SolrIndex {
     /*
      * Remove a pid from the solr index
      */
-    /*private synchronized void removeFromIndex(String identifier) throws Exception {
+    private synchronized void removeFromIndex(String identifier) throws Exception {
         
         
         Map<String, SolrDoc> docs = new HashMap<String, SolrDoc>();
@@ -929,7 +929,7 @@ public class SolrIndex {
 
         // index the rest
         //TODO: we need to figure out how to get the file path
-        for (String idToIndex : idsToIndex) {
+        /*for (String idToIndex : idsToIndex) {
             Identifier pid = new Identifier();
             pid.setValue(idToIndex);
             SystemMetadata sysMeta = DistributedMapsFactory.getSystemMetadata(idToIndex);
@@ -938,9 +938,9 @@ public class SolrIndex {
                 boolean isSysmetaChangeOnlyEvent = false;
                 insert(pid, sysMeta, objectPath, isSysmetaChangeOnlyEvent);
             }
-        }
+        }*/
             
-    }*/
+    }
     
     private void deleteDocFromIndex(String pid) throws Exception {
         if (pid != null && !pid.trim().equals("")) {
