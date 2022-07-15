@@ -29,8 +29,6 @@ import java.util.concurrent.TimeoutException;
 import org.apache.log4j.Logger;
 import org.dataone.configuration.Settings;
 import org.dataone.service.types.v1.Identifier;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -40,8 +38,6 @@ import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.LongString;
-
-
 
 /**
  * Worker class to process index tasks and submit results to store.
@@ -69,8 +65,6 @@ public class IndexWorker {
     private final static String INDEX_QUEUE_NAME = "index";
     private final static String INDEX_ROUTING_KEY = "index";
     
-    private static final String springConfigFileURL = "/index-parser-context.xml";
-    
     // Default values for the RabbitMQ message broker server. The value of 'localhost' is valid for
     // a RabbitMQ server running on a 'bare metal' server, inside a VM, or within a Kubernetes
     // where Mmetacat and the RabbitMQ server are running in containers that belong
@@ -84,10 +78,7 @@ public class IndexWorker {
     private static String docRootDir = Settings.getConfiguration().getString("index.document.root.directory", "/var/metacat/");
     private static Connection RabbitMQconnection = null;
     private static Channel RabbitMQchannel = null;
-    
-    private static ApplicationContext context = null;
     private static SolrIndex solrIndex = null;
-    
     private static Logger logger = Logger.getLogger(IndexWorker.class.getName());
     
 
@@ -98,9 +89,12 @@ public class IndexWorker {
      * @throws IOException 
      */
     public static void main(String[] args) throws IOException, TimeoutException {
-        logger.info("IndexWorker.main - Starting index worker...");
-        IndexWorker worker = new IndexWorker();
+        System.out.println("Starting index worker...");
+        SolrIndex solrIndex = null;
+        IndexWorker worker = new IndexWorker(solrIndex);
         worker.start();
+        //worker.handleIndexTask("123");
+        System.out.println("Done.");
     }
     
     /**
@@ -108,9 +102,9 @@ public class IndexWorker {
      * @throws IOException
      * @throws TimeoutException
      */
-    public IndexWorker() throws IOException, TimeoutException {
-        initIndexQueue();
-        initIndexParsers();
+    public IndexWorker(SolrIndex solrIndex) throws IOException, TimeoutException {
+        this.solrIndex = solrIndex;
+        init();
     }
     /**
      * Initialize the RabbitMQ service
@@ -118,7 +112,7 @@ public class IndexWorker {
      * @throws TimeoutException 
      * @throws ServiceException
      */
-    private void initIndexQueue() throws IOException, TimeoutException {
+    private void init() throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(RabbitMQhost);
         factory.setPort(RabbitMQport);
@@ -159,22 +153,15 @@ public class IndexWorker {
         }
         logger.debug("IndexWorker.init - The metadata root directory is " + docRootDir);
     }
-    
-    /**
-     * Initialize the solrIndex object which contains the index parsers.
-     */
-    private void initIndexParsers() {
-        if (context == null) {
-            synchronized(IndexWorker.class) {
-                if (context == null) {
-                    context = new ClassPathXmlApplicationContext(springConfigFileURL);
-                }
-            }
-        }
-        solrIndex = (SolrIndex)context.getBean("solrIndex");
-    }
 
-  
+    /**
+     * Callback for processing a specific indexing task
+     * @param message the message describing the task to be processed
+     */
+    public void handleIndexTask(String message) {
+        System.out.println("Handling task: " + message);
+        // TODO: Handle the index task
+    }
     
     /**
      * Worker starts to consume messages from the index queue  - calling SolrIndex to 
@@ -207,10 +194,6 @@ public class IndexWorker {
                     if (indexType == null || indexType.trim().equals("")) {
                         throw new Exception("The index type cannot be null or blank in the index task");
                     }
-                    int priority = properties.getPriority();
-                    logger.info("IndexWorker.consumer.handleDelivery - Received the index task from the index queue with the identifier: "+
-                                identifier + " , the index type: " + indexType + ", the file path (null means not to have): " + filePath + 
-                                ", the priotity: " + priority);
                     if (indexType.equals(CREATE_INDEXT_TYPE)) {
                         boolean sysmetaOnly = false;
                         solrIndex.update(pid, filePath, sysmetaOnly);
@@ -222,11 +205,12 @@ public class IndexWorker {
                     } else {
                         throw new Exception("DataONE indexer does not know the index type: " + indexType + " in the index task");
                     }
-                    logger.info("IndexWorker.consumer.handleDelivery - Completed the index task from the index queue with the identifier: "+
-                            identifier + " , the index type: " + indexType + ", the file path (null means not to have): " + filePath + 
-                            ", the priotity: " + priority);
+                    int priority = properties.getPriority();
+                    logger.info("IndexWorker.consumer.handleDelivery - Received the index task from the index queue with the identifier: "+
+                                identifier + " , the index type: " + indexType + ", the file path (null means not to have): " + filePath + 
+                                ", the priotity: " + priority);
                 } catch (Exception e) {
-                    logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                    logger.error("ndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
                                  identifier + " since " + e.getMessage());
                 }
                 RabbitMQchannel.basicAck(envelope.getDeliveryTag(), false);

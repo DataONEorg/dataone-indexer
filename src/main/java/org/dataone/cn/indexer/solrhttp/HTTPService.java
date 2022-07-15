@@ -86,7 +86,6 @@ public class HTTPService {
     final static String PARAM_QUERY = "q";
     final static String PARAM_RETURN = "fl";
     final static String VALUE_WILDCARD = "*";
-    final static String WT = "wt";
 
     private static final String MAX_ROWS = "5000";
 
@@ -438,7 +437,6 @@ public class HTTPService {
         params.add(new BasicNameValuePair(PARAM_ROWS, rows));
         params.add(new BasicNameValuePair(PARAM_INDENT, VALUE_INDENT_ON));
         params.add(new BasicNameValuePair(PARAM_RETURN, VALUE_WILDCARD));
-        params.add(new BasicNameValuePair(WT,  "xml"));
         String paramString = URLEncodedUtils.format(params, "UTF-8");
 
         String requestURI = uir + "?" + paramString;
