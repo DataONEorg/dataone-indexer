@@ -253,6 +253,9 @@ public class IndexWorker {
                     if (pathObject != null) {
                         filePath = ((LongString)pathObject).toString();
                     }
+                    if (filePath == null || filePath.trim().equals("")) {
+                        throw new Exception("The file path cannot be null or blank in the index task");
+                    }
                     String indexType = ((LongString)headers.get(HEADER_INDEX_TYPE)).toString();
                     if (indexType == null || indexType.trim().equals("")) {
                         throw new Exception("The index type cannot be null or blank in the index task");
@@ -262,15 +265,9 @@ public class IndexWorker {
                                 identifier + " , the index type: " + indexType + ", the file path (null means not to have): " + filePath + 
                                 ", the priotity: " + priority);
                     if (indexType.equals(CREATE_INDEXT_TYPE)) {
-                        if (filePath == null || filePath.trim().equals("")) {
-                            throw new Exception("The file path cannot be null or blank in the index task");
-                        }
                         boolean sysmetaOnly = false;
                         solrIndex.update(pid, filePath, sysmetaOnly);
                     } else if (indexType.equals(SYSMETA_CHANGE_TYPE)) {
-                        if (filePath == null || filePath.trim().equals("")) {
-                            throw new Exception("The file path cannot be null or blank in the index task");
-                        }
                         boolean sysmetaOnly = true;
                         solrIndex.update(pid, filePath, sysmetaOnly);
                     } else if (indexType.equals(DELETE_INDEX_TYPE)) {
