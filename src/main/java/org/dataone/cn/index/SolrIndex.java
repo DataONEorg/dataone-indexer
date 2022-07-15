@@ -874,28 +874,29 @@ public class SolrIndex {
     private void removeFromDataPackage(String pid) throws Exception  {
         SolrDoc indexedDoc = httpService.getSolrDocumentById(solrQueryUri, pid);
         deleteDocFromIndex(pid);
-        List<SolrDoc> docsToUpdate = new ArrayList<SolrDoc>();
-
         List<String> documents = indexedDoc.getAllFieldValues(SolrElementField.FIELD_DOCUMENTS);
-        for (String documentsValue : documents) {
-            SolrDoc solrDoc = httpService.getSolrDocumentById(solrQueryUri, documentsValue);
-            solrDoc.removeFieldsWithValue(SolrElementField.FIELD_ISDOCUMENTEDBY, pid);
-            deleteDocFromIndex(documentsValue);
-            insertToIndex(solrDoc);
+        if (documents != null  && !documents.isEmpty()) {
+            for (String documentsValue : documents) {
+                SolrDoc solrDoc = httpService.getSolrDocumentById(solrQueryUri, documentsValue);
+                if (solrDoc != null) {
+                    solrDoc.removeFieldsWithValue(SolrElementField.FIELD_ISDOCUMENTEDBY, pid);
+                    deleteDocFromIndex(documentsValue);
+                    insertToIndex(solrDoc);
+                }
+            }
         }
 
-        List<String> documentedBy = indexedDoc
-                .getAllFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY);
-        for (String documentedByValue : documentedBy) {
-            SolrDoc solrDoc = httpService.getSolrDocumentById(solrQueryUri, documentedByValue);
-            solrDoc.removeFieldsWithValue(SolrElementField.FIELD_DOCUMENTS, pid);
-            //docsToUpdate.add(solrDoc);
-            deleteDocFromIndex(documentedByValue);
-            insertToIndex(solrDoc);
+        List<String> documentedBy = indexedDoc.getAllFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY);
+        if (documentedBy != null && !documentedBy.isEmpty()) {
+            for (String documentedByValue : documentedBy) {
+                SolrDoc solrDoc = httpService.getSolrDocumentById(solrQueryUri, documentedByValue);
+                if (solrDoc != null) {
+                    solrDoc.removeFieldsWithValue(SolrElementField.FIELD_DOCUMENTS, pid);
+                    deleteDocFromIndex(documentedByValue);
+                    insertToIndex(solrDoc);
+                }
+            }
         }
-
-        //SolrElementAdd addCommand = new SolrElementAdd(docsToUpdate);
-        //httpService.sendUpdate(solrIndexUri, addCommand);
     }
 
     /*
