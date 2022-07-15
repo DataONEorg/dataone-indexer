@@ -543,11 +543,11 @@ public class SolrIndex {
     /*
      * Is the pid a resource map
      */
-    private boolean isDataPackage(String pid, String formatId) throws FileNotFoundException, ServiceFailure {
+    private boolean isDataPackage(String pid, SystemMetadata sysmeta) throws FileNotFoundException, ServiceFailure {
         boolean isDataPackage = false;
         //SystemMetadata sysmeta = DistributedMapsFactory.getSystemMetadata(pid);
-        if(formatId != null) {
-            isDataPackage = resourceMapFormatIdList.contains(formatId);
+        if(sysmeta != null) {
+            isDataPackage = resourceMapFormatIdList.contains(sysmeta.getFormatId().getValue());
         }
         return isDataPackage;
     }
@@ -570,15 +570,14 @@ public class SolrIndex {
      */
     public void remove(Identifier pid) throws Exception {
         if(pid != null ) {
-            log.debug("SorIndex.remove - start to remove the solr index for the pid "+pid.getValue());
-            SolrDoc indexDoc = httpService.getSolrDocumentById(solrQueryUri, pid.getValue());
-            if (indexDoc != null) {
-                log.debug("SorIndex.remove - in the branch which the solr doc was found for " + pid.getValue());
-                String formatId = indexDoc.getFirstFieldValue("formatId");
-                log.debug("SorIndex.remove - the format id for the object " + pid.getValue() + " is " + formatId);
-                remove(pid.getValue(), formatId);
-                log.info("SorIndex.remove - successfully removed the solr index for the pid " + pid.getValue());
+            SystemMetadata sysmeta = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
+            if (sysmeta == null) {
+                throw new NotFound("0000", "DataONE indexer cannot find the system metadata for the pid " + pid.getValue());
             }
+            log.debug("SorIndex.remove - start to remove the solr index for the pid "+pid.getValue());
+            remove(pid.getValue(), sysmeta);
+            log.debug("SorIndex.remove - finished to remove the solr index for the pid "+pid.getValue());
+            log.info("SorIndex.remove - successfully removed the solr index for the pid " + pid.getValue());
         }
     }
     /**
@@ -595,8 +594,8 @@ public class SolrIndex {
      * @throws ServiceFailure 
      * @throws OREParserException 
      */
-    private void remove(String pid, String formatId) throws Exception {
-        if (isDataPackage(pid, formatId)) {
+    private void remove(String pid, SystemMetadata sysmeta) throws Exception {
+        if (isDataPackage(pid, sysmeta)) {
             removeDataPackage(pid);
         } else if (isPartOfDataPackage(pid)) {
             removeFromDataPackage(pid);
