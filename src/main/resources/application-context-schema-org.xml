@@ -402,10 +402,19 @@
                     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                     PREFIX SO:   <http://schema.org/>
 
-                    SELECT ?license
+                    SELECT DISTINCT ?license
                       WHERE {
                         ?datasetId rdf:type    SO:Dataset .
                         ?datasetId SO:license ?license .
+                        {
+                            filter(datatype(?license_obj) = xsd:string) .
+                        }
+                        UNION
+                        {
+                            filter(datatype(?license) = SO:CreativeWork ) .
+                            ?license   SO:name    ?license .
+                        }
+
                       }
                 ]]>
             </value>
