@@ -8,11 +8,11 @@
   <properties fileName="index-processor.properties" />
   
   <!-- Provides the DNS hostname -->
-  <!--<properties fileName="file:/etc/dataone/node.properties" />-->
-  <!--<properties fileName="file:/etc/dataone/index/d1client.properties" />-->
+  <properties fileName="file:/etc/dataone/node.properties" />
+  <properties fileName="file:/etc/dataone/index/d1client.properties" />
   <!-- Some specific properties for CNs -->
-  <!--<properties fileName="file:/etc/dataone/index/cn-index-processor.properties">
+  <properties fileName="file:/etc/dataone/index/cn-index-processor.properties">
         <reloadingStrategy refreshDelay="15000"
                                config-class="org.apache.commons.configuration.reloading.FileChangedReloadingStrategy"/>
-    </properties>-->
+    </properties>
 </configuration>
