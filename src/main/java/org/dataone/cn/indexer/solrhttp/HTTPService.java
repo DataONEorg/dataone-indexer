@@ -77,8 +77,6 @@ public class HTTPService {
 
     private static final String CHAR_ENCODING = "UTF-8";
     private static final String XML_CONTENT_TYPE = "text/xml";
-    private static final String ARCHIVED_FIELD = "archived";
-    private static final String ARCHIVED_SHOWING_VALUE = "-archived:*fake";
 
     final static String PARAM_START = "start";
     final static String PARAM_ROWS = "rows";
@@ -409,12 +407,11 @@ public class HTTPService {
         params.add(new BasicNameValuePair(PARAM_ROWS, rows));
         params.add(new BasicNameValuePair(PARAM_INDENT, VALUE_INDENT_ON));
         params.add(new BasicNameValuePair(PARAM_RETURN, VALUE_WILDCARD));
-        params.add(new BasicNameValuePair(WT, "xml"));
-        params.add(new BasicNameValuePair(ARCHIVED_FIELD, ARCHIVED_SHOWING_VALUE));//make sure archived objects being included
+        params.add(new BasicNameValuePair(WT,  "xml"));
         String paramString = URLEncodedUtils.format(params, "UTF-8");
 
         String requestURI = uir + "?" + paramString;
-        log.info("HTTPService.doRequest - REQUEST URI: " + requestURI);
+        log.info("REQUEST URI= " + requestURI);
         HttpGet commandGet = new HttpGet(requestURI);
 
         HttpResponse response = getHttpClient().execute(commandGet);
