@@ -41,16 +41,10 @@ import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.log4j.Logger;
 import org.dataone.cn.hazelcast.HazelcastClientFactory;
 import org.dataone.cn.index.processor.IndexVisibilityDelegateHazelcastImpl;
-import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.utility.SeriesIdResolver;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.ore.ResourceMapFactory;
-import org.dataone.service.exceptions.InvalidToken;
-import org.dataone.service.exceptions.NotAuthorized;
-import org.dataone.service.exceptions.NotFound;
-import org.dataone.service.exceptions.NotImplemented;
-import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v2.SystemMetadata;
 import org.dspace.foresite.OREException;
@@ -255,12 +249,11 @@ public class ForesiteResourceMap implements ResourceMap {
         return isHead;
     }
 
-    private SolrDoc _mergeMappedReference(ResourceEntry resourceEntry, SolrDoc mergeDocument) throws InvalidToken, NotAuthorized, NotImplemented, ServiceFailure, NotFound {
+    private SolrDoc _mergeMappedReference(ResourceEntry resourceEntry, SolrDoc mergeDocument) {
 
     	Identifier identifier = new Identifier();
     	identifier.setValue(mergeDocument.getIdentifier());
-    	//SystemMetadata sysMeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
-    	SystemMetadata sysMeta = ObjectManager.getInstance().getSystemMetadata(identifier.getValue());
+    	SystemMetadata sysMeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
     	if (sysMeta.getSeriesId() != null && sysMeta.getSeriesId().getValue() != null && !sysMeta.getSeriesId().getValue().trim().equals("")) {
     		// skip this one
     	    if(!isHeadVersion(identifier, sysMeta.getSeriesId())) {
@@ -370,12 +363,7 @@ public class ForesiteResourceMap implements ResourceMap {
                
                 if (doc.getIdentifier().equals(resourceEntry.getIdentifier())
                         || resourceEntry.getIdentifier().equals(doc.getSeriesId())) {
-                    try {
-                        mergedDocuments.add(_mergeMappedReference(resourceEntry, doc));
-                    } catch (Exception e) {
-                        logger.error("ForestieResourceMap.mergeIndexedDocuments - cannot merge the document since " + e.getMessage());
-                    }
-                    
+                    mergedDocuments.add(_mergeMappedReference(resourceEntry, doc));
                 }
             }
         }
