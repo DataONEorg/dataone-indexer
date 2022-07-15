@@ -135,15 +135,13 @@ public class HTTPService {
             HttpEntity responseEntity = response.getEntity();
             inputStreamResponse = responseEntity.getContent();
             if (response.getStatusLine().getStatusCode() != 200) {
-                ByteArrayOutputStream baosResponse = new ByteArrayOutputStream();
-                org.apache.commons.io.IOUtils.copy(inputStreamResponse, baosResponse);
-                String error = new String(baosResponse.toByteArray());
-                log.error(error);
+                writeError(null, data, inputStreamResponse, uri);
                 post.abort();
-                throw new IOException("unable to update solr, non 200 response code." + error);
+                throw new IOException("unable to update solr, non 200 response code.");
             }
             post.abort();
         } catch (Exception ex) {
+            writeError(ex, data, inputStreamResponse, uri);
             throw new IOException(ex);
         } finally {
             IOUtils.closeQuietly(inputStreamResponse);
@@ -169,18 +167,11 @@ public class HTTPService {
             HttpEntity responseEntity = response.getEntity();
             inputStreamResponse = responseEntity.getContent();
             if (response.getStatusLine().getStatusCode() != 200) {
-                ByteArrayOutputStream baosResponse = new ByteArrayOutputStream();
-                org.apache.commons.io.IOUtils.copy(inputStreamResponse, baosResponse);
-                String error = new String(baosResponse.toByteArray());
-                log.error(error);
-                post.abort();
-                throw new IOException("unable to update solr, non 200 response code." + error);
+                writeError(null, data, inputStreamResponse, uri);
             }
             post.abort();
         } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
-        } finally {
-            IOUtils.closeQuietly(inputStreamResponse);
+            writeError(ex, data, inputStreamResponse, uri);
         }
     }
 
@@ -241,8 +232,49 @@ public class HTTPService {
         return sb.toString();
     }
 
-  
+    private void writeError(Exception ex, SolrElementAdd data, InputStream inputStreamResonse,
+            String uri) throws IOException {
 
+        try {
+            if (ex != null) {
+                log.error("Unable to write to stream", ex);
+            }
+
+            log.error("URL: " + uri);
+            log.error("Post: ");
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            data.serialize(baos, "UTF-8");
+            log.error(new String(baos.toByteArray(), "UTF-8"));
+            log.error("\n\n\nResponse: \n");
+            ByteArrayOutputStream baosResponse = new ByteArrayOutputStream();
+            org.apache.commons.io.IOUtils.copy(inputStreamResonse, baosResponse);
+            log.error(new String(baosResponse.toByteArray()));
+            inputStreamResonse.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeError(Exception ex, String data, InputStream inputStreamResonse, String uri)
+            throws IOException {
+
+        try {
+            if (ex != null) {
+                log.error("Unable to write to stream", ex);
+            }
+
+            log.error("URL: " + uri);
+            log.error("Post: ");
+            log.error(data);
+            log.error("\n\n\nResponse: \n");
+            ByteArrayOutputStream baosResponse = new ByteArrayOutputStream();
+            org.apache.commons.io.IOUtils.copy(inputStreamResonse, baosResponse);
+            log.error(new String(baosResponse.toByteArray()));
+            inputStreamResonse.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     // ?q=id%3Ac6a8c20f-3503-4ded-b395-98fcb0fdd78c+OR+f5aaac58-dee1-4254-8cc4-95c5626ab037+OR+f3229cfb-2c53-4aa0-8437-057c2a52f502&version=2.2
 
