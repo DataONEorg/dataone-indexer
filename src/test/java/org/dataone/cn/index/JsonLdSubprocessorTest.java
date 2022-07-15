@@ -467,7 +467,6 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         assertTrue(compareFieldLength(thisId, "text", 2501));
         String[] license = {"https://creativecommons.org/publicdomain/zero/1.0/", "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication"};
         assertTrue(compareFieldValue(thisId, "license", license));
-
     }
 
     protected boolean compareFieldValue(String id, String fieldName, String[] expectedValues) throws SolrServerException, IOException {
