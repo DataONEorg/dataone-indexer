@@ -36,7 +36,6 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.LongString;
 
 /**
  * Worker class to process index tasks and submit results to store.
@@ -89,8 +88,8 @@ public class IndexWorker {
 
         System.out.println("Starting index worker...");
         IndexWorker worker = new IndexWorker();
-        worker.start();
-        //worker.handleIndexTask("123");
+
+        worker.handleIndexTask("123");
         System.out.println("Done.");
     }
     
@@ -160,7 +159,7 @@ public class IndexWorker {
     }
     
     /**
-     * Worker starts to consume messages from the index queue  - calling SolrIndex to 
+     * Worker start to consume messages from the index queue  - calling SolrIndex to 
      * process index tasks and submit results to store.
      * @throws IOException
      */
@@ -170,22 +169,17 @@ public class IndexWorker {
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) 
                                        throws IOException {
                 Map<String, Object> headers = properties.getHeaders();
-                String identifier = ((LongString)headers.get(HEADER_ID)).toString();
-                String indexType = ((LongString)headers.get(HEADER_INDEX_TYPE)).toString();
-                String filePath = null;
-                Object pathObject = headers.get(HEADER_PATH);
-                if (pathObject != null) {
-                    filePath = ((LongString)pathObject).toString();
-                }
+                String identifier = (String)headers.get(HEADER_ID);
+                String indexType = (String)headers.get(HEADER_INDEX_TYPE);
+                String filePath = (String)headers.get(HEADER_PATH);
                 int priority = properties.getPriority();
                 logger.info("IndexWorker.consumer.handleDelivery - Received the index task from the index queue with the identifier: "+
                             identifier + " , the index type: " + indexType + ", the file path (null means not to have): " + filePath + 
                             ", the priotity: " + priority);
-                RabbitMQchannel.basicAck(envelope.getDeliveryTag(), false);
             }
          };
          logger.info("IndexWorker.start - Calling basicConsume");
-         boolean autoAck = false;
+         boolean autoAck = true;
          RabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, autoAck, consumer);
     }
     
