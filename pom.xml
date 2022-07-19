@@ -12,7 +12,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <compiler.target.version>1.7</compiler.target.version>
         <spring.version>3.1.4.RELEASE</spring.version>
-        <hazelcast.version>2.4.1</hazelcast.version>
         <solr.version>5.2.1</solr.version>
         <d1_cn_common.version>2.3.0</d1_cn_common.version>
         <d1_libclient_java.version>2.3.1</d1_libclient_java.version>
@@ -167,18 +166,6 @@
                     <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast</artifactId>
-            <version>${hazelcast.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast-spring</artifactId>
-            <version>${hazelcast.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
