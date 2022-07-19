@@ -1,9 +1,7 @@
-package org.dataone.cn.index.processor;
+package org.dataone.cn.indexer.resourcemap;
 
 import org.apache.log4j.Logger;
-import org.dataone.cn.hazelcast.HazelcastClientFactory;
 import org.dataone.cn.indexer.object.ObjectManager;
-import org.dataone.cn.indexer.resourcemap.IndexVisibilityDelegate;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.service.exceptions.InvalidToken;
 import org.dataone.service.exceptions.NotAuthorized;
@@ -13,12 +11,12 @@ import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v2.SystemMetadata;
 
-public class IndexVisibilityDelegateHazelcastImpl implements IndexVisibilityDelegate {
+public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
 
-    private static Logger logger = Logger.getLogger(IndexVisibilityDelegateHazelcastImpl.class
+    private static Logger logger = Logger.getLogger(IndexVisibilityDelegateImpl.class
             .getName());
 
-    public IndexVisibilityDelegateHazelcastImpl() {
+    public IndexVisibilityDelegateImpl() {
     }
 
     public boolean isDocumentVisible(Identifier pid) {

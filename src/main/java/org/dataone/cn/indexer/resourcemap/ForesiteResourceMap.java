@@ -40,7 +40,6 @@ import java.util.Set;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.log4j.Logger;
 import org.dataone.cn.hazelcast.HazelcastClientFactory;
-import org.dataone.cn.index.processor.IndexVisibilityDelegateHazelcastImpl;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.utility.SeriesIdResolver;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
@@ -70,7 +69,7 @@ public class ForesiteResourceMap implements ResourceMap {
     private String identifier = null;
     private HashMap<String, ForesiteResourceEntry> resourceMap = null;
 
-    private IndexVisibilityDelegate indexVisibilityDelegate = new IndexVisibilityDelegateHazelcastImpl();
+    private IndexVisibilityDelegate indexVisibilityDelegate = new IndexVisibilityDelegateImpl();
 
     public ForesiteResourceMap(String fileObjectPath) throws OREParserException {
         FileInputStream fileInputStream = null;
