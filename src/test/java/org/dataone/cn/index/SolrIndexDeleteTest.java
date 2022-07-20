@@ -383,7 +383,7 @@ public class SolrIndexDeleteTest extends DataONESolrJettyTestBase {
         assertPresentInSolrIndex("peggym.resourcemap");
     }
 
-    private void deleteAll() {
+    private void deleteAll() throws IOException {
         HTTPService httpService = (HTTPService) context.getBean("httpService");
         httpService.sendSolrDelete("peggym.130.4");
         httpService.sendSolrDelete("peggym.127.1");
