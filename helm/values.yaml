@@ -94,8 +94,8 @@ idxworker:
 rabbitmq:
   enabled: true
   auth:
-    username: rmq
-    password: override-this-pw-with-a-secret
+    username: guest
+    password: CHANGEME
   hostname: rabbitmq
   hostport: 5672
   #replicaCount: 3

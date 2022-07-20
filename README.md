@@ -34,6 +34,7 @@ nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG
 Helm provides a simple mechanism to install all application dependencies and configure the application in a single command. To deploy using helm to a release named `d1index` and also in a namespace named `d1index`, and then view the deployed pods and services, use a sequence like:
 
 ```bash
+kubectl create namespace d1index
 helm install -n d1index d1index ./helm
 kubectl -n d1index get all
 ```
