@@ -148,7 +148,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
 
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         for (int i=0; i<TIMES; i++) {
             try {
                 Thread.sleep(SLEEP);
@@ -236,7 +236,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
 
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         for (int i=0; i<TIMES; i++) {
             try {
                 Thread.sleep(SLEEP);
@@ -289,7 +289,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
 
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         for (int i=0; i<TIMES; i++) {
             try {
                 Thread.sleep(SLEEP);
@@ -371,7 +371,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
             insertResource(thisId, formatId, res, nodeid, userDN);
             Thread.sleep(SLEEPTIME);
             // now process the tasks
-            processor.processIndexTaskQueue();
+            //processor.processIndexTaskQueue();
             for (int j=0; j<TIMES; j++) {
                 try {
                     Thread.sleep(SLEEP);
@@ -420,7 +420,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         insertResource(thisId, formatId, resources.get(iDoc), nodeid, userDN);
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         for (int i=0; i<TIMES; i++) {
             try {
                 Thread.sleep(SLEEP);
@@ -442,7 +442,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         insertResource(thisId, formatId, resources.get(iDoc), nodeid, userDN);
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         for (int i=0; i<TIMES; i++) {
             try {
                 Thread.sleep(SLEEP);
@@ -584,7 +584,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
 
         Thread.sleep(2*SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         for (int i=0; i<TIMES; i++) {
             try {
                 Thread.sleep(SLEEP);

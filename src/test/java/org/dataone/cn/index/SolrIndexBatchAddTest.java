@@ -6,8 +6,8 @@ import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.dataone.cn.hazelcast.HazelcastClientFactory;
-import org.dataone.cn.index.generator.IndexTaskGenerator;
-import org.dataone.cn.index.processor.IndexTaskProcessor;
+//import org.dataone.cn.index.generator.IndexTaskGenerator;
+//import org.dataone.cn.index.processor.IndexTaskProcessor;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.service.types.v2.SystemMetadata;
 import org.dataone.service.util.TypeMarshaller;
@@ -24,8 +24,8 @@ public class SolrIndexBatchAddTest extends DataONESolrJettyTestBase {
 
     private static Logger logger = Logger.getLogger(SolrIndexBatchAddTest.class.getName());
 
-    private IndexTaskProcessor processor;
-    private IndexTaskGenerator generator;
+    //private IndexTaskProcessor processor;
+    //private IndexTaskGenerator generator;
 
     private static final int NUM_FILES = 10;
     
@@ -151,7 +151,7 @@ public class SolrIndexBatchAddTest extends DataONESolrJettyTestBase {
         }
         HazelcastClientFactory.getSystemMetadataMap().put(sysmeta.getIdentifier(), sysmeta);
         HazelcastClientFactory.getObjectPathMap().putAsync(sysmeta.getIdentifier(), path);
-        generator.processSystemMetaDataUpdate(sysmeta, path);
+        //generator.processSystemMetaDataUpdate(sysmeta, path);
     }
 
     public void setUp() throws Exception {
@@ -174,8 +174,8 @@ public class SolrIndexBatchAddTest extends DataONESolrJettyTestBase {
     }
 
     private void configureSpringResources() {
-        processor = (IndexTaskProcessor) context.getBean("indexTaskProcessor");
-        generator = (IndexTaskGenerator) context.getBean("indexTaskGenerator");
+        //processor = (IndexTaskProcessor) context.getBean("indexTaskProcessor");
+        //generator = (IndexTaskGenerator) context.getBean("indexTaskGenerator");
 
         peggym1271Sys = (Resource) context.getBean("peggym1271Sys");
         peggym1281Sys = (Resource) context.getBean("peggym1281Sys");

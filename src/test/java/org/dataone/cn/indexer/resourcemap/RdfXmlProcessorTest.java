@@ -51,7 +51,7 @@ import org.dataone.cn.hazelcast.HazelcastClientFactory;
 import org.dataone.cn.index.DataONESolrJettyTestBase;
 import org.dataone.cn.index.HazelcastClientFactoryTest;
 import org.dataone.cn.index.generator.IndexTaskGenerator;
-import org.dataone.cn.index.processor.IndexTaskProcessor;
+//import org.dataone.cn.index.processor.IndexTaskProcessor;
 import org.dataone.cn.index.task.IndexTask;
 import org.dataone.cn.indexer.annotation.RdfXmlSubprocessor;
 import org.dataone.cn.indexer.convert.SolrDateConverter;
@@ -95,10 +95,10 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
     private ApplicationContext provenanceContext = null;
 
     /* The index task processor used to process tasks in the queue */
-    protected IndexTaskProcessor processor;
+    //protected IndexTaskProcessor processor;
 
     /* The task generator that adds tasks to the queue */
-    private IndexTaskGenerator generator;
+    //private IndexTaskGenerator generator;
 
     /* the RDF/XML resource map to parse */
     private Resource provAlaWaiNS02MatlabProcessing2RDF;
@@ -398,7 +398,7 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
         
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
 
         // Insert the resource map into the task queue
         String resourceMap = "ala-wai-canal-ns02-matlab-processing.2.rdf";
@@ -407,7 +407,7 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
 
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         
 
         Thread.sleep(SLEEPTIME);
@@ -456,7 +456,7 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
 
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
 
         // Insert the resource map into the task queue
         String resourceMapId = "resource_map_urn:uuid:cd489c7e-be88-4d57-b13a-911b25a0b47f";
@@ -465,7 +465,7 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
 
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         
         Thread.sleep(SLEEPTIME);
         assertPresentInSolrIndex(emlId);
@@ -489,8 +489,8 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
     protected void configureSpringResources() throws IOException {
 
         // Instantiate the generator and processor from the test-context beans
-        processor = (IndexTaskProcessor) context.getBean("indexTaskProcessor");
-        generator = (IndexTaskGenerator) context.getBean("indexTaskGenerator");
+        //processor = (IndexTaskProcessor) context.getBean("indexTaskProcessor");
+        //generator = (IndexTaskGenerator) context.getBean("indexTaskGenerator");
 
         // instantiate the RDF resource to be tested
         if (provenanceContext == null) {
@@ -693,8 +693,8 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
         }
 
         // Trigger the index task creation
-        IndexTask task = generator.processSystemMetaDataUpdate(sysmeta, path);
-        log.debug("Index task returned: " + task.getPid());
+        //IndexTask task = generator.processSystemMetaDataUpdate(sysmeta, path);
+        //log.debug("Index task returned: " + task.getPid());
 
     }
 }

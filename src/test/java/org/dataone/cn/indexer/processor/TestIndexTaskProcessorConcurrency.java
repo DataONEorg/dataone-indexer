@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import org.dataone.cn.index.processor.IndexTaskProcessorJob;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;

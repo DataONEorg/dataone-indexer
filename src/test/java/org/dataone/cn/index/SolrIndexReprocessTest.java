@@ -31,8 +31,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.dataone.cn.hazelcast.HazelcastClientFactory;
-import org.dataone.cn.index.generator.IndexTaskGenerator;
-import org.dataone.cn.index.processor.IndexTaskProcessor;
+//import org.dataone.cn.index.generator.IndexTaskGenerator;
+//import org.dataone.cn.index.processor.IndexTaskProcessor;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.service.types.v2.SystemMetadata;
@@ -58,8 +58,8 @@ public class SolrIndexReprocessTest extends DataONESolrJettyTestBase {
 
     private static Logger logger = Logger.getLogger(SolrIndexReprocessTest.class.getName());
 
-    private IndexTaskProcessor processor;
-    private IndexTaskGenerator generator;
+    //private IndexTaskProcessor processor;
+    //private IndexTaskGenerator generator;
 
     private Resource peggym1271Sys;
     private Resource peggym1281Sys;
@@ -97,20 +97,20 @@ public class SolrIndexReprocessTest extends DataONESolrJettyTestBase {
         System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&finished the initial index and everything is good.");
         indexNewRevision(peggym1304SysObsoletedBy);
         //Thread.sleep(2000);
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         //Thread.sleep(2000);
         
         
         indexNewRevision(peggym1305Sys);
         Thread.sleep(2000);
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         // verify data package info correct in index
         verifyDataPackageNewRevision();
 
         // add data revision
         indexNewRevision(peggym1281SysObsoletedBy);
         indexNewRevision(peggym1282Sys);
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         // verify data package info correct in index
         verifyDataPackageNewDataRevision();
     }
@@ -132,17 +132,17 @@ public class SolrIndexReprocessTest extends DataONESolrJettyTestBase {
         addSystemMetadata(peggym1291Sys);
         addSystemMetadata(peggym1304Sys);
         Thread.sleep(SLEEPTIME);
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         Thread.sleep(SLEEPTIME);
         addSystemMetadata(peggymResourcemapSeriesSys);
         Thread.sleep(SLEEPTIME);
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
     }
 
     private void indexNewRevision(Resource resource) throws Exception{
         addSystemMetadata(resource);
         Thread.sleep(SLEEPTIME);
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
     }
 
     private void verifyDataPackageNewRevision() throws Exception {
@@ -308,7 +308,7 @@ public class SolrIndexReprocessTest extends DataONESolrJettyTestBase {
         HazelcastClientFactory.getSystemMetadataMap().put(sysmeta.getIdentifier(), sysmeta);
         //sysMetaMap.put(sysmeta.getIdentifier(), sysmeta);
         HazelcastClientFactory.getObjectPathMap().putAsync(sysmeta.getIdentifier(), path);
-        generator.processSystemMetaDataUpdate(sysmeta, path);
+        //generator.processSystemMetaDataUpdate(sysmeta, path);
     }
 
     public void setUp() throws Exception {
@@ -321,8 +321,8 @@ public class SolrIndexReprocessTest extends DataONESolrJettyTestBase {
     }
 
     private void configureSpringResources() {
-        processor = (IndexTaskProcessor) context.getBean("indexTaskProcessor");
-        generator = (IndexTaskGenerator) context.getBean("indexTaskGenerator");
+        //processor = (IndexTaskProcessor) context.getBean("indexTaskProcessor");
+        //generator = (IndexTaskGenerator) context.getBean("indexTaskGenerator");
 
         peggym1271Sys = (Resource) context.getBean("peggym1271Sys");
         peggym1281Sys = (Resource) context.getBean("peggym1281Sys");

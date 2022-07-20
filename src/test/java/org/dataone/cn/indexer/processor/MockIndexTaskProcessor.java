@@ -40,7 +40,7 @@ import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.log4j.Logger;
 import org.dataone.client.v2.formats.ObjectFormatCache;
 import org.dataone.cn.hazelcast.HazelcastClientFactory;
-import org.dataone.cn.index.processor.IndexTaskProcessingStrategy;
+//import org.dataone.cn.index.processor.IndexTaskProcessingStrategy;
 import org.dataone.cn.index.task.IndexTask;
 import org.dataone.cn.index.task.IndexTaskRepository;
 import org.dataone.cn.index.task.ResourceMapIndexTask;
@@ -94,11 +94,11 @@ public class MockIndexTaskProcessor {
     @Autowired
     private IndexTaskRepository repo;
 
-    @Autowired
-    private IndexTaskProcessingStrategy deleteProcessor;
+    //@Autowired
+    //private IndexTaskProcessingStrategy deleteProcessor;
 
-    @Autowired
-    private IndexTaskProcessingStrategy updateProcessor;
+    //@Autowired
+    //private IndexTaskProcessingStrategy updateProcessor;
 
     @Autowired
     private HTTPService httpService;
@@ -284,13 +284,13 @@ public class MockIndexTaskProcessor {
             if (task.isDeleteTask()) {
                 logger.info("+++++++++++++start to process delete index task for "+task.getPid()+" in thread "+Thread.currentThread().getId());
                 //System.out.println("+++++++++++++start to process delete index task for "+task.getPid()+" in thread "+Thread.currentThread().getId());
-                deleteProcessor.process(task);
+                //deleteProcessor.process(task);
                 //System.out.println("+++++++++++++end to process delete index task for "+task.getPid()+" in thread "+Thread.currentThread().getId());
                 logger.info("+++++++++++++end to process delete index task for "+task.getPid()+" in thread "+Thread.currentThread().getId());
             } else {
                 logger.info("*********************start to process update index task for "+task.getPid()+" in thread "+Thread.currentThread().getId());
                 //System.out.println("*********************start to process update index task for "+task.getPid()+" in thread "+Thread.currentThread().getId());
-                updateProcessor.process(task);
+                //updateProcessor.process(task);
                 //System.out.println("*********************end to process update index task for "+task.getPid()+" in thread "+Thread.currentThread().getId());
                 logger.info("*********************end to process update index task for "+task.getPid()+" in thread "+Thread.currentThread().getId());
             }

@@ -27,7 +27,7 @@ import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.hazelcast.HazelcastClientFactory;
-import org.dataone.cn.index.processor.IndexTaskProcessor;
+//import org.dataone.cn.index.processor.IndexTaskProcessor;
 import org.dataone.cn.indexer.parser.JsonLdSubprocessor;
 import org.dataone.cn.indexer.parser.ScienceMetadataDocumentSubprocessor;
 import org.dataone.cn.indexer.resourcemap.RdfXmlProcessorTest;
@@ -118,7 +118,7 @@ public class SolrFieldXPathEmlAttributeTest extends JsonLdSubprocessorTest {
         }
         
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         count = 0;
         while (count < TIMES) {
             try {
@@ -182,7 +182,7 @@ public class SolrFieldXPathEmlAttributeTest extends JsonLdSubprocessorTest {
         }
         
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         count = 0;
         while (count < TIMES) {
             try {
