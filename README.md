@@ -15,13 +15,36 @@ See LICENSE.txt for the details of distributing this software.
 
 ## Building Docker image
 
-The image can be built with either `docker` or `nerdctl` depending on which container environment you have installed. Here I show the example using
-Racher Desktop configured to use `nerdctl`.
+The image can be built with either `docker` or `nerdctl` depending on which container environment you have installed. Here I show the example using Racher Desktop configured to use `nerdctl`.
 
 ```bash
 mvn clean package -DskipTests
 nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 .
 ```
+
+If you are building locally for Kubernetes on, for example, rancher-desktop, you'll need to set the namespace to `k8s.io` using a build command such as:
+
+```bash
+mvn clean package -DskipTests
+nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 --namespace k8s.io .
+```
+
+## Deploying the application via Helm
+
+Helm provides a simple mechanism to install all application dependencies and configure the application in a single command. To deploy using helm to a release named `d1index` and also in a namespace named `d1index`, and then view the deployed pods and services, use a sequence like:
+
+```bash
+helm install -n d1index d1index ./helm
+kubectl -n d1index get all
+```
+
+and to uninstall the helm, use:
+
+```bash
+helm -n d1index uninstall d1index
+```
+
+Note that this helm chart also installs rabbitmq, which can be partially configured through the values.yaml file in the parent chart through exported child properties.
 
 ## Running the IndexWorker in the docker container
 
