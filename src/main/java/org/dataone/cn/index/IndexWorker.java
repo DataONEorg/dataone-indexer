@@ -145,7 +145,7 @@ public class IndexWorker {
             }
         } else {
             logger.info("IndexWorker.loadExternalPropertiesFile - can't load an external properties file from the env variable " +
-                    ENV_NAME_OF_PROPERTIES_FILE + " or from the default path " + defaultExternalPropertiesFile);
+                    ENV_NAME_OF_PROPERTIES_FILE + " or from the default path " + defaultExternalPropertiesFile + ". Dataone-indexer will use the properties file embedded in the jar file");
         }
     }
     
