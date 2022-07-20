@@ -47,6 +47,10 @@ helm -n d1index uninstall d1index
 
 Note that this helm chart also installs rabbitmq, which can be partially configured through the values.yaml file in the parent chart through exported child properties.
 
+### Authentication note
+
+The username and password under which the rabbitmq service runs are set in the values.yaml file. It appears that this information is cached on a PersistentVolumeClaim that is created automatically by rabbitmq. If the credentials are changed in the helm `values.yaml` file, authentication will fail because they will conflict with the cached values in the PVC. If you are just testing, the problem can be resolved by deleting the PVC. In production, the PVC would also be used for maintaining durable queues, and so it may not be reasonable to delete the PVC.  You can get the name and identifiers of the PVCs with `kubectl -n d1index get pvc`.
+
 ## Running the IndexWorker in the docker container
 
 The docker image assumes that the deployment configuration file exists to configure endpoint addresses and credentials. To run the indexer, ensure that the 
