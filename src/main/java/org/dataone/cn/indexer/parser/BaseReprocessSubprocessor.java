@@ -36,7 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dataone.client.v2.formats.ObjectFormatCache;
 import org.dataone.cn.hazelcast.HazelcastClientFactory;
-import org.dataone.cn.index.generator.IndexTaskGenerator;
+//import org.dataone.cn.index.generator.IndexTaskGenerator;
 import org.dataone.cn.index.util.PerformanceLogger;
 import org.dataone.cn.indexer.parser.utility.SeriesIdResolver;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
@@ -58,7 +58,7 @@ public class BaseReprocessSubprocessor implements IDocumentSubprocessor {
     private String solrQueryUri;
 
     @Autowired
-    private IndexTaskGenerator indexTaskGenerator;
+    //private IndexTaskGenerator indexTaskGenerator;
 
     private PerformanceLogger perfLog = PerformanceLogger.getInstance();
     
@@ -143,8 +143,8 @@ public class BaseReprocessSubprocessor implements IDocumentSubprocessor {
                                             .get(relatedPid);
                                     log.debug("Processing relatedSysMeta===" + relatedSysMeta);
                                     log.debug("Processing objectPath===" + objectPath);
-                                    indexTaskGenerator.processSystemMetaDataUpdate(relatedSysMeta,
-                                            objectPath);
+                                    /*indexTaskGenerator.processSystemMetaDataUpdate(relatedSysMeta,
+                                            objectPath);*/
                                 }
                             }
                         }

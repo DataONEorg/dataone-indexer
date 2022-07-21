@@ -38,7 +38,6 @@ import org.apache.commons.codec.EncoderException;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.log4j.Logger;
 import org.dataone.cn.hazelcast.HazelcastClientFactory;
-import org.dataone.cn.index.task.IndexTask;
 import org.dataone.cn.index.util.PerformanceLogger;
 import org.dataone.cn.indexer.parser.IDocumentDeleteSubprocessor;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
@@ -123,7 +122,7 @@ public class SolrIndexService {
         }
     }
 
-    public void removeFromIndex(List<IndexTask> tasks) throws Exception {
+    /*public void removeFromIndex(List<IndexTask> tasks) throws Exception {
     
         for (IndexTask indexTask : tasks) {
             String identifier = indexTask.getPid();
@@ -134,8 +133,8 @@ public class SolrIndexService {
             }
         }
         
-        /*
-         * TODO test:
+        
+         TODO test:
         
         SolrElementAdd addCommand = new SolrElementAdd();
         List<String> identifiersToDelete = new ArrayList<String>();
@@ -179,8 +178,8 @@ public class SolrIndexService {
         sendCommand(addCommand);
         httpService.sendSolrDeletes(identifiersToDelete);
         insertIntoIndex(tasksToIndex);
-        */
-    }
+        
+    }*/
     
     /**
      * Given a PID, system metadata input stream, and an optional document
@@ -308,7 +307,7 @@ public class SolrIndexService {
         perfLog.log("SolrIndexService.sendCommand(SolrElementAdd) adding docs into Solr index for id "+id, System.currentTimeMillis() - solrAddStart);
     }
 
-    public void insertIntoIndex(List<IndexTask> tasks) 
+    /*public void insertIntoIndex(List<IndexTask> tasks) 
             throws IOException, SAXException, ParserConfigurationException,
             XPathExpressionException, EncoderException, Exception {
      
@@ -325,7 +324,7 @@ public class SolrIndexService {
         long solrAddStart = System.currentTimeMillis();
         sendCommand(batchAddCommand);
         perfLog.log("SolrIndexService.sendCommand(SolrElementAdd) batch adding (" + tasks.size() + ") docs into Solr index", System.currentTimeMillis() - solrAddStart);
-    }
+    }*/
     
     private SolrElementAdd mergeAddCommands(SolrElementAdd original, SolrElementAdd addition) {
         if (original.getDocList() == null)
