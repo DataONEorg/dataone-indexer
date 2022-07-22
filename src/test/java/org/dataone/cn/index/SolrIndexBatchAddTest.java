@@ -5,9 +5,6 @@ import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.dataone.cn.hazelcast.HazelcastClientFactory;
-//import org.dataone.cn.index.generator.IndexTaskGenerator;
-//import org.dataone.cn.index.processor.IndexTaskProcessor;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.service.types.v2.SystemMetadata;
 import org.dataone.service.util.TypeMarshaller;
@@ -149,8 +146,8 @@ public class SolrIndexBatchAddTest extends DataONESolrJettyTestBase {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
-        HazelcastClientFactory.getSystemMetadataMap().put(sysmeta.getIdentifier(), sysmeta);
-        HazelcastClientFactory.getObjectPathMap().putAsync(sysmeta.getIdentifier(), path);
+        //HazelcastClientFactory.getSystemMetadataMap().put(sysmeta.getIdentifier(), sysmeta);
+        //HazelcastClientFactory.getObjectPathMap().putAsync(sysmeta.getIdentifier(), path);
         //generator.processSystemMetaDataUpdate(sysmeta, path);
     }
 
@@ -165,12 +162,12 @@ public class SolrIndexBatchAddTest extends DataONESolrJettyTestBase {
 
     @BeforeClass
     public static void init() {
-        HazelcastClientFactoryTest.setUp();
+        //HazelcastClientFactoryTest.setUp();
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        HazelcastClientFactoryTest.shutDown();
+        //HazelcastClientFactoryTest.shutDown();
     }
 
     private void configureSpringResources() {

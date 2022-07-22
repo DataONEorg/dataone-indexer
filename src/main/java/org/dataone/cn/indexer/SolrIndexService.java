@@ -37,8 +37,8 @@ import javax.xml.xpath.XPathExpressionException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.log4j.Logger;
-import org.dataone.cn.hazelcast.HazelcastClientFactory;
 import org.dataone.cn.index.util.PerformanceLogger;
+import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.IDocumentDeleteSubprocessor;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
@@ -112,9 +112,11 @@ public class SolrIndexService {
         for (String idToIndex : idsToIndex) {
             Identifier pid = new Identifier();
             pid.setValue(idToIndex);
-            SystemMetadata sysMeta = HazelcastClientFactory.getSystemMetadataMap().get(pid);
+            //SystemMetadata sysMeta = HazelcastClientFactory.getSystemMetadataMap().get(pid);
+            SystemMetadata sysMeta = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
             if (SolrDoc.visibleInIndex(sysMeta)) {
-                String objectPath = HazelcastClientFactory.getObjectPathMap().get(pid);
+                //String objectPath = HazelcastClientFactory.getObjectPathMap().get(pid);
+                String objectPath = null;
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
                 TypeMarshaller.marshalTypeToOutputStream(sysMeta, os);
                 insertIntoIndex(idToIndex, new ByteArrayInputStream(os.toByteArray()), objectPath);

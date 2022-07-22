@@ -30,9 +30,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
-import org.dataone.cn.hazelcast.HazelcastClientFactory;
-//import org.dataone.cn.index.generator.IndexTaskGenerator;
-//import org.dataone.cn.index.processor.IndexTaskProcessor;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.service.types.v2.SystemMetadata;
@@ -829,9 +826,9 @@ public class SolrIndexDeleteTest extends DataONESolrJettyTestBase {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
-        HazelcastClientFactory.getSystemMetadataMap().put(sysmeta.getIdentifier(), sysmeta);
+        //HazelcastClientFactory.getSystemMetadataMap().put(sysmeta.getIdentifier(), sysmeta);
         //sysMetaMap.put(sysmeta.getIdentifier(), sysmeta);
-        HazelcastClientFactory.getObjectPathMap().putAsync(sysmeta.getIdentifier(), path);
+        //HazelcastClientFactory.getObjectPathMap().putAsync(sysmeta.getIdentifier(), path);
         //generator.processSystemMetaDataUpdate(sysmeta, path);
     }
 
@@ -844,8 +841,8 @@ public class SolrIndexDeleteTest extends DataONESolrJettyTestBase {
             logger.error(ex.getMessage(), ex);
             fail("Test SystemMetadata misconfiguration - Exception " + ex);
         }
-        HazelcastClientFactory.getSystemMetadataMap().remove(sysmeta.getIdentifier());
-        HazelcastClientFactory.getObjectPathMap().removeAsync(sysmeta.getIdentifier());
+        //HazelcastClientFactory.getSystemMetadataMap().remove(sysmeta.getIdentifier());
+        //HazelcastClientFactory.getObjectPathMap().removeAsync(sysmeta.getIdentifier());
         //generator.processSystemMetaDataDelete(sysmeta);
     }
 
@@ -860,12 +857,12 @@ public class SolrIndexDeleteTest extends DataONESolrJettyTestBase {
 
     @BeforeClass
     public static void init() {
-        HazelcastClientFactoryTest.setUp();
+        //HazelcastClientFactoryTest.setUp();
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        HazelcastClientFactoryTest.shutDown();
+        //HazelcastClientFactoryTest.shutDown();
     }
 
     private void configureSpringResources() {

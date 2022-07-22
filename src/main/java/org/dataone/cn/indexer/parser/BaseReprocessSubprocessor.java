@@ -35,7 +35,6 @@ import org.apache.commons.codec.EncoderException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dataone.client.v2.formats.ObjectFormatCache;
-import org.dataone.cn.hazelcast.HazelcastClientFactory;
 //import org.dataone.cn.index.generator.IndexTaskGenerator;
 import org.dataone.cn.index.util.PerformanceLogger;
 import org.dataone.cn.indexer.parser.utility.SeriesIdResolver;
@@ -78,7 +77,7 @@ public class BaseReprocessSubprocessor implements IDocumentSubprocessor {
         Identifier id = new Identifier();
         id.setValue(identifier);
         long getSysMetaStart = System.currentTimeMillis();
-        SystemMetadata sysMeta = HazelcastClientFactory.getSystemMetadataMap().get(id);
+        SystemMetadata sysMeta = null;
         perfLog.log("BaseReprocessSubprocessor.processDocument() HazelcastClientFactory.getSystemMetadataMap().get(id) for id "+identifier, System.currentTimeMillis() - getSysMetaStart);
         
         if (sysMeta == null) {
@@ -137,10 +136,8 @@ public class BaseReprocessSubprocessor implements IDocumentSubprocessor {
 
                                     pidsToProcess.add(relatedPid);
                                     // queue a reprocessing of this related document
-                                    SystemMetadata relatedSysMeta = HazelcastClientFactory
-                                            .getSystemMetadataMap().get(relatedPid);
-                                    String objectPath = HazelcastClientFactory.getObjectPathMap()
-                                            .get(relatedPid);
+                                    SystemMetadata relatedSysMeta = null;
+                                    String objectPath = null;
                                     log.debug("Processing relatedSysMeta===" + relatedSysMeta);
                                     log.debug("Processing objectPath===" + objectPath);
                                     /*indexTaskGenerator.processSystemMetaDataUpdate(relatedSysMeta,

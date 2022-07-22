@@ -8,7 +8,7 @@ import org.dataone.client.exception.ClientSideException;
 import org.dataone.client.rest.DefaultHttpMultipartRestClient;
 import org.dataone.client.v2.impl.MultipartMNode;
 import org.dataone.client.v2.itk.D1Client;
-import org.dataone.cn.hazelcast.HazelcastClientFactory;
+import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.configuration.Settings;
 import org.dataone.service.exceptions.InvalidToken;
 import org.dataone.service.exceptions.NotAuthorized;
@@ -71,11 +71,17 @@ public class SeriesIdResolver {
 	 * Check if the given identifier is a PID or a SID
 	 * @param identifier
 	 * @return true if the identifier is a SID, false if a PID
+	 * @throws NotFound 
+	 * @throws ServiceFailure 
+	 * @throws NotImplemented 
+	 * @throws NotAuthorized 
+	 * @throws InvalidToken 
 	 */
-	public static boolean isSeriesId(Identifier identifier) {
+	public static boolean isSeriesId(Identifier identifier) throws InvalidToken, NotAuthorized, NotImplemented, 
+	                                                                                    ServiceFailure, NotFound {
 		
 		// if we have system metadata available via HZ map, then it's a PID
-		SystemMetadata systemMetadata = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
+		SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(identifier.getValue());
 		if (systemMetadata != null) {
 			return false;
 		}

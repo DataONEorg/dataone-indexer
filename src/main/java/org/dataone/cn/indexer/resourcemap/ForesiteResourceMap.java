@@ -39,7 +39,6 @@ import java.util.Set;
 
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.log4j.Logger;
-import org.dataone.cn.hazelcast.HazelcastClientFactory;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.utility.SeriesIdResolver;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;

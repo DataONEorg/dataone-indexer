@@ -47,12 +47,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.params.ModifiableSolrParams;
-import org.dataone.cn.hazelcast.HazelcastClientFactory;
 import org.dataone.cn.index.DataONESolrJettyTestBase;
-import org.dataone.cn.index.HazelcastClientFactoryTest;
-//import org.dataone.cn.index.generator.IndexTaskGenerator;
-//import org.dataone.cn.index.processor.IndexTaskProcessor;
-//import org.dataone.cn.index.task.IndexTask;
 import org.dataone.cn.indexer.annotation.RdfXmlSubprocessor;
 import org.dataone.cn.indexer.convert.SolrDateConverter;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
@@ -157,12 +152,12 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
 
     @BeforeClass
     public static void init() {
-        HazelcastClientFactoryTest.setUp();
+        //HazelcastClientFactoryTest.setUp();
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        HazelcastClientFactoryTest.shutDown();
+        //HazelcastClientFactoryTest.shutDown();
     }
 
     /**
@@ -682,9 +677,9 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
         }
         try {
             // insert the system metadata into Hazelcast
-            HazelcastClientFactory.getSystemMetadataMap().put(sysmeta.getIdentifier(), sysmeta);
+            //HazelcastClientFactory.getSystemMetadataMap().put(sysmeta.getIdentifier(), sysmeta);
             // insert the object path into Hazelcast
-            HazelcastClientFactory.getObjectPathMap().put(sysmeta.getIdentifier(), path);
+            //HazelcastClientFactory.getObjectPathMap().put(sysmeta.getIdentifier(), path);
 
         } catch (RuntimeException e) {
             e.printStackTrace();

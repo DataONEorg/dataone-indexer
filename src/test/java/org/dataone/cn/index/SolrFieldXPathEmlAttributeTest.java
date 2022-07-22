@@ -26,11 +26,7 @@ import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dataone.cn.hazelcast.HazelcastClientFactory;
-//import org.dataone.cn.index.processor.IndexTaskProcessor;
-import org.dataone.cn.indexer.parser.JsonLdSubprocessor;
 import org.dataone.cn.indexer.parser.ScienceMetadataDocumentSubprocessor;
-import org.dataone.cn.indexer.resourcemap.RdfXmlProcessorTest;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v1.NodeReference;
 import org.dataone.service.types.v2.SystemMetadata;
@@ -109,12 +105,14 @@ public class SolrFieldXPathEmlAttributeTest extends JsonLdSubprocessorTest {
         formatId = "https://eml.ecoinformatics.org/eml-2.2.0";
         insertResource(id, formatId, emlWithDataTable, nodeid, userDN);
         Identifier identifier = new Identifier();
-        SystemMetadata sysmeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
+        //SystemMetadata sysmeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
+        SystemMetadata sysmeta = null;
         int count = 0;
         while (sysmeta == null && count < TIMES) {
             count ++;
             Thread.sleep(SLEEPTIME);
-            sysmeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
+            //sysmeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
+            sysmeta = null;
         }
         
         // now process the tasks
@@ -173,12 +171,14 @@ public class SolrFieldXPathEmlAttributeTest extends JsonLdSubprocessorTest {
         formatId = "https://eml.ecoinformatics.org/eml-2.2.0";
         insertResource(id, formatId, emlWithOtherEntity, nodeid, userDN);
         Identifier identifier = new Identifier();
-        SystemMetadata sysmeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
+        //SystemMetadata sysmeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
+        SystemMetadata sysmeta = null;
         int count = 0;
         while (sysmeta == null && count < TIMES) {
             count ++;
             Thread.sleep(SLEEPTIME);
-            sysmeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
+            //sysmeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
+            sysmeta = null;
         }
         
         // now process the tasks
