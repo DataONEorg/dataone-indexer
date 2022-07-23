@@ -478,6 +478,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         QueryResponse qr = getSolrClient().query(solrParams);
         SolrDocument result = qr.getResults().get(0);
         Collection<Object> solrValues = result.getFieldValues(fieldName);
+
         Object testResult = result.getFirstValue(fieldName);
         String[] solrValuesArray = new String[solrValues.size()];
         if(testResult instanceof Float) {

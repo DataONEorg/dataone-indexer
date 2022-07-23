@@ -400,21 +400,30 @@
                 <![CDATA[
                     PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
                     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                    PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
                     PREFIX SO:   <http://schema.org/>
 
-                    SELECT DISTINCT ?license
+                    SELECT ?license
                       WHERE {
                         ?datasetId rdf:type    SO:Dataset .
-                        ?datasetId SO:license ?license .
+                        ?datasetId SO:license ?license_obj .
+                        # Don't include referenced sub-Datasets (i.e. a Dataset in a 'hasPart' property)
+                        FILTER NOT EXISTS { ?id SO:hasPart ?datasetId . }
                         {
-                            filter(datatype(?license_obj) = xsd:string) .
+                            BIND(STR(?license_obj) AS ?license) .
                         }
                         UNION
                         {
-                            filter(datatype(?license) = SO:CreativeWork ) .
-                            ?license   SO:name    ?license .
+                            ?license_obj   SO:name    ?license .
                         }
-
+                        UNION
+                        {
+                            ?license_obj   SO:license    ?license .
+                        }
+                        UNION
+                        {
+                            ?license_obj rdf:id ?license .
+                        }
                       }
                 ]]>
             </value>
