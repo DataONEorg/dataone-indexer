@@ -124,6 +124,10 @@
                     <groupId>com.hp.hpl.jena</groupId>
                     <artifactId>jena</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId> 
+                    <artifactId>log4j</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>

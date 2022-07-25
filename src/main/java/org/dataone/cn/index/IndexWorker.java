@@ -88,7 +88,7 @@ public class IndexWorker {
     private static ApplicationContext context = null;
     private static SolrIndex solrIndex = null;
     
-    private static Logger logger = Logger.getLogger(IndexWorker.class.getName());
+    private static Logger logger = Logger.getLogger(IndexWorker.class);
     
 
     /**
