@@ -4,7 +4,7 @@
   <header>
         <result delimiterParsingDisabled="true" forceReloadCheck="true" />
   </header>
-  <properties fileName="quartz.properties"/>
+  <!--<properties fileName="quartz.properties"/>-->
   <properties fileName="index-processor.properties" />
   
   <!-- Provides the DNS hostname -->
