@@ -91,10 +91,10 @@ public class SolrIndex {
     private static final int VERSION_CONFLICT_MAX_ATTEMPTS = Settings.getConfiguration().getInt("index.solr.versionConflict.max.attempts", 2);
     private static final int VERSION_CONFICT_WAITING = Settings.getConfiguration().getInt("index.solr.versionConflict.waiting.time", 100); //milliseconds
     private static final List<String> resourceMapFormatIdList = Settings.getConfiguration().getList("index.resourcemap.namespace");
-    private static final List<String> copyFields = Settings.getConfiguration().getList("index.solr.copyFields");//list of solr copy fields
     private List<IDocumentSubprocessor> subprocessors = null;
     private List<IDocumentDeleteSubprocessor> deleteSubprocessors = null;
     private static SolrClient solrServer = null;
+    private static List<String> copyFields = null;//list of solr copy fields
     
     @Autowired
     private HTTPService httpService = null;
@@ -112,15 +112,17 @@ public class SolrIndex {
      * @throws SAXException 
      * @throws IOException 
      */
-    public SolrIndex(XMLNamespaceConfig xmlNamespaceConfig, BaseXPathDocumentSubprocessor systemMetadataProcessor)
+    public SolrIndex(XMLNamespaceConfig xmlNamespaceConfig, BaseXPathDocumentSubprocessor systemMetadataProcessor, HTTPService httpService)
                     throws XPathExpressionException, ParserConfigurationException, IOException, SAXException {
          this.xmlNamespaceConfig = xmlNamespaceConfig;
          this.systemMetadataProcessor = systemMetadataProcessor;
+         this.httpService = httpService;
          init();
     }
     
     private void init() throws ParserConfigurationException, XPathExpressionException {
         sysmetaSolrFields = systemMetadataProcessor.getFieldList();
+        copyFields = httpService.getSolrCopyFields();
     }
 
     /**

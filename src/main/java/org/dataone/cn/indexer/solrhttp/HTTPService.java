@@ -56,6 +56,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.dataone.configuration.Settings;
 import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.UnsupportedType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -91,16 +92,18 @@ public class HTTPService {
     final static String WT = "wt";
 
     private static final String MAX_ROWS = "5000";
+    private List<String> copyDestinationFields = null;
 
     private static Logger log = Logger.getLogger(HTTPService.class.getName());
     private HttpComponentsClientHttpRequestFactory httpRequestFactory;
 
-    private String SOLR_SCHEMA_PATH;
+    private String SOLR_SCHEMA_PATH = Settings.getConfiguration().getString("solr.schema.path");
     private String solrIndexUri;
     private List<String> validSolrFieldNames = new ArrayList<String>();
 
     public HTTPService(HttpComponentsClientHttpRequestFactory requestFactory) {
         httpRequestFactory = requestFactory;
+        loadSolrSchemaFields();
     }
 
     /**
@@ -339,7 +342,7 @@ public class HTTPService {
             return null;
         }
 
-        loadSolrSchemaFields();
+        //loadSolrSchemaFields();
 
         List<SolrDoc> docs = new ArrayList<SolrDoc>();
 
@@ -391,7 +394,7 @@ public class HTTPService {
     private List<SolrDoc> getDocumentsByTwoFields(String uir, String field1, String field1Value,
             String field2, String field2Value) throws IOException, XPathExpressionException,
             EncoderException {
-        loadSolrSchemaFields();
+        //loadSolrSchemaFields();
         List<SolrDoc> docs = new ArrayList<SolrDoc>();
         StringBuilder sb = new StringBuilder();
         sb.append(field1 + ":").append(escapeQueryChars(field1Value));
@@ -474,7 +477,7 @@ public class HTTPService {
         if (SOLR_SCHEMA_PATH != null && validSolrFieldNames.isEmpty()) {
             Document doc = loadSolrSchemaDocument();
             NodeList nList = doc.getElementsByTagName("copyField");
-            List<String> copyDestinationFields = new ArrayList<String>();
+            copyDestinationFields = new ArrayList<String>();
             for (int i = 0; i < nList.getLength(); i++) {
                 Node node = nList.item(i);
                 String destinationField = node.getAttributes().getNamedItem("dest").getNodeValue();
@@ -539,5 +542,13 @@ public class HTTPService {
 
     public HttpClient getHttpClient() {
         return httpRequestFactory.getHttpClient();
+    }
+    
+    /**
+     * Get the copy fields after parsing the solr schema
+     * @return
+     */
+    public List<String> getSolrCopyFields() {
+        return copyDestinationFields;
     }
 }
