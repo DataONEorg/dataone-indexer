@@ -497,36 +497,50 @@ public class HTTPService {
     }
 
     private Document loadSolrSchemaDocument() {
-
         Document doc = null;
-        File schemaFile = new File(SOLR_SCHEMA_PATH);
-        if (schemaFile != null) {
-            FileInputStream fis = null;
+        InputStream fis = null;
+        if (SOLR_SCHEMA_PATH.startsWith("http://") || SOLR_SCHEMA_PATH.startsWith("https://")) {
+            log.info("HTTPService.loadSolrSchemaDocument - will load the schema file from " + SOLR_SCHEMA_PATH + " by http client");
+            HttpGet commandGet = new HttpGet(SOLR_SCHEMA_PATH);
+            HttpResponse response;
             try {
-                fis = new FileInputStream(schemaFile);
-            } catch (FileNotFoundException e) {
-                log.error(e.getMessage(), e);
+                response = getHttpClient().execute(commandGet);
+                HttpEntity entity = response.getEntity();
+                fis = entity.getContent();
+            } catch (IOException e) {
+                log.error("HTTPService.loadSolrSchemaDocument - can't get the schema doc from " + SOLR_SCHEMA_PATH + " since " + e.getMessage());
             }
+        } else {
+            log.info("HTTPService.loadSolrSchemaDocument - will load the schema file from " + SOLR_SCHEMA_PATH + " by http client");
+            File schemaFile = new File(SOLR_SCHEMA_PATH);
+            if (schemaFile != null) {
+                try {
+                    fis = new FileInputStream(schemaFile);
+                } catch (FileNotFoundException e) {
+                    log.error("HTTPService.loadSolrSchemaDocument - can't get the schema doc from " + SOLR_SCHEMA_PATH + " since " + e.getMessage());
+                }
+            }
+        }
+        if (fis != null) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = null;
             try {
                 dBuilder = dbFactory.newDocumentBuilder();
-            } catch (ParserConfigurationException e) {
-                log.error(e.getMessage(), e);
-            }
-            try {
                 doc = dBuilder.parse(fis);
+            } catch (ParserConfigurationException e) {
+                log.error("HTTPService.loadSolrSchemaDocument - can't parse the schema doc from " + SOLR_SCHEMA_PATH + " since " + e.getMessage());
             } catch (SAXException e) {
-                log.error(e.getMessage(), e);
+                log.error("HTTPService.loadSolrSchemaDocument - can't parse the schema doc from " + SOLR_SCHEMA_PATH + " since " + e.getMessage());
             } catch (IOException e) {
-                log.error(e.getMessage(), e);
-            }
-            try {
-                if (fis != null) {
-                    fis.close();
+                log.error("HTTPService.loadSolrSchemaDocument - can't parse the schema doc from " + SOLR_SCHEMA_PATH + " since " + e.getMessage());
+            } finally {
+                try {
+                    if (fis != null) {
+                        fis.close();
+                    }
+                } catch (IOException e) {
+                    log.warn("HTTPService.loadSolrSchemaDocument - can't close the input stream from " + SOLR_SCHEMA_PATH + " since " + e.getMessage());
                 }
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
             }
         }
         return doc;

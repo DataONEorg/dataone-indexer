@@ -123,6 +123,9 @@ public class SolrIndex {
     private void init() throws ParserConfigurationException, XPathExpressionException {
         sysmetaSolrFields = systemMetadataProcessor.getFieldList();
         copyFields = httpService.getSolrCopyFields();
+        for(String copyField : copyFields) {
+            log.info("SolrIndex.init - the copy field from the solr schema: " + copyField);
+        }
     }
 
     /**
