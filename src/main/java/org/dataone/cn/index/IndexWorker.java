@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -89,6 +91,31 @@ public class IndexWorker {
     private static SolrIndex solrIndex = null;
     
     private static Logger logger = Logger.getLogger(IndexWorker.class);
+    
+    private static String specifiedThreadNumberStr = Settings.getConfiguration().getString("index.thread.number", "0");
+    private static int specifiedThreadNumber = 0;
+    private static ExecutorService executor = null;
+    static {
+        try {
+            specifiedThreadNumber = (new Integer(specifiedThreadNumberStr)).intValue();
+        } catch (Exception e) {
+            logger.warn("IndexWorker static part - Metacat cannot parse the string " + specifiedThreadNumberStr +
+                     " specified by property index.thread.number into a number since " + e.getLocalizedMessage() + 
+                     ". The default value 0 will be used as the specified value");
+        }
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        availableProcessors = availableProcessors - 1;
+        int nThreads = Math.max(1, availableProcessors); //the default threads number
+        if (specifiedThreadNumber > 0 && specifiedThreadNumber < nThreads) {
+            nThreads = specifiedThreadNumber;
+        }
+        logger.info("IndexWorker static part - the size of index thread pool specified in the propery file is " + specifiedThreadNumber +
+                ". The size computed from the available processors is " + availableProcessors + 
+                 ". Final computed thread pool size for index executor: " + nThreads);
+        //int nThreads = org.dataone.configuration.Settings.getConfiguration().getInt("index.thread.number", 1);
+        //log.info("+++++++++++++++SystemMetadataEventListener.static - the number of threads will used in executors is " + nThreads);
+        executor = Executors.newFixedThreadPool(nThreads); 
+    }
     
 
     /**
