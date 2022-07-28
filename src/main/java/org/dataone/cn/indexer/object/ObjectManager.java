@@ -83,7 +83,8 @@ public class ObjectManager {
     }
     
     /**
-     * Get the absolute file path for a given relative path
+     * Get the absolute file path for a given relative path. If the relativePath is null or blank,
+     * null will be returned
      * @param relativePath
      * @param objectFormat
      * @return  the absolute file path 
@@ -91,11 +92,14 @@ public class ObjectManager {
      */
     public String getFilePath(String relativePath, String objectFormat) throws NotFound {
         String absolutePath = null;
-        ObjectFormat format =ObjectFormatCache.getInstance().getFormat(objectFormat);
-        if (format.getFormatType().equals("METADATA")) {
-            absolutePath = documentRootDir + relativePath;
-        } else {
-            absolutePath = dataRootDir + relativePath;
+        if (relativePath != null && !relativePath.trim().equals("") && 
+                objectFormat != null && !objectFormat.trim().equals("")) {
+            ObjectFormat format =ObjectFormatCache.getInstance().getFormat(objectFormat);
+            if (format.getFormatType().equals("METADATA")) {
+                absolutePath = documentRootDir + relativePath;
+            } else {
+                absolutePath = dataRootDir + relativePath;
+            }
         }
         logger.debug("ObjectManager.getFilePath - the absolute file path for the relative file path " + 
                         relativePath + " is " + absolutePath);

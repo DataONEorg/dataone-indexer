@@ -28,7 +28,6 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -211,7 +210,8 @@ public class SolrIndex {
             }
             
         }
-        if (!skipOtherProcessor) {
+        //if the objectPath is null, we should skip the other processes
+        if (!skipOtherProcessor && objectPath != null) {
             log.info("SolrIndex.process - Start to use subprocessor list to process the " + id);
             // Determine if subprocessors are available for this ID
             if (subprocessors != null) {
@@ -468,9 +468,25 @@ public class SolrIndex {
      *    remove the index for the previous version(s) and generate new index for the doc.
      * 2. Add a new doc - if the system metadata shows the value of the archive is false, generate the
      *    index for the doc.
-     * @throws Exception 
+     * @throws NotFound 
+     * @throws ServiceFailure 
+     * @throws NotImplemented 
+     * @throws NotAuthorized 
+     * @throws InvalidToken 
+     * @throws EncoderException 
+     * @throws MarshallingException 
+     * @throws SolrServerException 
+     * @throws ParserConfigurationException 
+     * @throws SAXException 
+     * @throws UnsupportedType 
+     * @throws XPathExpressionException 
+     * @throws InterruptedException 
+     * @throws IOException 
      */
-    public void update(Identifier pid, String relativePath, boolean isSysmetaChangeOnly) throws Exception {
+    public void update(Identifier pid, String relativePath, boolean isSysmetaChangeOnly) throws InvalidToken, NotAuthorized, 
+                                           NotImplemented, ServiceFailure, NotFound, XPathExpressionException, UnsupportedType, 
+                                           SAXException, ParserConfigurationException, SolrServerException, MarshallingException, 
+                                           EncoderException, InterruptedException, IOException {
         log.debug("SolrIndex.update - trying to update(insert or remove) solr index of object "+pid.getValue());
         String objectPath = null;
         SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
@@ -532,7 +548,10 @@ public class SolrIndex {
      * @throws MarshallingException
      * @throws EncoderException
      */
-    void update(Identifier pid, SystemMetadata systemMetadata, String objectPath, boolean isSysmetaChangeOnly) throws Exception {
+    void update(Identifier pid, SystemMetadata systemMetadata, String objectPath, boolean isSysmetaChangeOnly) throws 
+                                                        XPathExpressionException, NotImplemented, NotFound, UnsupportedType, 
+                                                        IOException, SAXException, ParserConfigurationException, 
+                                                        SolrServerException, MarshallingException, EncoderException  {
         //checkParams(pid, systemMetadata, objectPath);
         if(systemMetadata==null || pid==null) {
             log.error("SolrIndex.update - the systemMetadata or pid is null. So nothing will be indexed.");
@@ -571,9 +590,19 @@ public class SolrIndex {
     /**
      * Remove the solr index associated with specified pid
      * @param pid  the pid whose solr index will be removed
-     * @throws Exception
+     * @throws EncoderException 
+     * @throws IOException 
+     * @throws XPathExpressionException 
+     * @throws SAXException 
+     * @throws ParserConfigurationException 
+     * @throws SolrServerException 
+     * @throws UnsupportedType 
+     * @throws NotFound 
+     * @throws NotImplemented 
+     * @throws ServiceFailure 
      */
-    public void remove(Identifier pid) throws Exception {
+    public void remove(Identifier pid) throws XPathExpressionException, IOException, EncoderException, ServiceFailure, 
+                    NotImplemented, NotFound, UnsupportedType, SolrServerException, ParserConfigurationException, SAXException {
         if(pid != null ) {
             log.debug("SorIndex.remove - start to remove the solr index for the pid "+pid.getValue());
             SolrDoc indexDoc = httpService.getSolrDocumentById(solrQueryUri, pid.getValue());
@@ -589,6 +618,8 @@ public class SolrIndex {
     /**
      * Remove the indexed associated with specified pid.
      * @param pid  the pid which the indexes are associated with
+     * @throws EncoderException 
+     * @throws FileNotFoundException 
      * @throws IOException
      * @throws SolrServerException
      * @throws ParserConfigurationException 
@@ -600,7 +631,10 @@ public class SolrIndex {
      * @throws ServiceFailure 
      * @throws OREParserException 
      */
-    private void remove(String pid, String formatId) throws Exception {
+    private void remove(String pid, String formatId) throws FileNotFoundException, ServiceFailure, 
+                                            XPathExpressionException, NotImplemented, NotFound, UnsupportedType, 
+                                            SolrServerException, IOException, ParserConfigurationException, 
+                                            SAXException, EncoderException {
         if (isDataPackage(pid, formatId)) {
             removeDataPackage(pid);
         } else if (isPartOfDataPackage(pid)) {
@@ -614,7 +648,8 @@ public class SolrIndex {
      * Remove the resource map from the solr index. It doesn't only remove the index for itself and also
      * remove the relationship for the related metadata and data objects.
      */
-    private void removeDataPackage(String pid) throws Exception {
+    private void removeDataPackage(String pid) throws IOException, UnsupportedType, NotFound, XPathExpressionException, 
+                                    SolrServerException, ParserConfigurationException, SAXException, EncoderException  {
         deleteDocFromIndex(pid);
         List<SolrDoc> docsToUpdate = getUpdatedSolrDocsByRemovingResourceMap(pid);
         if (docsToUpdate != null && !docsToUpdate.isEmpty()) {
@@ -876,7 +911,7 @@ public class SolrIndex {
     /*
      * Remove a pid which is part of resource map.
      */
-    private void removeFromDataPackage(String pid) throws Exception  {
+    private void removeFromDataPackage(String pid) throws XPathExpressionException, IOException, EncoderException, SolrServerException  {
         SolrDoc indexedDoc = httpService.getSolrDocumentById(solrQueryUri, pid);
         deleteDocFromIndex(pid);
         List<String> documents = indexedDoc.getAllFieldValues(SolrElementField.FIELD_DOCUMENTS);
@@ -948,7 +983,7 @@ public class SolrIndex {
             
     }*/
     
-    private void deleteDocFromIndex(String pid) throws Exception {
+    private void deleteDocFromIndex(String pid) throws IOException {
         if (pid != null && !pid.trim().equals("")) {
             try {
                 //solrServer.deleteById(pid);

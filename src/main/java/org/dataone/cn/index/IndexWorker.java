@@ -24,17 +24,32 @@ package org.dataone.cn.index;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
+import org.apache.commons.codec.EncoderException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.configuration.Settings;
+import org.dataone.exceptions.MarshallingException;
+import org.dataone.service.exceptions.InvalidRequest;
+import org.dataone.service.exceptions.InvalidToken;
+import org.dataone.service.exceptions.NotAuthorized;
+import org.dataone.service.exceptions.NotFound;
+import org.dataone.service.exceptions.NotImplemented;
+import org.dataone.service.exceptions.ServiceFailure;
+import org.dataone.service.exceptions.UnsupportedType;
 import org.dataone.service.types.v1.Identifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.xml.sax.SAXException;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -44,6 +59,7 @@ import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.LongString;
+
 
 
 
@@ -92,32 +108,10 @@ public class IndexWorker {
     
     private static Logger logger = Logger.getLogger(IndexWorker.class);
     
-    private static String specifiedThreadNumberStr = Settings.getConfiguration().getString("index.thread.number", "0");
+    private static String specifiedThreadNumberStr = null;
     private static int specifiedThreadNumber = 0;
     private static ExecutorService executor = null;
-    static {
-        try {
-            specifiedThreadNumber = (new Integer(specifiedThreadNumberStr)).intValue();
-        } catch (Exception e) {
-            logger.warn("IndexWorker static part - Metacat cannot parse the string " + specifiedThreadNumberStr +
-                     " specified by property index.thread.number into a number since " + e.getLocalizedMessage() + 
-                     ". The default value 0 will be used as the specified value");
-        }
-        int availableProcessors = Runtime.getRuntime().availableProcessors();
-        availableProcessors = availableProcessors - 1;
-        int nThreads = Math.max(1, availableProcessors); //the default threads number
-        if (specifiedThreadNumber > 0 && specifiedThreadNumber < nThreads) {
-            nThreads = specifiedThreadNumber;
-        }
-        logger.info("IndexWorker static part - the size of index thread pool specified in the propery file is " + specifiedThreadNumber +
-                ". The size computed from the available processors is " + availableProcessors + 
-                 ". Final computed thread pool size for index executor: " + nThreads);
-        //int nThreads = org.dataone.configuration.Settings.getConfiguration().getInt("index.thread.number", 1);
-        //log.info("+++++++++++++++SystemMetadataEventListener.static - the number of threads will used in executors is " + nThreads);
-        executor = Executors.newFixedThreadPool(nThreads); 
-    }
     
-
     /**
      * Commandline main for the IndexWorker to be started.
      * @param args
@@ -182,6 +176,7 @@ public class IndexWorker {
      * @throws TimeoutException
      */
     public IndexWorker() throws IOException, TimeoutException {
+        initExecutorService();
         initIndexQueue();
         initIndexParsers();
     }
@@ -253,6 +248,31 @@ public class IndexWorker {
         }
         solrIndex = (SolrIndex)context.getBean("solrIndex");
     }
+    
+    /**
+     * Determine the size of the thread pool and initialize the executor service
+     */
+    private void initExecutorService() {
+        specifiedThreadNumberStr = Settings.getConfiguration().getString("index.thread.number", "0");
+        try {
+            specifiedThreadNumber = (new Integer(specifiedThreadNumberStr)).intValue();
+        } catch (NumberFormatException e) {
+            specifiedThreadNumber = 0;
+            logger.warn("IndexWorker.initExecutorService - Metacat cannot parse the string " + specifiedThreadNumberStr +
+                     " specified by property index.thread.number into a number since " + e.getLocalizedMessage() + 
+                     ". The default value 0 will be used as the specified value");
+        }
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        availableProcessors = availableProcessors - 1;
+        int nThreads = Math.max(1, availableProcessors); //the default threads number
+        if (specifiedThreadNumber > 0 && specifiedThreadNumber < nThreads) {
+            nThreads = specifiedThreadNumber; //use the specified number in the property file
+        }
+        logger.info("IndexWorker.initExecutorService - the size of index thread pool specified in the propery file is " + specifiedThreadNumber +
+                ". The size computed from the available processors is " + availableProcessors + 
+                 ". Final computed thread pool size for index executor: " + nThreads);
+        executor = Executors.newFixedThreadPool(nThreads); 
+    }
 
   
     
@@ -271,44 +291,94 @@ public class IndexWorker {
                     Map<String, Object> headers = properties.getHeaders();
                     identifier = ((LongString)headers.get(HEADER_ID)).toString();
                     if (identifier == null || identifier.trim().equals("")) {
-                        throw new Exception("The identifier cannot be null or blank in the index task");
+                        throw new InvalidRequest("0000", "The identifier cannot be null or blank in the index task");
                     }
-                    Identifier pid = new Identifier();
+                    final Identifier pid = new Identifier();
                     pid.setValue(identifier);
-                    String filePath = null;
+                    String filePath1 = null;
                     Object pathObject = headers.get(HEADER_PATH);
                     if (pathObject != null) {
-                        filePath = ((LongString)pathObject).toString();
+                        filePath1 = ((LongString)pathObject).toString();
                     }
-                    String indexType = ((LongString)headers.get(HEADER_INDEX_TYPE)).toString();
+                    final String finalFilePath = filePath1;
+                    final String indexType = ((LongString)headers.get(HEADER_INDEX_TYPE)).toString();
                     if (indexType == null || indexType.trim().equals("")) {
-                        throw new Exception("The index type cannot be null or blank in the index task");
+                        throw new InvalidRequest("0000", "The index type cannot be null or blank in the index task");
                     }
-                    int priority = properties.getPriority();
-                    logger.info("IndexWorker.consumer.handleDelivery - Received the index task from the index queue with the identifier: "+
-                                identifier + " , the index type: " + indexType + ", the file path (null means not to have): " + filePath + 
-                                ", the priotity: " + priority);
-                    if (indexType.equals(CREATE_INDEXT_TYPE)) {
-                        if (filePath == null || filePath.trim().equals("")) {
-                            throw new Exception("The file path cannot be null or blank in the index task");
+                    final int priority = properties.getPriority();
+                    
+                    Runnable runner = new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                logger.info("IndexWorker.consumer.handleDelivery - Received the index task from the index queue with the identifier: "+
+                                        pid.getValue() + " , the index type: " + indexType + ", the file path (null means not to have): " + finalFilePath + 
+                                        ", the priotity: " + priority);
+                                if (indexType.equals(CREATE_INDEXT_TYPE)) {
+                                    boolean sysmetaOnly = false;
+                                    solrIndex.update(pid, finalFilePath, sysmetaOnly);
+                                } else if (indexType.equals(SYSMETA_CHANGE_TYPE)) {
+                                    boolean sysmetaOnly = true;
+                                    solrIndex.update(pid, finalFilePath, sysmetaOnly);
+                                } else if (indexType.equals(DELETE_INDEX_TYPE)) {
+                                    solrIndex.remove(pid);
+                                } else {
+                                    throw new InvalidRequest("0000", "DataONE indexer does not know the index type: " + indexType + " in the index task");
+                                }
+                                logger.info("IndexWorker.consumer.handleDelivery - Completed the index task from the index queue with the identifier: "+
+                                        pid.getValue() + " , the index type: " + indexType + ", the file path (null means not to have): " + finalFilePath + 
+                                        ", the priotity: " + priority);
+                            } catch (InvalidToken e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            } catch (NotAuthorized e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            } catch (NotImplemented e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            } catch (ServiceFailure e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            } catch (NotFound e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            } catch (XPathExpressionException e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            } catch (UnsupportedType e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            } catch (SAXException e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            } catch (ParserConfigurationException e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            } catch (SolrServerException e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            } catch (MarshallingException e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            } catch (EncoderException e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            } catch (InterruptedException e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            } catch (IOException e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            } catch (InvalidRequest e) {
+                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                                        pid.getValue() + " since " + e.getMessage());
+                            }
                         }
-                        boolean sysmetaOnly = false;
-                        solrIndex.update(pid, filePath, sysmetaOnly);
-                    } else if (indexType.equals(SYSMETA_CHANGE_TYPE)) {
-                        if (filePath == null || filePath.trim().equals("")) {
-                            throw new Exception("The file path cannot be null or blank in the index task");
-                        }
-                        boolean sysmetaOnly = true;
-                        solrIndex.update(pid, filePath, sysmetaOnly);
-                    } else if (indexType.equals(DELETE_INDEX_TYPE)) {
-                        solrIndex.remove(pid);
-                    } else {
-                        throw new Exception("DataONE indexer does not know the index type: " + indexType + " in the index task");
-                    }
-                    logger.info("IndexWorker.consumer.handleDelivery - Completed the index task from the index queue with the identifier: "+
-                            identifier + " , the index type: " + indexType + ", the file path (null means not to have): " + filePath + 
-                            ", the priotity: " + priority);
-                } catch (Exception e) {
+                    };
+                    // submit the task, and that's it
+                    executor.submit(runner);
+                } catch (InvalidRequest e) {
                     logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
                                  identifier + " since " + e.getMessage());
                 }
