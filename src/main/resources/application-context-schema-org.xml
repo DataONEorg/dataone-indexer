@@ -393,6 +393,68 @@
         </constructor-arg>
     </bean>
 
+    <bean id="schema_org_license_url" class="org.dataone.cn.indexer.annotation.SparqlField">
+        <constructor-arg name="name" value="licenseUrl" />
+        <constructor-arg name="query">
+            <value>
+                <![CDATA[
+                    PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                    PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+                    PREFIX SO:   <http://schema.org/>
+
+                    SELECT ?licenseUrl
+                      WHERE {
+                        ?datasetId rdf:type    SO:Dataset .
+                        ?datasetId SO:license ?license .
+                        # Don't include referenced sub-Datasets (i.e. a Dataset in a 'hasPart' property)
+                        FILTER NOT EXISTS { ?id SO:hasPart ?datasetId . }
+                        {
+                            BIND(STR(?license) AS ?licenseUrl) .
+                        }
+                        UNION
+                        {
+                            ?license rdf:id ?licenseUrl .
+                        }
+                        UNION
+                        {
+                            ?license SO:license ?licenseUrl .
+                        }
+                      }
+                ]]>
+            </value>
+        </constructor-arg>
+    </bean>
+
+    <bean id="schema_org_license_name" class="org.dataone.cn.indexer.annotation.SparqlField">
+        <constructor-arg name="name" value="licenseName" />
+        <constructor-arg name="query">
+            <value>
+                <![CDATA[
+                    PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                    PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+                    PREFIX SO:   <http://schema.org/>
+
+                    SELECT ?licenseName
+                      WHERE {
+                        ?datasetId rdf:type    SO:Dataset .
+                        ?datasetId SO:license ?license .
+                        # Don't include referenced sub-Datasets (i.e. a Dataset in a 'hasPart' property)
+                        FILTER NOT EXISTS { ?id SO:hasPart ?datasetId . }
+                        {
+                            BIND(STR(?license) AS ?licenseName) .
+                        }
+                        UNION
+                        {
+                            ?license SO:name ?licenseName .
+                        }
+                      }
+                ]]>
+            </value>
+        </constructor-arg>
+    </bean>
+
     <!-- Extract bounding box coordinates from a 'SO:spatialCoverage' property. -->
     <bean id="schema_org_geoShape_box_south" class="org.dataone.cn.indexer.annotation.SparqlField">
         <constructor-arg name="name" value="southBoundCoord" />
