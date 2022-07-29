@@ -37,6 +37,7 @@ import javax.xml.xpath.XPathExpressionException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.cn.index.util.PerformanceLogger;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.IDocumentDeleteSubprocessor;
@@ -341,7 +342,12 @@ public class SolrIndexService {
     
     private void sendCommand(SolrElementAdd addCommand) throws IOException {
         HTTPService service = getHttpService();
-        service.sendUpdate(getSolrindexUri(), addCommand, OUTPUT_ENCODING);
+        try {
+            service.sendUpdate(getSolrindexUri(), addCommand, OUTPUT_ENCODING);
+        } catch (SolrServerException e) {
+            throw new IOException(e.getMessage());
+        }
+        
     }
 
     private SolrElementAdd getAddCommand(List<SolrDoc> docs) {
