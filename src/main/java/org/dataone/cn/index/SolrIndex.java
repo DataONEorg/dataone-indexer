@@ -375,9 +375,9 @@ public class SolrIndex {
         if(systemMetadata == null) {
             throw new SolrServerException("The system metadata of the indexed document "+pid.getValue()+ " should not be null.");
         }
-        if(objectPath == null) {
+        /*if(objectPath == null) {
             throw new SolrServerException("The indexed document itself for pid "+pid.getValue()+" should not be null.");
-        }
+        }*/
     }
     
     /**
@@ -493,7 +493,7 @@ public class SolrIndex {
         objectPath = ObjectManager.getInstance().getFilePath(relativePath, systemMetadata.getFormatId().getValue());
         try {
             update(pid, systemMetadata, objectPath, isSysmetaChangeOnly);
-        } catch (IOException e) {
+        } catch (SolrServerException e) {
             if (e.getMessage().contains(VERSION_CONFLICT) && VERSION_CONFLICT_MAX_ATTEMPTS > 0) {
                 log.info("SolrIndex.update - Indexer grabbed an older verion of the solr doc for object " + 
                         pid.getValue() + ". It will try " + VERSION_CONFLICT_MAX_ATTEMPTS + " to fix the issues");

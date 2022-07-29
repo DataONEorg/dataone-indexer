@@ -258,7 +258,7 @@ public class IndexWorker {
             specifiedThreadNumber = (new Integer(specifiedThreadNumberStr)).intValue();
         } catch (NumberFormatException e) {
             specifiedThreadNumber = 0;
-            logger.warn("IndexWorker.initExecutorService - Metacat cannot parse the string " + specifiedThreadNumberStr +
+            logger.warn("IndexWorker.initExecutorService - IndexWorker cannot parse the string " + specifiedThreadNumberStr +
                      " specified by property index.thread.number into a number since " + e.getLocalizedMessage() + 
                      ". The default value 0 will be used as the specified value");
         }

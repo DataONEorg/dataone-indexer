@@ -119,16 +119,16 @@ public class HTTPService {
      * @throws IOException
      */
 
-    public void sendUpdate(String uri, SolrElementAdd data, String encoding) throws IOException {
+    public void sendUpdate(String uri, SolrElementAdd data, String encoding) throws IOException, SolrServerException {
         this.sendUpdate(uri, data, encoding, XML_CONTENT_TYPE);
     }
 
-    public void sendUpdate(String uri, SolrElementAdd data) throws IOException {
+    public void sendUpdate(String uri, SolrElementAdd data) throws IOException, SolrServerException {
         sendUpdate(uri, data, CHAR_ENCODING, XML_CONTENT_TYPE);
     }
 
     public void sendUpdate(String uri, SolrElementAdd data, String encoding, String contentType)
-            throws IOException {
+            throws IOException, SolrServerException {
         InputStream inputStreamResponse = null;
         HttpPost post = null;
         HttpResponse response = null;
@@ -145,11 +145,9 @@ public class HTTPService {
                 String error = new String(baosResponse.toByteArray());
                 log.error(error);
                 post.abort();
-                throw new IOException("unable to update solr, non 200 response code." + error);
+                throw new SolrServerException("unable to update solr, non 200 response code." + error);
             }
             post.abort();
-        } catch (Exception ex) {
-            throw new IOException(ex);
         } finally {
             IOUtils.closeQuietly(inputStreamResponse);
         }
