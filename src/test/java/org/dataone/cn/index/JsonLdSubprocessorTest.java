@@ -211,7 +211,9 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         assertTrue(compareFieldValue(id, "serviceEndpoint", urls));
         assertTrue(compareFieldLength(id, "text", 4269));
         String[] license = {"https://creativecommons.org/licenses/by/4.0/"};
-        assertTrue(compareFieldValue(id, "license", license));
+        assertTrue(compareFieldValue(id, "licenseUrl", license));
+
+
     }
 
     /**
@@ -265,8 +267,10 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
                          "http://datadryad.org/stash/dataset/doi%253A10.5061%252Fdryad.m8s2r36"};
         assertTrue(compareFieldValue(id, "serviceEndpoint", urls));
         assertTrue(compareFieldLength(id, "text", 691));
-        String[] license = {"https://creativecommons.org/publicdomain/zero/1.0/", "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication"};
-        assertTrue(compareFieldValue(id, "license", license));
+        String[] licenseUrl = {"https://creativecommons.org/publicdomain/zero/1.0/"};
+        String[] licenseName = {"CC0 1.0 Universal (CC0 1.0) Public Domain Dedication"};
+        assertTrue(compareFieldValue(id, "licenseUrl", licenseUrl));
+        assertTrue(compareFieldValue(id, "licenseName", licenseName));
     }
 
     /**
@@ -335,7 +339,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         assertTrue(compareFieldValue(id, "geohash_9", new String [] {"4khsjfyj7"}));
         assertTrue(compareFieldLength(id, "text", 3681));
         String[] license = {"https://creativecommons.org/licenses/by/4.0/"};
-        assertTrue(compareFieldValue(id, "license", license));
+        assertTrue(compareFieldValue(id, "licenseUrl", license));
     }
 
     /**
@@ -465,8 +469,10 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
                 "http://datadryad.org/api/v2/datasets/doi%253A10.5061%252Fdryad.41sk145/download"};
         assertTrue(compareFieldValue(thisId, "serviceEndpoint", urls));
         assertTrue(compareFieldLength(thisId, "text", 2501));
-        String[] license = {"https://creativecommons.org/publicdomain/zero/1.0/", "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication"};
-        assertTrue(compareFieldValue(thisId, "license", license));
+        String[] licenseUrl = {"https://creativecommons.org/publicdomain/zero/1.0/"};
+        String[] licenseName = {"CC0 1.0 Universal (CC0 1.0) Public Domain Dedication"};
+        assertTrue(compareFieldValue(thisId, "licenseUrl", licenseUrl));
+        assertTrue(compareFieldValue(thisId, "licenseName", licenseName));
     }
 
     protected boolean compareFieldValue(String id, String fieldName, String[] expectedValues) throws SolrServerException, IOException {
@@ -639,7 +645,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
                         "https://international-year-of-the-salmon.github.io/about/data-unavailable.html"};
         assertTrue(compareFieldValue(id, "serviceEndpoint", urls));
         String[] license = {"https://creativecommons.org/licenses/by/4.0/"};
-        assertTrue(compareFieldValue(id, "license", license));
+        assertTrue(compareFieldValue(id, "licenseUrl", license));
     }
     
 }

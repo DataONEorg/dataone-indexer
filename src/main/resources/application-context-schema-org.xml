@@ -393,8 +393,8 @@
         </constructor-arg>
     </bean>
 
-    <bean id="schema_org_license" class="org.dataone.cn.indexer.annotation.SparqlField">
-        <constructor-arg name="name" value="license" />
+    <bean id="schema_org_license_url" class="org.dataone.cn.indexer.annotation.SparqlField">
+        <constructor-arg name="name" value="licenseUrl" />
         <constructor-arg name="query">
             <value>
                 <![CDATA[
@@ -403,26 +403,51 @@
                     PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
                     PREFIX SO:   <http://schema.org/>
 
-                    SELECT ?license
+                    SELECT ?licenseUrl
                       WHERE {
                         ?datasetId rdf:type    SO:Dataset .
-                        ?datasetId SO:license ?license_obj .
+                        ?datasetId SO:license ?license .
                         # Don't include referenced sub-Datasets (i.e. a Dataset in a 'hasPart' property)
                         FILTER NOT EXISTS { ?id SO:hasPart ?datasetId . }
                         {
-                            BIND(STR(?license_obj) AS ?license) .
+                            BIND(STR(?license) AS ?licenseUrl) .
                         }
                         UNION
                         {
-                            ?license_obj   SO:name    ?license .
+                            ?license rdf:id ?licenseUrl .
                         }
                         UNION
                         {
-                            ?license_obj   SO:license    ?license .
+                            ?license SO:license ?licenseUrl .
+                        }
+                      }
+                ]]>
+            </value>
+        </constructor-arg>
+    </bean>
+
+    <bean id="schema_org_license_name" class="org.dataone.cn.indexer.annotation.SparqlField">
+        <constructor-arg name="name" value="licenseName" />
+        <constructor-arg name="query">
+            <value>
+                <![CDATA[
+                    PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                    PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+                    PREFIX SO:   <http://schema.org/>
+
+                    SELECT ?licenseName
+                      WHERE {
+                        ?datasetId rdf:type    SO:Dataset .
+                        ?datasetId SO:license ?license .
+                        # Don't include referenced sub-Datasets (i.e. a Dataset in a 'hasPart' property)
+                        FILTER NOT EXISTS { ?id SO:hasPart ?datasetId . }
+                        {
+                            BIND(STR(?license) AS ?licenseName) .
                         }
                         UNION
                         {
-                            ?license_obj rdf:id ?license .
+                            ?license SO:name ?licenseName .
                         }
                       }
                 ]]>

@@ -24,7 +24,8 @@
         		<ref bean="schema_org_creator_list" />
 				<ref bean="schema_org_hasPart" />
 				<ref bean="schema_org_keywords" />
-				<ref bean="schema_org_license" />
+				<ref bean="schema_org_license_url" />
+				<ref bean="schema_org_license_name" />
 				<ref bean="schema_org_geoShape_box_south" />
 				<ref bean="schema_org_geoShape_box_west" />
 				<ref bean="schema_org_geoShape_box_north" />
