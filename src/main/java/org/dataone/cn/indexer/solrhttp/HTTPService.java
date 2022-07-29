@@ -285,8 +285,8 @@ public class HTTPService {
         StringBuilder query = new StringBuilder();
         //query.append("q=" + SolrElementField.FIELD_SERIES_ID + ":\"" + escapeQueryChars(seriesId) + "\" AND -obsoletedBy:*"); 
         query.append(SolrElementField.FIELD_SERIES_ID + ":" + escapeQueryChars(seriesId) + (" AND -obsoletedBy:*")); 
-        log.info("HTTPService.getDocumentBeySeriesId - the uir is " + uir);
-        log.info("HTTPService.getDocumentBeySeriesId - the query is " + query.toString());
+        log.debug("HTTPService.getDocumentBeySeriesId - the uir is " + uir);
+        log.debug("HTTPService.getDocumentBeySeriesId - the query is " + query.toString());
         //Get the SolrDoc by querying for it
         List<SolrDoc> list = new ArrayList<SolrDoc>();
         list.addAll(doRequest(uir, query, MAX_ROWS));
@@ -415,7 +415,7 @@ public class HTTPService {
         String paramString = URLEncodedUtils.format(params, "UTF-8");
 
         String requestURI = uir + "?" + paramString;
-        log.info("HTTPService.doRequest - REQUEST URI: " + requestURI);
+        log.debug("HTTPService.doRequest - REQUEST URI: " + requestURI);
         HttpGet commandGet = new HttpGet(requestURI);
 
         HttpResponse response = getHttpClient().execute(commandGet);

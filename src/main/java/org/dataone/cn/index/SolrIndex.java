@@ -558,8 +558,6 @@ public class SolrIndex {
             return;
         }
         insert(pid, systemMetadata, objectPath, isSysmetaChangeOnly);
-        log.info("SolrIndex.update============================= insert index for the identifier "+pid.getValue());
-      
     }
     
    

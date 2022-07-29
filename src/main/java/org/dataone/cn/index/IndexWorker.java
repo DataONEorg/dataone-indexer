@@ -311,7 +311,8 @@ public class IndexWorker {
                         @Override
                         public void run() {
                             try {
-                                logger.info("IndexWorker.consumer.handleDelivery - Received the index task from the index queue with the identifier: "+
+                                logger.info("IndexWorker.consumer.handleDelivery in thread " + Thread.currentThread().getId() + 
+                                        " - Received the index task from the index queue with the identifier: "+
                                         pid.getValue() + " , the index type: " + indexType + ", the file path (null means not to have): " + finalFilePath + 
                                         ", the priotity: " + priority);
                                 if (indexType.equals(CREATE_INDEXT_TYPE)) {
@@ -325,7 +326,8 @@ public class IndexWorker {
                                 } else {
                                     throw new InvalidRequest("0000", "DataONE indexer does not know the index type: " + indexType + " in the index task");
                                 }
-                                logger.info("IndexWorker.consumer.handleDelivery - Completed the index task from the index queue with the identifier: "+
+                                logger.info("IndexWorker.consumer.handleDelivery in thread " +  Thread.currentThread().getId() +
+                                        " - Completed the index task from the index queue with the identifier: "+
                                         pid.getValue() + " , the index type: " + indexType + ", the file path (null means not to have): " + finalFilePath + 
                                         ", the priotity: " + priority);
                             } catch (InvalidToken e) {
