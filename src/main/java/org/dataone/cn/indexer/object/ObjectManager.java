@@ -167,7 +167,7 @@ public class ObjectManager {
     private Session createSession(String authToken) {
         Session session = null;
         if (authToken == null || authToken.trim().equals("")) {
-            logger.debug("ObjectManager.getSession - Creating public sessioni");
+            logger.debug("ObjectManager.getSession - Creating the public session");
             session = new Session();
         } else {
             logger.debug("Creating authentication session from token: " + authToken.substring(0, 5) + "...");
