@@ -45,7 +45,9 @@ public class ObjectManager {
     private static String dataRootDir = Settings.getConfiguration().getString("index.data.root.directory");
     private static String documentRootDir = Settings.getConfiguration().getString("index.document.root.directory");
     private static String mnBaseURL = Settings.getConfiguration().getString("index.mn.baseURL");
+    private static String DataONEauthToken = null;
     private static Logger logger = Logger.getLogger(ObjectManager.class);
+    
     
     private MNode mn = null;
     private Session session = null;
@@ -64,6 +66,13 @@ public class ObjectManager {
         logger.debug("ObjectManager.constructor - the root document directory is " + 
                         documentRootDir + " and the root data directory is " + dataRootDir);
         mn = D1Client.getMN(mnBaseURL);
+        DataONEauthToken = System.getenv("DATAONE_AUTH_TOKEN");
+        if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
+            DataONEauthToken =  Settings.getConfiguration().getString("DataONE.authToken");
+            logger.debug("ObjectManager - Got token from properties file.");
+        } else {
+            logger.debug("ObjectManager - Got token from env.");
+        }
     }
     
     /**
