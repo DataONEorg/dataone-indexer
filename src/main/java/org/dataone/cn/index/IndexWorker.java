@@ -37,6 +37,7 @@ import org.apache.commons.codec.EncoderException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.configuration.Settings;
 import org.dataone.exceptions.MarshallingException;
 import org.dataone.service.exceptions.InvalidRequest;
@@ -117,8 +118,9 @@ public class IndexWorker {
      * @param args
      * @throws TimeoutException 
      * @throws IOException 
+     * @throws ServiceFailure 
      */
-    public static void main(String[] args) throws IOException, TimeoutException {
+    public static void main(String[] args) throws IOException, TimeoutException, ServiceFailure {
         logger.info("IndexWorker.main - Starting index worker...");
         loadExternalPropertiesFile();
         IndexWorker worker = new IndexWorker();
@@ -174,12 +176,15 @@ public class IndexWorker {
      * Default constructor to initialize the RabbitMQ service
      * @throws IOException
      * @throws TimeoutException
+     * @throws ServiceFailure 
      */
-    public IndexWorker() throws IOException, TimeoutException {
+    public IndexWorker() throws IOException, TimeoutException, ServiceFailure {
         initExecutorService();//initialize the executor first
         initIndexQueue();
         initIndexParsers();
+        ObjectManager.getInstance();
     }
+    
     /**
      * Initialize the RabbitMQ service
      * @throws IOException 
