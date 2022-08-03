@@ -176,7 +176,7 @@ public class IndexWorker {
      * @throws TimeoutException
      */
     public IndexWorker() throws IOException, TimeoutException {
-        initExecutorService();
+        initExecutorService();//initialize the executor first
         initIndexQueue();
         initIndexParsers();
     }
@@ -203,8 +203,8 @@ public class IndexWorker {
         factory.setAutomaticRecoveryEnabled(true);
         // attempt recovery every 10 seconds after a failure
         factory.setNetworkRecoveryInterval(10000);
-        logger.debug("IndexWorker.init - Set RabbitMQ host to: " + RabbitMQhost);
-        logger.debug("IndexWorker.init - Set RabbitMQ port to: " + RabbitMQport);
+        logger.debug("IndexWorker.initIndexQueue - Set RabbitMQ host to: " + RabbitMQhost);
+        logger.debug("IndexWorker.initIndexQueue - Set RabbitMQ port to: " + RabbitMQport);
 
         // Setup the 'InProcess' queue with a routing key - messages consumed by this queue require that
         // this routine key be used. The routine key INDEX_ROUTING_KEY sends messages to the index worker,
@@ -217,13 +217,14 @@ public class IndexWorker {
         boolean autoDelete = false;
         Map<String, Object> argus = new HashMap<String, Object>();
         argus.put("x-max-priority", RabbitMQMaxPriority);
-        logger.debug("IndexWorker.init - Set RabbitMQ max priority to: " + RabbitMQMaxPriority);
+        logger.debug("IndexWorker.initIndexQueue - Set RabbitMQ max priority to: " + RabbitMQMaxPriority);
         RabbitMQchannel.queueDeclare(INDEX_QUEUE_NAME, durable, exclusive, autoDelete, argus);
         RabbitMQchannel.queueBind(INDEX_QUEUE_NAME, EXCHANGE_NAME, INDEX_ROUTING_KEY);
         
         // Channel will only send one request for each worker at a time.
         RabbitMQchannel.basicQos(1);
-        logger.info("IndexWorker.init - Connected to RabbitMQ queue " + INDEX_QUEUE_NAME);
+        logger.debug("IndexWorker.IndexQueue - The metadata root directory is " + docRootDir);
+        logger.info("IndexWorker.IndexQueue - Connected to RabbitMQ queue " + INDEX_QUEUE_NAME);
         
         if(dataRootDir != null && !dataRootDir.endsWith("/")) {
             dataRootDir = dataRootDir + "/";
@@ -232,7 +233,7 @@ public class IndexWorker {
         if (docRootDir != null && !docRootDir.endsWith("/")) {
             docRootDir = docRootDir + "/";
         }
-        logger.debug("IndexWorker.init - The metadata root directory is " + docRootDir);
+        logger.debug("IndexWorker.initIndexQueue - The metadata root directory is " + docRootDir);
     }
     
     /**
