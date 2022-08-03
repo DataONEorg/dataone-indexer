@@ -55,6 +55,7 @@ public class ObjectManager {
     private static String nodeBaseURL = Settings.getConfiguration().getString("index.d1node.baseURL");
     private static String DataONEauthToken = null;
     private static Logger logger = Logger.getLogger(ObjectManager.class);
+    private static final String TOKEN_VARIABLE_NAME = "DATAONE_AUTH_TOKEN";
 
     private static MultipartD1Node d1Node = null;
     private static Session session = null;
@@ -74,9 +75,9 @@ public class ObjectManager {
                         documentRootDir + " and the root data directory is " + dataRootDir);
       
         //get the token
-        DataONEauthToken = System.getenv("DATAONE_AUTH_TOKEN");
+        DataONEauthToken = System.getenv(TOKEN_VARIABLE_NAME);
         if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
-            DataONEauthToken =  Settings.getConfiguration().getString("DataONE.authToken");
+            DataONEauthToken =  Settings.getConfiguration().getString(TOKEN_VARIABLE_NAME);
             logger.info("ObjectManager - Got token from properties file.");
         } else {
             logger.info("ObjectManager - Got token from env.");
