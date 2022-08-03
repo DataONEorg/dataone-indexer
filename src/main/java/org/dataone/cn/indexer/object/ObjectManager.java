@@ -65,10 +65,10 @@ public class ObjectManager {
      * @throws ServiceFailure 
      */
     private ObjectManager() throws ServiceFailure {
-        if (dataRootDir.endsWith("/")) {
+        if (!dataRootDir.endsWith("/")) {
             dataRootDir = dataRootDir + "/";
         }
-        if (documentRootDir.endsWith("/")) {
+        if (!documentRootDir.endsWith("/")) {
             documentRootDir = documentRootDir + "/";
         }
         logger.info("ObjectManager.constructor - the root document directory is " + 
