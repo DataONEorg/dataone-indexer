@@ -27,12 +27,10 @@ import org.dataone.client.auth.AuthTokenSession;
 import org.dataone.client.exception.ClientSideException;
 import org.dataone.client.rest.HttpMultipartRestClient;
 import org.dataone.client.rest.MultipartRestClient;
-import org.dataone.client.v2.MNode;
 import org.dataone.client.v2.formats.ObjectFormatCache;
 import org.dataone.client.v2.impl.MultipartCNode;
 import org.dataone.client.v2.impl.MultipartD1Node;
 import org.dataone.client.v2.impl.MultipartMNode;
-import org.dataone.client.v2.itk.D1Client;
 import org.dataone.configuration.Settings;
 import org.dataone.service.exceptions.InvalidToken;
 import org.dataone.service.exceptions.NotAuthorized;
@@ -41,7 +39,6 @@ import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v1.Session;
-import org.dataone.service.types.v1.Subject;
 import org.dataone.service.types.v2.ObjectFormat;
 import org.dataone.service.types.v2.SystemMetadata;
 
@@ -59,8 +56,8 @@ public class ObjectManager {
     private static String DataONEauthToken = null;
     private static Logger logger = Logger.getLogger(ObjectManager.class);
 
-    private MultipartD1Node d1Node = null;
-    private Session session = null;
+    private static MultipartD1Node d1Node = null;
+    private static Session session = null;
   
     /**
      * Private constructor
@@ -73,22 +70,22 @@ public class ObjectManager {
         if (documentRootDir.endsWith("/")) {
             documentRootDir = documentRootDir + "/";
         }
-        logger.debug("ObjectManager.constructor - the root document directory is " + 
+        logger.info("ObjectManager.constructor - the root document directory is " + 
                         documentRootDir + " and the root data directory is " + dataRootDir);
       
         //get the token
         DataONEauthToken = System.getenv("DATAONE_AUTH_TOKEN");
         if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
             DataONEauthToken =  Settings.getConfiguration().getString("DataONE.authToken");
-            logger.debug("ObjectManager - Got token from properties file.");
+            logger.info("ObjectManager - Got token from properties file.");
         } else {
-            logger.debug("ObjectManager - Got token from env.");
+            logger.info("ObjectManager - Got token from env.");
         }
         
         if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
             logger.info("ObjectManager ------ Could NOT get a token from either env or a properties file");
         }
-        Session session = createSession(DataONEauthToken);
+        session = createSession(DataONEauthToken);
         try {
             d1Node = getMultipartD1Node(session, nodeBaseURL);
         } catch (IOException | ClientSideException e) {
@@ -152,6 +149,7 @@ public class ObjectManager {
         Identifier identifier = new Identifier();
         identifier.setValue(id);
         SystemMetadata sysmeta = d1Node.getSystemMetadata(session, identifier);
+        logger.debug("ObjectManager.getSystemMetadata - finish getting the system metadata for the pid " + id);
         return sysmeta;
     }
     
@@ -167,10 +165,10 @@ public class ObjectManager {
     private Session createSession(String authToken) {
         Session session = null;
         if (authToken == null || authToken.trim().equals("")) {
-            logger.debug("ObjectManager.getSession - Creating the public session");
+            logger.info("ObjectManager.createSession - Creating the public session");
             session = new Session();
         } else {
-            logger.debug("Creating authentication session from token: " + authToken.substring(0, 5) + "...");
+            logger.info("ObjectManger.createSession - Creating authentication session from token: " + authToken.substring(0, 5) + "...");
             session = new AuthTokenSession(authToken);
         }
         return session;
@@ -195,10 +193,10 @@ public class ObjectManager {
         Boolean isCN = isCN(serviceUrl);
         // Now create a DataONE object that uses the rest client
         if (isCN) {
-            logger.debug("ObjectManager.getMultipartD1Node - creating cn MultipartMNode from the url " + serviceUrl);
+            logger.info("ObjectManager.getMultipartD1Node - creating cn MultipartMNode from the url " + serviceUrl);
             d1Node = new MultipartCNode(mrc, serviceUrl, session);
         } else {
-            logger.debug("ObjectManager.getMultipartD1Node - creating mn MultipartMNode from the url " + serviceUrl);
+            logger.info("ObjectManager.getMultipartD1Node - creating mn MultipartMNode from the url " + serviceUrl);
             d1Node = new MultipartMNode(mrc, serviceUrl, session);
         }
         return d1Node;
