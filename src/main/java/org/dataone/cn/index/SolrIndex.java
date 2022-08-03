@@ -122,9 +122,15 @@ public class SolrIndex {
     private void init() throws ParserConfigurationException, XPathExpressionException {
         sysmetaSolrFields = systemMetadataProcessor.getFieldList();
         copyFields = httpService.getSolrCopyFields();
-        for(String copyField : copyFields) {
-            log.info("SolrIndex.init - the copy field from the solr schema: " + copyField);
+        if (copyFields != null) {
+            log.info("SolrIndex.init - the size of the copy fields from the solr schema is : " + copyFields.size());
+            for(String copyField : copyFields) {
+                log.debug("SolrIndex.init - the copy field from the solr schema: " + copyField);
+            }
+        } else {
+            log.warn("SolrIndex.init - the size of the copy fields from the solr schema is 0.");
         }
+        
     }
 
     /**
