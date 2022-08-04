@@ -21,6 +21,8 @@
 package org.dataone.cn.indexer.object;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 
 import org.apache.log4j.Logger;
 import org.dataone.client.auth.AuthTokenSession;
@@ -65,6 +67,20 @@ public class ObjectManager {
      * @throws ServiceFailure 
      */
     private ObjectManager() throws ServiceFailure {
+        if (dataRootDir == null || dataRootDir.trim().equals("")) {
+            throw new ServiceFailure("0000", "The data root directory specified by the property index.data.root.directory is blank in the properties file");
+        }
+        if (documentRootDir == null || documentRootDir.trim().equals("")) {
+            throw new ServiceFailure("0000", "The metadata root directory specified by the property index.document.root.directory is blank in the properties file");
+        }
+        if (!Files.exists(FileSystems.getDefault().getPath(dataRootDir))) {
+            throw new ServiceFailure("0000", "The data root directory " + dataRootDir + 
+                                    " specified in the properties file doesn't exist");
+        }
+        if (!Files.exists(FileSystems.getDefault().getPath(documentRootDir))) {
+            throw new ServiceFailure("0000", "The document root directory " + documentRootDir + 
+                                    " specified in the properties file doesn't exist");
+        }
         if (!dataRootDir.endsWith("/")) {
             dataRootDir = dataRootDir + "/";
         }
