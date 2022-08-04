@@ -92,24 +92,23 @@ public class IndexWorker {
     
     private static final String springConfigFileURL = "/index-parser-context.xml";
     private static final String ENV_NAME_OF_PROPERTIES_FILE = "DATAONE_INDEXER_CONFIG";
-   
-    private static String RabbitMQhost = null;
-    private static int RabbitMQport = 0;
-    private static String RabbitMQusername = null;
-    private static String RabbitMQpassword = null;
-    private static int RabbitMQMaxPriority = 10;
-    private static Connection RabbitMQconnection = null;
-    private static Channel RabbitMQchannel = null;
-    private static String defaultExternalPropertiesFile = "/etc/dataone/dataone-indexer.properties";
-    
-    private static ApplicationContext context = null;
-    private static SolrIndex solrIndex = null;
     
     private static Logger logger = Logger.getLogger(IndexWorker.class);
-    
-    private static String specifiedThreadNumberStr = null;
-    private static int specifiedThreadNumber = 0;
-    private static ExecutorService executor = null;
+    private static String defaultExternalPropertiesFile = "/etc/dataone/dataone-indexer.properties";
+   
+    private String RabbitMQhost = null;
+    private int RabbitMQport = 0;
+    private String RabbitMQusername = null;
+    private String RabbitMQpassword = null;
+    private int RabbitMQMaxPriority = 10;
+    private Connection RabbitMQconnection = null;
+    private Channel RabbitMQchannel = null;
+    private ApplicationContext context = null;
+    private SolrIndex solrIndex = null;
+    private String specifiedThreadNumberStr = null;
+    private int specifiedThreadNumber = 0;
+    private ExecutorService executor = null;
+    private boolean multipleThread = true;
     
     /**
      * Commandline main for the IndexWorker to be started.
@@ -260,10 +259,19 @@ public class IndexWorker {
         if (specifiedThreadNumber > 0 && specifiedThreadNumber < nThreads) {
             nThreads = specifiedThreadNumber; //use the specified number in the property file
         }
-        logger.info("IndexWorker.initExecutorService - the size of index thread pool specified in the propery file is " + specifiedThreadNumber +
-                ". The size computed from the available processors is " + availableProcessors + 
-                 ". Final computed thread pool size for index executor: " + nThreads);
-        executor = Executors.newFixedThreadPool(nThreads); 
+        if (nThreads != 1) {
+            logger.info("IndexWorker.initExecutorService - the size of index thread pool specified in the propery file is " + specifiedThreadNumber +
+                    ". The size computed from the available processors is " + availableProcessors + 
+                     ". Final computed thread pool size for index executor: " + nThreads);
+            executor = Executors.newFixedThreadPool(nThreads);
+            multipleThread = true;
+        } else {
+            logger.info("IndexWorker.initExecutorService - the size of index thread pool specified in the propery file is " + specifiedThreadNumber +
+                    ". The size computed from the available processors is " + availableProcessors + 
+                     ". Final computed thread pool size for index executor: " + nThreads + ". Since its value is 1, we do NOT need the executor service and use a single thread way.");
+            multipleThread = false;
+        }
+        
     }
 
   
@@ -298,82 +306,22 @@ public class IndexWorker {
                         throw new InvalidRequest("0000", "The index type cannot be null or blank in the index task");
                     }
                     final int priority = properties.getPriority();
-                    
-                    Runnable runner = new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                logger.info("IndexWorker.consumer.handleDelivery in thread " + Thread.currentThread().getId() + 
-                                        " - Received the index task from the index queue with the identifier: "+
-                                        pid.getValue() + " , the index type: " + indexType + ", the file path (null means not to have): " + finalFilePath + 
-                                        ", the priotity: " + priority);
-                                if (indexType.equals(CREATE_INDEXT_TYPE)) {
-                                    boolean sysmetaOnly = false;
-                                    solrIndex.update(pid, finalFilePath, sysmetaOnly);
-                                } else if (indexType.equals(SYSMETA_CHANGE_TYPE)) {
-                                    boolean sysmetaOnly = true;
-                                    solrIndex.update(pid, finalFilePath, sysmetaOnly);
-                                } else if (indexType.equals(DELETE_INDEX_TYPE)) {
-                                    solrIndex.remove(pid);
-                                } else {
-                                    throw new InvalidRequest("0000", "DataONE indexer does not know the index type: " + indexType + " in the index task");
-                                }
-                                logger.info("IndexWorker.consumer.handleDelivery in thread " +  Thread.currentThread().getId() +
-                                        " - Completed the index task from the index queue with the identifier: "+
-                                        pid.getValue() + " , the index type: " + indexType + ", the file path (null means not to have): " + finalFilePath + 
-                                        ", the priotity: " + priority);
-                            } catch (InvalidToken e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
-                            } catch (NotAuthorized e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
-                            } catch (NotImplemented e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
-                            } catch (ServiceFailure e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
-                            } catch (NotFound e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
-                            } catch (XPathExpressionException e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
-                            } catch (UnsupportedType e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
-                            } catch (SAXException e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
-                            } catch (ParserConfigurationException e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
-                            } catch (SolrServerException e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
-                            } catch (MarshallingException e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
-                            } catch (EncoderException e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
-                            } catch (InterruptedException e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
-                            } catch (IOException e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
-                            } catch (InvalidRequest e) {
-                                logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
-                                        pid.getValue() + " since " + e.getMessage());
+                    if (multipleThread) {
+                        logger.debug("IndexWorker.start.handleDelivery - useing multiple threads to index identifier " + pid.getValue());
+                        Runnable runner = new Runnable() {
+                            @Override
+                            public void run() {
+                                indexOjbect(pid, indexType, priority, finalFilePath, multipleThread);
                             }
-                        }
-                    };
-                    // submit the task, and that's it
-                    executor.submit(runner);
+                        };
+                        // submit the task, and that's it
+                        executor.submit(runner);
+                    } else {
+                        logger.debug("IndexWorker.start.handleDelivery - useing single thread to index identifier " + pid.getValue());
+                        indexOjbect(pid, indexType, priority, finalFilePath, multipleThread);
+                    }
                 } catch (InvalidRequest e) {
-                    logger.error("IndexWorker.consumer.handleDelivery - cannot index the task for identifier  " + 
+                    logger.error("IndexWorker.start.handleDelivery - cannot index the task for identifier  " + 
                                  identifier + " since " + e.getMessage());
                 }
                 RabbitMQchannel.basicAck(envelope.getDeliveryTag(), false);
@@ -382,6 +330,84 @@ public class IndexWorker {
          logger.info("IndexWorker.start - Calling basicConsume");
          boolean autoAck = false;
          RabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, autoAck, consumer);
+    }
+    
+    /**
+     * Process the index task. This method is called by a single or multiple thread(s) determined by the configuration.
+     * @param pid  the identifier of the object which need to be indexed
+     * @param indexType  the type of index (delete, create or update)
+     * @param priority  the priority of the index task (for the log information only)
+     * @param finalFilePath  the file path of the object 
+     * @param multipleThread  the task was handled by multiple thread or not (for the log information only)
+     */
+    private void indexOjbect(Identifier pid, String indexType, int priority, String finalFilePath, boolean multipleThread) {
+        try {
+            long threadId = Thread.currentThread().getId();
+            logger.info("IndexWorker.consumer.indexOjbect by multiple thread? " + multipleThread + ", with the thread id " + threadId + 
+                    " - Received the index task from the index queue with the identifier: "+
+                    pid.getValue() + " , the index type: " + indexType + ", the file path (null means not to have): " + finalFilePath + 
+                    ", the priotity: " + priority);
+            if (indexType.equals(CREATE_INDEXT_TYPE)) {
+                boolean sysmetaOnly = false;
+                solrIndex.update(pid, finalFilePath, sysmetaOnly);
+            } else if (indexType.equals(SYSMETA_CHANGE_TYPE)) {
+                boolean sysmetaOnly = true;
+                solrIndex.update(pid, finalFilePath, sysmetaOnly);
+            } else if (indexType.equals(DELETE_INDEX_TYPE)) {
+                solrIndex.remove(pid);
+            } else {
+                throw new InvalidRequest("0000", "DataONE indexer does not know the index type: " + indexType + " in the index task");
+            }
+            logger.info("IndexWorker.indexOjbect with the thread id " +  threadId +
+                    " - Completed the index task from the index queue with the identifier: "+
+                    pid.getValue() + " , the index type: " + indexType + ", the file path (null means not to have): " + finalFilePath + 
+                    ", the priotity: " + priority);
+        } catch (InvalidToken e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        } catch (NotAuthorized e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        } catch (NotImplemented e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        } catch (ServiceFailure e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        } catch (NotFound e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        } catch (XPathExpressionException e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        } catch (UnsupportedType e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        } catch (SAXException e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        } catch (ParserConfigurationException e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        } catch (SolrServerException e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        } catch (MarshallingException e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        } catch (EncoderException e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        } catch (InterruptedException e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        } catch (IOException e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        } catch (InvalidRequest e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+        }
     }
     
     /**
