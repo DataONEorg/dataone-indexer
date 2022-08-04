@@ -98,8 +98,6 @@ public class IndexWorker {
     private static String RabbitMQusername = null;
     private static String RabbitMQpassword = null;
     private static int RabbitMQMaxPriority = 10;
-    private static String dataRootDir = null;
-    private static String docRootDir = null;
     private static Connection RabbitMQconnection = null;
     private static Channel RabbitMQchannel = null;
     private static String defaultExternalPropertiesFile = "/etc/dataone/dataone-indexer.properties";
@@ -197,8 +195,6 @@ public class IndexWorker {
         RabbitMQusername = Settings.getConfiguration().getString("index.rabbitmq.username", "guest");
         RabbitMQpassword = Settings.getConfiguration().getString("index.rabbitmq.password", "guest");
         RabbitMQMaxPriority = Settings.getConfiguration().getInt("index.rabbitmq.max.priority");
-        dataRootDir = Settings.getConfiguration().getString("index.data.root.directory", "/var/metacat/");
-        docRootDir = Settings.getConfiguration().getString("index.document.root.directory", "/var/metacat/");
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(RabbitMQhost);
         factory.setPort(RabbitMQport);
@@ -228,17 +224,7 @@ public class IndexWorker {
         
         // Channel will only send one request for each worker at a time.
         RabbitMQchannel.basicQos(1);
-        logger.debug("IndexWorker.IndexQueue - The metadata root directory is " + docRootDir);
         logger.info("IndexWorker.IndexQueue - Connected to RabbitMQ queue " + INDEX_QUEUE_NAME);
-        
-        if(dataRootDir != null && !dataRootDir.endsWith("/")) {
-            dataRootDir = dataRootDir + "/";
-        }
-        logger.debug("IndexWorker.init - The data root directory is " + dataRootDir);
-        if (docRootDir != null && !docRootDir.endsWith("/")) {
-            docRootDir = docRootDir + "/";
-        }
-        logger.debug("IndexWorker.initIndexQueue - The metadata root directory is " + docRootDir);
     }
     
     /**

@@ -85,8 +85,8 @@ affinity: {}
 idxworker:
   mn_url: "https://dev.nceas.ucsb.edu/knb/d1/mn"
   cn_url: "https://cn.dataone.org/cn"
-  data_directory: /var/metacat/
-  document_directory: /var/metacat/
+  data_directory: /var/metacat/data
+  document_directory: /var/metacat/documents
   # The size of the thread pool which process the index task
   pool_size: 5
 
