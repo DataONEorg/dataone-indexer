@@ -89,6 +89,7 @@ idxworker:
   document_directory: /var/metacat/documents
   # The size of the thread pool which process the index task
   pool_size: 5
+  debug: "FALSE"
 
 # The section for the rabbitMQ configuration
 rabbitmq:
