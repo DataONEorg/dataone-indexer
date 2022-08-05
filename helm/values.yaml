@@ -97,8 +97,17 @@ rabbitmq:
   auth:
     username: rmq
     password: change-to-using-a-secret
-  hostname: d1index-rabbitmq-headless.d1index.svc.cluster.local
+  hostname: d1index-rabbitmq-headless.d1index.svc
   hostport: 5672
   #replicaCount: 3
   #If you change the number of the max priority, the existing queue must be deleted. And consumers must use the same number.
   #max.priority: 10
+
+solr:
+  enabled: true
+  auth:
+    adminUsername: solradmin
+    adminPassword: change-to-using-a-solr-secret
+    #existingSecret: solr-secret
+  coreNames: ['testcore']
+  hostname: d1index-solr-headless.d1index.svc
