@@ -306,25 +306,27 @@ public class IndexWorker {
                         throw new InvalidRequest("0000", "The index type cannot be null or blank in the index task");
                     }
                     final int priority = properties.getPriority();
+                    final Envelope finalEnvelop = envelope;
                     if (multipleThread) {
                         logger.debug("IndexWorker.start.handleDelivery - using multiple threads to index identifier " + pid.getValue());
                         Runnable runner = new Runnable() {
                             @Override
                             public void run() {
-                                indexOjbect(pid, indexType, priority, finalFilePath, multipleThread);
+                                indexOjbect(pid, indexType, priority, finalFilePath, finalEnvelop.getDeliveryTag(), multipleThread);
                             }
                         };
                         // submit the task, and that's it
                         executor.submit(runner);
                     } else {
                         logger.debug("IndexWorker.start.handleDelivery - using single thread to index identifier " + pid.getValue());
-                        indexOjbect(pid, indexType, priority, finalFilePath, multipleThread);
+                        indexOjbect(pid, indexType, priority, finalFilePath, finalEnvelop.getDeliveryTag(), multipleThread);
                     }
                 } catch (InvalidRequest e) {
                     logger.error("IndexWorker.start.handleDelivery - cannot index the task for identifier  " + 
                                  identifier + " since " + e.getMessage());
+                    boolean requeue = false;
+                    RabbitMQchannel.basicReject(envelope.getDeliveryTag(), requeue);
                 }
-                RabbitMQchannel.basicAck(envelope.getDeliveryTag(), false);
             }
          };
          logger.info("IndexWorker.start - Calling basicConsume");
@@ -338,9 +340,10 @@ public class IndexWorker {
      * @param indexType  the type of index (delete, create or update)
      * @param priority  the priority of the index task (for the log information only)
      * @param finalFilePath  the file path of the object 
+     * @param deliveryTag  the tag of the rabbitmq message
      * @param multipleThread  the task was handled by multiple thread or not (for the log information only)
      */
-    private void indexOjbect(Identifier pid, String indexType, int priority, String finalFilePath, boolean multipleThread) {
+    private void indexOjbect(Identifier pid, String indexType, int priority, String finalFilePath, long deliveryTag, boolean multipleThread) {
         try {
             long threadId = Thread.currentThread().getId();
             logger.info("IndexWorker.consumer.indexOjbect by multiple thread? " + multipleThread + ", with the thread id " + threadId + 
@@ -358,55 +361,170 @@ public class IndexWorker {
             } else {
                 throw new InvalidRequest("0000", "DataONE indexer does not know the index type: " + indexType + " in the index task");
             }
+            try {
+                boolean multiple = false;
+                RabbitMQchannel.basicAck(deliveryTag, multiple);
+            } catch (Exception e) {
+                logger.error("IndexWorker.indexOjbect with the thread id " +  threadId +
+                        " - Though the index worker Completed the index task from the index queue with the identifier: "+
+                        pid.getValue() + " , the index type: " + indexType + ", sending acknowledgement back to rabbitmq failed since " 
+                        + e.getMessage()  + ". So rabbitmq may resend the message again");
+            }
             logger.info("IndexWorker.indexOjbect with the thread id " +  threadId +
                     " - Completed the index task from the index queue with the identifier: "+
                     pid.getValue() + " , the index type: " + indexType + ", the file path (null means not to have): " + finalFilePath + 
                     ", the priotity: " + priority);
+            
         } catch (InvalidToken e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         } catch (NotAuthorized e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         } catch (NotImplemented e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         } catch (ServiceFailure e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         } catch (NotFound e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         } catch (XPathExpressionException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         } catch (UnsupportedType e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         } catch (SAXException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         } catch (ParserConfigurationException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         } catch (SolrServerException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         } catch (MarshallingException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         } catch (EncoderException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         } catch (InterruptedException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         } catch (IOException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         } catch (InvalidRequest e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                     pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         }
     }
     
