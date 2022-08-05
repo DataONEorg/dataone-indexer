@@ -52,6 +52,9 @@ spec:
             - mountPath: /etc/dataone/dataone-indexer.properties
               subPath: dataone-indexer.properties
               name: {{ .Release.Name }}-config-volume
+          env:
+            - name: DEBUG
+              value: "{{ .Values.idxworker.debug }}"
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
