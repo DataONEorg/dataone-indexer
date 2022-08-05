@@ -96,7 +96,7 @@ rabbitmq:
   auth:
     username: rmq
     password: change-to-using-a-secret
-  hostname: rabbitmq
+  hostname: d1index-rabbitmq-headless.d1index.svc.cluster.local
   hostport: 5672
   #replicaCount: 3
   #If you change the number of the max priority, the existing queue must be deleted. And consumers must use the same number.
