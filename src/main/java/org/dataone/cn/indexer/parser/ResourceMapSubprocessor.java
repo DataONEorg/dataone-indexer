@@ -145,8 +145,8 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
         //IndexVisibilityHazelcastImplWithArchivedObj indexVisitility = new IndexVisibilityHazelcastImplWithArchivedObj();
         ResourceMap resourceMap = ResourceMapFactory.buildResourceMap(resourcMap);
         List<String> documentIds = resourceMap.getAllDocumentIDs();//this list includes the resourceMap id itself.
-        List<SolrDoc> updateDocuments = httpService.getDocumentsById(getSolrQueryUri(), documentIds);
-        //List<SolrDoc> updateDocuments = getSolrDocs(resourceMap.getIdentifier(), documentIds);
+        //List<SolrDoc> updateDocuments = httpService.getDocumentsById(getSolrQueryUri(), documentIds);
+        List<SolrDoc> updateDocuments = getSolrDocs(resourceMap.getIdentifier(), documentIds);
         List<SolrDoc> mergedDocuments = resourceMap.mergeIndexedDocuments(updateDocuments);
         /*if(mergedDocuments != null) {
             for(SolrDoc doc : mergedDocuments) {

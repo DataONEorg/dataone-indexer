@@ -307,7 +307,7 @@ public class IndexWorker {
                     }
                     final int priority = properties.getPriority();
                     if (multipleThread) {
-                        logger.debug("IndexWorker.start.handleDelivery - useing multiple threads to index identifier " + pid.getValue());
+                        logger.debug("IndexWorker.start.handleDelivery - using multiple threads to index identifier " + pid.getValue());
                         Runnable runner = new Runnable() {
                             @Override
                             public void run() {
@@ -317,7 +317,7 @@ public class IndexWorker {
                         // submit the task, and that's it
                         executor.submit(runner);
                     } else {
-                        logger.debug("IndexWorker.start.handleDelivery - useing single thread to index identifier " + pid.getValue());
+                        logger.debug("IndexWorker.start.handleDelivery - using single thread to index identifier " + pid.getValue());
                         indexOjbect(pid, indexType, priority, finalFilePath, multipleThread);
                     }
                 } catch (InvalidRequest e) {
