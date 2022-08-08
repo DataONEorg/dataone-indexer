@@ -109,6 +109,7 @@ public class IndexWorker {
     private int specifiedThreadNumber = 0;
     private ExecutorService executor = null;
     private boolean multipleThread = true;
+    private int nThreads = 1;
     
     /**
      * Commandline main for the IndexWorker to be started.
@@ -221,8 +222,8 @@ public class IndexWorker {
         RabbitMQchannel.queueDeclare(INDEX_QUEUE_NAME, durable, exclusive, autoDelete, argus);
         RabbitMQchannel.queueBind(INDEX_QUEUE_NAME, EXCHANGE_NAME, INDEX_ROUTING_KEY);
         
-        // Channel will only send one request for each worker at a time.
-        RabbitMQchannel.basicQos(1);
+        logger.info("IndexWorker.initIndexQueue - the allowed unacknowledged message(s) number is " + nThreads);
+        RabbitMQchannel.basicQos(nThreads);
         logger.info("IndexWorker.IndexQueue - Connected to RabbitMQ queue " + INDEX_QUEUE_NAME);
     }
     
@@ -255,7 +256,7 @@ public class IndexWorker {
         }
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         availableProcessors = availableProcessors - 1;
-        int nThreads = Math.max(1, availableProcessors); //the default threads number
+        nThreads = Math.max(1, availableProcessors); //the default threads number
         if (specifiedThreadNumber > 0 && specifiedThreadNumber < nThreads) {
             nThreads = specifiedThreadNumber; //use the specified number in the property file
         }
