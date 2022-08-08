@@ -224,7 +224,7 @@ public class IndexWorker {
         
         logger.info("IndexWorker.initIndexQueue - the allowed unacknowledged message(s) number is " + nThreads);
         RabbitMQchannel.basicQos(nThreads);
-        logger.info("IndexWorker.IndexQueue - Connected to RabbitMQ queue " + INDEX_QUEUE_NAME);
+        logger.debug("IndexWorker.initIndexQueue - Connected to the RabbitMQ queue with the name of " + INDEX_QUEUE_NAME);
     }
     
     /**

@@ -93,14 +93,14 @@ public class ObjectManager {
         //get the token
         DataONEauthToken = System.getenv(TOKEN_VARIABLE_NAME);
         if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
+            logger.info("ObjectManager - Couldn't get the auth token from an env. variable and will try to get the token from the properties file.");
             DataONEauthToken =  Settings.getConfiguration().getString(TOKEN_VARIABLE_NAME);
-            logger.info("ObjectManager - Got token from properties file.");
         } else {
-            logger.info("ObjectManager - Got token from env.");
+            logger.info("ObjectManager - Got the auth token from an env. variable");
         }
         
         if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
-            logger.info("ObjectManager ------ Could NOT get a token from either env or a properties file");
+            logger.warn("ObjectManager ------ Could NOT get an auth token from either an env. variable or the properties file. So it will act as the public user.");
         }
         session = createSession(DataONEauthToken);
         try {
