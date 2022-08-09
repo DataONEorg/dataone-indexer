@@ -330,9 +330,9 @@ public class IndexWorker {
                 }
             }
          };
-         logger.info("IndexWorker.start - Calling basicConsume");
          boolean autoAck = false;
          RabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, autoAck, consumer);
+         logger.info("IndexWorker.start - Calling basicConsume and waiting for the comming messages");
     }
     
     /**
