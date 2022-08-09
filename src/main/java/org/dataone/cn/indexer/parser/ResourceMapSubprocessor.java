@@ -172,7 +172,7 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
                     for (int i=0; i<maxAttempts; i++) {
                         Thread.sleep(waitingTime);
                         doc = httpService.getSolrDocumentById(solrQueryUri, id);;
-                        logger.debug("ResourceMapSubprocessor.getSolrDocs - the " + (i+1) + " time to wait " + 
+                        logger.info("ResourceMapSubprocessor.getSolrDocs - the " + (i+1) + " time to wait " + 
                                    waitingTime + " to get the solr doc for " + id);
                         if (doc != null) {
                             break;
