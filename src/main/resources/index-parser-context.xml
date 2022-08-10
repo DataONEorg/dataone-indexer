@@ -11,7 +11,7 @@
     <context:property-placeholder location="classpath:org/dataone/configuration/index-processor.properties"/>
     <import resource="classpath:index-context-file-includes.xml" /> 
 
-    <bean id="solrIndex" class="org.dataone.cn.index.SolrIndex">
+    <bean id="solrIndex" class="org.dataone.cn.indexer.SolrIndex">
      <constructor-arg name="xmlNamespaceConfig" ref="xmlNamespaceConfig" />
      <constructor-arg name="systemMetadataProcessor" ref="systemMetadata200Subprocessor"/>
      <constructor-arg name="httpService" ref="httpService" />

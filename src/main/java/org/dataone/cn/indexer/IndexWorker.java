@@ -19,7 +19,7 @@
  * 
  */
 
-package org.dataone.cn.index;
+package org.dataone.cn.indexer;
 
 import java.io.File;
 import java.io.IOException;

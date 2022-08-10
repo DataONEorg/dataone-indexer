@@ -18,7 +18,7 @@
  * limitations under the License.
  * 
  */
-package org.dataone.cn.index;
+package org.dataone.cn.indexer;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -49,8 +49,6 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
-//import org.apache.solr.schema.IndexSchema;
-import org.dataone.cn.indexer.XMLNamespaceConfig;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.BaseXPathDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.IDocumentDeleteSubprocessor;
