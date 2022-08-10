@@ -303,6 +303,8 @@ public class SolrIndex {
 
     private SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument) throws IOException,
             EncoderException, XPathExpressionException, SolrServerException, ParserConfigurationException, SAXException, NotImplemented, NotFound, UnsupportedType {
+        //Retrieve the existing solr document from the solr server for the id. If it doesn't exist, null or empty solr doc will be returned.
+        SolrDoc indexedDocument = httpService.getSolrDocumentById(solrQueryUri, indexDocument.getIdentifier());
         /*int wait = new Double(Math.random()  * 10000).intValue();
         System.out.println("++++++++++++++++++++++++++++ the wait time is " + wait);
         try {
@@ -310,8 +312,6 @@ public class SolrIndex {
         } catch (Exception e) {
             
         }*/
-        //Retrieve the existing solr document from the solr server for the id. If it doesn't exist, null or empty solr doc will be returned.
-        SolrDoc indexedDocument = httpService.getSolrDocumentById(solrQueryUri, indexDocument.getIdentifier());
         if (indexedDocument == null || indexedDocument.getFieldList().size() <= 0) {
             return indexDocument;
         } else {
@@ -493,7 +493,7 @@ public class SolrIndex {
             update(pid, systemMetadata, objectPath, isSysmetaChangeOnly);
         } catch (SolrServerException e) {
             if (e.getMessage().contains(VERSION_CONFLICT) && VERSION_CONFLICT_MAX_ATTEMPTS > 0) {
-                log.info("SolrIndex.update - Indexer grabbed an older verion of the solr doc for object " + 
+                log.info("SolrIndex.update - Indexer grabbed an older verion (version conflict) of the solr doc for object " + 
                         pid.getValue() + ". It will try " + VERSION_CONFLICT_MAX_ATTEMPTS + " to fix the issues");
                 for (int i=0; i<VERSION_CONFLICT_MAX_ATTEMPTS; i++) {
                     try {
@@ -503,11 +503,11 @@ public class SolrIndex {
                         break;
                     } catch (SolrException ee) {
                         if (ee.getMessage().contains(VERSION_CONFLICT)) {
-                            log.info("SolrIndex.update - Indexer grabbed an older verion of the solr doc for object " + 
+                            log.info("SolrIndex.update - Indexer grabbed an older verion (version conflict) of the solr doc for object " + 
                                     pid.getValue() + ". It will process it again in oder to get the new solr doc copy. This is the " + 
                                     (i+1) + " time to re-try.");
                             if (i == (VERSION_CONFLICT_MAX_ATTEMPTS -1)) {
-                                log.info("SolrIndex.update - Indexer grabbed an older verion of the solr doc for object " + 
+                                log.warn("SolrIndex.update - Indexer grabbed an older verion of the solr doc for object " + 
                                         pid.getValue() + ". However, Metacat already tried the max times and still can't fix the issue.");
                                 throw ee;
                             }
