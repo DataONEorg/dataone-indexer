@@ -62,6 +62,7 @@ import org.dataone.cn.indexer.solrhttp.SolrElementAdd;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
 import org.dataone.exceptions.MarshallingException;
+import org.dataone.service.exceptions.InvalidRequest;
 import org.dataone.service.exceptions.InvalidToken;
 import org.dataone.service.exceptions.NotAuthorized;
 import org.dataone.service.exceptions.NotFound;
@@ -366,12 +367,12 @@ public class SolrIndex {
      * @param data
      * @throws SolrServerException
      */
-    private void checkParams(Identifier pid, SystemMetadata systemMetadata, String objectPath) throws SolrServerException {
+    private void checkParams(Identifier pid, SystemMetadata systemMetadata, String objectPath) throws InvalidRequest {
         if(pid == null || pid.getValue() == null || pid.getValue().trim().equals("")) {
-            throw new SolrServerException("The identifier of the indexed document should not be null or blank.");
+            throw new InvalidRequest("0000", "The identifier of the indexed document should not be null or blank.");
         }
         if(systemMetadata == null) {
-            throw new SolrServerException("The system metadata of the indexed document "+pid.getValue()+ " should not be null.");
+            throw new InvalidRequest("0000", "The system metadata of the indexed document "+pid.getValue()+ " should not be null.");
         }
         /*if(objectPath == null) {
             throw new SolrServerException("The indexed document itself for pid "+pid.getValue()+" should not be null.");
@@ -389,9 +390,10 @@ public class SolrIndex {
      * @throws UnsupportedType 
      * @throws NotFound 
      * @throws NotImplemented 
+     * @throws InvalidRequest
      */
     private void insert(Identifier pid, SystemMetadata systemMetadata, String objectPath, boolean isSysmetaChangeOnly) 
-                    throws IOException, SAXException, ParserConfigurationException,
+                    throws IOException, SAXException, ParserConfigurationException, InvalidRequest,
                     XPathExpressionException, SolrServerException, MarshallingException, EncoderException, NotImplemented, NotFound, UnsupportedType {
         checkParams(pid, systemMetadata, objectPath);
         log.debug("SolrIndex.insert - trying to insert the solrDoc for object "+pid.getValue());
@@ -480,17 +482,18 @@ public class SolrIndex {
      * @throws XPathExpressionException 
      * @throws InterruptedException 
      * @throws IOException 
+     * @throws InvalidRequest
      */
     public void update(Identifier pid, String relativePath, boolean isSysmetaChangeOnly) throws InvalidToken, NotAuthorized, 
                                            NotImplemented, ServiceFailure, NotFound, XPathExpressionException, UnsupportedType, 
                                            SAXException, ParserConfigurationException, SolrServerException, MarshallingException, 
-                                           EncoderException, InterruptedException, IOException {
+                                           EncoderException, InterruptedException, IOException, InvalidRequest {
         log.debug("SolrIndex.update - trying to update(insert or remove) solr index of object "+pid.getValue());
         String objectPath = null;
         SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
         objectPath = ObjectManager.getInstance().getFilePath(relativePath, systemMetadata.getFormatId().getValue());
         try {
-            update(pid, systemMetadata, objectPath, isSysmetaChangeOnly);
+            insert(pid, systemMetadata, objectPath, isSysmetaChangeOnly);
         } catch (SolrServerException e) {
             if (e.getMessage().contains(VERSION_CONFLICT) && VERSION_CONFLICT_MAX_ATTEMPTS > 0) {
                 log.info("SolrIndex.update - Indexer grabbed an older verion (version conflict) of the solr doc for object " + 
@@ -499,7 +502,7 @@ public class SolrIndex {
                     try {
                         Thread.sleep(VERSION_CONFICT_WAITING);
                         systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
-                        update(pid, systemMetadata, objectPath, isSysmetaChangeOnly);
+                        insert(pid, systemMetadata, objectPath, isSysmetaChangeOnly);
                         break;
                     } catch (SolrException ee) {
                         if (ee.getMessage().contains(VERSION_CONFLICT)) {
@@ -522,43 +525,6 @@ public class SolrIndex {
         }
         log.info("SolrIndex.update - successfully inserted the solr index of the object " + pid.getValue());
     }
-   
-    
-    /**
-     * Update the solr index. This method handles the three scenarios:
-     * 1. Remove an existing doc - if the the system metadata shows the value of the archive is true,
-     *    remove the index for the previous version(s) and generate new index for the doc.
-     * 2. Add a new doc - if the system metadata shows the value of the archive is false, generate the
-     *    index for the doc.
-     * @param pid
-     * @param systemMetadata
-     * @param data
-     * @throws SolrServerException
-     * @throws ServiceFailure
-     * @throws XPathExpressionException
-     * @throws NotImplemented
-     * @throws NotFound
-     * @throws UnsupportedType
-     * @throws IOException
-     * @throws SAXException
-     * @throws ParserConfigurationException
-     * @throws OREParserException
-     * @throws MarshallingException
-     * @throws EncoderException
-     */
-    void update(Identifier pid, SystemMetadata systemMetadata, String objectPath, boolean isSysmetaChangeOnly) throws 
-                                                        XPathExpressionException, NotImplemented, NotFound, UnsupportedType, 
-                                                        IOException, SAXException, ParserConfigurationException, 
-                                                        SolrServerException, MarshallingException, EncoderException  {
-        //checkParams(pid, systemMetadata, objectPath);
-        if(systemMetadata==null || pid==null) {
-            log.error("SolrIndex.update - the systemMetadata or pid is null. So nothing will be indexed.");
-            return;
-        }
-        insert(pid, systemMetadata, objectPath, isSysmetaChangeOnly);
-    }
-    
-   
 
     /*
      * Is the pid a resource map
