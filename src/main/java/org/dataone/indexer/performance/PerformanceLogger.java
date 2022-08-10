@@ -19,7 +19,7 @@
  * 
  * $Id$
  */
-package org.dataone.cn.index.util;
+package org.dataone.indexer.performance;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;

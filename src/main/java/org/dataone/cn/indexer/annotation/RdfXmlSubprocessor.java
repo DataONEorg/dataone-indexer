@@ -34,7 +34,6 @@ import org.apache.commons.codec.EncoderException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dataone.cn.index.util.PerformanceLogger;
 import org.dataone.cn.indexer.annotation.SparqlField;
 import org.dataone.cn.indexer.annotation.TripleStoreService;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
@@ -43,6 +42,7 @@ import org.dataone.cn.indexer.parser.SubprocessorUtility;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.indexer.performance.PerformanceLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.hp.hpl.jena.ontology.OntModel;

@@ -16,12 +16,12 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.codec.EncoderException;
 
 import org.apache.log4j.Logger;
-import org.dataone.cn.index.util.PerformanceLogger;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrField;
 import org.dataone.cn.indexer.parser.SubprocessorUtility;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.indexer.performance.PerformanceLogger;
 import org.dataone.cn.indexer.XmlDocumentUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;

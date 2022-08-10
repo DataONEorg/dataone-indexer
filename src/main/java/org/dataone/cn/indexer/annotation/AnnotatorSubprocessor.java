@@ -19,13 +19,13 @@ import net.minidev.json.JSONValue;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.dataone.cn.index.util.PerformanceLogger;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrDataField;
 import org.dataone.cn.indexer.parser.SubprocessorUtility;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.indexer.performance.PerformanceLogger;
 import org.dataone.cn.indexer.annotation.OntologyModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 
