@@ -303,23 +303,15 @@ public class SolrIndex {
 
     private SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument) throws IOException,
             EncoderException, XPathExpressionException, SolrServerException, ParserConfigurationException, SAXException, NotImplemented, NotFound, UnsupportedType {
-        List<String> ids = new ArrayList<String>();
-        ids.add(indexDocument.getIdentifier());
-        //Retrieve the existing solr document from the solr server for the id. If it doesn't exist, null or empty solr doc will be returned.
-        List<SolrDoc> indexedDocuments = httpService.getDocumentsById(solrQueryUri, ids);
-        SolrDoc indexedDocument = indexedDocuments == null || indexedDocuments.size() <= 0 ? null
-                : indexedDocuments.get(0);
-        
-        /*int wait = new Double(Math.random()  * 3000).intValue();
+        /*int wait = new Double(Math.random()  * 10000).intValue();
         System.out.println("++++++++++++++++++++++++++++ the wait time is " + wait);
         try {
             Thread.sleep(wait);
         } catch (Exception e) {
             
         }*/
-
-        //IndexSchema indexSchema = SolrQueryServiceController.getInstance().getSchema();
-
+        //Retrieve the existing solr document from the solr server for the id. If it doesn't exist, null or empty solr doc will be returned.
+        SolrDoc indexedDocument = httpService.getSolrDocumentById(solrQueryUri, indexDocument.getIdentifier());
         if (indexedDocument == null || indexedDocument.getFieldList().size() <= 0) {
             return indexDocument;
         } else {
@@ -796,7 +788,7 @@ public class SolrIndex {
                 for (String item : aggregatedItems) {
                     SolrDoc doc = null;
                     try {
-                        doc = getDocumentById(item);
+                        doc = httpService.getSolrDocumentById(solrQueryUri, item);
                         List<String> fieldValues = doc.getAllFieldValues(newFieldName);
                         List<String> resourceMapIds = doc
                                 .getAllFieldValues(SolrElementField.FIELD_RESOURCEMAP);
@@ -832,14 +824,6 @@ public class SolrIndex {
         return map;
     }
 
-    /*
-     * Get the solr index doc from the index server for the given id.
-     */
-    private SolrDoc getDocumentById(String id) throws NotImplemented, NotFound, UnsupportedType, 
-                SolrServerException, ParserConfigurationException, SAXException, XPathExpressionException, IOException, EncoderException {
-        SolrDoc doc = httpService.getSolrDocumentById(solrQueryUri, id);
-        return doc;
-    }
     
     /*
      * Merge two list of updated solr docs. removedDocumentBy has the correct information about documentBy element.
