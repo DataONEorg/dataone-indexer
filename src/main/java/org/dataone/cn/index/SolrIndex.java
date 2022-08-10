@@ -91,18 +91,18 @@ public class SolrIndex {
     private static final int VERSION_CONFLICT_MAX_ATTEMPTS = Settings.getConfiguration().getInt("index.solr.versionConflict.max.attempts", 2);
     private static final int VERSION_CONFICT_WAITING = Settings.getConfiguration().getInt("index.solr.versionConflict.waiting.time", 100); //milliseconds
     private static final List<String> resourceMapFormatIdList = Settings.getConfiguration().getList("index.resourcemap.namespace");
-    private List<IDocumentSubprocessor> subprocessors = null;
-    private List<IDocumentDeleteSubprocessor> deleteSubprocessors = null;
+    private static List<IDocumentSubprocessor> subprocessors = null;
+    private static List<IDocumentDeleteSubprocessor> deleteSubprocessors = null;
     private static SolrClient solrServer = null;
     private static List<String> copyFields = null;//list of solr copy fields
     
     @Autowired
-    private HTTPService httpService = null;
+    private static HTTPService httpService = null;
     @Autowired
     private String solrQueryUri = null;
     private String solrIndexUri = null;
     private XMLNamespaceConfig xmlNamespaceConfig = null;
-    private BaseXPathDocumentSubprocessor systemMetadataProcessor = null;
+    private static BaseXPathDocumentSubprocessor systemMetadataProcessor = null;
     private List<ISolrField> sysmetaSolrFields = null;
     private static Log log = LogFactory.getLog(SolrIndex.class);
     
