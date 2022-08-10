@@ -40,9 +40,10 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ModifiableSolrParams;
-import org.dataone.cn.indexer.SolrIndexService;
+import org.dataone.cn.indexer.SolrIndex;
 import org.dataone.cn.indexer.parser.ISolrField;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v2.SystemMetadata;
 import org.dataone.service.util.DateTimeMarshaller;
 import org.dataone.service.util.TypeMarshaller;
@@ -63,25 +64,26 @@ import org.w3c.dom.Document;
 public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
 
     protected ApplicationContext context;
-    private SolrIndexService solrIndexService;
+    private SolrIndex solrIndexService;
 
     protected void addEmlToSolrIndex(Resource sysMetaFile) throws Exception {
-        SolrIndexService indexService = solrIndexService;
+        SolrIndex indexService = solrIndexService;
         SystemMetadata smd = TypeMarshaller.unmarshalTypeFromStream(SystemMetadata.class,
                 sysMetaFile.getInputStream());
         // path to actual science metadata document
         String path = StringUtils.remove(sysMetaFile.getFile().getPath(), File.separator + "SystemMetadata");
-        indexService.insertIntoIndex(smd.getIdentifier().getValue(), sysMetaFile.getInputStream(),
-                path);
+        boolean isSysmetaChangeOnly = false;
+        indexService.update(smd.getIdentifier(), path, isSysmetaChangeOnly);
+       
     }
 
     protected void addSysAndSciMetaToSolrIndex(Resource sysMeta, Resource sciMeta) throws Exception {
-        SolrIndexService indexService = solrIndexService;
+        SolrIndex indexService = solrIndexService;
         SystemMetadata smd = TypeMarshaller.unmarshalTypeFromStream(SystemMetadata.class,
                 sysMeta.getInputStream());
         String path = sciMeta.getFile().getAbsolutePath();
-        indexService
-                .insertIntoIndex(smd.getIdentifier().getValue(), sysMeta.getInputStream(), path);
+        boolean isSysmetaChangeOnly = false;
+        indexService.update(smd.getIdentifier(), path, isSysmetaChangeOnly);
     }
 
     protected SolrDocument assertPresentInSolrIndex(String pid) throws SolrServerException,
@@ -210,7 +212,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         if (context == null) {
             context = new ClassPathXmlApplicationContext("org/dataone/cn/index/test-context.xml");
         }
-        solrIndexService = (SolrIndexService) context.getBean("solrIndexService");
+        solrIndexService = (SolrIndex) context.getBean("solrIndex");
     }
 
     protected void startJettyAndSolr() throws Exception {
