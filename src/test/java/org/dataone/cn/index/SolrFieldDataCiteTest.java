@@ -104,6 +104,7 @@ public class SolrFieldDataCiteTest extends BaseSolrFieldXPathTest {
                 "CN=Tom Scientist A13461,O=University of America,C=US,DC=cilogon,DC=org");
         datacite1Expected.put("replicationAllowed", "");
         datacite1Expected.put("numberReplicas", "");
+        datacite1Expected.put("archived", "false");
         datacite1Expected.put("preferredReplicationMN", "");
         datacite1Expected.put("blockedReplicationMN", "");
         datacite1Expected.put("obsoletes", "");
