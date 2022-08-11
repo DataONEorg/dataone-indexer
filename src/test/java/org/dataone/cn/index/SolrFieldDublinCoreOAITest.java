@@ -100,6 +100,7 @@ public class SolrFieldDublinCoreOAITest extends BaseSolrFieldXPathTest {
                 "CN=Judy Kallestad A13391,O=University of Minnesota,C=US,DC=cilogon,DC=org");
         dcxExpected.put("replicationAllowed", "");
         dcxExpected.put("numberReplicas", "");
+        dcxExpected.put("archived", "false");
         dcxExpected.put("preferredReplicationMN", "");
         dcxExpected.put("blockedReplicationMN", "");
         dcxExpected.put("obsoletes", "");

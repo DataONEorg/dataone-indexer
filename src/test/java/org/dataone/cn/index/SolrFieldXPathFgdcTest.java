@@ -178,6 +178,7 @@ public class SolrFieldXPathFgdcTest extends BaseSolrFieldXPathTest {
         csiroExpected.put("rightsHolder", "CN=Dave Vieglais T799,O=Google,C=US,DC=cilogon,DC=org");
         csiroExpected.put("replicationAllowed", "true");
         csiroExpected.put("numberReplicas", "3");
+        csiroExpected.put("archived", "false");
         csiroExpected.put("preferredReplicationMN", "");
         csiroExpected.put("blockedReplicationMN", "");
         csiroExpected.put("obsoletes", "csiro_c_abayadultprawns");
@@ -303,6 +304,7 @@ public class SolrFieldXPathFgdcTest extends BaseSolrFieldXPathTest {
                 "CN=Dave Vieglais T799,O=Google,C=US,DC=cilogon,DC=org");
         fgdcNasaExpected.put("replicationAllowed", "true");
         fgdcNasaExpected.put("numberReplicas", "3");
+        fgdcNasaExpected.put("archived", "false");
         fgdcNasaExpected.put("preferredReplicationMN", "");
         fgdcNasaExpected.put("blockedReplicationMN", "");
         fgdcNasaExpected.put("obsoletes", "nasa_d_FEDGPS1292");
@@ -403,6 +405,7 @@ public class SolrFieldXPathFgdcTest extends BaseSolrFieldXPathTest {
         esriExpected.put("rightsHolder", "uid=nikkis,o=SAEON,dc=ecoinformatics,dc=org");
         esriExpected.put("replicationAllowed", "false");
         esriExpected.put("numberReplicas", "");
+        esriExpected.put("archived", "false");
         esriExpected.put("preferredReplicationMN", "");
         esriExpected.put("blockedReplicationMN", "");
         esriExpected.put("obsoletes", "");
@@ -501,6 +504,7 @@ public class SolrFieldXPathFgdcTest extends BaseSolrFieldXPathTest {
         ornlMercuryExpected.put("rightsHolder", "CN=mnEDORA,DC=dataone,DC=org");
         ornlMercuryExpected.put("replicationAllowed", "");
         ornlMercuryExpected.put("numberReplicas", "");
+        ornlMercuryExpected.put("archived", "false");
         ornlMercuryExpected.put("preferredReplicationMN", "");
         ornlMercuryExpected.put("blockedReplicationMN", "");
         ornlMercuryExpected.put("obsoletes", "");

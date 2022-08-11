@@ -170,6 +170,7 @@ public class SolrFieldXPathEmlTest extends BaseSolrFieldXPathTest {
         eml210Expected.put("rightsHolder", "dataone_integration_test_user");
         eml210Expected.put("replicationAllowed", "true");
         eml210Expected.put("numberReplicas", "");
+        eml210Expected.put("archived", "false");
         eml210Expected.put("preferredReplicationMN", "");
         eml210Expected.put("blockedReplicationMN", "");
         eml210Expected.put("obsoletes", "peggym.130.3");
@@ -341,6 +342,7 @@ public class SolrFieldXPathEmlTest extends BaseSolrFieldXPathTest {
         eml220Expected.put("rightsHolder", "dataone_integration_test_user");
         eml220Expected.put("replicationAllowed", "true");
         eml220Expected.put("numberReplicas", "");
+        eml220Expected.put("archived", "false");
         eml220Expected.put("preferredReplicationMN", "");
         eml220Expected.put("blockedReplicationMN", "");
         eml220Expected.put("obsoletes", "");
@@ -435,6 +437,7 @@ public class SolrFieldXPathEmlTest extends BaseSolrFieldXPathTest {
         emlServiceExpected.put("rightsHolder", "dataone_integration_test_user");
         emlServiceExpected.put("replicationAllowed", "true");
         emlServiceExpected.put("numberReplicas", "");
+        emlServiceExpected.put("archived", "false");
         emlServiceExpected.put("preferredReplicationMN", "");
         emlServiceExpected.put("blockedReplicationMN", "");
         emlServiceExpected.put("obsoletes", "");
