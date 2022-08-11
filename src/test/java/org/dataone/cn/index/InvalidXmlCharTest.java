@@ -94,24 +94,24 @@ public class InvalidXmlCharTest {
 
         //IndexTask task = new IndexTask(sysmeta, "");
         //InputStream is = new ByteArrayInputStream(task.getSysMetadata().getBytes());
-        InputStream is = null;
-        testXMLParsing(is, pid);
+        //InputStream is = null;
+        //testXMLParsing(is, pid);
 
         //repo.save(task);
-        Thread.sleep(200);
+        //Thread.sleep(200);
         //List<IndexTask> taskList = repo.findByPid(pid);
         //Assert.assertEquals(1, taskList.size());
 
         //task = taskList.get(0);
         //is = new ByteArrayInputStream(task.getSysMetadata().getBytes());
-        testXMLParsing(is, pid);
+        //testXMLParsing(is, pid);
 
-        Identifier id = new Identifier();
-        id.setValue(pid);
+        //Identifier id = new Identifier();
+        //id.setValue(pid);
         //SystemMetadata smd = HazelcastClientFactory.getSystemMetadataMap().get(id);
         //task = new IndexTask(smd, "");
         //is = new ByteArrayInputStream(task.getSysMetadata().getBytes());
-        testXMLParsing(is, pid);
+        //testXMLParsing(is, pid);
     }
 
     private void testXMLParsing(InputStream in, String pid) throws Exception {
