@@ -7,14 +7,12 @@ xmlns:context="http://www.springframework.org/schema/context"
 	http://www.springframework.org/schema/context
    		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <context:property-placeholder location="classpath:org/dataone/configuration/jdbc.properties, classpath:org/dataone/configuration/solr.properties"/>
-
-    <import resource="classpath:index-processor-context.xml"/>
+  
+    <import resource="classpath:index-parser-context.xml"/>
 
     <import resource="classpath:application-context-systemmeta200.xml" />
  	<import resource="classpath:application-context-resourcemap.xml" />
     <import resource="classpath:application-context-delete-subprocessors.xml" />
-    <import resource="classpath:application-context-reprocess-subprocessors.xml" />
 
 	<import resource="classpath:application-context-eml-base.xml" />
  	<import resource="classpath:application-context-eml200.xml" />
@@ -63,12 +61,6 @@ xmlns:context="http://www.springframework.org/schema/context"
     <import resource="classpath:application-context-json-ld.xml" /> 
 
     <import resource="classpath:org/dataone/cn/indexer/annotation/test-context-annotator.xml"/>
-
-    <!--
-    This import overrides default postgres datasource for testing.
-    	 To test with postgres, comment out the following import
-	-->
-	<import resource="classpath:org/dataone/configuration/hsql-datasource.xml" />
 
 	<bean id="fgdc_scan_Sys" class="org.springframework.core.io.ClassPathResource">
 		<constructor-arg type="java.lang.String"
