@@ -28,6 +28,11 @@
 				<value>http://ecoinformatics.org/oboe-ext/sbclter.1.0/oboe-sbclter.owl</value>
 				<value>https://purl.dataone.org/odo/MOSAIC_</value>
 				<value>http://purl.dataone.org/odo/ARCRC</value>
+				<value>https://purl.dataone.org/odo/ADCAD_</value>
+				<value>http://purl.dataone.org/odo/SENSO_</value>
+				<value>http://purl.dataone.org/odo/SALMON_</value>
+				<value>http://purl.dataone.org/odo/SALMON_alignment_</value>
+				<value>http://purl.dataone.org/odo/SASAP_</value>
 			</list>
 		</property>
 
@@ -55,6 +60,11 @@
 				<entry key="http://ecoinformatics.org/oboe-ext/sbclter.1.0/oboe-sbclter.owl" value="file:src/main/resources/ontologies/oboe-sbclter.owl" />
 				<entry key="https://purl.dataone.org/odo/MOSAIC_" value="file:src/main/resources/ontologies/MOSAiC.owl" />
 				<entry key="http://purl.dataone.org/odo/ARCRC" value="file:src/main/resources/ontologies/ARCRC.owl" />
+				<entry key="https://purl.dataone.org/odo/ADCAD_" value="file:src/main/resources/ontologies/ADCAD.owl" />
+				<entry key="http://purl.dataone.org/odo/SENSO_" value="file:src/main/resources/ontologies/SENSO.owl" />
+				<entry key="http://purl.dataone.org/odo/SALMON_" value="file:src/main/resources/ontologies/SALMON.owl" />
+				<entry key="http://purl.dataone.org/odo/SALMON_alignment_" value="file:src/main/resources/ontologies/SALMON_alignment.owl" />
+				<entry key="http://purl.dataone.org/odo/SASAP_" value="file:src/main/resources/ontologies/SASAP.owl" />
 			</map>
 		</constructor-arg>
 	</bean>

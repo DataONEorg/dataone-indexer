@@ -217,4 +217,144 @@ public class OntologyModelServiceTest {
 			fail(e.getMessage());
 		}
 	}
+
+	@Test
+	public void testADCADExpansion() {
+		try {
+			Map<String, Set<String>> concepts = OntologyModelService.getInstance().expandConcepts("https://purl.dataone.org/odo/ADCAD_00034");
+
+
+			// Assert on Solr fields returend
+			Set<String> fields = new HashSet<String>();
+			fields.add("annotation_property_uri");
+			fields.add("annotation_value_uri");
+			assertEquals(concepts.keySet(), fields);
+
+			// Assert on Solr field values returned
+			Set<String> values = new HashSet<String>();
+			values.add("https://purl.dataone.org/odo/ADCAD_00034");
+			values.add("https://purl.dataone.org/odo/ADCAD_00067");
+			values.add("https://purl.dataone.org/odo/ADCAD_00033");
+			values.add("https://purl.dataone.org/odo/ADCAD_00000");
+			values.add("http://www.w3.org/2000/01/rdf-schema#Class");
+			values.add("http://localhost/plosthes.2017-1#2863");
+			values.add("http://www.w3.org/2002/07/owl#Class");
+			values.add("https://www.wikidata.org/wiki/Q2329");
+			values.add("http://www.w3.org/2000/01/rdf-schema#Resource");
+
+			assertEquals(values, concepts.get("annotation_value_uri"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testSALMONExpansion() {
+		try {
+			Map<String, Set<String>> concepts = OntologyModelService.getInstance().expandConcepts("https://purl.dataone.org/odo/MOSAIC_00000041");
+
+
+			// Assert on Solr fields returend
+			Set<String> fields = new HashSet<String>();
+			fields.add("annotation_property_uri");
+			fields.add("annotation_value_uri");
+			assertEquals(concepts.keySet(), fields);
+
+			// Assert on Solr field values returned
+			Set<String> values = new HashSet<String>();
+			values.add("https://purl.dataone.org/odo/MOSAIC_00000041");
+			values.add("http://www.w3.org/2000/01/rdf-schema#Class");
+			values.add("http://www.w3.org/2002/07/owl#Class");
+			values.add("https://purl.dataone.org/odo/MOSAIC_00012000");
+			values.add("http://www.w3.org/2000/01/rdf-schema#Resource");
+
+			assertEquals(values, concepts.get("annotation_value_uri"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testSALMONAlignmentExpansion() {
+		try {
+			Map<String, Set<String>> concepts = OntologyModelService.getInstance().expandConcepts("http://purl.dataone.org/odo/salmon_000529");
+
+			// Assert on Solr fields returend
+			Set<String> fields = new HashSet<String>();
+			fields.add("annotation_property_uri");
+			fields.add("annotation_value_uri");
+			assertEquals(concepts.keySet(), fields);
+
+			// Assert on Solr field values returned
+			Set<String> values = new HashSet<String>();
+			values.add("http://purl.dataone.org/odo/SALMON_00000672");
+			values.add("http://purl.dataone.org/odo/SALMON_00000572");
+			values.add("http://purl.dataone.org/odo/SALMON_00000528");
+			values.add("http://www.w3.org/2002/07/owl#Class");
+			values.add("http://purl.dataone.org/odo/salmon_000529");
+			values.add("http://purl.dataone.org/odo/SALMON_00000529");
+
+			assertEquals(values, concepts.get("annotation_value_uri"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testSASAPExpansion() {
+		try {
+			Map<String, Set<String>> concepts = OntologyModelService.getInstance().expandConcepts("http://purl.dataone.org/odo/SASAP_00000393");
+
+
+			// Assert on Solr fields returend
+			Set<String> fields = new HashSet<String>();
+			fields.add("annotation_property_uri");
+			fields.add("annotation_value_uri");
+			assertEquals(concepts.keySet(), fields);
+
+			// Assert on Solr field values returned
+			Set<String> values = new HashSet<String>();
+			values.add("http://purl.dataone.org/odo/SASAP_00000098");
+			values.add("http://purl.dataone.org/odo/SASAP_00000174");
+			values.add("http://www.w3.org/2000/01/rdf-schema#Class");
+			values.add("http://purl.dataone.org/odo/SASAP_00000393");
+			values.add("http://www.w3.org/2002/07/owl#Class");
+			values.add("http://www.w3.org/2000/01/rdf-schema#Resource");
+
+			assertEquals(values, concepts.get("annotation_value_uri"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testSENSOExpansion() {
+		try {
+			Map<String, Set<String>> concepts = OntologyModelService.getInstance().expandConcepts("http://purl.dataone.org/odo/SENSO_00000002");
+
+
+			// Assert on Solr fields returend
+			Set<String> fields = new HashSet<String>();
+			fields.add("annotation_property_uri");
+			fields.add("annotation_value_uri");
+			assertEquals(concepts.keySet(), fields);
+
+			// Assert on Solr field values returned
+			Set<String> values = new HashSet<String>();
+			values.add("http://purl.dataone.org/odo/SENSO_00000002");
+			values.add("http://www.w3.org/2000/01/rdf-schema#Class");
+			values.add("http://purl.dataone.org/odo/SENSO_00000001");
+			values.add("http://www.w3.org/2002/07/owl#Class");
+			values.add("http://www.w3.org/2000/01/rdf-schema#Resource");
+
+			assertEquals(values, concepts.get("annotation_value_uri"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
 }
