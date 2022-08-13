@@ -60,17 +60,26 @@ public class EmlAnnotationSubprocessorTest {
             // Set up expected concepts and assert
             List<String> expectedConcepts = new ArrayList<String>();
 
-            expectedConcepts.add("http://purl.dataone.org/odo/ECSO_00000512");
+            expectedConcepts.add("http://www.w3.org/2002/07/owl#FunctionalProperty");
             expectedConcepts.add("http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#MeasurementType");
+            expectedConcepts.add("http://purl.dataone.org/odo/ARCRC_00000040");
             expectedConcepts.add("http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasUnit");
-            expectedConcepts.add("http://purl.dataone.org/odo/ECSO_00001102");
-            expectedConcepts.add("http://purl.dataone.org/odo/ECSO_00001243");
+            expectedConcepts.add("http://www.w3.org/2000/01/rdf-schema#Class");
             expectedConcepts.add("http://purl.dataone.org/odo/ECSO_00000629");
+            expectedConcepts.add("http://purl.dataone.org/odo/ARCRC_00000048");
             expectedConcepts.add("http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#containsMeasurementsOfType");
+            expectedConcepts.add("http://www.w3.org/2002/07/owl#Class");
             expectedConcepts.add("http://purl.dataone.org/odo/ECSO_00000518");
-            expectedConcepts.add("http://www.w3.org/2000/01/rdf-schema#Resource");
             expectedConcepts.add("http://purl.dataone.org/odo/ECSO_00000516");
             expectedConcepts.add("http://purl.obolibrary.org/obo/UO_0000301");
+            expectedConcepts.add("http://purl.dataone.org/odo/ECSO_00000512");
+            expectedConcepts.add("http://purl.dataone.org/odo/ARCRC_00000500");
+            expectedConcepts.add("http://purl.dataone.org/odo/ECSO_00001102");
+            expectedConcepts.add("http://www.w3.org/1999/02/22-rdf-syntax-ns#Property");
+            expectedConcepts.add("http://purl.dataone.org/odo/ECSO_00001243");
+            expectedConcepts.add("http://www.w3.org/2002/07/owl#ObjectProperty");
+            expectedConcepts.add("http://www.w3.org/2002/07/owl#NamedIndividual");
+            expectedConcepts.add("http://www.w3.org/2000/01/rdf-schema#Resource");
 
             assertEquals(1, solrDocs.size());
             assertEquals(expectedConcepts, expandedConcepts);
