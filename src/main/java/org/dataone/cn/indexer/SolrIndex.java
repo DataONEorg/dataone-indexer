@@ -481,14 +481,16 @@ public class SolrIndex {
      * @throws InterruptedException 
      * @throws IOException 
      * @throws InvalidRequest
+     * @throws IllegalAccessException 
+     * @throws InstantiationException 
      */
     public void update(Identifier pid, String relativePath, boolean isSysmetaChangeOnly) throws InvalidToken, NotAuthorized, 
                                            NotImplemented, ServiceFailure, NotFound, XPathExpressionException, UnsupportedType, 
                                            SAXException, ParserConfigurationException, SolrServerException, MarshallingException, 
-                                           EncoderException, InterruptedException, IOException, InvalidRequest {
+                                           EncoderException, InterruptedException, IOException, InvalidRequest, InstantiationException, IllegalAccessException {
         log.debug("SolrIndex.update - trying to update(insert or remove) solr index of object "+pid.getValue());
         String objectPath = null;
-        SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
+        SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue(), relativePath);
         objectPath = ObjectManager.getInstance().getFilePath(relativePath, systemMetadata.getFormatId().getValue());
         try {
             insert(pid, systemMetadata, objectPath, isSysmetaChangeOnly);
@@ -499,7 +501,7 @@ public class SolrIndex {
                 for (int i=0; i<VERSION_CONFLICT_MAX_ATTEMPTS; i++) {
                     try {
                         Thread.sleep(VERSION_CONFICT_WAITING);
-                        systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
+                        systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue(), relativePath);
                         insert(pid, systemMetadata, objectPath, isSysmetaChangeOnly);
                         break;
                     } catch (SolrException ee) {

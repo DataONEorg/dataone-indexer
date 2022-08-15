@@ -526,6 +526,26 @@ public class IndexWorker {
                 logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
                         pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
             }
+        } catch (InstantiationException e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
+        } catch (IllegalAccessException e) {
+            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                    pid.getValue() + " since " + e.getMessage());
+            try {
+                boolean requeue = false;
+                RabbitMQchannel.basicReject(deliveryTag, requeue);
+            } catch(IOException ee) {
+                logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
+                        pid.getValue() + " and also the rejection acknowledgement cannot be sent back to rabbitmq since " + ee.getMessage());
+            }
         }
     }
     

@@ -43,6 +43,7 @@ import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.utility.SeriesIdResolver;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.exceptions.MarshallingException;
 import org.dataone.ore.ResourceMapFactory;
 import org.dataone.service.exceptions.InvalidToken;
 import org.dataone.service.exceptions.NotAuthorized;
@@ -253,12 +254,14 @@ public class ForesiteResourceMap implements ResourceMap {
         return isHead;
     }
 
-    private SolrDoc _mergeMappedReference(ResourceEntry resourceEntry, SolrDoc mergeDocument) throws InvalidToken, NotAuthorized, NotImplemented, ServiceFailure, NotFound {
+    private SolrDoc _mergeMappedReference(ResourceEntry resourceEntry, SolrDoc mergeDocument) throws InvalidToken, NotAuthorized, NotImplemented, 
+                                    ServiceFailure, NotFound, InstantiationException, IllegalAccessException, IOException, MarshallingException {
 
     	Identifier identifier = new Identifier();
     	identifier.setValue(mergeDocument.getIdentifier());
     	//SystemMetadata sysMeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
-    	SystemMetadata sysMeta = ObjectManager.getInstance().getSystemMetadata(identifier.getValue());
+    	String relativeObjPath = null; //we don't know the path
+    	SystemMetadata sysMeta = ObjectManager.getInstance().getSystemMetadata(identifier.getValue(), relativeObjPath);
     	if (sysMeta.getSeriesId() != null && sysMeta.getSeriesId().getValue() != null && !sysMeta.getSeriesId().getValue().trim().equals("")) {
     		// skip this one
     	    if(!isHeadVersion(identifier, sysMeta.getSeriesId())) {

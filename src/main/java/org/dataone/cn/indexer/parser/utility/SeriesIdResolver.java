@@ -10,6 +10,7 @@ import org.dataone.client.v2.impl.MultipartMNode;
 import org.dataone.client.v2.itk.D1Client;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.configuration.Settings;
+import org.dataone.exceptions.MarshallingException;
 import org.dataone.service.exceptions.InvalidToken;
 import org.dataone.service.exceptions.NotAuthorized;
 import org.dataone.service.exceptions.NotFound;
@@ -76,12 +77,17 @@ public class SeriesIdResolver {
 	 * @throws NotImplemented 
 	 * @throws NotAuthorized 
 	 * @throws InvalidToken 
+	 * @throws MarshallingException 
+	 * @throws IOException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
 	public static boolean isSeriesId(Identifier identifier) throws InvalidToken, NotAuthorized, NotImplemented, 
-	                                                                                    ServiceFailure, NotFound {
+	           ServiceFailure, NotFound, InstantiationException, IllegalAccessException, IOException, MarshallingException {
 		
 		// if we have system metadata available via HZ map, then it's a PID
-		SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(identifier.getValue());
+	    String relativeObjPath = null;//we don't know the path
+		SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(identifier.getValue(), relativeObjPath);
 		if (systemMetadata != null) {
 			return false;
 		}

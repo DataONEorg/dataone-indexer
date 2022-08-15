@@ -1,8 +1,11 @@
 package org.dataone.cn.indexer.resourcemap;
 
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
+import org.dataone.exceptions.MarshallingException;
 import org.dataone.service.exceptions.InvalidToken;
 import org.dataone.service.exceptions.NotAuthorized;
 import org.dataone.service.exceptions.NotFound;
@@ -24,7 +27,8 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
         try {
 
             //SystemMetadata systemMetadata = HazelcastClientFactory.getSystemMetadataMap().get(pid);
-            SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
+            String relativeObjPath = null; //we don't know the path
+            SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue(), relativeObjPath);
             // TODO: Is pid Identifier a SID?
             if (systemMetadata == null) {
                 return true;
@@ -44,6 +48,14 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
             logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
         } catch (NotFound e) {
             logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
+        } catch (InstantiationException e) {
+            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
+        } catch (IllegalAccessException e) {
+            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
+        } catch (IOException e) {
+            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
+        } catch (MarshallingException e) {
+            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
         }
         return visible;
     }
@@ -52,7 +64,8 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
         boolean exists = false;
         try {
             //SystemMetadata systemMetadata = HazelcastClientFactory.getSystemMetadataMap().get(pid);
-            SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
+            String relativeObjPath = null; //we don't know the path
+            SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue(), relativeObjPath);
             if (systemMetadata != null) {
                 exists = true;
             } else {
@@ -70,6 +83,14 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
         } catch (ServiceFailure e) {
             logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
         } catch (NotFound e) {
+            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
+        } catch (InstantiationException e) {
+            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
+        } catch (IllegalAccessException e) {
+            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
+        } catch (IOException e) {
+            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
+        } catch (MarshallingException e) {
             logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
         }
         return exists;
