@@ -87,9 +87,10 @@ idxworker:
   cn_url: "https://cn.dataone.org/cn"
   data_directory: /var/metacat/data
   document_directory: /var/metacat/documents
-  # The size of the thread pool which process the index task
+  # The size of the thread pool which processes the index tasks
   pool_size: 5
   debug: "FALSE"
+  d1_serviceType_url=https://cn.dataone.org/mnServiceTypes.xml
 
 # The section for the rabbitMQ configuration
 rabbitmq:
