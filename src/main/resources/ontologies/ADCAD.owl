@@ -1,0 +1,481 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:terms="http://purl.org/dc/terms/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:obo="http://purl.obolibrary.org/obo/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:wikidata="https://www.wikidata.org/wiki/"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:plos="http://localhost/plosthes.2017-1#"
+    xmlns:odo="https://purl.dataone.org/odo/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00071">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q43455"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00004"/>
+    <rdfs:label>Ethnology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00031">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q9161265"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#5560"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00038"/>
+    <rdfs:label>Soil Science</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00075">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q8078"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00068"/>
+    <rdfs:label>Logic</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00063">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q2374463"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00068"/>
+    <rdfs:label>Data science</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00068">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q816264"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00000"/>
+    <rdfs:label>Formal Science</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00056">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q43035"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#3462"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00050"/>
+    <rdfs:label>Electrical Engineering</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00044">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q161764"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#4377"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00038"/>
+    <rdfs:label>Geochemistry</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00000">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q11862829"/>
+    <rdfs:label>Academic Discipline</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00076">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q8162"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#4752"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00004"/>
+    <rdfs:label>Linguistics</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_">
+    <owl:versionInfo>Version 1.0.0</owl:versionInfo>
+    <owl:versionIRI rdf:resource="https://purl.dataone.org/odo/ADCAD/1.0.0"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <terms:title>Arctic Data Center Academic Disciplines Ontology (ADCAD)</terms:title>
+    <terms:license rdf:resource="https://creativecommons.org/licenses/by/4.0/"/>
+    <terms:description>Ontology to support disciplinary annotation of datasets housed at the Arctic Data Center (https://arcticdata.io)</terms:description>
+    <terms:creator rdf:resource="https://orcid.org/0000-0003-0077-4738"/>
+    <terms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-12-09</terms:created>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00032">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q19924411"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#1816"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Forestry</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00028">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q207011"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#3301"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Neuroscience</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00016">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q908902"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Structural Biology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00004">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q34749"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#8539"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00000"/>
+    <rdfs:label>Social Science</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00036">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q333"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#4331"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00033"/>
+    <rdfs:label>Astronomy</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00008">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q36442"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#3078"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00004"/>
+    <rdfs:label>Political Science</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00082">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q47041"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#4462"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Biodiversity</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00070">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q2419229"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#5253"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Theoretical Biology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00042">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q46255"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#2002"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00038"/>
+    <rdfs:label>Geophysics</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00030">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q3606845"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#7452"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Agricultural Research</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00074">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q101333"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#713"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00050"/>
+    <rdfs:label>Mechanical Engineering</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00062">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q1450531"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00050"/>
+    <rdfs:label>Cyberinfrastructure</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00050">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q11023"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#4019"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00000"/>
+    <rdfs:label>Engineering</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00035">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q413"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#6066"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00033"/>
+    <rdfs:label>Physics</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00079">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q52120"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#7901"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00080"/>
+    <rdfs:label>Glaciology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00023">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q7150"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#10424"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Ecology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00067">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q7991"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00000"/>
+    <rdfs:label>Natural Science</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00055">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q682496"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#1866"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00050"/>
+    <rdfs:label>Systems Engineering</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00043">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q131089"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#2110"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00038"/>
+    <rdfs:label>Geodesy</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00039">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q757520"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#4730"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00038"/>
+    <rdfs:label>Atmospheric Science</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00027">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q133805"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#8910"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Epidemiology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00015">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q7141"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#1352"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Cell Biology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00003">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q23498"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#2668"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00004"/>
+    <rdfs:label>Archaeology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00019">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q128570"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#3739"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Bioinformatics</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00081">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q166542"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#1449"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00008"/>
+    <rdfs:label>International Relations</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00053">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q228736"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#8251"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00050"/>
+    <rdfs:label>Materials Science</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00041">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q1069"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#7981"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00038"/>
+    <rdfs:label>Geology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00073">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q77590"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#8418"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00050"/>
+    <rdfs:label>Civil Engineering</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00078">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q12831143"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#7999"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00004"/>
+    <rdfs:label>Human Geography</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00034">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q2329"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#2863"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00033"/>
+    <rdfs:label>Chemistry</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00022">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q431"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#5402"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Zoology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00066">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q840400"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#9401"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Evolutionary Biology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00010">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q864928"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#3625"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00067"/>
+    <rdfs:label>Life Science</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00006">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q9418"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#6810"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00004"/>
+    <rdfs:label>Psychology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00038">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q8008"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#1990"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00033"/>
+    <rdfs:label>Geoscience</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00014">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q7100"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#1443"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Biophysics</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00058">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q80993"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#2352"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00050"/>
+    <rdfs:label>Software Engineering</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00018">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q213713"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#4415"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Developmental Biology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00080">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q2383547"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00049"/>
+    <rdfs:label>Cryology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00064">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q12483"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#5750"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00068"/>
+    <rdfs:label>Statistics</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00020">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q514"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#1761"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Anatomy</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00052">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q1710723"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00050"/>
+    <rdfs:label>Materials Engineering</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00040">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q43518"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#6456"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00038"/>
+    <rdfs:label>Oceanography</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00072">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q83588"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#8050"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00050"/>
+    <rdfs:label>Chemical Engineering</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00057">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q21198"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#2884"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00068"/>
+    <rdfs:label>Computer Science</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00013">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q7094"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#2243"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Biochemistry</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00045">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q52107"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#10439"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00038"/>
+    <rdfs:label>Physical Geography</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00077">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q21201"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#4823"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00004"/>
+    <rdfs:label>Sociology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00033">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q14632398"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#3917"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00067"/>
+    <rdfs:label>Physical Science</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00065">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q23404"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#2187"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00004"/>
+    <rdfs:label>Anthropology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00021">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q441"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#6638"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Plant Science</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00017">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q7162"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#6195"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Genetics</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00049">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q42250"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#9617"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00038"/>
+    <rdfs:label>Hydrology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00005">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q8434"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#4484"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00004"/>
+    <rdfs:label>Education</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00037">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q395"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#9313"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00068"/>
+    <rdfs:label>Mathematics</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00069">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q7205"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#2848"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00038"/>
+    <rdfs:label>Palaeontology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00025">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q7193"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#3803"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00010"/>
+    <rdfs:label>Microbiology</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://purl.dataone.org/odo/ADCAD_00009">
+    <skos:exactMatch rdf:resource="https://www.wikidata.org/wiki/Q8134"/>
+    <skos:exactMatch rdf:resource="http://localhost/plosthes.2017-1#1"/>
+    <rdfs:subClassOf rdf:resource="https://purl.dataone.org/odo/ADCAD_00004"/>
+    <rdfs:label>Economics</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+</rdf:RDF>

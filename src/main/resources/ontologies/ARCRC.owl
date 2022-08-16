@@ -1,0 +1,1116 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/samanthacsik/ontologies/2020/10/untitled-ontology-48#"
+     xml:base="http://www.semanticweb.org/samanthacsik/ontologies/2020/10/untitled-ontology-48"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:obo="http://purl.obolibrary.org/obo/"
+     xmlns:odo="http://purl.obolibrary.org/odo/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:envo="http://purl.obolibrary.org/obo/envo#"
+     xmlns:foaf="http://xmlns.com/foaf/0.1/"
+     xmlns:odo1="http://purl.dataone.org/odo/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:oboInOwl="http://www.geneontology.org/formats/oboInOwl#">
+    <owl:Ontology rdf:about="http://purl.dataone.org/odo/ARCRC">
+        <owl:versionIRI rdf:resource="http://purl.dataone.org/odo/ARCRC.owl/0.9"/>
+        <owl:imports rdf:resource="http://purl.dataone.org/odo/ECSO8.owl"/>
+        <owl:imports rdf:resource="http://www.opengis.net/ont/geosparql"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/IAO_0000115 -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.obolibrary.org/obo/IAO_0000115">
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-04T19:46:54Z</dc:date>
+        <rdfs:label xml:lang="en">definition</rdfs:label>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://purl.obolibrary.org/odo/IAO_0000119 -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.obolibrary.org/odo/IAO_0000119">
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-04T19:47:37Z</dc:date>
+        <rdfs:label xml:lang="en">definition source</rdfs:label>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/creator -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/creator"/>
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/description -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/description"/>
+    
+
+
+    <!-- http://www.geneontology.org/formats/oboInOwl#id -->
+
+    <owl:AnnotationProperty rdf:about="http://www.geneontology.org/formats/oboInOwl#id"/>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#comment -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#comment"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#sameAs -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2002/07/owl#sameAs"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#altLabel -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#altLabel"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000011 -->
+
+    <owl:ObjectProperty rdf:about="http://purl.dataone.org/odo/ARCRC_00000011">
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-04T22:51:54Z</dc:date>
+        <rdfs:comment>might want to delete before we import ECSO so that there are no conflict issues (usesProtocol already exists in ECSO)</rdfs:comment>
+        <rdfs:label xml:lang="en">usesProtocol</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000012 -->
+
+    <owl:ObjectProperty rdf:about="http://purl.dataone.org/odo/ARCRC_00000012">
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-04T22:53:03Z</dc:date>
+        <rdfs:comment>adding this object property, but can delete later if not appropriate
+
+e.g. of usage for NSIDC sea ice index (a target variable) that is calculated using both ice extent and ice concentration data:
+
+axiom = calculatedUsing only (Sea Ice Extent and Sea Ice Concentration)</rdfs:comment>
+        <rdfs:label xml:lang="en">calculatedUsing</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000518 -->
+
+    <owl:ObjectProperty rdf:about="http://purl.dataone.org/odo/ARCRC_00000518"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000000 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000000">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000504"/>
+        <obo:IAO_0000115>Vital Signs are indicators of the state of the Arctic environmental system. They are assessed using measurements of and/or proxies for target variables.</obo:IAO_0000115>
+        <odo:IAO_0000119>inferred from https://arctic.noaa.gov/Report-Card</odo:IAO_0000119>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-04T19:24:38Z</dc:date>
+        <dc:description>Issued annually since 2006, the Arctic Report Card (ARC) is a timely and peer-reviewed source for clear, reliable and concise environmental information on the current state of different components of the Arctic environmental system relative to historical records. The Report Card is intended for a wide audience, including scientists, teachers, students, decision-makers and the general public interested in the Arctic environment and science.</dc:description>
+        <rdfs:label xml:lang="en">Arctic Essays 2020</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000001 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000001">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000013"/>
+        <obo:IAO_0000115>Snow covering the Arctic land surface, which is characterized by three variables: snow cover extent (how much area is covered by snow), snow cover duration (how long snow continuously remains on the land surface), and snow water equivalent (how much water is stored in solid form by the snowpack; a function of snow depth and density).</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-04T19:42:36Z</dc:date>
+        <rdfs:label xml:lang="en">Terrestrial Snow Cover Indicator</rdfs:label>
+        <rdfs:seeAlso rdf:resource="http://purl.dataone.org/odo/ECSO_00001652"/>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://purl.dataone.org/odo/ARCRC_00000001"/>
+        <owl:annotatedProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000115"/>
+        <owl:annotatedTarget>Snow covering the Arctic land surface, which is characterized by three variables: snow cover extent (how much area is covered by snow), snow cover duration (how long snow continuously remains on the land surface), and snow water equivalent (how much water is stored in solid form by the snowpack; a function of snow depth and density).</owl:annotatedTarget>
+        <odo:IAO_0000119>adapted from https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/843/Terrestrial-Snow-Cover</odo:IAO_0000119>
+    </owl:Axiom>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000002 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000002">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000013"/>
+        <obo:IAO_0000115>The quantity of aboveground vegetation in the Arctic tundra.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-04T19:42:42Z</dc:date>
+        <rdfs:label xml:lang="en">Tundra Greenness Indicator</rdfs:label>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://purl.dataone.org/odo/ARCRC_00000002"/>
+        <owl:annotatedProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000115"/>
+        <owl:annotatedTarget>The quantity of aboveground vegetation in the Arctic tundra.</owl:annotatedTarget>
+        <dc:description>Normalized Difference Vegetation Index, NDVI (http://www.purl.dataone.org/odo/ECSO_00010076) is highly correlated with Tundra Greeness.</dc:description>
+    </owl:Axiom>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000003 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000003">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000013"/>
+        <obo:IAO_0000115>An air temperature measured two-meters above the land or ocean surface.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-04T19:42:51Z</dc:date>
+        <rdfs:label xml:lang="en">Surface Air Temperature Indicator</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000004 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000004">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000013"/>
+        <obo:IAO_0000115>A vast body of ice covering 1.71 million km2, roughly 80% of the surface of Greenland.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <rdfs:label>Greenland Ice Sheet Indicator</rdfs:label>
+        <rdfs:seeAlso>https://nsidc.org/cryosphere/glossary/</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000005 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000005">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000013"/>
+        <obo:IAO_0000115>The process of carbon fixation in the Arctic Ocean, primarily by autotrophic single-celled algae living in sea ice (ice algae) and water column (phytoplankton).</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-04T19:43:13Z</dc:date>
+        <rdfs:label xml:lang="en">Arctic Ocean Primary Productivity Indicator</rdfs:label>
+        <skos:altLabel>Arctic Ocean Primary Productivity Carbon Flux</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000006 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000006">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000013"/>
+        <obo:IAO_0000115>A water temperature which inheres in water close to the surface of an ocean or sea. The exact meaning of surface varies according to the measurement method used, but it is between 1 millimetre (0.04 in) and 20 metres (70 ft) below the sea surface.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-04T19:43:19Z</dc:date>
+        <rdfs:label xml:lang="en">Sea Surface Temperature Indicator</rdfs:label>
+        <owl:sameAs>http://purl.dataone.org/odo/ECSO_00001523</owl:sameAs>
+        <skos:altLabel>SST
+temperature of sea surface
+ocean surface temperature
+temperature of the ocean surface</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000007 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000007">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000013"/>
+        <obo:IAO_0000115>Ice which has formed by the freezing of sea (saline) water.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-04T19:43:23Z</dc:date>
+        <rdfs:label xml:lang="en">Sea Ice Indicator</rdfs:label>
+        <owl:sameAs>http://purl.obolibrary.org/obo/ENVO_00002200</owl:sameAs>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000009 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000009">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000010 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000010">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000500"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-12-03T22:29:42Z</dc:date>
+        <rdfs:label xml:lang="en">Arctic Report Card Supporting Dataset</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000013 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000013">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000510"/>
+        <obo:IAO_0000115>Vital Signs are indicators of the state of the Arctic environmental system. They are assessed using measurements of and/or proxies for Key Variables.</obo:IAO_0000115>
+        <odo:IAO_0000119>inferred from https://arctic.noaa.gov/Report-Card</odo:IAO_0000119>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T00:43:25Z</dc:date>
+        <rdfs:label xml:lang="en">Arctic Vital Signs</rdfs:label>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://purl.dataone.org/odo/ARCRC_00000013"/>
+        <owl:annotatedProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000115"/>
+        <owl:annotatedTarget>Vital Signs are indicators of the state of the Arctic environmental system. They are assessed using measurements of and/or proxies for Key Variables.</owl:annotatedTarget>
+        <dc:description>Issued annually since 2006, the Arctic Report Card is a timely and peer-reviewed source for clear, reliable and concise environmental information on the current state of different components of the Arctic environmental system relative to historical records. The Report Card is intended for a wide audience, including scientists, teachers, students, decision-makers and the general public interested in the Arctic environment and science.
+
+Find current and past assessments of the Arctic Report Card Vital Signs by visiting: https://arctic.noaa.gov/Report-Card</dc:description>
+    </owl:Axiom>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000014 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000014">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000010"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-12-03T22:30:07Z</dc:date>
+        <rdfs:label xml:lang="en">Arctic Report Card Supporting Dataset for the 2020 Report</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000040 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000040">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000500"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:04:20Z</dc:date>
+        <dc:description>Measurements and/or proxies used in the assessments of Arctic Report Card Essays.</dc:description>
+        <rdfs:label xml:lang="en">Arctic Key Variable</rdfs:label>
+        <skos:altLabel>Arctic Target Variables</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000041 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000041">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000504"/>
+        <obo:IAO_0000115>Measurements and/or proxies for assessing the 2020 Arctic Vital Signs.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:04:37Z</dc:date>
+        <rdfs:label xml:lang="en">Arctic Key Variables 2020</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000042 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000042">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000043 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000043">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+        <obo:IAO_0000115>The height of a given point in the atmosphere in units proportional to the potential energy of unit mass (geopotential) at this height relative to sea level.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:06:48Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Surface Air Temperature.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/835/Surface-Air-Temperature</dc:description>
+        <rdfs:label xml:lang="en">geopotential height</rdfs:label>
+        <skos:altLabel>geopotential altitude</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000044 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000044">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+        <obo:IAO_0000115>The sum of mean monthly Land Surface Temperatures (LST) for months with mean temperatures above freezing (&gt;0°C).</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:07:00Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Tundra Greenness.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/838/Tundra-Greenness</dc:description>
+        <rdfs:label xml:lang="en">Summer Warmth Index</rdfs:label>
+        <skos:altLabel>SWI</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000045 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000045">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000503"/>
+        <obo:IAO_0000115>Air temperature measured two-meters above the land or ocean surface.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:07:17Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Surface Air Temperature.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/835/Surface-Air-Temperature</dc:description>
+        <rdfs:label xml:lang="en">surface air temperature</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000046 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000046">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+        <obo:IAO_0000115>An air temperature measured in the lower troposphere (i.e. at 925 hPa).</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:08:13Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Surface Air Temperature.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/835/Surface-Air-Temperature</dc:description>
+        <rdfs:label xml:lang="en">near-surface air temperature</rdfs:label>
+        <rdfs:seeAlso rdf:resource="http://purl.dataone.org/odo/ECSO_00003057"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000047 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000047">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000503"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000048 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000048">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000049 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000049">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000502"/>
+        <obo:IAO_0000115>How much area is covered in snow.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:10:34Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Terrestrial Snow Cover.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/843/Terrestrial-Snow-Cover</dc:description>
+        <rdfs:label xml:lang="en">snow cover extent</rdfs:label>
+        <rdfs:seeAlso rdf:resource="http://purl.dataone.org/odo/ECSO_00001652"/>
+        <skos:altLabel>SCE</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000050 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000050">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000502"/>
+        <obo:IAO_0000115>How long snow continuously remains on land surfaces.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:10:49Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Terrestrial Snow Cover.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/843/Terrestrial-Snow-Cover</dc:description>
+        <rdfs:label xml:lang="en">snow cover duration</rdfs:label>
+        <skos:altLabel>SCD</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000051 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000051">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000502"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000053 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000053">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000501"/>
+        <obo:IAO_0000115>The fractional area coverage of sea ice over a given region.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:11:30Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Sea Ice.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/841/Sea-Ice</dc:description>
+        <rdfs:label xml:lang="en">sea ice concentration</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000054 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000054">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000501"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000055 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000055">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000501"/>
+        <obo:IAO_0000115>The total volume of sea ice (sea ice thickness multiplied by sea ice concentration) integrated over a given area.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:12:03Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Sea Ice.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/841/Sea-Ice</dc:description>
+        <rdfs:label xml:lang="en">sea ice volume</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000056 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000056">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000501"/>
+        <obo:IAO_0000115>The distance between the bottom of the ice to the top surface of the ice.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:12:13Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Sea Ice.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/841/Sea-Ice</dc:description>
+        <rdfs:label xml:lang="en">sea ice thickness</rdfs:label>
+        <rdfs:seeAlso rdf:resource="http://purl.dataone.org/odo/ECSO_00002086"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000057 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000057">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000501"/>
+        <obo:IAO_0000115>The duration of time a particular area of sea ice has persisted in its solid state.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:12:34Z</dc:date>
+        <dc:description>This Target Variable is used to inform Vital Sign &apos;Sea Ice.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/841/Sea-Ice</dc:description>
+        <rdfs:label xml:lang="en">age of sea ice</rdfs:label>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://purl.dataone.org/odo/ARCRC_00000057"/>
+        <owl:annotatedProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000115"/>
+        <owl:annotatedTarget>The duration of time a particular area of sea ice has persisted in its solid state.</owl:annotatedTarget>
+        <dc:description>Age of sea ice is calculated using data from the National Snow &amp; Ice Data Center (NSIDC).</dc:description>
+    </owl:Axiom>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000058 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000058">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+        <obo:IAO_0000115>The loss of solid ice from a glacier into the ocean via calving.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:13:10Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Greenland Ice Sheet.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/842/Greenland-Ice-Sheet</dc:description>
+        <rdfs:label xml:lang="en">solid ice discharge</rdfs:label>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://purl.dataone.org/odo/ARCRC_00000058"/>
+        <owl:annotatedProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000115"/>
+        <owl:annotatedTarget>The loss of solid ice from a glacier into the ocean via calving.</owl:annotatedTarget>
+        <dc:description>The rate of solid ice discharge depends on the speed of glacier ice flow, the thickness of the ice, and the advance or retreat of the terminus of the glacier.</dc:description>
+    </owl:Axiom>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000059 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000059">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000503"/>
+        <obo:IAO_0000115>The fraction of solar radiation reflected by a surface.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:13:19Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign, &apos;Greenland Ice Sheet.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/842/Greenland-Ice-Sheet</dc:description>
+        <rdfs:label xml:lang="en">surface albedo</rdfs:label>
+        <rdfs:seeAlso rdf:resource="http://purl.dataone.org/odo/ECSO_00001694"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000060 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000060">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+        <obo:IAO_0000115>Difference in Arctic land air temperature form the 1981-2010 mean (a positive anomaly is a higher temperature; a negative anomaly is a lower temperature).</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:13:32Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Surface Air Temperature.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/835/Surface-Air-Temperature</dc:description>
+        <rdfs:label xml:lang="en">Arctic land air temperature anomaly</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000061 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000061">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+        <obo:IAO_0000115>Difference in global temperature from the 1981-2010 mean (a positive anomaly is a higher temperature; a negative anomaly is a lower temperature).</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:13:49Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Surface Air Temperature.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/835/Surface-Air-Temperature</dc:description>
+        <rdfs:label xml:lang="en">global land air temperature anomaly</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000062 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000062">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+        <obo:IAO_0000115>Difference in seasonal or annual air temperatures from the 1981-2010 mean (a positive anomaly is a higher temperature; a negative anomaly is a lower temperature).</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:14:06Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Surface Air Temperature.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/835/Surface-Air-Temperature</dc:description>
+        <rdfs:label xml:lang="en">seasonal/annual anomaly patterns for air temperatures</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000063 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000063">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000503"/>
+        <obo:IAO_0000115>Quasi-liquid film that can occur on the surface of a solid even below melting point; the thickness of the film is temperature dependent.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:14:24Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Greenland Ice Sheet.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/842/Greenland-Ice-Sheet</dc:description>
+        <rdfs:label xml:lang="en">surface melt</rdfs:label>
+        <rdfs:seeAlso rdf:resource="http://purl.dataone.org/odo/ECSO_00002845"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000064 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000064">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+        <obo:IAO_0000115>The net balance between mass gain vs. mass loss.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:14:38Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Greenland Ice Sheet.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/842/Greenland-Ice-Sheet</dc:description>
+        <rdfs:label xml:lang="en">total mass balance</rdfs:label>
+        <rdfs:seeAlso rdf:resource="http://purl.dataone.org/odo/ECSO_00002886"/>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://purl.dataone.org/odo/ARCRC_00000064"/>
+        <owl:annotatedProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000115"/>
+        <owl:annotatedTarget>The net balance between mass gain vs. mass loss.</owl:annotatedTarget>
+        <dc:description>Total mass balance is commonly applied for measuring land ice (glaciers and ice sheets). It is typically measured over one year, which includes one accumulation season plus one ablation season (often September - August for the Arctic)</dc:description>
+    </owl:Axiom>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000065 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000065">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000503"/>
+        <obo:IAO_0000115>Net balance between ice gained (via accumulation) vs. ice loss (via ablation) at the surface.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:14:51Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Greenland Ice Sheet.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/842/Greenland-Ice-Sheet</dc:description>
+        <rdfs:label xml:lang="en">surface mass balance</rdfs:label>
+        <rdfs:seeAlso rdf:resource="http://purl.dataone.org/odo/ECSO_00002641"/>
+    </owl:Class>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://purl.dataone.org/odo/ARCRC_00000065"/>
+        <owl:annotatedProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000115"/>
+        <owl:annotatedTarget>Net balance between ice gained (via accumulation) vs. ice loss (via ablation) at the surface.</owl:annotatedTarget>
+        <dc:description>Surface mass balance is commonly applied for measuring land ice (glaciers and ice sheets).</dc:description>
+    </owl:Axiom>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000066 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000066">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+        <obo:IAO_0000115>Loss in ice mass due to melting, sublimation, evaporation, ice calving, aeolian processes like blowing snow, avalanche, and any other ablation.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:15:01Z</dc:date>
+        <dc:description>This Key Variable was used to inform the Vital Sign, &apos;Greenland Ice Sheet.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/842/Greenland-Ice-Sheet</dc:description>
+        <rdfs:label xml:lang="en">ice ablation</rdfs:label>
+        <rdfs:seeAlso>ice ablation zone: http://purl.obolibrary.org/obo/ENVO_01000914
+glacial ice ablation process:  http://purl.obolibrary.org/obo/ENVO_01000919</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000067 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000067">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+        <obo:IAO_0000115>The annual change in total ice area of a marine-terminating glacier as a result of the advance or retreat of the terminal end of a glacier.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:15:16Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign, &apos;Greenland Ice Sheet.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/842/Greenland-Ice-Sheet</dc:description>
+        <rdfs:label xml:lang="en">marine terminating glacier front annual area change</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000068 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000068">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+        <obo:IAO_0000115>The large-scale movement of air, and together with ocean circulation, is the means by which thermal energy is redistributed on the surface of the earth.</obo:IAO_0000115>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-06T00:49:30Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Surface Air Temperature.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/835/Surface-Air-Temperature</dc:description>
+        <rdfs:label xml:lang="en">atmospheric wind circulation</rdfs:label>
+        <rdfs:seeAlso>https://glossary.ametsoc.org/wiki/Wind</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000500 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000500">
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-06T04:35:46Z</dc:date>
+        <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">Issued annually since 2006, the Arctic Report Card is a timely and peer-reviewed source for clear, reliable and concise environmental information on the current state of different components of the Arctic environmental system relative to historical records. The Report Card is intended for a wide audience, including scientists, teachers, students, decision-makers and the general public interested in the Arctic environment and science.
+
+The main website for the Arctic Report Card as of Nov 1, 2020 is: https://arctic.noaa.gov/Report-Card</dc:description>
+        <rdfs:label xml:lang="en">Arctic Report Card Component</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000501 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000501">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-06T04:47:36Z</dc:date>
+        <rdfs:label xml:lang="en">sea ice key variable</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000502 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000502">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-06T04:48:36Z</dc:date>
+        <rdfs:label xml:lang="en">snow key variable</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000503 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000503">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000040"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-06T04:51:42Z</dc:date>
+        <rdfs:label xml:lang="en">surface-based key variable</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000504 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000504">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000500"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-06T04:59:24Z</dc:date>
+        <rdfs:label xml:lang="en">Arctic Report Card 2020 Component</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000505 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000505">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000506"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000506 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000506">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000500"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-06T16:07:02Z</dc:date>
+        <rdfs:label xml:lang="en">Place</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000510 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000510">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000500"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-19T00:56:31Z</dc:date>
+        <dc:description>Essays are indicators of the state of the Arctic environmental system. They are assessed using measurements of and/or proxies for Key Variables. Essays are classified under one of three categories: Vital Signs, Other Indicators, and Frostbites.</dc:description>
+        <rdfs:label xml:lang="en">Arctic Report Card Essay</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000512 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000512">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000510"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-12-01T01:21:33Z</dc:date>
+        <rdfs:label xml:lang="en">Other Indicators</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000513 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000513">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000510"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-12-01T01:21:50Z</dc:date>
+        <rdfs:label xml:lang="en">Frostbites</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000514 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000514">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000042"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-12-01T01:25:18Z</dc:date>
+        <dc:description>MaxNDVI is the peak NDVI value for the year and is related to the annual maximum biomass of aboveground vegetation that is reached in midsummer (typically late July or early August).</dc:description>
+        <rdfs:label xml:lang="en">MaxNDVI</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000515 -->
+
+    <owl:Class rdf:about="http://purl.dataone.org/odo/ARCRC_00000515">
+        <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/ARCRC_00000042"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-12-01T01:28:06Z</dc:date>
+        <dc:description>TI (time-integrated) NDVI is the sum of the biweekly NDVI values for the growing season and is correlated with the total aboveground vegetation productivity.</dc:description>
+        <rdfs:label xml:lang="en">TI-NDVI</rdfs:label>
+        <skos:altLabel>TI (time-integrated) NDVI</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000009 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ARCRC_00000009">
+        <owl:sameAs rdf:resource="http://purl.dataone.org/odo/ECSO_00001747"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000042 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ARCRC_00000042">
+        <owl:sameAs rdf:resource="http://www.purl.dataone.org/odo/ECSO_00010076"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000047 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ARCRC_00000047">
+        <owl:sameAs rdf:resource="http://purl.dataone.org/odo/ECSO_00001523"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000048 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ARCRC_00000048">
+        <owl:sameAs rdf:resource="http://purl.dataone.org/odo/ECSO_00000516"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000051 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ARCRC_00000051">
+        <owl:sameAs rdf:resource="http://purl.dataone.org/odo/ECSO_00001205"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000054 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ARCRC_00000054">
+        <owl:sameAs rdf:resource="http://purl.dataone.org/odo/ECSO_00002654"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000505 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ARCRC_00000505">
+        <owl:sameAs rdf:resource="https://schema.org/Place"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000507 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ARCRC_00000507">
+        <rdf:type rdf:resource="http://purl.dataone.org/odo/ARCRC_00000505"/>
+        <owl:sameAs rdf:resource="http://purl.obolibrary.org/obo/GAZ_00001507"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-06T16:08:24Z</dc:date>
+        <rdfs:label xml:lang="en">Greenland</rdfs:label>
+        <rdfs:seeAlso rdf:resource="http://purl.obolibrary.org/obo/GAZ_00001507"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000508 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ARCRC_00000508">
+        <rdf:type rdf:resource="http://purl.dataone.org/odo/ARCRC_00000505"/>
+        <owl:sameAs rdf:resource="http://purl.obolibrary.org/obo/GAZ_00011748"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-06T16:16:13Z</dc:date>
+        <rdfs:label xml:lang="en">Greenland Ice Sheet</rdfs:label>
+        <rdfs:seeAlso rdf:resource="http://purl.obolibrary.org/obo/GAZ_00011748"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000509 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ARCRC_00000509">
+        <rdf:type rdf:resource="http://purl.dataone.org/odo/ARCRC_00000505"/>
+        <owl:sameAs rdf:resource="http://purl.obolibrary.org/obo/GAZ_00000323"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-07T01:31:38Z</dc:date>
+        <rdfs:label xml:lang="en">Arctic Ocean</rdfs:label>
+        <skos:altLabel>Arctic Sea</skos:altLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ARCRC_00000518 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ARCRC_00000518">
+        <owl:sameAs rdf:resource="http://www.w3.org/ns/prov#wasInfluencedBy"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ECSO_00000324 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ECSO_00000324">
+        <owl:sameAs rdf:resource="http://purl.obolibrary.org/obo/ENVO_04000013"/>
+        <oboInOwl:id>ECSO_00000324</oboInOwl:id>
+        <rdfs:label>Particulate Organic Carbon</rdfs:label>
+        <skos:altLabel>POC</skos:altLabel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ECSO_00000516 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ECSO_00000516"/>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ECSO_00001205 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ECSO_00001205"/>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ECSO_00001523 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ECSO_00001523"/>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ECSO_00001747 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ECSO_00001747"/>
+    
+
+
+    <!-- http://purl.dataone.org/odo/ECSO_00002654 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.dataone.org/odo/ECSO_00002654"/>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/ENVO_04000013 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.obolibrary.org/obo/ENVO_04000013"/>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/GAZ_00000323 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.obolibrary.org/obo/GAZ_00000323"/>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/GAZ_00001507 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.obolibrary.org/obo/GAZ_00001507"/>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/GAZ_00011748 -->
+
+    <owl:NamedIndividual rdf:about="http://purl.obolibrary.org/obo/GAZ_00011748"/>
+    
+
+
+    <!-- http://www.purl.dataone.org/odo/ECSO_00010076 -->
+
+    <owl:NamedIndividual rdf:about="http://www.purl.dataone.org/odo/ECSO_00010076"/>
+    
+
+
+    <!-- http://www.w3.org/ns/prov#wasInfluencedBy -->
+
+    <owl:NamedIndividual rdf:about="http://www.w3.org/ns/prov#wasInfluencedBy"/>
+    
+
+
+    <!-- https://schema.org/Place -->
+
+    <owl:NamedIndividual rdf:about="https://schema.org/Place"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="http://purl.dataone.org/odo/ARCRC_00000009">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-12-02T18:39:21Z</dc:date>
+        <obo:IAO_0000115>The depth of water contained within a snowpack if the snowpack were melted instantly.</obo:IAO_0000115>
+        <rdfs:seeAlso>https://nsidc.org/cryosphere/glossary/</rdfs:seeAlso>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <rdfs:label xml:lang="en">snow water equivalent</rdfs:label>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Terrestrial Snow Cover.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/843/Terrestrial-Snow-Cover</dc:description>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://purl.dataone.org/odo/ARCRC_00000042">
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <skos:altLabel>NDVI</skos:altLabel>
+        <rdfs:label xml:lang="en">Normalized Difference Vegetation Index</rdfs:label>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:06:29Z</dc:date>
+        <obo:IAO_0000115>A remotely sensed indicator of the quantity of aboveground vegetation in an area of land (pixel size). Calculated from distinct wavelengths of visible and near-infrared sunlight reflected by a vegetated land surface.  NDVI is calculated using the equation: the near-infrared reflectance minus the red reflectance, divided by near-infrared reflectance plus red reflectance.</obo:IAO_0000115>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Tundra Greenness.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/838/Tundra-Greenness</dc:description>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://purl.dataone.org/odo/ARCRC_00000047">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:08:29Z</dc:date>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Sea Surface Temperature.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/840/Sea-Surface-Temperature</dc:description>
+        <rdfs:label xml:lang="en">sea surface temperature</rdfs:label>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <skos:altLabel>SST
+temperature of sea surface
+ocean surface temperature
+temperature of the ocean surface</skos:altLabel>
+        <obo:IAO_0000115>A water temperature which inheres in water close to the surface of an ocean or sea. The exact meaning of surface varies according to the measurement method used, but it is between 1 millimetre (0.04 in) and 20 metres (70 ft) below the sea surface.</obo:IAO_0000115>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://purl.dataone.org/odo/ARCRC_00000048">
+        <obo:IAO_0000115>Chlorophyll-a is a specific form of chlorophyll used in oxygenic photosynthesis.</obo:IAO_0000115>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Arctic Ocean Primary Productivity.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/839/Arctic-Ocean-Primary-Productivity-The-Response-of-Marine-Algae-to-Climate-Warming-and-Sea-Ice-Decline</dc:description>
+        <rdfs:label xml:lang="en">chlorophyll-a concentration</rdfs:label>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:10:23Z</dc:date>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://purl.dataone.org/odo/ARCRC_00000051">
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <obo:IAO_0000115>Depth of snow, which is precipitation in the form of flakes of crystalline water ice that falls from clouds.</obo:IAO_0000115>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:10:59Z</dc:date>
+        <rdfs:label xml:lang="en">snow depth</rdfs:label>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Terrestrial Snow Cover.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/843/Terrestrial-Snow-Cover</dc:description>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://purl.dataone.org/odo/ARCRC_00000054">
+        <rdfs:seeAlso rdf:resource="http://purl.dataone.org/odo/ECSO_00002654"/>
+        <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+        <dc:description>This Key Variable is used to inform Vital Sign &apos;Sea Ice.&apos; See the 2019 Essay here: https://arctic.noaa.gov/Report-Card/Report-Card-2019/ArtMID/7916/ArticleID/841/Sea-Ice</dc:description>
+        <obo:IAO_0000115>Defines a region as &quot;ice-covered&apos; or &quot;not ice-covered&quot; based on a threshold percentage of sea ice concentration per data cell.</obo:IAO_0000115>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-05T23:11:42Z</dc:date>
+        <rdfs:label xml:lang="en">sea ice extent</rdfs:label>
+    </rdf:Description>
+    <owl:Axiom>
+        <owl:annotatedSource rdf:resource="http://purl.dataone.org/odo/ARCRC_00000054"/>
+        <owl:annotatedProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000115"/>
+        <owl:annotatedTarget>Defines a region as &quot;ice-covered&apos; or &quot;not ice-covered&quot; based on a threshold percentage of sea ice concentration per data cell.</owl:annotatedTarget>
+        <dc:description>A threshold of 15% is used for the Arctic Report Card assessments and is the most commonly used threshold.</dc:description>
+    </owl:Axiom>
+    <rdf:Description rdf:about="http://purl.dataone.org/odo/ARCRC_00000505">
+        <rdfs:label xml:lang="en">Geographic Named Place</rdfs:label>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-06T16:06:54Z</dc:date>
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <dc:description>General class for containing places and locations referenced in the Arctic Report Card</dc:description>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://purl.dataone.org/odo/ARCRC_00000518">
+        <dc:creator rdf:resource="http://orcid.org/0000-0003-0632-7576"/>
+        <rdfs:label xml:lang="en">wasInfluencedBy</rdfs:label>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-12-01T17:55:14Z</dc:date>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://purl.dataone.org/odo/ECSO_00000327">
+        <skos:altLabel>DOC</skos:altLabel>
+        <rdfs:label>Dissolved Organic Carbon</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#List">
+        <rdfs:label>List</rdfs:label>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
