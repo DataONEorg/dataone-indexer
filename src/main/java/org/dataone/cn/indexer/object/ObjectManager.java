@@ -214,7 +214,7 @@ public class ObjectManager {
         if (relativeObjPath != null) {
             if (relativeObjPath.contains(File.pathSeparator)) {
                 logger.debug("ObjectManager.getSysmetaFile - the object file path " + relativeObjPath + " has at least one path separator " + File.pathSeparator);
-                relativeSysmetaPath = relativeObjPath.substring(0, relativeObjPath.lastIndexOf(File.pathSeparator) + 1);
+                relativeSysmetaPath = relativeObjPath.substring(0, relativeObjPath.lastIndexOf(File.pathSeparator) + 1) + SYSTEMMETA_FILE_NAME;
             } else {
                 logger.debug("ObjectManager.getSysmetaFile - the object file path " + relativeObjPath + " doesnot have any path separator " + File.pathSeparator);
                 //There is not path information in the object path ( it only has the file name). So we just simply return systemmetadata.xml
