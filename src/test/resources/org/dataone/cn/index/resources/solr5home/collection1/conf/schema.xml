@@ -135,6 +135,7 @@ This schema is copied into the dataone-cn-index buildout for deployment on cn no
 		<field name="formatType"		type="string"	indexed="true"	stored="true"	multiValued="false"/>
         <field name="size"            	type="tlong"     indexed="true" stored="true" multiValued="false"/>
         <field name="checksum"        	type="string"   indexed="true" stored="true" multiValued="false"/>
+        <field name="archived"        type="boolean"  indexed="true" stored="true" multiValued="false"/>
         <field name="checksumAlgorithm" type="string" indexed="true" stored="true"/>
         <field name="dateUploaded"    type="tdate"     indexed="true" stored="true" multiValued="false"/>
         <field name="dateModified"    type="tdate"     indexed="true" stored="true" multiValued="false"/>

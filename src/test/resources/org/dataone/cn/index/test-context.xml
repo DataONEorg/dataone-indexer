@@ -97,7 +97,7 @@ xmlns:context="http://www.springframework.org/schema/context"
     </bean>
 	<bean id="peggym1304Sys" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.130.4"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.4/systemmetadata.xml"/>
     </bean>
     <bean id="peggym1305Sys" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
@@ -113,7 +113,7 @@ xmlns:context="http://www.springframework.org/schema/context"
     </bean>
 	<bean id="peggym1304Sci" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.4"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.4/peggym.130.4"/>
     </bean>
     <bean id="peggymResourcemapSys" class="org.springframework.core.io.ClassPathResource" >
          <constructor-arg type="java.lang.String"

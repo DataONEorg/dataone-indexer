@@ -65,6 +65,20 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
 
     protected ApplicationContext context;
     private SolrIndex solrIndexService;
+    
+    /**
+     * Index the given object into solr
+     * @param identifier  the identifier of the object which needs to be indexed
+     * @param objectFile  the file path of the object which needs to be indexed
+     * @throws Exception
+     */
+    protected void indexOjbectToSolr(String identifier, Resource objectFile) throws Exception {
+        boolean isSysmetaChangeOnly = false;
+        String relativePath = objectFile.getFile().getPath();
+        Identifier pid = new Identifier();
+        pid.setValue(identifier);
+        solrIndexService.update(pid, relativePath, isSysmetaChangeOnly);
+    }
 
     protected void addEmlToSolrIndex(Resource sysMetaFile) throws Exception {
         SolrIndex indexService = solrIndexService;
