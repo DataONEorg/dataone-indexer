@@ -64,11 +64,11 @@ xmlns:context="http://www.springframework.org/schema/context"
 
 	<bean id="fgdc_scan_Sys" class="org.springframework.core.io.ClassPathResource">
 		<constructor-arg type="java.lang.String"
-		value="org/dataone/cn/index/resources/d1_testdocs/fgdc/68e96cf6-fb14-42aa-bbea-6da546ccb507-scan_201407_2172.SystemMetadata.xml" />
+		value="org/dataone/cn/index/resources/d1_testdocs/fgdc/fgdc_scan/systemmetadata.xml" />
 	</bean>
 	<bean id="fgdc_scan_Sci" class="org.springframework.core.io.ClassPathResource">
 		<constructor-arg type="java.lang.String"
-		value="org/dataone/cn/index/resources/d1_testdocs/fgdc/68e96cf6-fb14-42aa-bbea-6da546ccb507-scan_201407_2172.xml" />
+		value="org/dataone/cn/index/resources/d1_testdocs/fgdc/fgdc_scan/68e96cf6-fb14-42aa-bbea-6da546ccb507-scan_201407_2172.xml" />
 	</bean>
 
 	<bean id="peggym1271Sys" class="org.springframework.core.io.ClassPathResource" >
@@ -176,12 +176,12 @@ xmlns:context="http://www.springframework.org/schema/context"
 
     <bean id="fdgc01111999SciMeta" class="org.springframework.core.io.ClassPathResource">
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/fgdc/csiro_d_abayadultprawns.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/fgdc/csiro_d_abayadultprawns/csiro_d_abayadultprawns.xml"/>
     </bean>
 
     <bean id="fdgc01111999SysMeta" class="org.springframework.core.io.ClassPathResource">
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/fgdc/csiro_d_abayadultprawnsSysmeta.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/fgdc/csiro_d_abayadultprawns/systemmetadata.xml"/>
     </bean>
 
      <bean id="fgdcNasaSciMeta" class="org.springframework.core.io.ClassPathResource">

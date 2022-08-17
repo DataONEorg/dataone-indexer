@@ -66,7 +66,7 @@ public class SolrIndexFieldTest extends DataONESolrJettyTestBase {
         String pid = "68e96cf6-fb14-42aa-bbea-6da546ccb507-scan_201407_2172.xml";
         Resource systemMetadataResource = (Resource) context.getBean("fgdc_scan_Sys");
         Resource sciMetadataResource = (Resource) context.getBean("fgdc_scan_Sci");
-        addSysAndSciMetaToSolrIndex(systemMetadataResource, sciMetadataResource);
+        indexObjectToSolr(pid, sciMetadataResource);
 
         SolrDocument result = assertPresentInSolrIndex(pid);
 
@@ -95,10 +95,11 @@ public class SolrIndexFieldTest extends DataONESolrJettyTestBase {
         // document
         String pid = "peggym.130.4";
         Resource systemMetadataResource = (Resource) context.getBean("peggym1304Sys");
+        Resource scienceResource = (Resource) context.getBean("peggym1304Sci");
 
         // add peggym.130.4 to solr index, using XPathDocumentParser (used by
         // index-task-processor)
-        addEmlToSolrIndex(systemMetadataResource);
+        indexObjectToSolr(pid, scienceResource);
 
         // retrieve solrDocument for peggym130.4 from solr server by pid
         SolrDocument result = assertPresentInSolrIndex(pid);
@@ -129,7 +130,7 @@ public class SolrIndexFieldTest extends DataONESolrJettyTestBase {
         String pid = "www.nbii.gov_metadata_mdata_CSIRO_csiro_d_abayadultprawns";
         Resource systemMetadataResource = (Resource) context.getBean("fdgc01111999SysMeta");
         Resource sciMetadataResource = (Resource) context.getBean("fdgc01111999SciMeta");
-        addSysAndSciMetaToSolrIndex(systemMetadataResource, sciMetadataResource);
+        indexObjectToSolr(pid, sciMetadataResource);
 
         SolrDocument result = assertPresentInSolrIndex(pid);
 
@@ -157,6 +158,7 @@ public class SolrIndexFieldTest extends DataONESolrJettyTestBase {
         super.setUp();
         systemMetadata200Subprocessor = (BaseXPathDocumentSubprocessor) context
                 .getBean("systemMetadata200Subprocessor");
+        sendSolrDeleteAll();
     }
 
     @After
