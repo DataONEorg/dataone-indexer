@@ -189,10 +189,10 @@ public class SolrTokenenizerTest extends DataONESolrJettyTestBase {
         peggym1291Sci = (Resource) context.getBean("peggym1291Sci");
         peggym1304Sci = (Resource) context.getBean("peggym1304Sci");
         tao129301Sci = (Resource) context.getBean("tao129301");
-        indexOjbectToSolr("peggym.127.1", peggym1271Sci);
-        indexOjbectToSolr("peggym.128.1", peggym1281Sci);
-        indexOjbectToSolr("peggym.129.1", peggym1291Sci);
-        indexOjbectToSolr("peggym.130.4", peggym1304Sci);
-        indexOjbectToSolr("tao.12930.1", tao129301Sci);
+        indexObjectToSolr("peggym.127.1", peggym1271Sci);
+        indexObjectToSolr("peggym.128.1", peggym1281Sci);
+        indexObjectToSolr("peggym.129.1", peggym1291Sci);
+        indexObjectToSolr("peggym.130.4", peggym1304Sci);
+        indexObjectToSolr("tao.12930.1", tao129301Sci);
     }
 }

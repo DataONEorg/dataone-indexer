@@ -72,7 +72,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
      * @param objectFile  the file path of the object which needs to be indexed
      * @throws Exception
      */
-    protected void indexOjbectToSolr(String identifier, Resource objectFile) throws Exception {
+    protected void indexObjectToSolr(String identifier, Resource objectFile) throws Exception {
         boolean isSysmetaChangeOnly = false;
         String relativePath = objectFile.getFile().getPath();
         Identifier pid = new Identifier();
