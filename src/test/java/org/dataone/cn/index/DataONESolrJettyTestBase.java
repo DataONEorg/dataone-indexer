@@ -128,6 +128,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
 
     public void sendSolrDeleteAll() throws SolrServerException, IOException {
         getSolrClient().deleteByQuery("*:*");
+        getSolrClient().commit();
     }
 
     protected void assertNotPresentInSolrIndex(String pid) throws SolrServerException, IOException {
