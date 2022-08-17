@@ -215,9 +215,11 @@ public class SolrIndex {
             }
             
         }
+        log.debug("SolrIndex.process - the value of skipOtherProcessors is " + skipOtherProcessor + 
+                        " and the object path is " + objectPath + " for the id " + id);
         //if the objectPath is null, we should skip the other processes
         if (!skipOtherProcessor && objectPath != null) {
-            log.info("SolrIndex.process - Start to use subprocessor list to process the " + id);
+            log.debug("SolrIndex.process - Start to use subprocessor list to process " + id);
             // Determine if subprocessors are available for this ID
             if (subprocessors != null) {
                 // for each subprocessor loaded from the spring config
