@@ -225,6 +225,7 @@ public class SolrFieldIsotc211Test extends BaseSolrFieldXPathTest {
         nodc1Expected.put("blockedReplicationMN", "");
         nodc1Expected.put("obsoletes", "");
         nodc1Expected.put("obsoletedBy", "");
+        nodc1Expected.put("archived", "false");
         nodc1Expected.put("dateUploaded", dateConverter.convert("2015-05-08T01:47:41.356045"));
         nodc1Expected.put("dateModified", dateConverter.convert("2015-05-08T01:47:41.391065Z"));
         nodc1Expected.put("datasource", "urn:node:NODC");
@@ -312,6 +313,7 @@ public class SolrFieldIsotc211Test extends BaseSolrFieldXPathTest {
         nodc2Expected.put("blockedReplicationMN", "");
         nodc2Expected.put("obsoletes", "");
         nodc2Expected.put("obsoletedBy", "");
+        nodc2Expected.put("archived", "false");
         nodc2Expected.put("dateUploaded", dateConverter.convert("2015-05-08T01:47:41.356045"));
         nodc2Expected.put("dateModified", dateConverter.convert("2015-05-08T01:47:41.391065Z"));
         nodc2Expected.put("datasource", "urn:node:NODC");
@@ -415,6 +417,7 @@ public class SolrFieldIsotc211Test extends BaseSolrFieldXPathTest {
         iarc1Expected.put("blockedReplicationMN", "");
         iarc1Expected.put("obsoletes", "");
         iarc1Expected.put("obsoletedBy", "");
+        iarc1Expected.put("archived", "false");
         iarc1Expected.put("dateUploaded", dateConverter.convert("2015-05-08T01:47:46.858771"));
         iarc1Expected.put("dateModified", dateConverter.convert("2015-05-08T01:47:46.893356Z"));
         iarc1Expected.put("datasource", "urn:node:IARC");
@@ -500,6 +503,7 @@ public class SolrFieldIsotc211Test extends BaseSolrFieldXPathTest {
         iarc2Expected.put("blockedReplicationMN", "");
         iarc2Expected.put("obsoletes", "");
         iarc2Expected.put("obsoletedBy", "");
+        iarc2Expected.put("archived", "false");
         iarc2Expected.put("dateUploaded", dateConverter.convert("2015-05-08T01:47:41.356045"));
         iarc2Expected.put("dateModified", dateConverter.convert("2015-05-08T01:47:41.391065Z"));
         iarc2Expected.put("datasource", "urn:node:IARC");
@@ -544,6 +548,7 @@ public class SolrFieldIsotc211Test extends BaseSolrFieldXPathTest {
         tightlyCoupledServiceExpected.put("blockedReplicationMN", "");
         tightlyCoupledServiceExpected.put("obsoletes", "");
         tightlyCoupledServiceExpected.put("obsoletedBy", "");
+        tightlyCoupledServiceExpected.put("archived", "false");
         tightlyCoupledServiceExpected.put("dateUploaded", dateConverter.convert("2016-01-11T20:49:00.385Z"));
         tightlyCoupledServiceExpected.put("dateModified", dateConverter.convert("2016-01-11T20:49:00.385Z"));
         tightlyCoupledServiceExpected.put("datasource", "urn:node:mnDemo6");
@@ -632,6 +637,7 @@ public class SolrFieldIsotc211Test extends BaseSolrFieldXPathTest {
         looselyCoupledServiceExpected.put("blockedReplicationMN", "");
         looselyCoupledServiceExpected.put("obsoletes", "");
         looselyCoupledServiceExpected.put("obsoletedBy", "");
+        looselyCoupledServiceExpected.put("archived", "false");
         looselyCoupledServiceExpected.put("dateUploaded", dateConverter.convert("2016-01-12T17:30:48.415Z"));
         looselyCoupledServiceExpected.put("dateModified", dateConverter.convert("2016-01-12T17:30:48.415Z"));
         looselyCoupledServiceExpected.put("datasource", "urn:node:mnDemo6");
@@ -706,6 +712,7 @@ public class SolrFieldIsotc211Test extends BaseSolrFieldXPathTest {
         distributionInfoExpected.put("blockedReplicationMN", "");
         distributionInfoExpected.put("obsoletes", "");
         distributionInfoExpected.put("obsoletedBy", "");
+        distributionInfoExpected.put("archived", "false");
         distributionInfoExpected.put("dateUploaded", dateConverter.convert("2016-01-12T17:30:48.415Z"));
         distributionInfoExpected.put("dateModified", dateConverter.convert("2016-01-12T17:30:48.415Z"));
         distributionInfoExpected.put("datasource", "urn:node:mnDemo6");
@@ -809,6 +816,7 @@ public class SolrFieldIsotc211Test extends BaseSolrFieldXPathTest {
         geoserverExpected.put("blockedReplicationMN", "");
         geoserverExpected.put("obsoletes", "");
         geoserverExpected.put("obsoletedBy", "");
+        geoserverExpected.put("archived", "false");
         geoserverExpected.put("dateUploaded", dateConverter.convert("2016-01-12T17:30:48.415Z"));
         geoserverExpected.put("dateModified", dateConverter.convert("2016-01-12T17:30:48.415Z"));
         geoserverExpected.put("datasource", "urn:node:mnDemo6");
@@ -900,6 +908,7 @@ public class SolrFieldIsotc211Test extends BaseSolrFieldXPathTest {
         looselyCoupledServiceSrvAndDistribExpected.put("blockedReplicationMN", "");
         looselyCoupledServiceSrvAndDistribExpected.put("obsoletes", "");
         looselyCoupledServiceSrvAndDistribExpected.put("obsoletedBy", "");
+        looselyCoupledServiceSrvAndDistribExpected.put("archived", "false");
         looselyCoupledServiceSrvAndDistribExpected.put("dateUploaded", dateConverter.convert("2016-01-12T17:30:48.415Z"));
         looselyCoupledServiceSrvAndDistribExpected.put("dateModified", dateConverter.convert("2016-01-12T17:30:48.415Z"));
         looselyCoupledServiceSrvAndDistribExpected.put("datasource", "urn:node:mnDemo6");
@@ -977,6 +986,7 @@ public class SolrFieldIsotc211Test extends BaseSolrFieldXPathTest {
         tightlyCoupledServiceSrvOnlyExpected.put("blockedReplicationMN", "");
         tightlyCoupledServiceSrvOnlyExpected.put("obsoletes", "");
         tightlyCoupledServiceSrvOnlyExpected.put("obsoletedBy", "");
+        tightlyCoupledServiceSrvOnlyExpected.put("archived", "false");
         tightlyCoupledServiceSrvOnlyExpected.put("dateUploaded", dateConverter.convert("2016-01-12T17:30:48.415Z"));
         tightlyCoupledServiceSrvOnlyExpected.put("dateModified", dateConverter.convert("2016-01-12T17:30:48.415Z"));
         tightlyCoupledServiceSrvOnlyExpected.put("datasource", "urn:node:mnDemo6");
@@ -1085,6 +1095,7 @@ public class SolrFieldIsotc211Test extends BaseSolrFieldXPathTest {
         noaaExpected.put("blockedReplicationMN", "");
         noaaExpected.put("obsoletes", "");
         noaaExpected.put("obsoletedBy", "");
+        noaaExpected.put("archived", "false");
         noaaExpected.put("dateUploaded", dateConverter.convert("2015-05-08T01:47:41.356045"));
         noaaExpected.put("dateModified", dateConverter.convert("2015-05-08T01:47:41.391065Z"));
         noaaExpected.put("datasource", "urn:node:NODC");
@@ -1163,6 +1174,7 @@ public class SolrFieldIsotc211Test extends BaseSolrFieldXPathTest {
         researchWorkspaceExpected.put("blockedReplicationMN", "");
         researchWorkspaceExpected.put("obsoletes", "");
         researchWorkspaceExpected.put("obsoletedBy", "");
+        researchWorkspaceExpected.put("archived", "false");
         researchWorkspaceExpected.put("dateUploaded", dateConverter.convert("2021-03-16T05:34:26.963Z"));
         researchWorkspaceExpected.put("dateModified", dateConverter.convert("2021-03-16T05:34:26.963Z"));
         researchWorkspaceExpected.put("datasource", "urn:node:DATAONE_TEST");
