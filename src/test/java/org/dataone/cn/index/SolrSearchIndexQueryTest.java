@@ -11,7 +11,7 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class SolrSearchIndexQueryTest extends DataONESolrJettyTestBase {
 
-    private Resource peggym1304Sys;
+    private Resource peggym1304Sci;
 
     @Test
     public void testQueryForIdInFullTextField() throws Exception {
@@ -31,8 +31,8 @@ public class SolrSearchIndexQueryTest extends DataONESolrJettyTestBase {
 
     private void loadTestResource() throws Exception, SolrServerException {
         String pid = "peggym.130.4";
-        peggym1304Sys = (Resource) context.getBean("peggym1304Sys");
-        addEmlToSolrIndex(peggym1304Sys);
+        peggym1304Sci = (Resource) context.getBean("peggym1304Sci");
+        indexOjbectToSolr(pid, peggym1304Sci);
         assertPresentInSolrIndex(pid);
     }
 }
