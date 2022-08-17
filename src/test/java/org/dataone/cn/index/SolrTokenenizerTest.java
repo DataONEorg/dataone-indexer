@@ -33,11 +33,11 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class SolrTokenenizerTest extends DataONESolrJettyTestBase {
 
-    private Resource peggym1271Sys;
-    private Resource peggym1281Sys;
-    private Resource peggym1291Sys;
-    private Resource peggym1304Sys;
-    private Resource tao129301Sys;
+    private Resource peggym1271Sci;
+    private Resource peggym1281Sci;
+    private Resource peggym1291Sci;
+    private Resource peggym1304Sci;
+    private Resource tao129301Sci;
 
     @BeforeClass
     public static void init() {
@@ -184,15 +184,15 @@ public class SolrTokenenizerTest extends DataONESolrJettyTestBase {
     }
 
     private void addAllToSolr() throws Exception {
-        peggym1271Sys = (Resource) context.getBean("peggym1271Sys");
-        peggym1281Sys = (Resource) context.getBean("peggym1281Sys");
-        peggym1291Sys = (Resource) context.getBean("peggym1291Sys");
-        peggym1304Sys = (Resource) context.getBean("peggym1304Sys");
-        tao129301Sys = (Resource) context.getBean("tao129301Sys");
-        addEmlToSolrIndex(peggym1271Sys);
-        addEmlToSolrIndex(peggym1281Sys);
-        addEmlToSolrIndex(peggym1291Sys);
-        addEmlToSolrIndex(peggym1304Sys);
-        addEmlToSolrIndex(tao129301Sys);
+        peggym1271Sci = (Resource) context.getBean("peggym1271Sci");
+        peggym1281Sci = (Resource) context.getBean("peggym1281Sci");
+        peggym1291Sci = (Resource) context.getBean("peggym1291Sci");
+        peggym1304Sci = (Resource) context.getBean("peggym1304Sci");
+        tao129301Sci = (Resource) context.getBean("tao129301");
+        indexOjbectToSolr("peggym.127.1", peggym1271Sci);
+        indexOjbectToSolr("peggym.128.1", peggym1281Sci);
+        indexOjbectToSolr("peggym.129.1", peggym1291Sci);
+        indexOjbectToSolr("peggym.130.4", peggym1304Sci);
+        indexOjbectToSolr("tao.12930.1", tao129301Sci);
     }
 }

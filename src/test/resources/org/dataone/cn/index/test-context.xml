@@ -73,7 +73,11 @@ xmlns:context="http://www.springframework.org/schema/context"
 
 	<bean id="peggym1271Sys" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.127.1"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.127.1/systemmetadata.xml"/>
+    </bean>
+    <bean id="peggym1271Sci" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.127.1/peggym.127.1"/>
     </bean>
 	<bean id="peggym1271SysArchived" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
@@ -81,7 +85,11 @@ xmlns:context="http://www.springframework.org/schema/context"
     </bean>
 	<bean id="peggym1281Sys" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.128.1"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.128.1/systemmetadata.xml"/>
+    </bean>
+    <bean id="peggym1281Sci" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.128.1/peggym.128.1"/>
     </bean>
     <bean id="peggym1281SysObsoletedBy" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
@@ -93,7 +101,11 @@ xmlns:context="http://www.springframework.org/schema/context"
     </bean>
 	<bean id="peggym1291Sys" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.129.1"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.129.1/systemmetadata.xml"/>
+    </bean>
+    <bean id="peggym1291Sci" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.129.1/peggym.129.1"/>
     </bean>
 	<bean id="peggym1304Sys" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
@@ -227,11 +239,11 @@ xmlns:context="http://www.springframework.org/schema/context"
 
 	<bean id="tao129301" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/tao.12930.1"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/tao.12930.1/tao.12930.1"/>
     </bean>
     <bean id="tao129301Sys" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/tao.12930.1"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/tao.12930.1/systemmetadata.xml"/>
     </bean>
 
    	<bean id="ornl_mercury_science_metadata" class="org.springframework.core.io.ClassPathResource" >
