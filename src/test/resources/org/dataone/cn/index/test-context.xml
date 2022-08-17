@@ -426,12 +426,12 @@ xmlns:context="http://www.springframework.org/schema/context"
 
 	<bean id="eml220TestDocSysMeta" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml220testdocsysmeta.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml220testdocscimeta/systemmetadata.xml"/>
     </bean>
 
     <bean id="eml220TestDocSciMeta" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml220testdocscimeta.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml220testdocscimeta/eml220testdocscimeta.xml"/>
     </bean>
     
     <bean id="portalTestDocSysMeta" class="org.springframework.core.io.ClassPathResource" >

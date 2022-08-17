@@ -48,7 +48,7 @@ public class SolrIndexEmlAnnotationTest extends DataONESolrJettyTestBase {
         Resource systemMetadataResource = (Resource) context.getBean("eml220TestDocSysMeta");
         Resource scienceMetadataResource = (Resource) context.getBean("eml220TestDocSciMeta");
 
-        addSysAndSciMetaToSolrIndex(systemMetadataResource, scienceMetadataResource);
+        indexOjbectToSolr(pid, scienceMetadataResource);
         SolrDocument result = assertPresentInSolrIndex(pid);
 
         // Compare EML 2.2.0 fields
