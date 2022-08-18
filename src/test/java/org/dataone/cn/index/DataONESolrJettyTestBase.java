@@ -28,6 +28,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
+import org.apache.commons.codec.EncoderException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.SolrJettyTestBase;
@@ -43,6 +47,10 @@ import org.apache.solr.common.params.ModifiableSolrParams;
 import org.dataone.cn.indexer.SolrIndex;
 import org.dataone.cn.indexer.parser.ISolrField;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.service.exceptions.NotFound;
+import org.dataone.service.exceptions.NotImplemented;
+import org.dataone.service.exceptions.ServiceFailure;
+import org.dataone.service.exceptions.UnsupportedType;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v2.SystemMetadata;
 import org.dataone.service.util.DateTimeMarshaller;
@@ -52,6 +60,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * Solr unit test framework is dependent on JUnit 4.7. Later versions of junit
@@ -78,6 +87,28 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         Identifier pid = new Identifier();
         pid.setValue(identifier);
         solrIndexService.update(pid, relativePath, isSysmetaChangeOnly);
+    }
+    
+    /**
+     * Delete the given identifier from the solr server
+     * @param identifier
+     * @throws XPathExpressionException
+     * @throws ServiceFailure
+     * @throws NotImplemented
+     * @throws NotFound
+     * @throws UnsupportedType
+     * @throws IOException
+     * @throws EncoderException
+     * @throws SolrServerException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     */
+    protected void deleteSolrDoc(String identifier) throws XPathExpressionException, ServiceFailure, NotImplemented, 
+                            NotFound, UnsupportedType, IOException, EncoderException, SolrServerException, 
+                            ParserConfigurationException, SAXException {
+        Identifier pid = new Identifier();
+        pid.setValue(identifier);
+        solrIndexService.remove(pid);
     }
 
     protected void addEmlToSolrIndex(Resource sysMetaFile) throws Exception {

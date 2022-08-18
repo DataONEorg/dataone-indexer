@@ -176,6 +176,7 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
 
         // instantiate the subprocessor
         provRdfXmlSubprocessor = (RdfXmlSubprocessor) context.getBean("rdfXMLSubprocessor");
+        sendSolrDeleteAll();
 
     }
 
