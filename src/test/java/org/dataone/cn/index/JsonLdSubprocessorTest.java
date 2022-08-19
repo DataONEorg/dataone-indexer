@@ -62,23 +62,34 @@ import com.github.jsonldjava.utils.JsonUtils;
  *
  */
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
+public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
     
     /* Log it */
     private static Log log = LogFactory.getLog(JsonLdSubprocessorTest.class);
 
     /* The schema.org object */
     private Resource schemaOrgDoc;
+    private String schemaOrgDocPid = "bco-dmo.jsonld";
     private Resource schemaOrgDoc2;
+    private String schemaOrgDoc2Pid = "doi_A10.5061_dryad.m8s2r36.jsonld";
     private Resource schemaOrgDocSOSO;
+    private String schemaOrgDocSOSOPid = "ESIP-SOSO-v1.2.0-example-full.jsonld";
     private Resource schemaOrgTestWithoutVocab;
+    private String schemaOrgTestWithoutVocabPid = "context-http-without-vocab.jsonld";
     private Resource schemaOrgTestDocHttpVocab;
+    private String schemaOrgTestDocHttpVocabPid = "context-http-vocab.jsonld";
     private Resource schemaOrgTestDocHttpsVocab;
+    private String schemaOrgTestDocHttpsVocabPid = "context-https-vocab.jsonld";
     private Resource schemaOrgTestDocHttp;
+    private String schemaOrgTestDocHttpPid = "context-http.jsonld";
     private Resource schemaOrgTestDocHttps;
+    private String schemaOrgTestDocHttpsPid = "context-https.jsonld";
     private Resource schemaOrgTestDocDryad1;
+    private String schemaOrgTestDocDryad1Pid = "doi.org_10.5061_dryad.5qb78.jsonld";
     private Resource schemaOrgTestDocDryad2;
+    private String schemaOrgTestDocDryad2Pid = "doi.org_10.5061_dryad.41sk145.jsonld";
     private Resource schemaOrgTesHakaiDeep;
+    private String schemaOrgTesHakaiDeepPid = "hakai-deep-schema.jsonld";
 
     /* An instance of the RDF/XML Subprocessor */
     private JsonLdSubprocessor jsonLdSubprocessor;
@@ -132,20 +143,9 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
     //@Ignore
     @Test
     public void testInsertSchemaOrg() throws Exception {
-        /* variables used to populate system metadata for each resource */
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
-
-        // Insert the schema.org file into the task queue
-        String id = "urn:uuid:f18812ac-7f4f-496c-82cc-3f4f54830289";
-        formatId = "science-on-schema.org/Dataset;ld+json";
-        insertResource(id, formatId, schemaOrgDoc, nodeid, userDN);
-
+        //index the object
+        String id = schemaOrgDocPid; 
+        indexObjectToSolr(id, schemaOrgDoc);
         Thread.sleep(SLEEPTIME);
         // now process the tasks
         //processor.processIndexTaskQueue();
@@ -220,20 +220,8 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
      */
     @Test
     public void testInsertSchemaOrg2() throws Exception {
-        /* variables used to populate system metadata for each resource */
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
-
-        // Insert the schema.org file into the task queue
-        String id = "doi.org_10.5061_dryad.m8s2r36";
-        formatId = "science-on-schema.org/Dataset;ld+json";
-        insertResource(id, formatId, schemaOrgDoc2, nodeid, userDN);
-
+        String id = schemaOrgDoc2Pid;
+        indexObjectToSolr(id, schemaOrgDoc2);
         Thread.sleep(SLEEPTIME);
         // now process the tasks
         //processor.processIndexTaskQueue();
@@ -274,19 +262,8 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
      */
     @Test
     public void testInsertSchemaOrgSOSO() throws Exception {
-        /* variables used to populate system metadata for each resource */
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
-
-        // Insert the schema.org file into the task queue
-        String id = "doi:10.1234/1234567890";
-        formatId = "science-on-schema.org/Dataset;ld+json";
-        insertResource(id, formatId, schemaOrgDocSOSO, nodeid, userDN);
-
+        String id = schemaOrgDocSOSOPid;
+        indexObjectToSolr(id, schemaOrgDocSOSO);
         Thread.sleep(SLEEPTIME);
         // now process the tasks
         //processor.processIndexTaskQueue();
@@ -341,13 +318,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
      */
     @Test
     public void testInsertSchemaNormalization() throws Exception {
-        /* variables used to populate system metadata for each resource */
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
+       
 
         ArrayList<Resource> resources = new ArrayList<>();
         resources.add(schemaOrgTestDocHttp);
@@ -357,18 +328,18 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
 
         // Insert the schema.org file into the task queue
         ArrayList<String> ids = new ArrayList<>();
-        ids.add("F7CD5CE0-E798-4BD0-911E-CFE6A2FE605C");
-        ids.add("54B393F9-E756-40D7-A88C-3B8CE7A54AD3");
-        ids.add("A5D04C9A-B9CA-43FD-8A97-BA7D2BD4D0E7");
-        ids.add("406A4A02-3426-4E99-9D84-1E3F40DDEF06");
-        formatId = "science-on-schema.org/Dataset;ld+json";
+        ids.add(schemaOrgTestDocHttpPid);
+        ids.add(schemaOrgTestDocHttpsPid);
+        ids.add(schemaOrgTestDocHttpVocabPid);
+        ids.add(schemaOrgTestDocHttpsVocabPid);
+       
         int i = -1;
         String thisId;
         for (Resource res : resources) {
             i++;
             thisId = ids.get(i);
             log.info("processing doc with id: " + thisId);
-            insertResource(thisId, formatId, res, nodeid, userDN);
+            indexObjectToSolr(thisId, res);
             Thread.sleep(SLEEPTIME);
             // now process the tasks
             //processor.processIndexTaskQueue();
@@ -396,28 +367,19 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
      */
     @Test
     public void testInsertSchemaOrgDryad() throws Exception {
-        /* variables used to populate system metadata for each resource */
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
-
         ArrayList<Resource> resources = new ArrayList<>();
         resources.add(schemaOrgTestDocDryad1);
         resources.add(schemaOrgTestDocDryad2);
 
         // Insert the schema.org file into the task queue
         ArrayList<String> ids = new ArrayList<>();
-        ids.add("BCD368D7-68B7-401A-86D4-35D1A3411C59");
-        ids.add("487C757E-5B71-4029-B165-C902A4E6CB8D");
-        formatId = "science-on-schema.org/Dataset;ld+json";
+        ids.add(schemaOrgTestDocDryad1Pid);
+        ids.add(schemaOrgTestDocDryad2Pid);
         String thisId;
 
         int iDoc = 0;
         thisId = ids.get(iDoc);
-        insertResource(thisId, formatId, resources.get(iDoc), nodeid, userDN);
+        indexObjectToSolr(thisId, resources.get(iDoc));
         Thread.sleep(SLEEPTIME);
         // now process the tasks
         //processor.processIndexTaskQueue();
@@ -439,7 +401,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
 
         iDoc++;
         thisId = ids.get(iDoc);
-        insertResource(thisId, formatId, resources.get(iDoc), nodeid, userDN);
+        indexObjectToSolr(thisId, resources.get(iDoc));
         Thread.sleep(SLEEPTIME);
         // now process the tasks
         //processor.processIndexTaskQueue();
@@ -505,18 +467,8 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
     
     @Test
     public void testHakaiDeep() throws Exception {
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
-
-        // Insert the schema.org file into the task queue
-        String id = "urn:uuid:f18812ac-7f4f-496c-82cc-3f4f548303690";
-        formatId = "science-on-schema.org/Dataset;ld+json";
-        insertResource(id, formatId, schemaOrgTesHakaiDeep, nodeid, userDN);
+        String id = schemaOrgTesHakaiDeepPid;
+        indexObjectToSolr(id, schemaOrgTesHakaiDeep);
 
         Thread.sleep(2*SLEEPTIME);
         // now process the tasks
