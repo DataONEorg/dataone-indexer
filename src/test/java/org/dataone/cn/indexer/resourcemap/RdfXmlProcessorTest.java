@@ -97,29 +97,39 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
 
     /* the RDF/XML resource map to parse */
     private Resource provAlaWaiNS02MatlabProcessing2RDF;
+    private String provAlaWaiNS02MatlabProcessing2RDFPid = "ala-wai-ns02-matlab-processing.2.rdf";
 
     /* The three Matlab scripts involved in the processing */
     private Resource provAlaWaiNS02MatlabProcessingDataProcessor1m;
+    private String provAlaWaiNS02MatlabProcessingDataProcessor1mPid = "ala-wai-ns02-matlab-processing-DataProcessor.1.m";
     private Resource provAlaWaiNS02MatlabProcessingConfigure1m;
+    private String provAlaWaiNS02MatlabProcessingConfigure1mPid = "ala-wai-ns02-matlab-processing-Configure.1.m";
     private Resource provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1m;
+    private String provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1mPid = "ala-wai-ns02-matlab-processing-schedule_AW02XX_001CTDXXXXR00_processing.1.m";
 
     /* The EML science metadata describing the processing */
     private Resource provAlaWaiNS02MatlabProcessingEML1xml;
+    private String provAlaWaiNS02MatlabProcessingEML1xmlPid = "ala-wai-ns02-matlab-processing.eml.1.xml";
 
     /* The input data being processed */
     private Resource provAlaWaiNS02CTDData1txt;
+    private String provAlaWaiNS02CTDData1txtPid = "ala-wai-ns02-ctd-data.1.txt";
 
     /* The processed output image */
     private Resource provAlaWaiNS02ImageDataAW02XX_001CTDXXXXR00_20150203_10day1jpg;
+    private String provAlaWaiNS02ImageDataAW02XX_001CTDXXXXR00_20150203_10day1jpgPid = "ala-wai-ns02-image-data-AW02XX_001CTDXXXXR00_20150203_10day.1.jpg";
     
     /* The eml 2.2.0 object is part of a portal */
     private Resource partEml220;
+    private String partEml220Pid = "eml-test-doc";
     
     /* The portal object which has the part eml 220 object*/
     private Resource partPortal;
+    private String partPortalPid = "urn:uuid:b210adf0-f08a-4cae-aa86-5b64605e9297";
     
     /* The resource map describing the hasPart/isPartOf relationship */
     private Resource partResourcemap;
+    private String partResourcemapPid = "resourcemap-with-part.xml";
 
     /* An instance of the RDF/XML Subprocessor */
     private RdfXmlSubprocessor provRdfXmlSubprocessor;

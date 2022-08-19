@@ -12,52 +12,52 @@
 
     <bean id="provAlaWaiNS02MatlabProcessing2RDF" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String" 
-        value="org/dataone/cn/indexer/resourcemap/resources/ala-wai-ns02-matlab-processing.2.rdf"/>
+        value="org/dataone/cn/indexer/resourcemap/resources/ala-wai-ns02-matlab-processing.2/ala-wai-ns02-matlab-processing.2.rdf"/>
     </bean>
      
     <bean id="provAlaWaiNS02MatlabProcessingDataProcessor1m" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String" 
-        value="org/dataone/cn/indexer/resourcemap/resources/ala-wai-ns02-matlab-processing-DataProcessor.1.m"/>
+        value="org/dataone/cn/indexer/resourcemap/resources/ala-wai-ns02-matlab-processing-DataProcessor.1/ala-wai-ns02-matlab-processing-DataProcessor.1.m"/>
     </bean>
 
     <bean id="provAlaWaiNS02MatlabProcessingConfigure1m" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String" 
-        value="org/dataone/cn/indexer/resourcemap/resources/ala-wai-ns02-matlab-processing-Configure.1.m"/>
+        value="org/dataone/cn/indexer/resourcemap/resources/ala-wai-ns02-matlab-processing-Configure.1/ala-wai-ns02-matlab-processing-Configure.1.m"/>
     </bean>
 
     <bean id="provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1m" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String" 
-        value="org/dataone/cn/indexer/resourcemap/resources/ala-wai-ns02-matlab-processing-schedule_AW02XX_001CTDXXXXR00_processing.1.m"/>
+        value="org/dataone/cn/indexer/resourcemap/resources/ala-wai-ns02-matlab-processing-schedule_AW02XX_001CTDXXXXR00_processing.1/ala-wai-ns02-matlab-processing-schedule_AW02XX_001CTDXXXXR00_processing.1.m"/>
     </bean>
 
     <bean id="provAlaWaiNS02MatlabProcessingEML1xml" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String" 
-        value="org/dataone/cn/indexer/resourcemap/resources/ala-wai-ns02-matlab-processing.eml.1.xml"/>
+        value="org/dataone/cn/indexer/resourcemap/resources/ala-wai-ns02-matlab-processing.eml.1/ala-wai-ns02-matlab-processing.eml.1.xml"/>
     </bean>
     
     <bean id="provAlaWaiNS02CTDData1txt" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String" 
-        value="org/dataone/cn/indexer/resourcemap/resources/ala-wai-ns02-ctd-data.1.txt"/>
+        value="org/dataone/cn/indexer/resourcemap/resources/ala-wai-ns02-ctd-data.1/ala-wai-ns02-ctd-data.1.txt"/>
     </bean>
 
     <bean id="provAlaWaiNS02ImageDataAW02XX_001CTDXXXXR00_20150203_10day1jpg" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String" 
-        value="org/dataone/cn/indexer/resourcemap/resources/ala-wai-ns02-image-data-AW02XX_001CTDXXXXR00_20150203_10day.1.jpg"/>
+        value="org/dataone/cn/indexer/resourcemap/resources/ala-wai-ns02-image-data-AW02XX_001CTDXXXXR00_20150203_10day.1/ala-wai-ns02-image-data-AW02XX_001CTDXXXXR00_20150203_10day.1.jpg"/>
     </bean>
     
     <bean id="portalTestDoc" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/portal/portal.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/portal/portal/portal.xml"/>
     </bean>
     
      <bean id="eml220TestDocSciMeta" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml220testdocscimeta.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml220testdocscimeta/eml220testdocscimeta.xml"/>
      </bean>
      
      <bean id="partResourceMap" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/indexer/resourcemap/resources/resourcemap-with-part.xml"/>
+        value="org/dataone/cn/indexer/resourcemap/resources/resourcemap-with-part/resourcemap-with-part.xml"/>
      </bean>
 
 </beans>
