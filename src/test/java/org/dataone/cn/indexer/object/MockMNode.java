@@ -33,16 +33,24 @@ import org.springframework.core.io.Resource;
 public class MockMNode extends MultipartMNode {
     public static final String NODE_ID = "urn:node:MNMetacat_Test";
     private ApplicationContext context = null;
+    private ApplicationContext provenanceContext = null;
     private Resource peggym1271Sys = null;
     private Resource peggym1281Sys = null;
     private Resource peggym1291Sys = null;
     private Resource peggym1304Sys = null; 
+    private Resource provAlaWaiNS02MatlabProcessingDataProcessor1mSys = null;
+    private Resource provAlaWaiNS02MatlabProcessingConfigure1mSys = null;
+    private Resource provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1mSys = null;
+    private Resource provAlaWaiNS02MatlabProcessingEML1xmlSys = null;
+    
     /*
      * Constructor
      */
     public MockMNode(String nodeBaseServiceUrl) throws IOException, ClientSideException {
         super(nodeBaseServiceUrl);
         this.nodeType = NodeType.MN;
+        provenanceContext = new ClassPathXmlApplicationContext("org/dataone/cn/indexer/resourcemap/test-context-provenance.xml");
+        
     }
     
     /**
@@ -73,6 +81,18 @@ public class MockMNode extends MultipartMNode {
              case "peggym.130.4" :
                  resource = peggym1304Sys;
                  break;
+             case "ala-wai-canal-ns02-matlab-processing-DataProcessor.1.m" :
+                 resource = provAlaWaiNS02MatlabProcessingDataProcessor1mSys;
+                 break;
+             case "ala-wai-canal-ns02-matlab-processing.eml.1.xml" :
+                 resource = provAlaWaiNS02MatlabProcessingEML1xmlSys;
+                 break;
+             case "ala-wai-canal-ns02-matlab-processing-Configure.1.m" :
+                 resource = provAlaWaiNS02MatlabProcessingConfigure1mSys;
+                 break;
+             case "ala-wai-canal-ns02-matlab-processing-schedule_AW02XX_001CTDXXXXR00_processing.1.m" :
+                 resource = provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1mSys;
+                 break;
              default :
                  throw new NotFound("0000", "MockMNode couldn't find the system metadata for identifier " + identifier);
         }
@@ -98,6 +118,17 @@ public class MockMNode extends MultipartMNode {
                 peggym1281Sys = (Resource) context.getBean("peggym1281Sys");
                 peggym1291Sys = (Resource) context.getBean("peggym1291Sys");
                 peggym1304Sys = (Resource) context.getBean("peggym1304Sys");
+                provAlaWaiNS02MatlabProcessingDataProcessor1mSys = (Resource) provenanceContext
+                        .getBean("provAlaWaiNS02MatlabProcessingDataProcessor1mSys");
+
+                provAlaWaiNS02MatlabProcessingConfigure1mSys = (Resource) provenanceContext
+                        .getBean("provAlaWaiNS02MatlabProcessingConfigure1mSys");
+
+                provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1mSys = (Resource) provenanceContext
+                        .getBean("provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1mSys");
+
+                provAlaWaiNS02MatlabProcessingEML1xmlSys = (Resource) provenanceContext
+                        .getBean("provAlaWaiNS02MatlabProcessingEML1xmlSys");
                 System.out.println("finished to intialize the resources in the MockMNode");
             }
         }
