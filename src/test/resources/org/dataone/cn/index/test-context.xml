@@ -91,13 +91,13 @@ xmlns:context="http://www.springframework.org/schema/context"
         <constructor-arg type="java.lang.String"
         value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.128.1/peggym.128.1"/>
     </bean>
-    <bean id="peggym1281SysObsoletedBy" class="org.springframework.core.io.ClassPathResource" >
+    <bean id="peggym1281SciObsoletedBy" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.128.1-obsoletedBy"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.128.1-obsoletedBy/peggym.128.1-obsoletedBy"/>
     </bean>
-    <bean id="peggym1282Sys" class="org.springframework.core.io.ClassPathResource" >
+    <bean id="peggym1282Sci" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.128.2"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.128.2/peggym.128.2"/>
     </bean>
 	<bean id="peggym1291Sys" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
@@ -111,17 +111,17 @@ xmlns:context="http://www.springframework.org/schema/context"
         <constructor-arg type="java.lang.String"
         value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.4/systemmetadata.xml"/>
     </bean>
-    <bean id="peggym1305Sys" class="org.springframework.core.io.ClassPathResource" >
+    <bean id="peggym1305Sci" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.130.5"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.5/peggym.130.5"/>
     </bean>
     <bean id="peggym1304SysArchived" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
         value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.130.4-archived"/>
     </bean>
-    <bean id="peggym1304SysObsoletedBy" class="org.springframework.core.io.ClassPathResource" >
+    <bean id="peggym1304SciObsoletedBy" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.130.4-obsoletedBy"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.4-obsoletedBy/peggym.130.4-obsoletedBy"/>
     </bean>
 	<bean id="peggym1304Sci" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
@@ -131,9 +131,9 @@ xmlns:context="http://www.springframework.org/schema/context"
          <constructor-arg type="java.lang.String"
         value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.resourcemap/peggym.resourcemap"/>
     </bean>
-    <bean id="peggymResourcemapSeriesSys" class="org.springframework.core.io.ClassPathResource" >
+    <bean id="peggymResourcemapSeriesSci" class="org.springframework.core.io.ClassPathResource" >
          <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.resourcemap.series"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.resourcemap.series/peggym.resourcemap.series"/>
     </bean>
     <bean id="peggymResourcemap2Sci" class="org.springframework.core.io.ClassPathResource" >
          <constructor-arg type="java.lang.String"

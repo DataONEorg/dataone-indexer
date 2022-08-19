@@ -264,6 +264,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         mockMNode.setContext(context);
         ObjectManager.setD1Node(mockMNode);
         System.out.println("--------------After setting mockNode for object manager in the test base setup method");
+        sendSolrDeleteAll();
     }
 
     public void tearDown() throws Exception {
