@@ -461,71 +461,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         assertTrue(compareFieldLength(thisId, "text", 2501));
     }
 
-    protected boolean compareFieldValue(String id, String fieldName, String[] expectedValues) throws SolrServerException, IOException {
-
-        boolean equal = true;
-        ModifiableSolrParams solrParams = new ModifiableSolrParams();
-        solrParams.set("q", "id:" + ClientUtils.escapeQueryChars(id));
-        solrParams.set("fl", "*");
-        QueryResponse qr = getSolrClient().query(solrParams);
-        SolrDocument result = qr.getResults().get(0);
-        Collection<Object> solrValues = result.getFieldValues(fieldName);
-        Object testResult = result.getFirstValue(fieldName);
-        String[] solrValuesArray = new String[solrValues.size()];
-        if(testResult instanceof Float) {
-            // Solr returned a 'Float' value, so convert it to a string so that it can
-            // be compared to the expected value.
-            System.out.println("++++++++++++++++ Solr returned a 'Float'.");
-            int iObj = 0;
-            float fval;
-            for (Object obj : solrValues) {
-               fval = (Float) obj;
-               solrValuesArray[iObj] = Float.toString(fval);
-               iObj++;
-            }
-        } else if (testResult instanceof String) {
-            System.out.println("++++++++++++++++ Solr returned a 'String'.");
-            solrValuesArray = solrValues.toArray(new String[solrValues.size()]);
-        } else if (testResult instanceof Date) {
-            // Solr returned a 'Date' value, so convert it to a string so that it can
-            // be compared to the expected value.
-            System.out.println("++++++++++++++++ Solr returned a 'Date'.");
-            TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
-            int iObj = 0;
-
-            DateTimeZone.setDefault(DateTimeZone.UTC);
-            DateTimeFormatter dtfOut = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-            Date dateObj;
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-            for (Object obj : solrValues) {
-                DateTime dateTime = new DateTime(obj);
-                solrValuesArray[iObj] = dtfOut.print(dateTime);
-                iObj++;
-            }
-        }
-
-        System.out.println("++++++++++++++++ the solr result array for the field " + fieldName + " is " + solrValuesArray);
-        System.out.println("++++++++++++++++ the expected values for the field " + fieldName + " is " + expectedValues);
-        if (solrValuesArray.length != expectedValues.length) {
-            equal = false;
-            return equal;
-        }
-        if (solrValuesArray.length > 1) {
-            Arrays.sort(expectedValues);
-            Arrays.sort(solrValuesArray);
-        }
-        for (int i=0; i<solrValuesArray.length; i++) {
-            System.out.println("++++++++++++++++ compare values for field " + "\"" + fieldName + "\"" + " Solr: " + solrValuesArray[i] + " expected value: " + expectedValues[i]);
-
-            if (!solrValuesArray[i].equals(expectedValues[i])) {
-                equal = false;
-                break;
-            }
-        }
-        return equal;
-        
-    }
+    
 
     /**
      * Compare the string length of a result with a known correct value.

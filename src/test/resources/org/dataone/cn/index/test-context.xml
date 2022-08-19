@@ -504,12 +504,12 @@ xmlns:context="http://www.springframework.org/schema/context"
     
     <bean id="emlWithDataTableTestDoc" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml2.2.0testdatatable.xml"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml2.2.0testdatatable/eml2.2.0testdatatable.xml"/>
     </bean>
     
     <bean id="emlWithOtherEntityTestDoc" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml2.2.0testotherentity.xml"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml2.2.0testotherentity/eml2.2.0testotherentity.xml"/>
     </bean>
 
     <bean id="schemaOrgTesHakaiDeep" class="org.springframework.core.io.ClassPathResource" >
