@@ -115,11 +115,17 @@ public class ObjectManager {
             logger.warn("ObjectManager ------ Could NOT get an auth token from either an env. variable or the properties file. So it will act as the public user.");
         }
         session = createSession(DataONEauthToken);
-        try {
-            d1Node = getMultipartD1Node(session, nodeBaseURL);
-        } catch (IOException | ClientSideException e) {
-            logger.error("ObjectManager - couldn't create the d1node for the url " + nodeBaseURL + " since " + e.getMessage());
-            throw new ServiceFailure("0000", e.getMessage());
+        if (d1Node == null) {
+            logger.info("ObjectManager ------ going to create the d1node with url " + nodeBaseURL);
+            try {
+                d1Node = getMultipartD1Node(session, nodeBaseURL);
+            } catch (IOException | ClientSideException e) {
+                logger.error("ObjectManager - couldn't create the d1node for the url " + nodeBaseURL + " since " + e.getMessage());
+                throw new ServiceFailure("0000", e.getMessage());
+            }
+        } else {
+            logger.info("ObjectManager ---NOT going to create the d1node with the url " + nodeBaseURL + 
+                       " since the ObjectManager already was assigned a d1node with the url " + d1Node.getNodeBaseServiceUrl());
         }
     }
     
@@ -198,6 +204,15 @@ public class ObjectManager {
             logger.debug("ObjectManager.getSystemMetadata - finish getting the system metadata via DataONE API for the pid " + id);
         }
         return sysmeta;
+    }
+    
+    /**
+     * Set the d1 node for this object manager.
+     * We only use it for testing
+     * @param node  the d1node will be assigned
+     */
+    public static void setD1Node(MultipartD1Node node) {
+        d1Node = node;
     }
     
     /**

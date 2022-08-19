@@ -45,6 +45,8 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.dataone.cn.indexer.SolrIndex;
+import org.dataone.cn.indexer.object.MockMNode;
+import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.ISolrField;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.service.exceptions.NotFound;
@@ -248,6 +250,11 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         super.setUp();
         loadSpringContext();
         startJettyAndSolr();
+        //set up MockMnode for the ObjectManager
+        MockMNode mockMNode = new MockMNode("http://mnode.foo");
+        mockMNode.setContext(context);
+        ObjectManager.setD1Node(mockMNode);
+        System.out.println("--------------After setting mockNode for object manager in the test base setup method");
     }
 
     public void tearDown() throws Exception {
