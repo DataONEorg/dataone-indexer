@@ -116,6 +116,16 @@ public class SolrIndexDeleteTest extends DataONESolrJettyTestBase {
         indexTestDataPackage();
         // verify in index correct
         verifyTestDataPackageIndexed();
+        
+        //reindex data and metadata objects
+        indexObjectToSolr(pid1271, peggym1271Sci);
+        indexObjectToSolr(pid1281, peggym1281Sci);
+        indexObjectToSolr(pid1291, peggym1291Sci);
+        indexObjectToSolr(pid1304, peggym1304Sci);
+        Thread.sleep(2*SLEEPTIME);
+        // verify in index correct
+        verifyTestDataPackageIndexed();
+        
         // remove a data object with id 1271
         deleteSolrDoc(pid1271);
         Thread.sleep(SLEEPTIME);
@@ -209,6 +219,15 @@ public class SolrIndexDeleteTest extends DataONESolrJettyTestBase {
         verifyComplicatedDataPackageIndexed();
         indexSecondComplicatedDataPackage();
         verifySecondComplicatedDataPackageIndexed();
+        
+        //reindex those components
+        indexObjectToSolr(pid1271, peggym1271Sci);
+        indexObjectToSolr(pid1281, peggym1281Sci);
+        indexObjectToSolr(pid1291, peggym1291Sci);
+        indexObjectToSolr(pid1304, peggym1304Sci);
+        Thread.sleep(2*SLEEPTIME);
+        verifySecondComplicatedDataPackageIndexed();
+        
         deleteSolrDoc(peggymResourcemapComplicatedId2);
         Thread.sleep(SLEEPTIME);
         //processor.processIndexTaskQueue();
