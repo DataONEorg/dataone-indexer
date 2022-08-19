@@ -123,6 +123,10 @@ xmlns:context="http://www.springframework.org/schema/context"
         <constructor-arg type="java.lang.String"
         value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.4-obsoletedBy/peggym.130.4-obsoletedBy"/>
     </bean>
+    <bean id="peggym1304SysObsoletedBy" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.4-obsoletedBy/systemmetadata.xml"/>
+    </bean>
 	<bean id="peggym1304Sci" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
         value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.4/peggym.130.4"/>
