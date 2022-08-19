@@ -450,12 +450,12 @@ xmlns:context="http://www.springframework.org/schema/context"
     
      <bean id="schemaOrgTestDocSysMeta" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/json-ld/bco-dmo-sysmeta.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/json-ld/bco-dmo/systemmetadata.xml"/>
     </bean>
 
     <bean id="schemaOrgTestDoc" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/json-ld/bco-dmo.jsonld"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/json-ld/bco-dmo/bco-dmo.jsonld"/>
     </bean>
 
 <!--    <bean id="schemaOrgTestDocSysMeta2" class="org.springframework.core.io.ClassPathResource" >-->
@@ -465,45 +465,45 @@ xmlns:context="http://www.springframework.org/schema/context"
 
     <bean id="schemaOrgTestDoc2" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/doi_A10.5061_dryad.m8s2r36.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/doi_A10.5061_dryad.m8s2r36/doi_A10.5061_dryad.m8s2r36.jsonld"/>
     </bean>
     <bean id="schemaOrgTestDocSOSO" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/ESIP-SOSO-v1.2.0-example-full.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/ESIP-SOSO-v1.2.0-example-full/ESIP-SOSO-v1.2.0-example-full.jsonld"/>
     </bean>
     <bean id="schemaOrgTestWithoutVocab" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-http-without-vocab.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-http-without-vocab/context-http-without-vocab.jsonld"/>
     </bean>
 
     <bean id="schemaOrgTestHttpVocab" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-http-vocab.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-http-vocab/context-http-vocab.jsonld"/>
     </bean>
 
     <bean id="schemaOrgTestHttpsVocab" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-https-vocab.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-https-vocab/context-https-vocab.jsonld"/>
     </bean>
 
     <bean id="schemaOrgTestHttp" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-http.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-http/context-http.jsonld"/>
     </bean>
 
     <bean id="schemaOrgTestHttps" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-https.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-https/context-https.jsonld"/>
     </bean>
 
     <bean id="schemaOrgTestDryad1" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/doi.org_10.5061_dryad.5qb78.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/doi.org_10.5061_dryad.5qb78/doi.org_10.5061_dryad.5qb78.jsonld"/>
     </bean>
 
     <bean id="schemaOrgTestDryad2" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/doi.org_10.5061_dryad.41sk145.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/doi.org_10.5061_dryad.41sk145/doi.org_10.5061_dryad.41sk145.jsonld"/>
     </bean>
     
     <bean id="emlWithDataTableTestDoc" class="org.springframework.core.io.ClassPathResource" >
@@ -518,6 +518,6 @@ xmlns:context="http://www.springframework.org/schema/context"
 
     <bean id="schemaOrgTesHakaiDeep" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/hakai-deep-schema.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/hakai-deep-schema/hakai-deep-schema.jsonld"/>
     </bean>
 </beans>
