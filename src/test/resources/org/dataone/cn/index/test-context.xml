@@ -440,12 +440,12 @@ xmlns:context="http://www.springframework.org/schema/context"
     
     <bean id="portalTestDocSysMeta" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/portal/portalsysmeta.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/portal/portal/systemmetadata.xml"/>
     </bean>
 
     <bean id="portalTestDoc" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/portal/portal.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/portal/portal/portal.xml"/>
     </bean>
     
      <bean id="schemaOrgTestDocSysMeta" class="org.springframework.core.io.ClassPathResource" >
