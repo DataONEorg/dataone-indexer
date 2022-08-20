@@ -520,4 +520,31 @@ xmlns:context="http://www.springframework.org/schema/context"
         <constructor-arg type="java.lang.String"
                          value="org/dataone/cn/index/resources/d1_testdocs/json-ld/hakai-deep-schema/hakai-deep-schema.jsonld"/>
     </bean>
+    
+    <bean id="testDoc" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String" 
+        value="org/dataone/cn/indexer/resourcemap/resources/mpcOre1"/>
+    </bean>
+    
+    <bean id="incompleteResourceMap" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String" 
+        value="org/dataone/cn/indexer/resourcemap/resources/incomplete_resourceMap_ALEXXX_015MTBD009R00_20110122.50.1.rdf"/>
+    </bean>
+    
+    <bean id="dryadDoc" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg type="java.lang.String" 
+        value="org/dataone/cn/indexer/resourcemap/resources/dryad.12"/>
+    </bean>
+ 
+    <bean id="transitiveRelationshipsDoc" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg type="java.lang.String" 
+        value="org/dataone/cn/indexer/resourcemap/resources/transitive_resourcemap.rdf"/>
+    </bean>
+    
+    <bean id="incompleteTransitiveRelationshipsDoc" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg type="java.lang.String" 
+        value="org/dataone/cn/indexer/resourcemap/resources/incomplete_transitive_resourcemap.rdf"/>
+    </bean>
+    
+    <bean id="oreResourceMapTest" class="org.dataone.cn.indexer.resourcemap.OREResourceMapTest"/>
 </beans>
