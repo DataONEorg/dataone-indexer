@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <ns1:systemMetadata xmlns:ns1="http://ns.dataone.org/service/types/v2.0">
     <serialVersion>1</serialVersion>
-  <identifier>ala-wai-ns02-matlab-processing-Configure.1.m</identifier>
+  <identifier>ala-wai-canal-ns02-matlab-processing-Configure.1.m</identifier>
   <formatId>text/plain</formatId>
   <size>16841</size>
   <checksum algorithm="MD5">03b43c710872420d7b0c9a82c085ae02</checksum>

@@ -101,23 +101,23 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
 
     /* The three Matlab scripts involved in the processing */
     private Resource provAlaWaiNS02MatlabProcessingDataProcessor1m;
-    private String provAlaWaiNS02MatlabProcessingDataProcessor1mPid = "ala-wai-ns02-matlab-processing-DataProcessor.1.m";
+    private String provAlaWaiNS02MatlabProcessingDataProcessor1mPid = "ala-wai-canal-ns02-matlab-processing-DataProcessor.1.m";
     private Resource provAlaWaiNS02MatlabProcessingConfigure1m;
-    private String provAlaWaiNS02MatlabProcessingConfigure1mPid = "ala-wai-ns02-matlab-processing-Configure.1.m";
+    private String provAlaWaiNS02MatlabProcessingConfigure1mPid = "ala-wai-canal-ns02-matlab-processing-Configure.1.m";
     private Resource provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1m;
-    private String provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1mPid = "ala-wai-ns02-matlab-processing-schedule_AW02XX_001CTDXXXXR00_processing.1.m";
+    private String provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1mPid = "ala-wai-canal-ns02-matlab-processing-schedule_AW02XX_001CTDXXXXR00_processing.1.m";
 
     /* The EML science metadata describing the processing */
     private Resource provAlaWaiNS02MatlabProcessingEML1xml;
-    private String provAlaWaiNS02MatlabProcessingEML1xmlPid = "ala-wai-ns02-matlab-processing.eml.1.xml";
+    private String provAlaWaiNS02MatlabProcessingEML1xmlPid = "ala-wai-canal-ns02-matlab-processing.eml.1.xml";
 
     /* The input data being processed */
     private Resource provAlaWaiNS02CTDData1txt;
-    private String provAlaWaiNS02CTDData1txtPid = "ala-wai-ns02-ctd-data.1.txt";
+    private String provAlaWaiNS02CTDData1txtPid = "ala-wai-canal-ns02-ctd-data.1.txt";
 
     /* The processed output image */
     private Resource provAlaWaiNS02ImageDataAW02XX_001CTDXXXXR00_20150203_10day1jpg;
-    private String provAlaWaiNS02ImageDataAW02XX_001CTDXXXXR00_20150203_10day1jpgPid = "ala-wai-ns02-image-data-AW02XX_001CTDXXXXR00_20150203_10day.1.jpg";
+    private String provAlaWaiNS02ImageDataAW02XX_001CTDXXXXR00_20150203_10day1jpgPid = "ala-wai-canal-ns02-image-data-AW02XX_001CTDXXXXR00_20150203_10day.1.jpg";
     
     /* The eml 2.2.0 object is part of a portal */
     private Resource partEml220;

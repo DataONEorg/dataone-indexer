@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <ns1:systemMetadata xmlns:ns1="http://ns.dataone.org/service/types/v2.0">
     <serialVersion>1</serialVersion>
-  <identifier>ala-wai-ns02-ctd-data.1.txt</identifier>
+  <identifier>ala-wai-canal-ns02-ctd-data.1.txt</identifier>
   <formatId>text/plain</formatId>
   <size>234117</size>
   <checksum algorithm="MD5">d2268fd5782d20364fe3af518526a0d0</checksum>

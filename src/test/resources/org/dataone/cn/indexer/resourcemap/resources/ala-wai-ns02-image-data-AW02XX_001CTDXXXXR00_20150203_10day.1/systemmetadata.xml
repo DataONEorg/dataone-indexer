@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <ns1:systemMetadata xmlns:ns1="http://ns.dataone.org/service/types/v2.0">
     <serialVersion>1</serialVersion>
-  <identifier>ala-wai-ns02-image-data-AW02XX_001CTDXXXXR00_20150203_10day.1.jpg</identifier>
+  <identifier>ala-wai-canal-ns02-image-data-AW02XX_001CTDXXXXR00_20150203_10day.1.jpg</identifier>
   <formatId>image/jpeg</formatId>
   <size>228839</size>
   <checksum algorithm="MD5">b5190322c0838d39d19469d7782bb23d</checksum>

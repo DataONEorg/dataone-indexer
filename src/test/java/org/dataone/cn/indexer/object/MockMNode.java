@@ -60,7 +60,7 @@ public class MockMNode extends MultipartMNode {
     @Override
     public SystemMetadata getSystemMetadata(Session session, Identifier id)
                             throws InvalidToken, ServiceFailure, NotAuthorized, NotFound, NotImplemented {
-        System.out.println("in the get System metadata in the MockMNode.");
+        System.out.println("In the get System metadata method in the MockMNode for " + id.getValue());
         SystemMetadata sysmeta = null;
         initialize();
         Resource resource = null;
@@ -101,6 +101,7 @@ public class MockMNode extends MultipartMNode {
         } catch (Exception e) {
             throw new ServiceFailure("0000", e.getMessage());
         }
+        System.out.println("In the get System metadata method in the MockMNode for " + id.getValue() + " after successfully getting it.");
         return sysmeta;
     }
     
