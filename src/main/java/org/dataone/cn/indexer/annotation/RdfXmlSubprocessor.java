@@ -74,13 +74,11 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
 
     private List<String> fieldsToMerge = new ArrayList<String>();
 
-    @Autowired
+ 
     private HTTPService httpService = null;
 
-    @Autowired
     private String solrQueryUri = null;
 
-    @Autowired
     private SubprocessorUtility processorUtility;
 
     /**
@@ -475,5 +473,53 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
 
     public void setFieldsToMerge(List<String> fieldsToMerge) {
         this.fieldsToMerge = fieldsToMerge;
+    }
+    
+    /**
+     * Get the http service object
+     * @return  the http service object 
+     */
+    public HTTPService getHttpService() {
+        return httpService;
+    }
+
+    /**
+     * Set the http service object for this class
+     * @param httpService  the object will be set
+     */
+    public void setHttpService(HTTPService httpService) {
+        this.httpService = httpService;
+    }
+
+    /**
+     * Get the solr query url
+     * @return  the query url
+     */
+    public String getSolrQueryUri() {
+        return solrQueryUri;
+    }
+
+    /**
+     * Set the solr query url 
+     * @param solrQueryUri  the url will be set
+     */
+    public void setSolrQueryUri(String solrQueryUri) {
+        this.solrQueryUri = solrQueryUri;
+    }
+
+    /**
+     * Get the subprocessor utility
+     * @return  the subprocessor utility object
+     */
+    public SubprocessorUtility getProcessorUtility() {
+        return processorUtility;
+    }
+
+    /**
+     * Set the subprocessor utility object for this class
+     * @param processorUtility  the subprocessor utility object will be set
+     */
+    public void setProcessorUtility(SubprocessorUtility processorUtility) {
+        this.processorUtility = processorUtility;
     }
 }
