@@ -65,18 +65,26 @@ public class SolrFieldEmlAnnotationTest extends BaseSolrFieldXPathTest {
     public void setUp() throws Exception {
         // annotations should include the superclass[es]
         annotationExpected.put("sem_annotation",
-            "http://purl.dataone.org/odo/ECSO_00000512" + "||" +
+            "http://www.w3.org/2002/07/owl#FunctionalProperty" + "||" +
             "http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#MeasurementType" + "||" +
-            "http://purl.dataone.org/odo/ECSO_00001102" + "||" +
-            "http://purl.dataone.org/odo/ECSO_00001243" + "||" +
+            "http://purl.dataone.org/odo/ARCRC_00000040" + "||" +
+            "http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasUnit" + "||" +
+            "http://www.w3.org/2000/01/rdf-schema#Class" + "||" +
             "http://purl.dataone.org/odo/ECSO_00000629" + "||" +
+            "http://purl.dataone.org/odo/ARCRC_00000048" + "||" +
+            "http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#containsMeasurementsOfType" + "||" +
+            "http://www.w3.org/2002/07/owl#Class" + "||" +
             "http://purl.dataone.org/odo/ECSO_00000518" + "||" +
-            "http://www.w3.org/2000/01/rdf-schema#Resource" + "||" +
             "http://purl.dataone.org/odo/ECSO_00000516" + "||" +
             "http://purl.obolibrary.org/obo/UO_0000301" + "||" +
-            "http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#hasUnit" + "||" +
-            "http://purl.dataone.org/odo/ECSO_00000629" + "||" +
-            "http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#containsMeasurementsOfType");
+            "http://purl.dataone.org/odo/ECSO_00000512" + "||" +
+            "http://purl.dataone.org/odo/ARCRC_00000500" + "||" +
+            "http://purl.dataone.org/odo/ECSO_00001102" + "||" +
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" + "||" +
+            "http://purl.dataone.org/odo/ECSO_00001243" + "||" +
+            "http://www.w3.org/2002/07/owl#ObjectProperty" + "||" +
+            "http://www.w3.org/2002/07/owl#NamedIndividual" + "||" +
+            "http://www.w3.org/2000/01/rdf-schema#Resource");
     }
 
     protected boolean compareFields(HashMap<String, String> expected, InputStream document,
