@@ -54,6 +54,7 @@ import org.dataone.cn.indexer.object.MockMNode;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.ISolrField;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.configuration.Settings;
 import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
@@ -85,6 +86,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
 
     protected ApplicationContext context;
     private SolrIndex solrIndexService;
+    private int solrPort = Settings.getConfiguration().getInt("test.solr.port", 8985);
     
     /**
      * Index the given object into solr
@@ -280,7 +282,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
 
     protected void startJettyAndSolr() throws Exception {
         if (jetty == null) {
-            JettyConfig jconfig = JettyConfig.builder().setPort(8983).build();
+            JettyConfig jconfig = JettyConfig.builder().setPort(solrPort).build();
             File f = new File(".");
             String localPath = f.getAbsolutePath();
             createJettyWithPort(localPath
