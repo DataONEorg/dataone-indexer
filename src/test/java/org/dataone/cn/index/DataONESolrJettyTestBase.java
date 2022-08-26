@@ -284,7 +284,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
             File f = new File(".");
             String localPath = f.getAbsolutePath();
             createJettyWithPort(localPath
-                    + "/src/test/resources/org/dataone/cn/index/resources/solr5home", jconfig);
+                    + "/src/test/resources/org/dataone/cn/index/resources/solr8home", jconfig);
         }
     }
 
@@ -294,7 +294,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     // port.
     protected static JettySolrRunner createJettyWithPort(String solrHome, JettyConfig config)
             throws Exception {
-        createJetty(solrHome, config);
+        createAndStartJetty(solrHome, config);
         return jetty;
     }
     
