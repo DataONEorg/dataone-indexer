@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Solr managed schema - automatically generated - DO NOT EDIT -->
+<schema name="dataone" version="1.5">
+  <uniqueKey>id</uniqueKey>
+  <fieldType name="_bbox_coord" class="solr.TrieDoubleField" stored="false" docValues="true" precisionStep="8"/>
+  <fieldType name="alphaOnlySort" class="solr.TextField" omitNorms="true" sortMissingLast="true">
+    <analyzer>
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.TrimFilterFactory"/>
+      <filter class="solr.PatternReplaceFilterFactory" pattern="([^a-z])" replace="all" replacement=""/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="ancestor_path" class="solr.TextField">
+    <analyzer type="index">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.PathHierarchyTokenizerFactory" delimiter="/"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="bbox" class="solr.BBoxField" geo="true" numberType="_bbox_coord" distanceUnits="degrees"/>
+  <fieldType name="binary" class="solr.BinaryField"/>
+  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+  <fieldType name="booleans" class="solr.BoolField" sortMissingLast="true" multiValued="true"/>
+  <fieldType name="currency" class="solr.CurrencyField" currencyConfig="currency.xml" defaultCurrency="USD" precisionStep="8"/>
+  <fieldType name="date" class="solr.TrieDateField" positionIncrementGap="0" precisionStep="0"/>
+  <fieldType name="descendent_path" class="solr.TextField">
+    <analyzer type="index">
+      <tokenizer class="solr.PathHierarchyTokenizerFactory" delimiter="/"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="double" class="solr.TrieDoubleField" positionIncrementGap="0" precisionStep="0"/>
+  <fieldType name="float" class="solr.TrieFloatField" positionIncrementGap="0" precisionStep="0"/>
+  <fieldType name="ignored" class="solr.StrField" indexed="false" stored="false" multiValued="true"/>
+  <fieldType name="int" class="solr.TrieIntField" positionIncrementGap="0" precisionStep="0"/>
+  <fieldType name="location" class="solr.LatLonPointSpatialField" docValues="true"/>
+  <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType" geo="true" omitNorms="true" omitTermFreqAndPositions="true" maxDistErr="0.000009" termOffsets="false" distErrPct="0.025" distanceUnits="degrees" termPositions="false" omitPositions="true"/>
+  <fieldType name="long" class="solr.TrieLongField" positionIncrementGap="0" precisionStep="0"/>
+  <fieldType name="lowercase" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="managed_en" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.ManagedStopFilterFactory" managed="english"/>
+      <filter class="solr.ManagedSynonymFilterFactory" managed="english"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="payloads" class="solr.TextField" indexed="true" stored="false">
+    <analyzer>
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.DelimitedPayloadTokenFilterFactory" encoder="float"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="pdates" class="solr.DatePointField" docValues="true" multiValued="true"/>
+  <fieldType name="pdoubles" class="solr.DoublePointField" docValues="true" multiValued="true"/>
+  <fieldType name="phonetic" class="solr.TextField" indexed="true" stored="false">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.DoubleMetaphoneFilterFactory" inject="false"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="plongs" class="solr.LongPointField" docValues="true" multiValued="true"/>
+  <fieldType name="point" class="solr.PointType" subFieldSuffix="_d" dimension="2"/>
+  <fieldType name="random" class="solr.RandomSortField" indexed="true"/>
+  <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
+  <fieldType name="tdate" class="solr.TrieDateField" positionIncrementGap="0" precisionStep="6"/>
+  <fieldType name="tdouble" class="solr.TrieDoubleField" positionIncrementGap="0" precisionStep="8"/>
+  <fieldType name="text_case_insensitive" class="solr.TextField">
+    <analyzer type="index">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_en" class="solr.TextField" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.EnglishPossessiveFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.SynonymFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.EnglishPossessiveFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_en_splitting" class="solr.TextField" autoGeneratePhraseQueries="true" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.WordDelimiterFilterFactory" catenateNumbers="1" generateNumberParts="1" splitOnCaseChange="1" generateWordParts="1" splitOnNumerics="0" catenateAll="0" catenateWords="1"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.PorterStemFilterFactory"/>
+      <filter class="solr.ReversedWildcardFilterFactory" maxPosQuestion="2" maxFractionAsterisk="0.33" maxPosAsterisk="3" withOriginal="true"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.SynonymFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.WordDelimiterFilterFactory" catenateNumbers="0" generateNumberParts="1" generateWordParts="1" catenateAll="0" catenateWords="0"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_en_splitting_tight" class="solr.TextField" autoGeneratePhraseQueries="true" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+      <filter class="solr.SynonymFilterFactory" expand="false" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.StopFilterFactory" words="lang/stopwords_en.txt" ignoreCase="true"/>
+      <filter class="solr.WordDelimiterFilterFactory" catenateNumbers="1" generateNumberParts="0" generateWordParts="0" catenateAll="0" catenateWords="1"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.KeywordMarkerFilterFactory" protected="protwords.txt"/>
+      <filter class="solr.EnglishMinimalStemFilterFactory"/>
+      <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.SynonymFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_general_rev" class="solr.TextField" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.ReversedWildcardFilterFactory" maxPosQuestion="2" maxFractionAsterisk="0.33" maxPosAsterisk="3" withOriginal="true"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.SynonymFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_ws" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="tfloat" class="solr.TrieFloatField" positionIncrementGap="0" precisionStep="8"/>
+  <fieldType name="tint" class="solr.TrieIntField" positionIncrementGap="0" precisionStep="8"/>
+  <fieldType name="tlong" class="solr.TrieLongField" positionIncrementGap="0" precisionStep="8"/>
+  <field name="LTERSite" type="string" indexed="true" stored="true"/>
+  <field name="_root_" type="string" indexed="true" stored="false"/>
+  <field name="_text_" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="_version_" type="long" indexed="true" stored="true"/>
+  <field name="abstract" type="text_general" multiValued="false" indexed="true" stored="true"/>
+  <field name="archived" type="boolean" multiValued="false" indexed="true" stored="true"/>
+  <field name="attribute" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="attributeDescription" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="attributeLabel" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="attributeName" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="attributeUnit" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="author" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="authorGivenName" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="authorGivenNameSort" type="alphaOnlySort" multiValued="false" indexed="true" stored="true"/>
+  <field name="authorLastName" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="authorSurName" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="authorSurNameSort" type="alphaOnlySort" multiValued="false" indexed="true" stored="true"/>
+  <field name="authoritativeMN" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="awardNumber" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="awardTitle" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="beginDate" type="tdate" multiValued="false" indexed="true" stored="true"/>
+  <field name="blockedReplicationMN" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="changePermission" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="checksum" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="checksumAlgorithm" type="string" indexed="true" stored="true"/>
+  <field name="class" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="collectionQuery" type="string" multiValued="false" indexed="true"/>
+  <field name="contactOrganization" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="contactOrganizationText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="dataUrl" type="string" indexed="false" stored="true"/>
+  <field name="datasource" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="dateModified" type="tdate" multiValued="false" indexed="true" stored="true"/>
+  <field name="datePublished" type="tdate" multiValued="false" indexed="true" stored="true"/>
+  <field name="dateUploaded" type="tdate" multiValued="false" indexed="true" stored="true"/>
+  <field name="decade" type="string" indexed="true" stored="true"/>
+  <field name="documents" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="eastBoundCoord" type="tfloat" multiValued="false" indexed="true" stored="true"/>
+  <field name="edition" type="text_general" indexed="true" stored="true"/>
+  <field name="endDate" type="tdate" multiValued="false" indexed="true" stored="true"/>
+  <field name="family" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="fileID" type="string" indexed="true" stored="true"/>
+  <field name="fileName" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="formatId" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="formatType" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="funderIdentifier" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="funderName" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="funding" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="fundingText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="gcmdKeyword" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="genus" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="geoform" type="string" indexed="true" stored="true"/>
+  <field name="geohash_1" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="geohash_2" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="geohash_3" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="geohash_4" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="geohash_5" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="geohash_6" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="geohash_7" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="geohash_8" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="geohash_9" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="hasPart" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="id" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="identifier" type="text_general" indexed="true" stored="true"/>
+  <field name="investigator" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="investigatorText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="isDocumentedBy" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="isPartOf" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="isPublic" type="boolean" indexed="true" stored="true"/>
+  <field name="isService" type="boolean" default="false" multiValued="false" indexed="true" stored="true"/>
+  <field name="isSpatial" type="string" indexed="true" stored="true"/>
+  <field name="keyConcept" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="keywords" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="keywordsText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="kingdom" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="label" type="text_case_insensitive" multiValued="false" indexed="true" stored="true"/>
+  <field name="language" type="string" indexed="true" stored="true"/>
+  <field name="licenseDescription" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="licenseDescriptionText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="licenseName" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="licenseNameText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="licenseUrl" type="string" multiValued="true" indexed="false" stored="true"/>
+  <field name="logo" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="mediaType" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="mediaTypeProperty" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="namedLocation" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="noBoundingBox" type="string" indexed="true" stored="true"/>
+  <field name="northBoundCoord" type="tfloat" multiValued="false" indexed="true" stored="true"/>
+  <field name="numberReplicas" type="int" multiValued="false" indexed="true" stored="true"/>
+  <field name="obsoletedBy" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="obsoletes" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="ogcUrl" type="text_general" indexed="false" stored="true"/>
+  <field name="order" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="origin" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="originText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="originator" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="originatorText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="parameter" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="parameterText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="phylum" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="placeKey" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <field name="preferredReplicationMN" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="presentationCat" type="string" indexed="true" stored="true"/>
+  <field name="project" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="projectText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="prov_generated" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_generatedByExecution" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_generatedByProgram" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_generatedByUser" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_hasDerivations" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_hasSources" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_instanceOfClass" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_used" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_usedByExecution" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_usedByProgram" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_usedByUser" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_wasDerivedFrom" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_wasExecutedByExecution" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_wasExecutedByUser" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_wasGeneratedBy" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="prov_wasInformedBy" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="pubDate" type="tdate" indexed="true" stored="true"/>
+  <field name="purpose" type="text_general" indexed="true" stored="true"/>
+  <field name="readPermission" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="relatedOrganizations" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="replicaMN" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="replicaVerifiedDate" type="tdate" multiValued="true" indexed="true" stored="true"/>
+  <field name="replicationAllowed" type="boolean" multiValued="false" indexed="true" stored="true"/>
+  <field name="replicationStatus" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="resourceMap" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="rightsHolder" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="scientificName" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="sem_annotated_by" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="sem_annotates" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="sem_annotation" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="sem_comment" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="sensor" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="sensorText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="seriesId" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="serviceCoupling" type="string" default="false" multiValued="false" indexed="true" stored="true"/>
+  <field name="serviceDescription" type="text_general" multiValued="false" indexed="true" stored="true"/>
+  <field name="serviceEndpoint" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="serviceInput" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="serviceOutput" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="serviceTitle" type="text_general" multiValued="false" indexed="true" stored="true"/>
+  <field name="serviceType" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="site" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="siteText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="size" type="tlong" multiValued="false" indexed="true" stored="true"/>
+  <field name="sku" type="text_en_splitting_tight" indexed="true" stored="true"/>
+  <field name="source" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="sourceText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="southBoundCoord" type="tfloat" multiValued="false" indexed="true" stored="true"/>
+  <field name="species" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="submitter" type="string" multiValued="false" indexed="true" stored="true"/>
+  <field name="term" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="termText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="text" type="text_en_splitting" multiValued="false" indexed="true" stored="true"/>
+  <field name="title" type="text_general" multiValued="false" indexed="true" stored="true"/>
+  <field name="titlestr" type="string" indexed="true" stored="false"/>
+  <field name="topic" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="topicText" type="text_general" multiValued="true" indexed="true" stored="false"/>
+  <field name="updateDate" type="tdate" indexed="true" stored="true"/>
+  <field name="webUrl" type="string" multiValued="true" indexed="false" stored="true"/>
+  <field name="westBoundCoord" type="tfloat" multiValued="false" indexed="true" stored="true"/>
+  <field name="writePermission" type="string" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_coordinate" type="tdouble" indexed="true" stored="false"/>
+  <dynamicField name="ignored_*" type="ignored" multiValued="true"/>
+  <dynamicField name="random_*" type="random"/>
+  <dynamicField name="attr_*" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_dtm" type="tdate" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_txt" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_dts" type="date" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_tdt" type="tdate" indexed="true" stored="true"/>
+  <dynamicField name="*_im" type="tint" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_sm" type="string" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_lm" type="tlong" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_tm" type="text_general" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_bm" type="boolean" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_fm" type="tfloat" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_dm" type="tdouble" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_is" type="int" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_ss" type="string" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_ls" type="long" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_en" type="text_en" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_bs" type="boolean" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_fs" type="float" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_ds" type="double" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_dt" type="date" indexed="true" stored="true"/>
+  <dynamicField name="*_ti" type="tint" indexed="true" stored="true"/>
+  <dynamicField name="*_tl" type="tlong" indexed="true" stored="true"/>
+  <dynamicField name="*_tf" type="tfloat" indexed="true" stored="true"/>
+  <dynamicField name="*_td" type="tdouble" indexed="true" stored="true"/>
+  <dynamicField name="*_i" type="int" indexed="true" stored="true"/>
+  <dynamicField name="*_s" type="string" indexed="true" stored="true"/>
+  <dynamicField name="*_l" type="long" indexed="true" stored="true"/>
+  <dynamicField name="*_t" type="text_general" indexed="true" stored="true"/>
+  <dynamicField name="*_b" type="boolean" indexed="true" stored="true"/>
+  <dynamicField name="*_f" type="float" indexed="true" stored="true"/>
+  <dynamicField name="*_d" type="double" indexed="true" stored="true"/>
+  <dynamicField name="*_p" type="location" indexed="true" stored="true"/>
+  <dynamicField name="*_c" type="currency" indexed="true" stored="true"/>
+  <copyField source="contactOrganization" dest="contactOrganizationText"/>
+  <copyField source="dateUploaded" dest="updateDate"/>
+  <copyField source="funding" dest="fundingText"/>
+  <copyField source="id" dest="identifier"/>
+  <copyField source="id" dest="sku"/>
+  <copyField source="investigator" dest="investigatorText"/>
+  <copyField source="keywords" dest="keywordsText"/>
+  <copyField source="origin" dest="originText"/>
+  <copyField source="origin" dest="originatorText"/>
+  <copyField source="parameter" dest="parameterText"/>
+  <copyField source="project" dest="projectText"/>
+  <copyField source="pubDate" dest="datePublished"/>
+  <copyField source="sensor" dest="sensorText"/>
+  <copyField source="site" dest="siteText"/>
+  <copyField source="source" dest="sourceText"/>
+  <copyField source="term" dest="termText"/>
+  <copyField source="title" dest="titlestr"/>
+  <copyField source="topic" dest="topicText"/>
+  <copyField source="*" dest="_text_"/>
+</schema>
