@@ -120,6 +120,10 @@
                     <artifactId>jena</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>org.apache.jena</groupId>
+                    <artifactId>jena-core</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>log4j</groupId> 
                     <artifactId>log4j</artifactId>
                 </exclusion>
