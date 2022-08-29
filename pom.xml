@@ -17,6 +17,16 @@
         <solr.test.home>solr8home</solr.test.home>
     </properties>
 
+    <profiles>
+      <profile>
+        <id>solr9</id>
+        <properties>
+          <solr.version>9.0.0</solr.version>
+          <solr.test.home>solr8home</solr.test.home>
+        </properties>
+      </profile>
+    </profiles>
+
     <repositories>
         <repository>
             <id>sonatype.org</id>
@@ -305,10 +315,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.16</version>
+                <version>2.22.0</version>
                 <configuration>
                     <enableAssertions>true</enableAssertions>
                     <argLine>-Dtest.solr.allowed.securerandom=NativePRNG</argLine>
+                    <systemPropertyVariables>
+                        <solrTestHome>${solr.test.home}</solrTestHome >
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>

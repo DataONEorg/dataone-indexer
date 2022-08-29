@@ -87,6 +87,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     protected ApplicationContext context;
     private SolrIndex solrIndexService;
     private int solrPort = Settings.getConfiguration().getInt("test.solr.port", 8985);
+    private static final String DEFAULT_SOL_RHOME = "solr8home";
     
     /**
      * Index the given object into solr
@@ -282,11 +283,17 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
 
     protected void startJettyAndSolr() throws Exception {
         if (jetty == null) {
+            String solrTestHome = System.getProperty("solrTestHome");
+            System.out.println("===========================The test solr home from the system property is " + solrTestHome);
+            if (solrTestHome == null || solrTestHome.trim().equals("")) {
+                solrTestHome = DEFAULT_SOL_RHOME;
+            }
+            System.out.println("============================The final test solr home  is " + solrTestHome);
             JettyConfig jconfig = JettyConfig.builder().setPort(solrPort).build();
             File f = new File(".");
             String localPath = f.getAbsolutePath();
             createJettyWithPort(localPath
-                    + "/src/test/resources/org/dataone/cn/index/resources/solr8home", jconfig);
+                    + "/src/test/resources/org/dataone/cn/index/resources/" + solrTestHome, jconfig);
         }
     }
 
