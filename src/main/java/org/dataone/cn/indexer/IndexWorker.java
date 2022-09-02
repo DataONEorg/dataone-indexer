@@ -40,6 +40,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.configuration.Settings;
 import org.dataone.exceptions.MarshallingException;
+import org.dataone.indexer.queue.IndexQueueMessageParser;
 import org.dataone.service.exceptions.InvalidRequest;
 import org.dataone.service.exceptions.InvalidToken;
 import org.dataone.service.exceptions.NotAuthorized;
@@ -289,38 +290,22 @@ public class IndexWorker {
                                        throws IOException {
                 String identifier = null;
                 try {
-                    Map<String, Object> headers = properties.getHeaders();
-                    identifier = ((LongString)headers.get(HEADER_ID)).toString();
-                    if (identifier == null || identifier.trim().equals("")) {
-                        throw new InvalidRequest("0000", "The identifier cannot be null or blank in the index task");
-                    }
-                    final Identifier pid = new Identifier();
-                    pid.setValue(identifier);
-                    String filePath1 = null;
-                    Object pathObject = headers.get(HEADER_PATH);
-                    if (pathObject != null) {
-                        filePath1 = ((LongString)pathObject).toString();
-                    }
-                    final String finalFilePath = filePath1;
-                    final String indexType = ((LongString)headers.get(HEADER_INDEX_TYPE)).toString();
-                    if (indexType == null || indexType.trim().equals("")) {
-                        throw new InvalidRequest("0000", "The index type cannot be null or blank in the index task");
-                    }
-                    final int priority = properties.getPriority();
+                    final IndexQueueMessageParser parser = new IndexQueueMessageParser();
+                    parser.parse(properties, body);
                     final Envelope finalEnvelop = envelope;
                     if (multipleThread) {
-                        logger.debug("IndexWorker.start.handleDelivery - using multiple threads to index identifier " + pid.getValue());
+                        logger.debug("IndexWorker.start.handleDelivery - using multiple threads to index identifier " + parser.getIdentifier().getValue());
                         Runnable runner = new Runnable() {
                             @Override
                             public void run() {
-                                indexOjbect(pid, indexType, priority, finalFilePath, finalEnvelop.getDeliveryTag(), multipleThread);
+                                indexOjbect(parser, finalEnvelop.getDeliveryTag(), multipleThread);
                             }
                         };
                         // submit the task, and that's it
                         executor.submit(runner);
                     } else {
-                        logger.debug("IndexWorker.start.handleDelivery - using single thread to index identifier " + pid.getValue());
-                        indexOjbect(pid, indexType, priority, finalFilePath, finalEnvelop.getDeliveryTag(), multipleThread);
+                        logger.debug("IndexWorker.start.handleDelivery - using single thread to index identifier " + parser.getIdentifier().getValue());
+                        indexOjbect(parser, finalEnvelop.getDeliveryTag(), multipleThread);
                     }
                 } catch (InvalidRequest e) {
                     logger.error("IndexWorker.start.handleDelivery - cannot index the task for identifier  " + 
@@ -337,14 +322,15 @@ public class IndexWorker {
     
     /**
      * Process the index task. This method is called by a single or multiple thread(s) determined by the configuration.
-     * @param pid  the identifier of the object which need to be indexed
-     * @param indexType  the type of index (delete, create or update)
-     * @param priority  the priority of the index task (for the log information only)
-     * @param finalFilePath  the file path of the object 
+     @param paser  the parser parsed the index queue message and holds the index information
      * @param deliveryTag  the tag of the rabbitmq message
      * @param multipleThread  the task was handled by multiple thread or not (for the log information only)
      */
-    private void indexOjbect(Identifier pid, String indexType, int priority, String finalFilePath, long deliveryTag, boolean multipleThread) {
+    private void indexOjbect(IndexQueueMessageParser parser, long deliveryTag, boolean multipleThread) {
+        Identifier pid = parser.getIdentifier();
+        String indexType = parser.getIndexType();
+        int priority = parser.getPriority();
+        String finalFilePath = parser.getObjectPath();
         try {
             long threadId = Thread.currentThread().getId();
             logger.info("IndexWorker.consumer.indexOjbect by multiple thread? " + multipleThread + ", with the thread id " + threadId + 
