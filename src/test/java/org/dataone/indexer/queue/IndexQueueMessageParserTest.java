@@ -40,7 +40,7 @@ public class IndexQueueMessageParserTest {
             parser.parse(properties, body);
             fail("Since the idenitifer is null, we shoulder get here");
         } catch (InvalidRequest e) {
-            //we should be here
+            
         }
         
         id = LongStringHelper.asLongString(" ");
@@ -52,7 +52,7 @@ public class IndexQueueMessageParserTest {
             parser.parse(properties, body);
             fail("Since the idenitifer is null, we shouldn't get here");
         } catch (InvalidRequest e) {
-            //we should be here
+            
         }
         
         id = LongStringHelper.asLongString("foo");
@@ -64,7 +64,7 @@ public class IndexQueueMessageParserTest {
             parser.parse(properties, body);
             fail("Since the index type is null, we shouldn't get here");
         } catch (InvalidRequest e) {
-            //we should be here
+           
         }
         
         id = LongStringHelper.asLongString("foo");
@@ -76,7 +76,7 @@ public class IndexQueueMessageParserTest {
             parser.parse(properties, body);
             fail("Since the index type is null, we shouldn't get here");
         } catch (InvalidRequest e) {
-            //we should be here
+            
         }
     }
     
@@ -105,7 +105,7 @@ public class IndexQueueMessageParserTest {
         id = "urn:uuid:45298965-f867-440c-841f-91d3abd729b7";
         indexType = "delete";
         priority = 2;
-        filePath = "/var/metacat/12d-fad";
+        filePath = "";
         longId = LongStringHelper.asLongString(id);
         longIndexType = LongStringHelper.asLongString(indexType);
         longFilePath = LongStringHelper.asLongString(filePath);
@@ -131,6 +131,20 @@ public class IndexQueueMessageParserTest {
         assertTrue(parser.getIndexType().equals(indexType));
         assertTrue(parser.getPriority() == priority);
         assertTrue(parser.getObjectPath().equals(filePath));
+        
+        id = "test-foo2";
+        indexType = "sysmeta2";
+        priority = 10;
+        longId = LongStringHelper.asLongString(id);
+        longIndexType = LongStringHelper.asLongString(indexType);
+        longFilePath = null;
+        properties = generateProperties(longId, longIndexType, priority, longFilePath);
+        parser = new IndexQueueMessageParser();
+        parser.parse(properties, body);
+        assertTrue(parser.getIdentifier().getValue().equals(id));
+        assertTrue(parser.getIndexType().equals(indexType));
+        assertTrue(parser.getPriority() == priority);
+        assertTrue(parser.getObjectPath() == null);
     }
     
     /**
