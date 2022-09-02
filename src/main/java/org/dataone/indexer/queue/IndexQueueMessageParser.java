@@ -55,16 +55,25 @@ public class IndexQueueMessageParser {
      */
     public void parse(AMQP.BasicProperties properties, byte[] body) throws InvalidRequest {
         Map<String, Object> headers = properties.getHeaders();
-        String pid = ((LongString)headers.get(HEADER_ID)).toString();
+        Object pidObj = headers.get(HEADER_ID);
+        if (pidObj == null) {
+            throw new InvalidRequest("0000", "The identifier cannot be null in the index queue message.");
+        }
+        String pid = ((LongString)pidObj).toString();
         if (pid == null || pid.trim().equals("")) {
-        throw new InvalidRequest("0000", "The identifier cannot be null or blank in the index queue message.");
+            throw new InvalidRequest("0000", "The identifier cannot be null or blank in the index queue message.");
         }
         logger.debug("IndexQueueMessageParser.parse - the identifier in the message is " + pid);
+        identifier = new Identifier();
         identifier.setValue(pid);
         
-        indexType = ((LongString)headers.get(HEADER_INDEX_TYPE)).toString();
+        Object typeObj = headers.get(HEADER_INDEX_TYPE);
+        if (typeObj == null) {
+            throw new InvalidRequest("0000", "The index type cannot be null in the index queue message.");
+        }
+        indexType = ((LongString)typeObj).toString();
         if (indexType == null || indexType.trim().equals("")) {
-        throw new InvalidRequest("0000", "The index type cannot be null or blank in the index queue message.");
+            throw new InvalidRequest("0000", "The index type cannot be null or blank in the index queue message.");
         }
         logger.debug("IndexQueueMessageParser.parse - the index type in the message is " + indexType);
  
