@@ -76,15 +76,15 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
     private static int waitingTime = Settings.getConfiguration().getInt("index.resourcemap.waitingComponent.time", 100);
     private static int maxAttempts = Settings.getConfiguration().getInt("index.resourcemap.waitingComponent.max.attempts", 5);
     
-    private static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    private static DocumentBuilder builder = null;
-    static  {
+    //private static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    //private static DocumentBuilder builder = null;
+    /*static  {
         try {
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
             logger.error("ResourceMapSubprocess.static - can't initialize the DocumentBuilder since " + e.getMessage());
         }
-    }
+    }*/
 
     @Autowired
     private HTTPService httpService = null;
@@ -130,6 +130,8 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
         
         //Get the path to the resource map file
         //String resourcMapPath = DistributedMapsFactory.getObjectPathMap().get(id);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
         Document resourceMap = builder.parse(is);
         List<SolrDoc> processedDocs = processResourceMap(resourceMapDoc, resourceMap);
         Map<String, SolrDoc> processedDocsMap = new HashMap<String, SolrDoc>();
