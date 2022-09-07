@@ -16,7 +16,7 @@ RUN apt install figlet
 RUN apt install curl
 
 # The most recently built jar file is copied from the maven build directory to this dir by maven, so that
-# it can be copyied to the image.
+# it can be copied to the image.
 COPY ../target/dataone-index-worker-${TAG}-shaded.jar .
 COPY ./docker/entrypoint.sh .
 

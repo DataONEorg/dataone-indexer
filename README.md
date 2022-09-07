@@ -29,6 +29,17 @@ mvn clean package -DskipTests
 nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 --namespace k8s.io .
 ```
 
+## Publish the image to GHCR
+
+For the built image to be accessible for kubernetes, it needs to be published to an image registry that is visible to Kubernetes. For example, we can make the published image available via the Github Container Registry (ghcr.io) so that it can be pulled by Kubernetes. For this to work, one must first tag the image with the ghcr.io URL so that it can be published. Then, after logging in to the registry with a suitable GIHUB PAT, one can push the image to the registry.  
+
+```
+nerdctl tag dataone-index-worker:2.4.0 ghcr.io/dataoneorg/dataone-index-worker:2.4.0
+echo $GITHUB_PAT | nerdctl login ghcr.io -u DataONEorg --password-stdin
+nerdctl push ghcr.io/dataoneorg/dataone-index-worker:2.4.0
+```
+
+Once the image has been pushed, it may be private and will need to be made public and assigned to the `dataone-indexer` repository.
 ## Deploying the application via Helm
 
 Helm provides a simple mechanism to install all application dependencies and configure the application in a single command. To deploy using helm to a release named `d1index` and also in a namespace named `d1index`, and then view the deployed pods and services, use a sequence like:
