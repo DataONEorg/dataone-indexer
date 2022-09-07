@@ -20,5 +20,8 @@ RUN apt install curl
 COPY ../target/dataone-index-worker-${TAG}-shaded.jar .
 COPY ./docker/entrypoint.sh .
 
+# Connect this image to a GitHub repository
+LABEL org.opencontainers.image.source https://github.com/dataoneorg/dataone-indexer
+
 # Run the Worker process
 CMD ./entrypoint.sh
