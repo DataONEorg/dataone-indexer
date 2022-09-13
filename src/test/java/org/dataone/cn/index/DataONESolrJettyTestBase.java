@@ -84,7 +84,7 @@ import org.xml.sax.SAXException;
 @SuppressSSL
 public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
 
-    protected ApplicationContext context;
+    protected static ApplicationContext context;
     private SolrIndex solrIndexService;
     private int solrPort = Settings.getConfiguration().getInt("test.solr.port", 8985);
     private static final String DEFAULT_SOL_RHOME = "solr8home";
@@ -384,5 +384,16 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         }
         return equal;
         
+    }
+    
+    /**
+     * Get the context
+     * @return  the context
+     */
+    public static ApplicationContext getContext() {
+        if (context == null) {
+            context = new ClassPathXmlApplicationContext("org/dataone/cn/index/test-context.xml");
+        }
+        return context;
     }
 }
