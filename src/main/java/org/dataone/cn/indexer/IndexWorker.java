@@ -181,10 +181,23 @@ public class IndexWorker {
      * @throws ServiceFailure 
      */
     public IndexWorker() throws IOException, TimeoutException, ServiceFailure {
-        initExecutorService();//initialize the executor first
-        initIndexQueue();
-        initIndexParsers();
-        ObjectManager.getInstance();
+        this(true);
+    }
+    
+    /**
+     * Constructor with/without initialization
+     * @param initialize  if we need to initialize RabittMQ and et al
+     * @throws IOException
+     * @throws TimeoutException
+     * @throws ServiceFailure
+     */
+    public IndexWorker(Boolean initialize) throws IOException, TimeoutException, ServiceFailure {
+        if (initialize) {
+            initExecutorService();//initialize the executor first
+            initIndexQueue();
+            initIndexParsers();
+            ObjectManager.getInstance();
+        }
     }
     
     /**
