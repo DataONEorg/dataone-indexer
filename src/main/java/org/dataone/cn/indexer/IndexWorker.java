@@ -96,6 +96,10 @@ public class IndexWorker {
     
     private static Logger logger = Logger.getLogger(IndexWorker.class);
     private static String defaultExternalPropertiesFile = "/etc/dataone/dataone-indexer.properties";
+    
+    protected static String propertyFilePath = null;
+    protected boolean multipleThread = true;
+    protected int nThreads = 1;
    
     private String RabbitMQhost = null;
     private int RabbitMQport = 0;
@@ -105,12 +109,11 @@ public class IndexWorker {
     private Connection RabbitMQconnection = null;
     private Channel RabbitMQchannel = null;
     private ApplicationContext context = null;
-    private SolrIndex solrIndex = null;
+    protected SolrIndex solrIndex = null;
     private String specifiedThreadNumberStr = null;
     private int specifiedThreadNumber = 0;
     private ExecutorService executor = null;
-    private boolean multipleThread = true;
-    private int nThreads = 1;
+    
     
     /**
      * Commandline main for the IndexWorker to be started.
@@ -132,37 +135,37 @@ public class IndexWorker {
      * If the attempt fails, it will try to use the default path - /etc/dataone/dataone-indexer.properties
      * If it fails again, it will give up
      */
-    private static void loadExternalPropertiesFile() {
-        String path = System.getenv(ENV_NAME_OF_PROPERTIES_FILE);
-        logger.debug("IndexWorker.loadExternalPropertiesFile - the configuration path from the env variable is " + path);
-        if (path != null && !path.trim().equals("")) {
-            File defaultFile = new File (path);
+    protected static void loadExternalPropertiesFile() {
+        propertyFilePath = System.getenv(ENV_NAME_OF_PROPERTIES_FILE);
+        logger.debug("IndexWorker.loadExternalPropertiesFile - the configuration path from the env variable is " + propertyFilePath);
+        if (propertyFilePath != null && !propertyFilePath.trim().equals("")) {
+            File defaultFile = new File (propertyFilePath);
             if (defaultFile.exists() && defaultFile.canRead()) {
                 logger.info("IndexWorker.loadExternalPropertiesFile - the configuration path can be read from the env variable " + ENV_NAME_OF_PROPERTIES_FILE +
-                           " and its value is " + path + ". The file exists and it will be used.");
+                           " and its value is " + propertyFilePath + ". The file exists and it will be used.");
             } else {
                 logger.info("IndexWorker.loadExternalPropertiesFile - the configuration path can be read from the env variable " + ENV_NAME_OF_PROPERTIES_FILE +
-                        " and its value is " + path + ". But the file does NOT exist or be readable. So it will NOT be used.");
-                path = null;
+                        " and its value is " + propertyFilePath + ". But the file does NOT exist or be readable. So it will NOT be used.");
+                propertyFilePath = null;
             }
           
         }
-        if (path == null || path.trim().equals("")) {
+        if (propertyFilePath == null || propertyFilePath.trim().equals("")) {
             //The attempt to read the configuration file from the env variable failed. We will try the default external path
             File defaultFile = new File (defaultExternalPropertiesFile);
             if (defaultFile.exists() && defaultFile.canRead()) {
                 logger.info("IndexWorker.loadExternalPropertiesFile - the configure path can't be read from the env variable " + ENV_NAME_OF_PROPERTIES_FILE +
                            ". However, the default external file " + defaultExternalPropertiesFile + " exists and it will be used.");
-                path = defaultExternalPropertiesFile;
+                propertyFilePath = defaultExternalPropertiesFile;
             }
         }
-        if (path != null && !path.trim().equals("")) {
+        if (propertyFilePath != null && !propertyFilePath.trim().equals("")) {
             try {
                 //Settings.getConfiguration();
-                Settings.augmentConfiguration(path);
-                logger.info("IndexWorker.loadExternalPropertiesFile - loaded the properties from the file " + path);
+                Settings.augmentConfiguration(propertyFilePath);
+                logger.info("IndexWorker.loadExternalPropertiesFile - loaded the properties from the file " + propertyFilePath);
             } catch (ConfigurationException e) {
-               logger.error("IndexWorker.loadExternalPropertiesFile - can't load any properties from the file " + path + 
+               logger.error("IndexWorker.loadExternalPropertiesFile - can't load any properties from the file " + propertyFilePath + 
                             " since " + e.getMessage() + ". It will use the default properties in the jar file.");
             }
         } else {
@@ -231,7 +234,7 @@ public class IndexWorker {
     /**
      * Initialize the solrIndex object which contains the index parsers.
      */
-    private void initIndexParsers() {
+    protected void initIndexParsers() {
         if (context == null) {
             synchronized(IndexWorker.class) {
                 if (context == null) {
@@ -245,7 +248,7 @@ public class IndexWorker {
     /**
      * Determine the size of the thread pool and initialize the executor service
      */
-    private void initExecutorService() {
+    protected void initExecutorService() {
         specifiedThreadNumberStr = Settings.getConfiguration().getString("index.thread.number", "0");
         try {
             specifiedThreadNumber = (new Integer(specifiedThreadNumberStr)).intValue();
