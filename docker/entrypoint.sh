@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 figlet -ck DataONE Indexer
 
 if [[ "$DEBUG" == "TRUE" ]]
