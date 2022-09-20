@@ -105,10 +105,9 @@ rabbitmq:
   #max.priority: 10
 
 solr:
-  enabled: true
+  collection: dataone-index
+  hostname: d1index-solr-headless.d1index.svc
   auth:
     adminUsername: solradmin
     adminPassword: change-to-using-a-solr-secret
     #existingSecret: solr-secret
-  coreNames: ['testcore']
-  hostname: d1index-solr-headless.d1index.svc

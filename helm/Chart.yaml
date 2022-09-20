@@ -39,7 +39,5 @@ dependencies:
     import-values:
       - child: auth
         parent: solr
-      - child: coreNames
-        parent: solr
-      - child: cloudEnabled
-        parent: solr
+      - child: collection
+        parent: solr.collection
