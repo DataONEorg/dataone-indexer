@@ -14,6 +14,7 @@ RUN apt update
 RUN apt install bash 
 RUN apt install figlet
 RUN apt install curl
+RUN apt install nano
 
 # The most recently built jar file is copied from the maven build directory to this dir by maven, so that
 # it can be copied to the image.
