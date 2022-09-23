@@ -978,7 +978,7 @@ public class SolrIndex {
             try {
                 //solrServer.deleteById(pid);
                 //solrServer.commit();
-                httpService.sendSolrDelete(solrIndexUri, pid);
+                httpService.sendSolrDelete(pid, solrIndexUri);
             //} catch (SolrServerException e) {
                 //throw e;
                 
