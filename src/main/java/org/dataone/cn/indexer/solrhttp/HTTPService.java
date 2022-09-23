@@ -98,7 +98,6 @@ public class HTTPService {
     private HttpComponentsClientHttpRequestFactory httpRequestFactory;
 
     private String SOLR_SCHEMA_PATH = Settings.getConfiguration().getString("solr.schema.path");
-    private String solrIndexUri;
     private List<String> validSolrFieldNames = new ArrayList<String>();
 
     public HTTPService(HttpComponentsClientHttpRequestFactory requestFactory) 
@@ -188,7 +187,7 @@ public class HTTPService {
         }
     }
 
-    public void sendSolrDelete(String pid) throws IOException {
+    public void sendSolrDelete(String pid, String solrUpdateUri) throws IOException {
         // generate request to solr server to remove index record for task.pid
         OutputStream outputStream = new ByteArrayOutputStream();
         try {
@@ -196,14 +195,14 @@ public class HTTPService {
                     CHAR_ENCODING);
             String escapedId = StringEscapeUtils.escapeXml(pid);
             IOUtils.write("<delete><id>" + escapedId + "</id></delete>", outputStream, CHAR_ENCODING);
-            sendPost(getSolrIndexUri(), outputStream.toString());
+            sendPost(solrUpdateUri, outputStream.toString());
         } catch (IOException e) {
             //e.printStackTrace();
             throw e;
         }
     }
 
-    public void sendSolrDeletes(List<String> pids) {
+    public void sendSolrDeletes(List<String> pids, String solrUpdateUri) {
         // generate request to solr server to remove index record for task.pid
         OutputStream outputStream = new ByteArrayOutputStream();
         try {
@@ -215,7 +214,7 @@ public class HTTPService {
                 IOUtils.write("<delete><id>" + escapedId + "</id></delete>", outputStream, CHAR_ENCODING);  
             }
             IOUtils.write("</update>", outputStream, CHAR_ENCODING);
-            sendPost(getSolrIndexUri(), outputStream.toString());
+            sendPost(solrUpdateUri, outputStream.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -548,14 +547,6 @@ public class HTTPService {
             }
         }
         return doc;
-    }
-
-    public void setSolrIndexUri(String uri) {
-        this.solrIndexUri = uri;
-    }
-
-    public String getSolrIndexUri() {
-        return this.solrIndexUri;
     }
 
     public HttpClient getHttpClient() {

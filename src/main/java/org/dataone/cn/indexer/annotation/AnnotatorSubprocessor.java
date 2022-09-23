@@ -25,6 +25,7 @@ import org.dataone.cn.indexer.parser.SubprocessorUtility;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.configuration.Settings;
 import org.dataone.indexer.performance.PerformanceLogger;
 import org.dataone.cn.indexer.annotation.OntologyModelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +53,7 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
     @Autowired
     private HTTPService httpService = null;
 
-    @Autowired
-    private String solrQueryUri = null;
+    private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
 
     private PerformanceLogger perfLog = PerformanceLogger.getInstance();
     

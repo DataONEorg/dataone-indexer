@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.configuration.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class SubprocessorUtility {
@@ -19,8 +20,7 @@ public class SubprocessorUtility {
     @Autowired
     private HTTPService httpService = null;
 
-    @Autowired
-    private String solrQueryUri = null;
+    private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
 
     public SubprocessorUtility() {
     }

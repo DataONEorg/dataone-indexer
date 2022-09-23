@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.configuration.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class BaseDocumentDeleteSubprocessor implements IDocumentDeleteSubprocessor {
@@ -44,8 +45,7 @@ public class BaseDocumentDeleteSubprocessor implements IDocumentDeleteSubprocess
     @Autowired
     private HTTPService httpService;
 
-    @Autowired
-    private String solrQueryUri;
+    private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
 
     private String relationSourceFormatId;
     private String relationSourceField;

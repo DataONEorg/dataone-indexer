@@ -96,9 +96,8 @@ public class SolrIndex {
     
     @Autowired
     private static HTTPService httpService = null;
-    @Autowired
-    private String solrQueryUri = null;
-    private String solrIndexUri = null;
+    private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
+    private String solrIndexUri = Settings.getConfiguration().getString("solr.index.uri");
     private XMLNamespaceConfig xmlNamespaceConfig = null;
     private static BaseXPathDocumentSubprocessor systemMetadataProcessor = null;
     private List<ISolrField> sysmetaSolrFields = null;
@@ -979,7 +978,7 @@ public class SolrIndex {
             try {
                 //solrServer.deleteById(pid);
                 //solrServer.commit();
-                httpService.sendSolrDelete(pid);
+                httpService.sendSolrDelete(solrIndexUri, pid);
             //} catch (SolrServerException e) {
                 //throw e;
                 
@@ -1008,35 +1007,4 @@ public class SolrIndex {
         return httpService;
     }
     
-    /**
-     * Get the solr query url
-     * @return  the solr query url
-     */
-    public String getSolrQueryUri() {
-        return solrQueryUri;
-    }
-
-    /**
-     * Set the solr query url
-     * @param solrQueryUri
-     */
-    public void setSolrQueryUri(String solrQueryUri) {
-        this.solrQueryUri = solrQueryUri;
-    }
-    
-    /**
-     * Get the the update solr uri
-     * @return
-     */
-    public String getSolrIndexUri() {
-        return solrIndexUri;
-    }
-
-    /**
-     * Set the update solr uri
-     * @param solrindexUri
-     */
-    public void setSolrIndexUri(String solrIndexUri) {
-        this.solrIndexUri = solrIndexUri;
-    }
 }

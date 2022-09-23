@@ -89,8 +89,7 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
     @Autowired
     private HTTPService httpService = null;
 
-    @Autowired
-    private String solrQueryUri = null;
+    private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
 
     @Autowired
     private SubprocessorUtility processorUtility;
@@ -228,22 +227,4 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
     public HTTPService getHttpService() {
         return httpService;
     }
-    
-    /**
-     * Get the solr query url
-     * @return  the solr query url
-     */
-    public String getSolrQueryUri() {
-        return solrQueryUri;
-    }
-
-    /**
-     * Set the solr query url
-     * @param solrQueryUri
-     */
-    public void setSolrQueryUri(String solrQueryUri) {
-        this.solrQueryUri = solrQueryUri;
-    }
-    
-  
 }

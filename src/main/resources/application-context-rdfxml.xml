@@ -4,7 +4,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<bean id="rdfXMLSubprocessor" class="org.dataone.cn.indexer.annotation.RdfXmlSubprocessor">
-        <property name="solrQueryUri" value="${solr.query.uri}" />
         <property name="httpService" ref="httpService" />
         <property name="processorUtility" ref="subprocessorUtility" />
 		<property name="matchDocuments">

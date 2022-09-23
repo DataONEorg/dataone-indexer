@@ -15,8 +15,6 @@
      <constructor-arg name="xmlNamespaceConfig" ref="xmlNamespaceConfig" />
      <constructor-arg name="systemMetadataProcessor" ref="systemMetadata200Subprocessor"/>
      <constructor-arg name="httpService" ref="httpService" />
-     <property name="solrQueryUri" value="${solr.query.uri}" />
-     <property name="solrIndexUri" value="${solr.index.uri}" />
      <property name="subprocessors">
       <list>
        <ref bean="eml200Subprocessor" />
@@ -218,14 +216,6 @@
 	 	</constructor-arg>
 	</bean>
 
-	<bean id="solrQueryUri" class="java.lang.String">
-		<constructor-arg value="${solr.query.uri}"/>
-	</bean>
-
-	<bean id="solrIndexUri" class="java.lang.String">
-		<constructor-arg value="${solr.index.uri}"/>
-	</bean>
-
     <!--<bean id="httpConnectionManager" class="org.apache.http.impl.conn.SingleClientConnManager"/> -->
     <bean id="httpConnectionManager" class="org.apache.http.impl.conn.PoolingClientConnectionManager"  p:defaultMaxPerRoute="12" />
 
@@ -241,7 +231,6 @@
 
 	<bean id="httpService" class="org.dataone.cn.indexer.solrhttp.HTTPService">
 		<constructor-arg ref="httpClientFactory" />
-		<property name="solrIndexUri" value="${solr.index.uri}" />
 	</bean>
 
 	<bean id="mnServiceRegistrationTypeDocumentService" class="org.dataone.cn.indexer.convert.MemberNodeServiceRegistrationTypeDocumentService"/>

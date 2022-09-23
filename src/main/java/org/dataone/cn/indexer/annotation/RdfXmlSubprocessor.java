@@ -42,6 +42,7 @@ import org.dataone.cn.indexer.parser.SubprocessorUtility;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.configuration.Settings;
 import org.dataone.indexer.performance.PerformanceLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -77,7 +78,7 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
  
     private HTTPService httpService = null;
 
-    private String solrQueryUri = null;
+    private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
 
     private SubprocessorUtility processorUtility;
 
@@ -491,21 +492,6 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
         this.httpService = httpService;
     }
 
-    /**
-     * Get the solr query url
-     * @return  the query url
-     */
-    public String getSolrQueryUri() {
-        return solrQueryUri;
-    }
-
-    /**
-     * Set the solr query url 
-     * @param solrQueryUri  the url will be set
-     */
-    public void setSolrQueryUri(String solrQueryUri) {
-        this.solrQueryUri = solrQueryUri;
-    }
 
     /**
      * Get the subprocessor utility
