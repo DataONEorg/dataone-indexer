@@ -417,7 +417,7 @@
                             <goal>copy</goal>
                         </goals>
                         <configuration>
-                            <sourceFile>src/main/resources/index-solr-schema.xml</sourceFile>
+                            <sourceFile>src/main/resources/solr-conf/schema.xml</sourceFile>
                             <destinationFile>src/test/resources/org/dataone/cn/index/resources/${solr.test.home}/collection1/conf/schema.xml</destinationFile>
                         </configuration>
                     </execution>
