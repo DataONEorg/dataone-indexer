@@ -41,3 +41,5 @@ dependencies:
         parent: solr
       - child: collection
         parent: solr.collection
+      - child: javaMem
+        parent: solr.javaMem

@@ -52,6 +52,9 @@ spec:
             - mountPath: /etc/dataone/dataone-indexer.properties
               subPath: dataone-indexer.properties
               name: {{ .Release.Name }}-config-volume
+            - mountPath: {{ .Values.persistence.mountPath }}
+              name: {{ .Values.persistence.volumeName }}
+              readOnly: true
           env:
             - name: DEBUG
               value: "{{ .Values.idxworker.debug }}"
@@ -72,3 +75,6 @@ spec:
           configMap:
             name: {{ .Release.Name }}-configfiles
             defaultMode: 0644
+        - name: {{ .Values.persistence.volumeName }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.claimName }}
