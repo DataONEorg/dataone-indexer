@@ -116,5 +116,5 @@ solr:
   auth:
     #enabled: false
     adminUsername: solradmin
--   adminPassword: change-to-using-a-solr-secret
+    adminPassword: change-to-using-a-solr-secret
     #existingSecret: solr-secret

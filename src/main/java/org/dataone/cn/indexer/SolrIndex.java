@@ -86,8 +86,8 @@ public class SolrIndex {
     public static final String ID = "id";
     private static final String IDQUERY = ID+":*";
     private static final String VERSION_CONFLICT = "version conflict";
-    private static final int VERSION_CONFLICT_MAX_ATTEMPTS = Settings.getConfiguration().getInt("index.solr.versionConflict.max.attempts", 2);
-    private static final int VERSION_CONFICT_WAITING = Settings.getConfiguration().getInt("index.solr.versionConflict.waiting.time", 100); //milliseconds
+    private static final int VERSION_CONFLICT_MAX_ATTEMPTS = Settings.getConfiguration().getInt("index.solr.versionConflict.max.attempts", 5);
+    private static final int VERSION_CONFICT_WAITING = Settings.getConfiguration().getInt("index.solr.versionConflict.waiting.time", 500); //milliseconds
     private static final List<String> resourceMapFormatIdList = Settings.getConfiguration().getList("index.resourcemap.namespace");
     private static List<IDocumentSubprocessor> subprocessors = null;
     private static List<IDocumentDeleteSubprocessor> deleteSubprocessors = null;

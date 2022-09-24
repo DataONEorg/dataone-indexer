@@ -73,8 +73,8 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
 
     private static Logger logger = Logger.getLogger(ResourceMapSubprocessor.class.getName());
     
-    private static int waitingTime = Settings.getConfiguration().getInt("index.resourcemap.waitingComponent.time", 100);
-    private static int maxAttempts = Settings.getConfiguration().getInt("index.resourcemap.waitingComponent.max.attempts", 5);
+    private static int waitingTime = Settings.getConfiguration().getInt("index.resourcemap.waitingComponent.time", 600);
+    private static int maxAttempts = Settings.getConfiguration().getInt("index.resourcemap.waitingComponent.max.attempts", 15);
     
     //private static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     //private static DocumentBuilder builder = null;
