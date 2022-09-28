@@ -93,15 +93,17 @@ kubectl cp -n d1index solrconfig.xml  d1index-solr-0:/bitnami/solr/server/solr/
 - Creat the configuration directory for the collection of `dataone-index` in all Solr pods
 ```
 kubectl exec -n d1index -it d1index-solr-2 -- /bin/bash
+d1index-solr-2:/$ cd /bitnami/solr/server/solr/configsets
 d1index-solr-2:/bitnami/solr/server/solr/configsets$ cp -R sample_techproducts_configs dataone_index_configs
 d1index-solr-2:/bitnami/solr/server/solr/configsets$ cp schema.xml dataone_index_configs/conf/.
 d1index-solr-2:/bitnami/solr/server/solr/configsets$ cp solrconfig.xml dataone_index_configs/conf/solrconfig.xml 
+d1index-solr-2:/bitnami/solr/server/solr/configsets$ rm dataone_index_configs/conf/managed-schema 
 ```
-- Delete the dummy `dataone-one` collection installed in the helm installation process
+- Delete the dummy `dataone-one` collection installed in the helm installation process. This command may fail but we can ignore the failure.
 ```
-/opt/bitnami/solr/bin/solr delete -c collection_name
+/opt/bitnami/solr/bin/solr delete -c dataone-index
 ```
-- Create a new `dataone-one` collection based on the customized configuration. Note: this command only needs to run once on a Solr pod.
+- Create a new `dataone-one` collection based on the customized configuration. Note: this command only needs to run once on a Solr pod and we assume the number of the Solr nodes is 3
 ```
 /opt/bitnami/solr/bin/solr create -c dataone-index -d /bitnami/solr/server/solr/configsets/dataone_index_configs/ -rf 3
 ```
