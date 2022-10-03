@@ -42,7 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class BaseDocumentDeleteSubprocessor implements IDocumentDeleteSubprocessor {
 
-    @Autowired
     private HTTPService httpService;
 
     private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
@@ -174,5 +173,21 @@ public class BaseDocumentDeleteSubprocessor implements IDocumentDeleteSubprocess
 
     public void setUniDirectionalRelationFields(List<String> uniDirectionalRelationFields) {
         this.uniDirectionalRelationFields = uniDirectionalRelationFields;
+    }
+    
+    /**
+     * Set the http service
+     * @param service
+     */
+    public void setHttpService(HTTPService service) {
+        this.httpService = service;
+    }
+
+    /**
+     * Get the http service
+     * @return  the http service
+     */
+    public HTTPService getHttpService() {
+        return httpService;
     }
 }

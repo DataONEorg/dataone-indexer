@@ -43,7 +43,6 @@ public class EmlAnnotationSubprocessor implements IDocumentSubprocessor {
 
     private PerformanceLogger perfLog = PerformanceLogger.getInstance();
 
-    @Autowired
     private SubprocessorUtility processorUtility;
 
     private List<String> matchDocuments = null;

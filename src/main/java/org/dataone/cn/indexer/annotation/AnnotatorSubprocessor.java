@@ -47,10 +47,8 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
 
     private static Logger log = Logger.getLogger(AnnotatorSubprocessor.class.getName());
 
-    @Autowired
     private SubprocessorUtility processorUtility;
 
-    @Autowired
     private HTTPService httpService = null;
 
     private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
@@ -85,6 +83,38 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
 
     public void setFieldList(List<ISolrDataField> fieldList) {
         this.fieldList = fieldList;
+    }
+    
+    /**
+     * Set the http service
+     * @param service
+     */
+    public void setHttpService(HTTPService service) {
+        this.httpService = service;
+    }
+
+    /**
+     * Get the http service
+     * @return  the http service
+     */
+    public HTTPService getHttpService() {
+        return httpService;
+    }
+    
+    /**
+     * Get the subprocessor utility object
+     * @return  the subprocessor utility
+     */
+    public SubprocessorUtility getProcessorUtility() {
+        return processorUtility;
+    }
+
+    /**
+     * Set the subprocessor utility
+     * @param processorUtility  the subprocessor utility object will be set 
+     */
+    public void setProcessorUtility(SubprocessorUtility processorUtility) {
+        this.processorUtility = processorUtility;
     }
 
     /**

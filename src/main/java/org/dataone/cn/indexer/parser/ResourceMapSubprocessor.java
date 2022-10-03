@@ -86,12 +86,10 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
         }
     }*/
 
-    @Autowired
     private HTTPService httpService = null;
 
     private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
 
-    @Autowired
     private SubprocessorUtility processorUtility;
 
     private PerformanceLogger perfLog = PerformanceLogger.getInstance();
@@ -226,5 +224,21 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
      */
     public HTTPService getHttpService() {
         return httpService;
+    }
+    
+    /**
+     * Get the subprocessor utility object
+     * @return  the subprocessor utility
+     */
+    public SubprocessorUtility getProcessorUtility() {
+        return processorUtility;
+    }
+
+    /**
+     * Set the subprocessor utility
+     * @param processorUtility  the subprocessor utility object will be set 
+     */
+    public void setProcessorUtility(SubprocessorUtility processorUtility) {
+        this.processorUtility = processorUtility;
     }
 }

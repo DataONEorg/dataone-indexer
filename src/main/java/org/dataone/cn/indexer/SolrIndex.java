@@ -46,9 +46,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrException;
-import org.apache.solr.common.SolrInputDocument;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.BaseXPathDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.IDocumentDeleteSubprocessor;
@@ -94,7 +92,6 @@ public class SolrIndex {
     private static SolrClient solrServer = null;
     private static List<String> copyFields = null;//list of solr copy fields
     
-    @Autowired
     private static HTTPService httpService = null;
     private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
     private String solrIndexUri = Settings.getConfiguration().getString("solr.index.uri");

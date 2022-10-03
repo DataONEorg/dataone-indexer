@@ -39,7 +39,6 @@ public class MemberNodeServiceRegistrationTypeCache {
     private static long lastRefreshTime = 0;
     private static Collection<MemberNodeServiceRegistrationType> serviceTypes = new ArrayList<MemberNodeServiceRegistrationType>();
 
-    @Autowired
     private MemberNodeServiceRegistrationTypeDocumentService mnServiceRegistrationTypeDocumentService;
 
     public Collection<MemberNodeServiceRegistrationType> getServiceTypes() {
@@ -55,6 +54,15 @@ public class MemberNodeServiceRegistrationTypeCache {
         }
 
         return serviceTypes;
+    }
+
+    public MemberNodeServiceRegistrationTypeDocumentService getMnServiceRegistrationTypeDocumentService() {
+        return mnServiceRegistrationTypeDocumentService;
+    }
+
+    public void setMnServiceRegistrationTypeDocumentService(
+            MemberNodeServiceRegistrationTypeDocumentService mnServiceRegistrationTypeDocumentService) {
+        this.mnServiceRegistrationTypeDocumentService = mnServiceRegistrationTypeDocumentService;
     }
 
 }

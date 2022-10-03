@@ -17,7 +17,6 @@ public class SubprocessorUtility {
 
     private static Logger logger = Logger.getLogger(SubprocessorUtility.class.getName());
 
-    @Autowired
     private HTTPService httpService = null;
 
     private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
@@ -44,5 +43,21 @@ public class SubprocessorUtility {
             }
         }
         return indexDocument;
+    }
+    
+    /**
+     * Set the http service
+     * @param service
+     */
+    public void setHttpService(HTTPService service) {
+        this.httpService = service;
+    }
+
+    /**
+     * Get the http service
+     * @return  the http service
+     */
+    public HTTPService getHttpService() {
+        return httpService;
     }
 }
