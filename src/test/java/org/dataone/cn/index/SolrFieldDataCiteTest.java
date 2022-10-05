@@ -71,7 +71,7 @@ public class SolrFieldDataCiteTest extends BaseSolrFieldXPathTest {
         datacite1Expected.put("fileID", "https://" + hostname + "/cn/v2/resolve/" + pid1);
         datacite1Expected
                 .put("text",
-                        "10.5072/DataCollector_dateCollected_geoLocationBox    Peach, A.     Temperature and Humidity in School Classrooms, Ponhook Lake, N.S., 1961-1962   National Research Council Canada  1963   Temperature  Humidity  Classrooms  Ponhook Lake (N.S.)     Pomegranate, B.     1961-06-01/1962-10-12   en  report   10 p.    The Division has been taking records of temperatures and humidities in groups of houses at various locations in Canada over the past several years. This survey has more recently been extended to include schools. Records obtained from classrooms in six schools in Ponhook Lake, Nova Scotia from June 1, 1961-October 12, 1962 are now reported.     44.7167 -64.2 44.9667 -63.8  Ponhook Lake, Nova Scotia dataciteScienceMetadata1");
+                        "10.5072/DataCollector_dateCollected_geoLocationBox    Peach, A.     Temperature and Humidity in School Classrooms, Ponhook Lake, N.S., 1961-1962   National Research Council Canada  1963   Temperature  Humidity  Classrooms  Ponhook Lake (N.S.)     Pomegranate, B.     1961-06-01/1962-10-12   en  report   10 p.    The Division has been taking records of temperatures and humidities in groups of houses at various locations in Canada over the past several years. This survey has more recently been extended to include schools. Records obtained from classrooms in six schools in Ponhook Lake, Nova Scotia from June 1, 1961-October 12, 1962 are now reported.     44.7167 -64.2 44.9667 -63.8  Ponhook Lake, Nova Scotia     CC0 1.0 Universal dataciteScienceMetadata1");
         
         datacite1Expected.put("northBoundCoord", "44.9667");
         datacite1Expected.put("eastBoundCoord", "-63.8");
@@ -120,7 +120,9 @@ public class SolrFieldDataCiteTest extends BaseSolrFieldXPathTest {
         datacite1Expected.put("changePermission", "");
         datacite1Expected.put("isPublic", "true");
         datacite1Expected.put("dataUrl", "https://" + hostname + "/cn/v2/resolve/" + pid1);
-    }
+        datacite1Expected.put("licenseName", "CC0 1.0 Universal");
+        datacite1Expected.put("licenseUrl", "http://creativecommons.org/publicdomain/zero/1.0/");
+     }
 
     @Test
     public void testDataCiteFieldParsing() throws Exception {
