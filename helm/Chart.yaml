@@ -39,7 +39,20 @@ dependencies:
     import-values:
       - child: auth
         parent: solr
-      - child: collection
-        parent: solr.collection
-      - child: javaMem
-        parent: solr.javaMem
+            #- child: javaMem
+            #parent: solr
+            #- child: collection
+            #parent: solr
+            #- child: extraVolumes
+            #parent: solr
+            #- child: extraVolumeMounts
+            #parent: solr
+            #- child: initContainers
+            #parent: solr
+            #- child: podOptions.initContainers
+            #parent: solr
+            #- child: podOptions.volumes
+            #parent: solr
+            #- child: configMapOptions.providedConfigMap
+            #parent: solr
+
