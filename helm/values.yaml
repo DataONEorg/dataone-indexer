@@ -118,12 +118,12 @@ solr:
     adminUsername: solradmin
     adminPassword: change-to-using-a-solr-secret
     #existingSecret: solr-secret
-  extraVolumes: "solr-config"
-      #name: solr-config
-      #configMap:
-        #name: solr-configmap
-  #extraVolumeMounts:
-    #name: solr-config
-    #mountPath: /solrconfig
-    #readonly: true
+  extraVolumes:
+    - name: solr-config
+      configMap:
+        name: solr-configmap
+  extraVolumeMounts:
+    - name: solr-config
+      mountPath: /solrconfig
+      readonly: true
 

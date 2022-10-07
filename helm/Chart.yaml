@@ -29,30 +29,7 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     version: 10.1.14
     condition: rabbitmq.enabled, global.rabbitmq.enabled
-    import-values:
-      - child: auth
-        parent: rabbitmq
   - name: solr
     repository: https://charts.bitnami.com/bitnami
     version: 6.0.6
     condition: solr.enabled, global.solr.enabled
-    import-values:
-      - child: auth
-        parent: solr
-            #- child: javaMem
-            #parent: solr
-            #- child: collection
-            #parent: solr
-            #- child: extraVolumes
-            #parent: solr
-            #- child: extraVolumeMounts
-            #parent: solr
-            #- child: initContainers
-            #parent: solr
-            #- child: podOptions.initContainers
-            #parent: solr
-            #- child: podOptions.volumes
-            #parent: solr
-            #- child: configMapOptions.providedConfigMap
-            #parent: solr
-
