@@ -110,20 +110,20 @@ rabbitmq:
   #max.priority: 10
 
 solr:
-  collection: dataone-index
-  javaMem: "-Xms512m -Xmx2g"
+  collection: dataone_collection
+  coreNames:
+    - dataone_core
+  #javaMem: "-Xms512m -Xmx2g"
   hostname: d1index-solr-headless.d1index.svc
   auth:
-    #enabled: false
     adminUsername: solradmin
     adminPassword: change-to-using-a-solr-secret
     #existingSecret: solr-secret
   extraVolumes:
     - name: solr-config
       configMap:
-        name: solr-configmap
+        name: d1index-configfiles
   extraVolumeMounts:
     - name: solr-config
       mountPath: /solrconfig
-      readonly: true
 
