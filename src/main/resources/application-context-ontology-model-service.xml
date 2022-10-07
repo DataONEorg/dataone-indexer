@@ -42,29 +42,29 @@
 	<bean id="alt.entries" class="java.util.HashMap">
 		<constructor-arg>
 			<map key-type="java.lang.String" value-type="java.lang.String">
-				<entry key="http://purl.dataone.org/ontologies/observation/d1-ECSO.owl" value="file:src/main/resources/ontologies/ECSO.owl" />
-				<entry key="http://purl.dataone.org/ontologies/provenance/ProvONE/v1/owl/provone.owl" value="file:src/main/resources/ontologies/provone.owl" />
-				<entry key="http://purl.obolibrary.org/obo/envo.owl" value="file:src/main/resources/ontologies/envo.owl" />
-				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-owl.owl" value="file:src/main/resources/ontologies/oboe.owl" />
-				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl" value="file:src/main/resources/ontologies/oboe-core.owl" />
-				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-characteristics.owl" value="file:src/main/resources/ontologies/oboe-characteristics.owl" />
-				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-standards.owl" value="file:src/main/resources/ontologies/oboe-standards.owl" />
-				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-spatial.owl" value="file:src/main/resources/ontologies/oboe-spatial.owl" />
-				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-temporal.owl" value="file:src/main/resources/ontologies/oboe-temporal.owl" />
-				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-taxa.owl" value="file:src/main/resources/ontologies/oboe-taxa.owl" />
-				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-biology.owl" value="file:src/main/resources/ontologies/oboe-biology.owl" />
-				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-ecology.owl" value="file:src/main/resources/ontologies/oboe-ecology.owl" />
-				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-environment.owl" value="file:src/main/resources/ontologies/oboe-environment.owl" />
-				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-chemistry.owl" value="file:src/main/resources/ontologies/oboe-chemistry.owl" />
-				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-anatomy.owl" value="file:src/main/resources/ontologies/oboe-anatomy.owl" />
-				<entry key="http://ecoinformatics.org/oboe-ext/sbclter.1.0/oboe-sbclter.owl" value="file:src/main/resources/ontologies/oboe-sbclter.owl" />
-				<entry key="https://purl.dataone.org/odo/MOSAIC_" value="file:src/main/resources/ontologies/MOSAiC.owl" />
-				<entry key="http://purl.dataone.org/odo/ARCRC" value="file:src/main/resources/ontologies/ARCRC.owl" />
-				<entry key="https://purl.dataone.org/odo/ADCAD_" value="file:src/main/resources/ontologies/ADCAD.owl" />
-				<entry key="http://purl.dataone.org/odo/SENSO_" value="file:src/main/resources/ontologies/SENSO.owl" />
-				<entry key="http://purl.dataone.org/odo/SALMON_" value="file:src/main/resources/ontologies/SALMON.owl" />
-				<entry key="http://purl.dataone.org/odo/SALMON_alignment_" value="file:src/main/resources/ontologies/SALMON_alignment.owl" />
-				<entry key="http://purl.dataone.org/odo/SASAP_" value="file:src/main/resources/ontologies/SASAP.owl" />
+				<entry key="http://purl.dataone.org/ontologies/observation/d1-ECSO.owl" value="ontologies/ECSO.owl" />
+				<entry key="http://purl.dataone.org/ontologies/provenance/ProvONE/v1/owl/provone.owl" value="ontologies/provone.owl" />
+				<entry key="http://purl.obolibrary.org/obo/envo.owl" value="ontologies/envo.owl" />
+				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-owl.owl" value="ontologies/oboe.owl" />
+				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl" value="ontologies/oboe-core.owl" />
+				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-characteristics.owl" value="ontologies/oboe-characteristics.owl" />
+				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-standards.owl" value="ontologies/oboe-standards.owl" />
+				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-spatial.owl" value="ontologies/oboe-spatial.owl" />
+				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-temporal.owl" value="ontologies/oboe-temporal.owl" />
+				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-taxa.owl" value="ontologies/oboe-taxa.owl" />
+				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-biology.owl" value="ontologies/oboe-biology.owl" />
+				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-ecology.owl" value="ontologies/oboe-ecology.owl" />
+				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-environment.owl" value="ontologies/oboe-environment.owl" />
+				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-chemistry.owl" value="ontologies/oboe-chemistry.owl" />
+				<entry key="http://ecoinformatics.org/oboe/oboe.1.2/oboe-anatomy.owl" value="ontologies/oboe-anatomy.owl" />
+				<entry key="http://ecoinformatics.org/oboe-ext/sbclter.1.0/oboe-sbclter.owl" value="ontologies/oboe-sbclter.owl" />
+				<entry key="https://purl.dataone.org/odo/MOSAIC_" value="ontologies/MOSAiC.owl" />
+				<entry key="http://purl.dataone.org/odo/ARCRC" value="ontologies/ARCRC.owl" />
+				<entry key="https://purl.dataone.org/odo/ADCAD_" value="ontologies/ADCAD.owl" />
+				<entry key="http://purl.dataone.org/odo/SENSO_" value="ontologies/SENSO.owl" />
+				<entry key="http://purl.dataone.org/odo/SALMON_" value="ontologies/SALMON.owl" />
+				<entry key="http://purl.dataone.org/odo/SALMON_alignment_" value="ontologies/SALMON_alignment.owl" />
+				<entry key="http://purl.dataone.org/odo/SASAP_" value="ontologies/SASAP.owl" />
 			</map>
 		</constructor-arg>
 	</bean>
