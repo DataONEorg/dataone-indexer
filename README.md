@@ -84,7 +84,31 @@ nerdctl run -it \
 
 ## Manual steps to customize the Solr servers
 
-After installing the standard solr servers by helm, we need to create the DataONE collections with the specific DataONE schema. A shell script `/solrconfig/config-solr.sh` is provided that authenticates against solr, and creates the new configuration.
+After installing the standard solr servers by helm, we need to create the DataONE collections with the specific DataONE schema. A shell script `/solrconfig/config-solr.sh` is provided that authenticates against solr, and creates the new configuration. After logging into the solr-0 pod, this script can be run to create the configuration. It only needs to be run on one node, as the config values are created in zookeeper.
+
+## Checking if SOLR is configured
+
+Logging in using the SOLR_AUTHENTICATION_OPTS and SOLR_AUTH_TYPE env variables allows the `solr` command to be executed to check the server status:
+
+```bash
+$ export SOLR_AUTH_TYPE=basic
+$ export SOLR_AUTHENTICATION_OPTS="-Dbasicauth=${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD}" 
+$ solr status -z ${SOLR_ZK_HOSTS} -c ${SOLR_COLLECTION}
+
+Found 1 Solr nodes:
+
+Solr process 8 running on port 8983
+{
+  "solr_home":"/opt/bitnami/solr/server/solr",
+  "version":"9.0.0 a4eb7aa123dc53f8dac74d80b66a490f2d6b4a26 - janhoy - 2022-05-05 01:00:08",
+  "startTime":"2022-10-11T07:08:50.155Z",
+  "uptime":"0 days, 0 hours, 21 minutes, 52 seconds",
+  "memory":"70.9 MB (%13.8) of 512 MB",
+  "cloud":{
+    "ZooKeeper":"d1index-zookeeper:2181/solr",
+    "liveNodes":"3",
+    "collections":"1"}}
+```
 
 # SOLR Dashboard
 
