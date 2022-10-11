@@ -84,29 +84,18 @@ nerdctl run -it \
 
 ## Manual steps to customize the Solr servers
 
-After installing the standard solr servers by helm, some manual steps are needed to make it work against the DataONE schema.
-- Copy the local `schema.xml` and `solrconfig.xml` files which are located at `src/main/resources/solr-conf` directory to all Solr pods
+After installing the standard solr servers by helm, we need to create the DataONE collections with the specific DataONE schema. A shell script `/solrconfig/config-solr.sh` is provided that authenticates against solr, and creates the new configuration.
+
+# SOLR Dashboard
+
+Once the SOLR server is up and running, connect to the SOLR Dashboard by creating a kube proxy, and then browse to the local address:
+
 ```
-kubectl cp -n d1index schema.xml  d1index-solr-0:/bitnami/solr/server/solr/configsets/.
-kubectl cp -n d1index solrconfig.xml  d1index-solr-0:/bitnami/solr/server/solr/configsets/.
+k8 port-forward -n d1index service/d1index-solr 8983:8983 & 
+echo "Solr URL: 127.0.0.1:8983/solr/"
 ```
-- Creat the configuration directory for the collection of `dataone-index` in all Solr pods
-```
-kubectl exec -n d1index -it d1index-solr-2 -- /bin/bash
-d1index-solr-2:/$ cd /bitnami/solr/server/solr/configsets
-d1index-solr-2:/bitnami/solr/server/solr/configsets$ cp -R sample_techproducts_configs dataone_index_configs
-d1index-solr-2:/bitnami/solr/server/solr/configsets$ cp schema.xml dataone_index_configs/conf/.
-d1index-solr-2:/bitnami/solr/server/solr/configsets$ cp solrconfig.xml dataone_index_configs/conf/solrconfig.xml 
-d1index-solr-2:/bitnami/solr/server/solr/configsets$ rm dataone_index_configs/conf/managed-schema 
-```
-- Delete the dummy `dataone-one` collection installed in the helm installation process. This command may fail but we can ignore the failure.
-```
-/opt/bitnami/solr/bin/solr delete -c dataone-index
-```
-- Create a new `dataone-one` collection based on the customized configuration. Note: this command only needs to run once on a Solr pod and we assume the number of the Solr nodes is 3
-```
-/opt/bitnami/solr/bin/solr create -c dataone-index -d /bitnami/solr/server/solr/configsets/dataone_index_configs/ -rf 3
-```
+
+You'll need to login with the helm-configured SOLR admin user and password.
 
 ## History
 

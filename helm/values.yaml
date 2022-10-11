@@ -110,7 +110,7 @@ rabbitmq:
   #max.priority: 10
 
 solr:
-  collection: dataone_collection
+  collection: dataone_index
   coreNames:
     - dataone_core
   #javaMem: "-Xms512m -Xmx2g"
