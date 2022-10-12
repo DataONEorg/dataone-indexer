@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: dataone-index-worker
+  repository: ghcr.io/dataoneorg/dataone-index-worker
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   #tag: ""
@@ -123,7 +123,11 @@ solr:
     - name: solr-config
       configMap:
         name: d1index-configfiles
+        defaultMode: 0777
   extraVolumeMounts:
     - name: solr-config
       mountPath: /solrconfig
+    - name: solr-config
+      mountPath: /opt/bitnami/scripts/solr/entrypoint.sh
+      subPath: entrypoint.sh
 
