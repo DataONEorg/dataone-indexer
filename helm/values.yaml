@@ -110,7 +110,8 @@ rabbitmq:
   #max.priority: 10
 
 solr:
-  collection: dataone_index
+  collection: temp_collection
+  customCollection: dataone_index
   coreNames:
     - dataone_core
   #javaMem: "-Xms512m -Xmx2g"
@@ -130,4 +131,23 @@ solr:
     - name: solr-config
       mountPath: /opt/bitnami/scripts/solr/entrypoint.sh
       subPath: entrypoint.sh
+  readinessProbe:
+      enabled: false
+  customReadinessProbe:
+      failureThreshold: 6
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 15
+      initialDelaySeconds: 60
+      timeoutSeconds: 15
+      failureThreshold: 6
+      periodSeconds: 10
+      successThreshold: 1
+      exec:
+        command:
+          - /bin/bash
+          - -ec
+          - |
+            curl --silent --connect-timeout 15000 --user ${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD} http://localhost:${SOLR_PORT_NUMBER}/api/node/health | grep --quiet  '\"status\":\"OK\"'
 

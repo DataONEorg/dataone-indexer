@@ -28,7 +28,7 @@ if [[ "$*" = *"/opt/bitnami/scripts/solr/run.sh"* ]]; then
         error "Zookeeper not detected"
         exit 1
     fi
-    #sh -c "/solrconfig/config-solr.sh"
+    #/solrconfig/config-solr.sh
     info "** Collection created **"
 fi
 
