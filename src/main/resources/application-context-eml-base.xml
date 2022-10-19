@@ -564,6 +564,13 @@
 			value="//software/implementation/distribution/online/url/text()"/>
 		<property name="multivalue" value="true" />
 	</bean>	
+
+	<bean id="eml.licenseDescription.200" class="org.dataone.cn.indexer.parser.FullTextSolrField">
+		<constructor-arg name="name" value="licenseDescription" />
+		<constructor-arg name="xpath"
+			value="//dataset/intellectualRights/para/text()[normalize-space()] | //dataset/intellectualRights/section/text()[normalize-space()]" />
+		<property name="multivalue" value="false" />
+	</bean>
 	
 	<!-- following service fields are not supported -->
 	<!-- 		serviceType, serviceInput, serviceOutput, serviceCoupling -->
