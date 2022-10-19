@@ -37,6 +37,9 @@
 		    	<ref bean="datacite.boxSpatialGeohash" />
 		    	<ref bean="datacite.fileID" />
 		    	<ref bean="datacite.fullText" />
+
+		        <ref bean="datacite.licenseName" />
+		        <ref bean="datacite.licenseUrl" />
 		    </list>
 		</property>
 	</bean>
