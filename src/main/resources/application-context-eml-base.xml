@@ -565,11 +565,11 @@
 		<property name="multivalue" value="true" />
 	</bean>	
 
-	<bean id="eml.licenseDescription.200" class="org.dataone.cn.indexer.parser.FullTextSolrField">
+	<bean id="eml.licenseDescription.200" class="org.dataone.cn.indexer.parser.SolrField">
 		<constructor-arg name="name" value="licenseDescription" />
 		<constructor-arg name="xpath"
-			value="//dataset/intellectualRights/para/text()[normalize-space()] | //dataset/intellectualRights/section/text()[normalize-space()]" />
-		<property name="multivalue" value="false" />
+			value="//intellectualRights/para/text()[normalize-space()] | //intellectualRights/section/text()[normalize-space()]"/>
+		<property name="multivalue" value="true" />
 	</bean>
 	
 	<!-- following service fields are not supported -->
