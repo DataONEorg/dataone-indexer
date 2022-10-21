@@ -121,6 +121,19 @@ echo "Solr URL: 127.0.0.1:8983/solr/"
 
 You'll need to login with the helm-configured SOLR admin user and password.
 
+Once the proxy is set up, you can also run API calls from the [ConfigSet API](https://solr.apache.org/guide/6_6/configsets-api.html) and [Collections API](https://solr.apache.org/guide/6_6/collections-api.html).
+
+```
+curl -u ${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD} http://localhost:8983/solr/admin/configs?action=CREATE\&name=dataone_index --header "Content-Type:text/xml" -X POST -d @dataone_index.zip
+{
+  "responseHeader":{
+    "status":0,
+    "QTime":5974}}
+curl -u ${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD} http://localhost:8983/solr/admin/configs?action=list
+curl -u ${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD} http://localhost:8983/solr/admin/collections?action=list
+```
+
+
 ## History
 
 This is a refactored version of the original DataONE [d1_cn_index_processor](https://github.com/DataONEorg/d1_cn_index_processor) that runs completely independently of other

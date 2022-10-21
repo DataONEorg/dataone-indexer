@@ -131,23 +131,39 @@ solr:
     - name: solr-config
       mountPath: /opt/bitnami/scripts/solr/entrypoint.sh
       subPath: entrypoint.sh
-  readinessProbe:
-      enabled: false
-  customReadinessProbe:
-      failureThreshold: 6
-      initialDelaySeconds: 60
-      periodSeconds: 10
-      successThreshold: 1
-      timeoutSeconds: 15
-      initialDelaySeconds: 60
-      timeoutSeconds: 15
-      failureThreshold: 6
-      periodSeconds: 10
-      successThreshold: 1
-      exec:
-        command:
-          - /bin/bash
-          - -ec
-          - |
-            curl --silent --connect-timeout 15000 --user ${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD} http://localhost:${SOLR_PORT_NUMBER}/api/node/health | grep --quiet  '\"status\":\"OK\"'
+  #readinessProbe:
+  #    enabled: false
+  #customReadinessProbe:
+  #    failureThreshold: 6
+  #    initialDelaySeconds: 60
+  #    periodSeconds: 10
+  #    successThreshold: 1
+  #    timeoutSeconds: 15
+  #    initialDelaySeconds: 60
+  #    timeoutSeconds: 15
+  #    failureThreshold: 6
+  #    periodSeconds: 10
+  #    successThreshold: 1
+  #    exec:
+  #      command:
+  #        - /bin/bash
+  #        - -ec
+  #        - |
+  #          curl --silent --connect-timeout 15000 --user ${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD} http://localhost:${SOLR_PORT_NUMBER}/api/node/health | grep --quiet  '\"status\":\"OK\"'
+  lifecycleHooks:
+      postStart:
+        exec:
+          #command: ["/bin/bash", "-c", "env > /tmp/lifecycle-env"]
+          command: ["/bin/bash", "-c", "/solrconfig/config-solr.sh"]
+  #sidecars:
+  #- name: solr-cfg-sidecar
+  #  image: ubuntu:22.04
+  #  imagePullPolicy: IfNotPresent
+  #  #command: ['bash', '-c', "/solrconfig/config-solr.sh"]
+  #  command: ['bash', '-c', "df -h && ls -l / && sleep 3600"]
+  #  volumeMounts:
+  #    - name: solr-config
+  #      mountPath: /solrconfig
+  #    - name: data
+  #      mountPath: /bitnami/solr
 
