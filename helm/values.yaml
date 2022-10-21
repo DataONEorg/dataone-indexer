@@ -14,6 +14,9 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+global:
+    storageClass: csi-rbd-sc
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -105,6 +108,9 @@ rabbitmq:
     password: change-to-using-a-secret
   hostname: d1index-rabbitmq-headless.d1index.svc
   hostport: 5672
+  persistence:
+      storageClass: csi-rbd-sc
+      size: 10Gi
   #replicaCount: 3
   #If you change the number of the max priority, the existing queue must be deleted. And consumers must use the same number.
   #max.priority: 10
@@ -120,6 +126,9 @@ solr:
     adminUsername: solradmin
     adminPassword: change-to-using-a-solr-secret
     #existingSecret: solr-secret
+  persistence:
+      storageClass: csi-rbd-sc
+      size: 10Gi
   extraVolumes:
     - name: solr-config
       configMap:
@@ -131,6 +140,8 @@ solr:
     - name: solr-config
       mountPath: /opt/bitnami/scripts/solr/entrypoint.sh
       subPath: entrypoint.sh
+  #initContainers:
+  #  - name: zk-ready
   #readinessProbe:
   #    enabled: false
   #customReadinessProbe:
