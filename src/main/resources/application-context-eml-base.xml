@@ -565,11 +565,27 @@
 		<property name="multivalue" value="true" />
 	</bean>	
 
-	<bean id="eml.licenseDescription.200" class="org.dataone.cn.indexer.parser.SolrField">
+	<bean id="eml.licenseDescription" class="org.dataone.cn.indexer.parser.SolrField">
 		<constructor-arg name="name" value="licenseDescription" />
 		<constructor-arg name="xpath"
 			value="//intellectualRights/para/text()[normalize-space()] | //intellectualRights/section/text()[normalize-space()]"/>
 		<property name="multivalue" value="true" />
+	</bean>
+
+	<bean id="eml.licenseName" class="org.dataone.cn.indexer.parser.SolrField">
+		<constructor-arg name="name" value="licenseName" />
+		<constructor-arg name="xpath"
+			value="//licensed/licenseName/text()[normalize-space()]"/>
+		<property name="multivalue" value="true" />
+		<property name="dedupe" value="true" />
+	</bean>
+
+	<bean id="eml.licenseUrl" class="org.dataone.cn.indexer.parser.SolrField">
+		<constructor-arg name="name" value="licenseUrl" />
+		<constructor-arg name="xpath"
+			value="//licensed/url/text()[normalize-space()]"/>
+		<property name="multivalue" value="true" />
+		<property name="dedupe" value="true" />
 	</bean>
 	
 	<!-- following service fields are not supported -->

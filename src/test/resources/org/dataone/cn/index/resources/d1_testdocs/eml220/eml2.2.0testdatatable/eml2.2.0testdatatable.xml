@@ -27,6 +27,11 @@
     <intellectualRights>
       <para>This work is dedicated to the public domain under the Creative Commons Universal 1.0 Public Domain Dedication. To view a copy of this dedication, visit https://creativecommons.org/publicdomain/zero/1.0/.</para>
     </intellectualRights>
+    <licensed>
+      <licenseName>CC0 1.0 Universal (CC0 1.0) Public Domain Dedication</licenseName>
+      <url>https://spdx.org/licenses/CC0-1.0.html</url>
+      <identifier>CC0-1.0</identifier>
+    </licensed>
     <coverage>
       <geographicCoverage>
         <geographicDescription>Bonanza River, Norton Sound, AK</geographicDescription>
