@@ -31,5 +31,5 @@ dependencies:
     condition: rabbitmq.enabled, global.rabbitmq.enabled
   - name: solr
     repository: https://charts.bitnami.com/bitnami
-    version: 6.2.2
+    version: 6.2.3
     condition: solr.enabled, global.solr.enabled
