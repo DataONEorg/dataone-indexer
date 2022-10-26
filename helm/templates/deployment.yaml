@@ -86,3 +86,4 @@ spec:
         - name: {{ .Values.persistence.volumeName }}
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.claimName }}
+            readOnly: true
