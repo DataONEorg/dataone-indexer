@@ -54,6 +54,11 @@ ingress:
       paths:
         - path: /
           pathType: ImplementationSpecific
+          backend:
+            service:
+              name: d1index-solr
+              port:
+                number: 8983
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
