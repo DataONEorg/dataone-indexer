@@ -127,6 +127,9 @@ solr:
     - dataone_core
   #javaMem: "-Xms512m -Xmx2g"
   hostname: d1index-solr-headless.d1index.svc
+  service:
+    ports:
+        http: 8983
   auth:
     adminUsername: solradmin
     adminPassword: change-to-using-a-solr-secret
