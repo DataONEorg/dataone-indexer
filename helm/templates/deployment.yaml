@@ -66,6 +66,13 @@ spec:
                   # If 'false", the secret must exist before the pod can start
                   # App versions before v2.3.4 will read this value from a config file, not the env var.
                   optional: true
+      initContainers:
+        - name: init-solr
+          image: busybox:1.28
+          command: ['sh', '-c', "until nc -z {{ .Values.solr.hostname}} 8983 > /dev/null; do echo waiting for Solr; sleep 5; done"]
+        - name: init-rabbitmq
+          image: busybox:1.28
+          command: ['sh', '-c', "until nc -z {{ .Values.rabbitmq.hostname }} {{ .Values.rabbitmq.hostport}} > /dev/null; do echo waiting for RabbitMQ; sleep 2; done"]
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
