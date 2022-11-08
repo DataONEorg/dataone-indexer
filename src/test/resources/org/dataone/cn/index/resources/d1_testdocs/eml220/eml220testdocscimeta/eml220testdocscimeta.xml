@@ -8,6 +8,11 @@
         <surName>Annotator</surName>
       </individualName>
     </creator>
+    <licensed>
+      <licenseName>Creative Commons Attribution 4.0 International</licenseName>
+      <url>https://spdx.org/licenses/CC-BY-4.0.html</url>
+      <identifier>CC-BY-4.0</identifier>
+   </licensed>
     <contact>
       <individualName>
         <givenName>EML</givenName>
@@ -73,10 +78,5 @@
         </attribute>
       </attributeList>
     </dataTable>
-    <licensed>
-      <licenseName>Creative Commons Attribution 4.0 International</licenseName>
-      <url>https://spdx.org/licenses/CC-BY-4.0.html</url>
-      <identifier>CC-BY-4.0</identifier>
-   </licensed>
   </dataset>
 </eml:eml>

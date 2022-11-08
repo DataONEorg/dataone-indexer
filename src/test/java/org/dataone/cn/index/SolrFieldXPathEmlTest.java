@@ -327,7 +327,7 @@ public class SolrFieldXPathEmlTest extends BaseSolrFieldXPathTest {
         eml220Expected.put("fileID", "https://" + hostname + "/cn/v2/resolve/eml-test-doc");
         eml220Expected
                 .put("text",
-                        "EML Annotation Example   EML  Annotator     EML  Annotator    MY PROJECT    EML  Annotator   principalInvestigator   SOME_RANDOM_FUNDING_INFO   My Funder  MY_FUNDER  AWARD1  An example award title  https://example.org/someaward    Creative Commons Attribution 4.0 International  https://spdx.org/licenses/CC-BY-4.0.html  CC-BY-4.0 eml-test-doc SOME_ATTRIBUTE SOME_ATTRIBUTE's definition");
+                        "EML Annotation Example   EML  Annotator    Creative Commons Attribution 4.0 International  https://spdx.org/licenses/CC-BY-4.0.html  CC-BY-4.0    EML  Annotator    MY PROJECT    EML  Annotator   principalInvestigator   SOME_RANDOM_FUNDING_INFO   My Funder  MY_FUNDER  AWARD1  An example award title  https://example.org/someaward eml-test-doc SOME_ATTRIBUTE SOME_ATTRIBUTE's definition");
 
         eml220Expected.put("licenseDescription", "");
         eml220Expected.put("licenseName", "Creative Commons Attribution 4.0 International");
