@@ -16,6 +16,7 @@ fullnameOverride: ""
 
 global:
     storageClass: csi-rbd-sc
+    solrPort: &global-solr-port 8983
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -58,7 +59,7 @@ ingress:
             service:
               name: d1index-solr
               port:
-                number: 8983
+                number: *global-solr-port
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
@@ -129,7 +130,11 @@ solr:
   hostname: d1index-solr-headless.d1index.svc
   service:
     ports:
-        http: 8983
+        http: *global-solr-port
+    nodePorts:
+        http: *global-solr-port
+  containerPorts:
+    http: *global-solr-port
   auth:
     adminUsername: solradmin
     adminPassword: change-to-using-a-solr-secret

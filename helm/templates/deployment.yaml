@@ -68,10 +68,10 @@ spec:
                   optional: true
       initContainers:
         - name: init-solr
-          image: busybox:1.28
-          command: ['sh', '-c', "until nc -z {{ .Values.solr.hostname}} 8983 > /dev/null; do echo waiting for Solr; sleep 5; done"]
+          image: busybox:latest
+          command: ['sh', '-c', "until nc -z {{ .Values.solr.hostname}} {{ .Values.solr.service.ports.http }} > /dev/null; do echo waiting for Solr; sleep 5; done"]
         - name: init-rabbitmq
-          image: busybox:1.28
+          image: busybox:latest
           command: ['sh', '-c', "until nc -z {{ .Values.rabbitmq.hostname }} {{ .Values.rabbitmq.hostport}} > /dev/null; do echo waiting for RabbitMQ; sleep 2; done"]
       {{- with .Values.nodeSelector }}
       nodeSelector:
