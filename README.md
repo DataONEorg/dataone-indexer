@@ -133,6 +133,42 @@ curl -u ${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD} http://localhost:8983/solr
 curl -u ${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD} http://localhost:8983/solr/admin/collections?action=list
 ```
 
+### Admin tools for rabbitmq
+
+Once rabbitmq is configured, one can access the web console by port-forwarding.
+
+```
+k8 -n jones port-forward pod/d1index-rabbitmq-0 15672:15672 &
+```
+
+then login to the Rabbitmq web console: http://localhost:15672
+
+You can also download a copy of `rabbitmqadmin` from http://localhost:15672/cli/rabbitmqadmin, 
+and the `rabbitmqadmin` command can be used to interact with the server. First, you need to set up a config file for rabbitmqadmin that provides some default values:
+
+```
+$ cat rmq.conf
+[default]
+hostname = d1index-rabbitmq-headless
+port = 15672
+username = rmq
+password = your-client-pw-here
+declare_vhost = / # Used as default for declare / delete only
+vhost = /         # Used as default for declare / delete / list
+```
+
+- List exchanges and queues
+    - `rabbitmqadmin -c rmq.conf -N default -U rmq -p $RMQPW list exchanges --vhost=/`
+    - `rabbitmqadmin -c rmq.conf -N default -U rmq -p $RMQPW list queues --vhost=/`
+- Declare exchanges, queues, and bindings
+    - `rabbitmqadmin -c rmq.conf -N default declare exchange name=testexchange type=direct -U rmq -p $RMQPW --vhost=/`
+    - `rabbitmqadmin -c rmq.conf -N default declare queue name=testqueue type=direct -U rmq -p $RMQPW --vhost=/`
+    - `rabbitmqadmin -c rmq.conf -N default -U rmq -p $RMQPW declare binding source=testexchange destination=testqueue routing_key=testqueue --vhost=/`
+- Publish a bunch of messages to a queue
+```
+for n in $(seq 1 30); do echo $n; rabbitmqadmin -c rmq.conf -N default -U rmq -p $RMQPW publish exchange=testexchange routing_key=testqueue payload="Message: ${n}" --vhost=/; done
+```
+properties={\"headers\":{\"myKey\":\"MyValue\"}}
 
 ## History
 
