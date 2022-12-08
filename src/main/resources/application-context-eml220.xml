@@ -66,6 +66,9 @@
     <ref bean="eml.serviceTitle" />
     <ref bean="eml.serviceDescription" />
     <ref bean="eml.serviceEndpoint" /> 
+    <ref bean="eml.licenseDescription" />
+    <ref bean="eml.licenseName" />
+    <ref bean="eml.licenseUrl" />
    </list>
   </property>
  </bean>
