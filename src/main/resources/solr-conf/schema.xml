@@ -153,8 +153,8 @@ This schema is copied into the dataone-cn-index buildout for deployment on cn no
         <field name="checksum"        	type="string"   indexed="true" stored="true" multiValued="false"/>
         <field name="archived"        type="boolean"  indexed="true" stored="true" multiValued="false"/>
         <field name="checksumAlgorithm" type="string" indexed="true" stored="true"/>
-        <field name="dateUploaded"    type="date_range"     indexed="true" stored="true" multiValued="false"/>
-        <field name="dateModified"    type="date_range"     indexed="true" stored="true" multiValued="false"/>
+        <field name="dateUploaded"    type="date"     indexed="true" stored="true" multiValued="false"/>
+        <field name="dateModified"    type="date"     indexed="true" stored="true" multiValued="false"/>
         <field name="submitter"       type="string"   indexed="true" stored="true" multiValued="false"/>
         <field name="rightsHolder"    type="string"   indexed="true" stored="true" multiValued="false"/>
         <field name="authoritativeMN"       	type="string"   indexed="true" stored="true" multiValued="false"/>
@@ -164,7 +164,7 @@ This schema is copied into the dataone-cn-index buildout for deployment on cn no
         <field name="blockedReplicationMN"  	type="string"   indexed="true" stored="true" multiValued="true"/>
         <field name="replicaMN"      		type="string"   indexed="true" stored="true" multiValued="true"/>
 				<field name="replicationStatus"     type="string"   indexed="true" stored="true" multiValued="true"/>
-        <field name="replicaVerifiedDate" 	type="date_range"    indexed="true" stored="true" multiValued="true"/>
+        <field name="replicaVerifiedDate" 	type="date"    indexed="true" stored="true" multiValued="true"/>
         <field name="datasource"       		type="string"  indexed="true" stored="true" multiValued="false"/>
         <field name="obsoletes"       		type="string"   indexed="true" stored="true" multiValued="false"/>
         <field name="obsoletedBy"      		type="string"   indexed="true" stored="true" multiValued="false"/>
@@ -200,13 +200,13 @@ This schema is copied into the dataone-cn-index buildout for deployment on cn no
         <field name="westBoundCoord"           type="tfloat"     multiValued="false" indexed="true" stored="true"/>
         <field name="eastBoundCoord"           type="tfloat"     multiValued="false" indexed="true" stored="true"/>
         <field name="namedLocation"            type="string"    multiValued="true" indexed="true" stored="true" />
-        <field name="beginDate"                type="date_range"      multiValued="false" indexed="true" stored="true" />
-        <field name="endDate"                  type="date_range"      multiValued="false" indexed="true" stored="true" />
+        <field name="beginDate"                type="date"      multiValued="false" indexed="true" stored="true" />
+        <field name="endDate"                  type="date"      multiValued="false" indexed="true" stored="true" />
         <field name="title"                    type="text_general"    multiValued="false" indexed="true" stored="true" />
         <field name="scientificName"           type="string"    multiValued="true" indexed="true" stored="true" />
         <field name="relatedOrganizations"     type="string"    multiValued="true" indexed="true" stored="true" />
-        <field name="datePublished"            type="date_range"      multiValued="false" indexed="true" stored="true" />
-        <field name="pubDate" 				   type="date_range" 							indexed="true" stored="true"/>
+        <field name="datePublished"            type="date"      multiValued="false" indexed="true" stored="true" />
+        <field name="pubDate" 				   type="date" 							indexed="true" stored="true"/>
 
 		<field name="investigator" 		type="string" 	indexed="true" stored="true" multiValued="true"/>
 		<field name="investigatorText" 	type="text_general" 	indexed="true" stored="false" multiValued="true"/>
@@ -220,7 +220,7 @@ This schema is copied into the dataone-cn-index buildout for deployment on cn no
         <field name="geoform" 			type="string" 	indexed="true" stored="true"/>
         <field name="presentationCat" 	type="string" 	indexed="true" stored="true"/>
         <field name="purpose" 			type="text_general" 	indexed="true" stored="true"/>
-        <field name="updateDate" 		type="date_range" 	indexed="true" stored="true"/>
+        <field name="updateDate" 		type="date" 	indexed="true" stored="true"/>
         <field name="edition" 			type="text_general" 	indexed="true" stored="true"/>
         <field name="dataUrl" 			type="string" 	indexed="false" stored="true"/>
         <field name="originator" 		type="string" 	indexed="true" stored="true" multiValued="true"/>
