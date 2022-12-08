@@ -1,9 +1,10 @@
 name: Java Maven Build, Test, and Publish
 
-on: [push]
-  branches:
-    - feature*
-    - develop*
+on: 
+  push:
+    branches:
+      - feature*
+      - develop*
 
 jobs:
   build:
