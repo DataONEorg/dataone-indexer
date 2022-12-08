@@ -9,8 +9,9 @@
     <url>http://maven.apache.org</url>
 
     <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <compiler.target.version>1.7</compiler.target.version>
         <spring.version>5.3.22</spring.version>
         <d1_libclient_java.version>2.3.1</d1_libclient_java.version>
         <solr.version>8.11.2</solr.version>
@@ -327,10 +328,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.7</source>
-                    <target>${compiler.target.version}</target>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>com.mycila.maven-license-plugin</groupId>
