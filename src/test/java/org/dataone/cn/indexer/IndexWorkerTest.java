@@ -68,13 +68,16 @@ public class IndexWorkerTest {
             assertTrue(!worker.multipleThread);
         }
         String propertyName = "index.thread.number";
-        String numberStr = "2";
+        String numberStr = "5";
         int number = (new Integer(numberStr)).intValue();
-        Settings.getConfiguration().setProperty(propertyName, numberStr);
-        worker.initExecutorService();
-        System.out.println("worker.nThreads(2): " + worker.nThreads);
-        assertTrue(worker.nThreads == number);
-        assertTrue(worker.multipleThread);
+        // only test setting multiple threads if enough processors are available
+        if (finalThreads > number) { 
+            Settings.getConfiguration().setProperty(propertyName, numberStr);
+            worker.initExecutorService();
+            System.out.println("worker.nThreads(" + numberStr + "): " + worker.nThreads);
+            assertTrue(worker.nThreads == number);
+            assertTrue(worker.multipleThread);
+        }
         numberStr = "1";
         number = (new Integer(numberStr)).intValue();
         Settings.getConfiguration().setProperty(propertyName, numberStr);
