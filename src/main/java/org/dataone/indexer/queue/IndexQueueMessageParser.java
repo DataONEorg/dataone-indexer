@@ -54,7 +54,13 @@ public class IndexQueueMessageParser {
      * @throws InvalidRequest
      */
     public void parse(AMQP.BasicProperties properties, byte[] body) throws InvalidRequest {
+        if(properties == null) {
+            throw new InvalidRequest("0000", "The properties, which contains the index task info, cannot be null in the index queue message.");
+        }
         Map<String, Object> headers = properties.getHeaders();
+        if(headers == null) {
+            throw new InvalidRequest("0000", "The header of the properties, which contains the index task info, cannot be null in the index queue message.");
+        }
         Object pidObj = headers.get(HEADER_ID);
         if (pidObj == null) {
             throw new InvalidRequest("0000", "The identifier cannot be null in the index queue message.");
@@ -82,8 +88,12 @@ public class IndexQueueMessageParser {
             objectPath = ((LongString)pathObject).toString();
         }
         logger.debug("IndexQueueMessageParser.parse - the file path of the object which be indexed in the message is " + objectPath);
-        
-        priority = properties.getPriority();
+        try {
+            priority = properties.getPriority();
+        } catch (NullPointerException e) {
+            logger.info("IndexQueueMessageParser.parse - the priority is not set in the message and we will set it one.");
+            priority =1;
+        }
         logger.debug("IndexQueueMessageParser.parse - the priority in the message is " + priority);
     }
 
