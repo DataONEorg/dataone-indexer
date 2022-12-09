@@ -54,11 +54,13 @@ public class IndexWorkerTest {
     public void testInitExecutorService() throws Exception {
         //first to try the property of index.thread.number without value (the default setting in the test)
         int availableProcessors = Runtime.getRuntime().availableProcessors();
+        System.out.println("availableProcessors: " + availableProcessors);
         availableProcessors = availableProcessors - 1;
         int finalThreads = Math.max(1, availableProcessors);
         boolean initialize = false;
         IndexWorker worker = new IndexWorker(initialize);
         worker.initExecutorService();
+        System.out.println("worker.nThreads(default): " + worker.nThreads);
         assertTrue(worker.nThreads == finalThreads);
         if (finalThreads > 1) {
             assertTrue(worker.multipleThread);
@@ -68,14 +70,19 @@ public class IndexWorkerTest {
         String propertyName = "index.thread.number";
         String numberStr = "5";
         int number = (new Integer(numberStr)).intValue();
-        Settings.getConfiguration().setProperty(propertyName, numberStr);
-        worker.initExecutorService();
-        assertTrue(worker.nThreads == number);
-        assertTrue(worker.multipleThread);
+        // only test setting multiple threads if enough processors are available
+        if (finalThreads > number) { 
+            Settings.getConfiguration().setProperty(propertyName, numberStr);
+            worker.initExecutorService();
+            System.out.println("worker.nThreads(" + numberStr + "): " + worker.nThreads);
+            assertTrue(worker.nThreads == number);
+            assertTrue(worker.multipleThread);
+        }
         numberStr = "1";
         number = (new Integer(numberStr)).intValue();
         Settings.getConfiguration().setProperty(propertyName, numberStr);
         worker.initExecutorService();
+        System.out.println("worker.nThreads(1): " + worker.nThreads);
         assertTrue(worker.nThreads == number);
         assertTrue(!worker.multipleThread);
         Settings.getConfiguration().clearProperty(propertyName);
