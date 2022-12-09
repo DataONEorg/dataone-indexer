@@ -4,14 +4,15 @@ on:
   push:
     branches:
       - feature*
-      - develop*
+      - develop
     tags: [ 'v*.*.*' ]
 
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
+  #IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: dataone-index-worker
 
 jobs:
   maven-build:
@@ -36,6 +37,7 @@ jobs:
 
   docker-publish:
     name: Docker Build and Publish
+    if: github.ref_name == 'develop' || github.ref_name == 'v*.*.*'
     needs: maven-build
     runs-on: ubuntu-latest
     permissions:
