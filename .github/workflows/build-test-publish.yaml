@@ -71,7 +71,9 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5
         with:
-          context: ./docker
+          context: .
+          file: docker/Dockerfile
+          build-args: [TAG=2.4.0]
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
