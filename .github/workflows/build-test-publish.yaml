@@ -20,3 +20,5 @@ jobs:
           cache: 'maven'
       - name: Build and Test
         run: mvn --batch-mode --update-snapshots -Dtest=IndexWorkerTest test
+      - name: Package
+        run: mvn --batch-mode --update-snapshots -DskipTests=true package
