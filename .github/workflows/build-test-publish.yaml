@@ -28,7 +28,8 @@ jobs:
           key: builddir-${{ github.run_id }}
 
   docker-publish:
-    name: Docker build
+    name: Docker Build and Publish
+    needs: maven-build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/cache@v3
