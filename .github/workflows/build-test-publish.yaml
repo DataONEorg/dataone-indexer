@@ -27,7 +27,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: Build and Test
-        run: mvn --batch-mode --update-snapshots -Dtest=IndexWorkerTest test
+        run: mvn --batch-mode --update-snapshots test
       - name: Package
         run: mvn --batch-mode --update-snapshots -DskipTests=true package
       - uses: actions/cache@v3
