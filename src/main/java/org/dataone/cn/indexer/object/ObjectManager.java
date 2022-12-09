@@ -99,30 +99,8 @@ public class ObjectManager {
         logger.info("ObjectManager.constructor - the root document directory is " + 
                 documentRootDir + " and the root data directory is " + dataRootDir + 
                 " Are they same?" + ifDataAndDocRootSame);
-        
-        //get the token
-        DataONEauthToken = System.getenv(TOKEN_VARIABLE_NAME);
-        if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
-            DataONEauthToken =  Settings.getConfiguration().getString(TOKEN_VARIABLE_NAME);
-            if (DataONEauthToken != null && !DataONEauthToken.trim().equals("")) {
-                logger.info("ObjectManager - Got the auth token from the properties file");
-            }
-        } else {
-            logger.info("ObjectManager - Got the auth token from an env. variable");
-        }
-        
-        if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
-            logger.warn("ObjectManager ------ Could NOT get an auth token from either an env. variable or the properties file. So it will act as the public user.");
-        }
-        session = createSession(DataONEauthToken);
         if (d1Node == null) {
-            logger.info("ObjectManager ------ going to create the d1node with url " + nodeBaseURL);
-            try {
-                d1Node = getMultipartD1Node(session, nodeBaseURL);
-            } catch (IOException | ClientSideException e) {
-                logger.error("ObjectManager - couldn't create the d1node for the url " + nodeBaseURL + " since " + e.getMessage());
-                throw new ServiceFailure("0000", e.getMessage());
-            }
+            refreshD1Node();
         } else {
             logger.info("ObjectManager ---NOT going to create the d1node with the url " + nodeBaseURL + 
                        " since the ObjectManager already was assigned a d1node with the url " + d1Node.getNodeBaseServiceUrl());
@@ -200,7 +178,15 @@ public class ObjectManager {
             //if we can't get it from the file system, get it from dataone API
             Identifier identifier = new Identifier();
             identifier.setValue(id);
-            sysmeta = d1Node.getSystemMetadata(session, identifier);
+            try {
+                sysmeta = d1Node.getSystemMetadata(session, identifier);
+                logger.debug("ObjectManager.getSystemMetadata - finish getting the system metadata via the DataONE API call for the pid " + id);
+            } catch (NotAuthorized e) {
+                logger.info("ObjectManager.getSystemMetadata - failed to get the system metadata via the DataONE API call for the pid " + id +
+                            " since it is not authorized. We will refresh the token and try again");
+                refreshD1Node();
+                sysmeta = d1Node.getSystemMetadata(session, identifier);
+            }
             logger.debug("ObjectManager.getSystemMetadata - finish getting the system metadata via DataONE API for the pid " + id);
         }
         return sysmeta;
@@ -264,6 +250,35 @@ public class ObjectManager {
         logger.debug("ObjectManager.getSysmetaFile - the final system metadata file path for the object path " + 
                 relativeObjPath + " is " + sysmetaPath + ". Null means that not system metadata file exists.");
         return sysmetaFile;
+    }
+    
+    /**
+     * In case the token expired, the method will retrieve the token and create a new d1 node
+     * @throws ServiceFailure 
+     */
+    private void refreshD1Node() throws ServiceFailure {
+       //get the token
+        DataONEauthToken = System.getenv(TOKEN_VARIABLE_NAME);
+        if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
+            DataONEauthToken =  Settings.getConfiguration().getString(TOKEN_VARIABLE_NAME);
+            if (DataONEauthToken != null && !DataONEauthToken.trim().equals("")) {
+                logger.info("ObjectManager.refreshD1Node - Got the auth token from the properties file");
+            }
+        } else {
+            logger.info("ObjectManager.refreshD1Node - Got the auth token from an env. variable");
+        }
+        
+        if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
+            logger.warn("ObjectManager.refreshD1Node ------ Could NOT get an auth token from either an env. variable or the properties file. So it will act as the public user.");
+        }
+        session = createSession(DataONEauthToken);
+        logger.info("ObjectManager.refreshD1Node ------ going to create the d1node with url " + nodeBaseURL);
+        try {
+            d1Node = getMultipartD1Node(session, nodeBaseURL);
+        } catch (IOException | ClientSideException e) {
+            logger.error("ObjectManager.refreshD1Node - couldn't create the d1node for the url " + nodeBaseURL + " since " + e.getMessage());
+            throw new ServiceFailure("0000", e.getMessage());
+        }
     }
     
     /**
