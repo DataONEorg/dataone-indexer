@@ -7,9 +7,9 @@ on:
       - develop*
 
 jobs:
-  build:
+  maven-build:
+    name: Maven Build and Test
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK
@@ -22,3 +22,24 @@ jobs:
         run: mvn --batch-mode --update-snapshots -Dtest=IndexWorkerTest test
       - name: Package
         run: mvn --batch-mode --update-snapshots -DskipTests=true package
+      - uses: actions/cache@v3
+        with:
+          path: .
+          key: builddir-${{ github.run_id }}
+
+  docker-publish:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache@v3
+        with:
+          path: .
+          key: builddir-${{ github.run_id }}
+
+      - name: Build Docker image
+        run: |
+          ls .
+          ls target
+          #docker build -t foo/bar:$GITHUB_SHA
+          #mkdir -p path/to/artifacts
+          #docker save foo/bar:$GITHUB_SHA > path/to/artifacts/docker-image.tar
