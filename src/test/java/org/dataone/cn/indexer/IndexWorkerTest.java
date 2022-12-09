@@ -68,11 +68,11 @@ public class IndexWorkerTest {
             assertTrue(!worker.multipleThread);
         }
         String propertyName = "index.thread.number";
-        String numberStr = "5";
+        String numberStr = "2";
         int number = (new Integer(numberStr)).intValue();
         Settings.getConfiguration().setProperty(propertyName, numberStr);
         worker.initExecutorService();
-        System.out.println("worker.nThreads(5): " + worker.nThreads);
+        System.out.println("worker.nThreads(2): " + worker.nThreads);
         assertTrue(worker.nThreads == number);
         assertTrue(worker.multipleThread);
         numberStr = "1";
