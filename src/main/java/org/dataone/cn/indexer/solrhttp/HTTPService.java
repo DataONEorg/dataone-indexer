@@ -138,6 +138,7 @@ public class HTTPService {
             post.setEntity(new OutputStreamHttpEntity(data, encoding));
             response = getHttpClient().execute(post);
             HttpEntity responseEntity = response.getEntity();
+            log.info("HTTPService.sendUpdate - after get the http response entity.");
             inputStreamResponse = responseEntity.getContent();
             if (response.getStatusLine().getStatusCode() != 200) {
                 ByteArrayOutputStream baosResponse = new ByteArrayOutputStream();
