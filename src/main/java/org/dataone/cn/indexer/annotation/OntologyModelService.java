@@ -44,13 +44,15 @@ public class OntologyModelService {
 
   public static OntologyModelService getInstance() {
     if (instance == null) {
-      instance = new OntologyModelService();
-
-      // Populate the ontology model with registered ontologies and alternate
-      // entries (local cache locations)
-      instance.init();
+        synchronized(OntologyModelService.class) {
+            if (instance == null) {
+                instance = new OntologyModelService();
+                // Populate the ontology model with registered ontologies and alternate
+                // entries (local cache locations)
+                instance.init();
+            }
+        }
     }
-
     return instance;
   }
 
@@ -161,7 +163,7 @@ public class OntologyModelService {
     altEntryList = entryList;
   }
 
-  public void loadAltEntries() {
+  protected void loadAltEntries() {
     log.debug("OntologyModelService - Loading altEntries of size " + altEntryList.size());
 
     OntDocumentManager ontManager = ontModel.getDocumentManager();
