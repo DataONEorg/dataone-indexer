@@ -37,6 +37,7 @@ import org.apache.commons.codec.EncoderException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.dataone.cn.indexer.annotation.OntologyModelService;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.configuration.Settings;
 import org.dataone.exceptions.MarshallingException;
@@ -197,6 +198,7 @@ public class IndexWorker {
             initIndexQueue();
             initIndexParsers();
             ObjectManager.getInstance();
+            OntologyModelService.getInstance();
         }
     }
     
