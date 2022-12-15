@@ -53,11 +53,12 @@ public class OntologyModelService {
             }
         }
     }
+    log.info("OntologyModelService.getInstance - the instance is " + instance.toString());
     return instance;
   }
 
   private void init() {
-    log.debug(OntologyModelService.class.getName() + " init() called");
+    log.info(OntologyModelService.class.getName() + " init() called");
 
     if (ontModel != null) {
       return;
@@ -82,6 +83,7 @@ public class OntologyModelService {
   }
 
   protected Map<String, Set<String>> expandConcepts(String uri) {
+    long start = System.currentTimeMillis();
     log.debug("expandConcepts " + uri);
     Map<String, Set<String>> conceptFields = new HashMap<String, Set<String>>();
 
@@ -135,7 +137,8 @@ public class OntologyModelService {
     } catch (QueryException ex) {
       log.error("OntologyModelService.expandConcepts(" + uri + ") encountered an exception while querying.");
     }
-
+    long end = System.currentTimeMillis();
+    log.info("OntologyModelService.expandConcept - the total time for the method is " + (end -start) + " milliseconds.");
     return conceptFields;
   }
 

@@ -95,8 +95,10 @@ public class EmlAnnotationSubprocessor implements IDocumentSubprocessor {
 
                 for (SolrElementField field: fields) {
                     log.debug("Expanding concepts for " + field.getName() + ": " + field.getValue());
+                    long start = System.currentTimeMillis();
                     Map<String, Set<String>> expandedConcepts = OntologyModelService.getInstance().expandConcepts(field.getValue());
-
+                    long end = System.currentTimeMillis();
+                    log.info("EmlAnnotation.processDocument - the time to get expandedConcepts is" + (end-start) + " milliseconds.");
                     for (Map.Entry<String, Set<String>> expandedField: expandedConcepts.entrySet()) {
                         for (String value: expandedField.getValue()) {
                             if (!expandedFields.containsKey(field.getName())) {
