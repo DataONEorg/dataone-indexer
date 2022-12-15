@@ -396,7 +396,7 @@ public class SolrIndex {
         long start = System.currentTimeMillis();
         Map<String, SolrDoc> docs = process(pid.getValue(), systemMetadata, objectPath, isSysmetaChangeOnly);
         long end = System.currentTimeMillis();
-        //log.info(Settings.PERFORMANCELOG + pid.getValue() + Settings.PERFORMANCELOG_INDEX_METHOD + " Index subprocessors process" + Settings.PERFORMANCELOG_DURATION + (end-start)/1000);
+        log.info("SolrIndex.insert - the subprocessor processing time of " + pid.getValue() + " is "  + (end-start) + " milliseconds.");
         //transform the Map to the SolrInputDocument which can be used by the solr server
         if(docs != null) {
             start = System.currentTimeMillis();
@@ -405,12 +405,13 @@ public class SolrIndex {
                 if(id != null) {
                     SolrDoc doc = docs.get(id);
                     insertToIndex(doc);
-                    log.info("SolrIndex.insert - inserted the solr-doc object of pid "+id+", which relates to object "+pid.getValue()+", into the solr server.");
+                    log.debug("SolrIndex.insert - inserted the solr-doc object of pid "+id+", which relates to object "+pid.getValue()+", into the solr server.");
                 }
                 
             }
             end = System.currentTimeMillis();
-            log.debug("SolrIndex.insert - finished to insert the solrDoc for object "+pid.getValue());
+            log.info("SolrIndex.insert - finished to insert the solrDoc to the solr server for object " + pid.getValue() + 
+                       " and it took " + (end-start) + " milliseconds.");
         } else {
             log.debug("SolrIndex.insert - the genered solrDoc is null. So we will not index the object "+pid.getValue());
         }
