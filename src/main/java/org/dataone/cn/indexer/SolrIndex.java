@@ -182,6 +182,7 @@ public class SolrIndex {
                     throws IOException, SAXException, ParserConfigurationException,
                     XPathExpressionException, MarshallingException, EncoderException, SolrServerException, NotImplemented, NotFound, UnsupportedType{
         log.debug("SolrIndex.process - trying to generate the solr doc object for the pid "+id);
+        long start = System.currentTimeMillis();
         Map<String, SolrDoc> docs = new HashMap<String, SolrDoc>();
         // Load the System Metadata document
         ByteArrayOutputStream systemMetadataOutputStream = new ByteArrayOutputStream();
@@ -193,7 +194,8 @@ public class SolrIndex {
             log.error(e.getMessage(), e);
             throw new SolrServerException(e.getMessage());
         }
-        
+        long end = System.currentTimeMillis();
+        log.info("SolrIndex.process - the time for processing the system metadata for the pid " + id + " is " + (end-start));
         // get the format id for this object
         String formatId = docs.get(id).getFirstFieldValue(SolrElementField.FIELD_OBJECTFORMAT);
         boolean skipOtherProcessor = false;
@@ -221,21 +223,30 @@ public class SolrIndex {
                 // for each subprocessor loaded from the spring config
                 for (IDocumentSubprocessor subprocessor : subprocessors) {
                     // Does this subprocessor apply?
+                    start = System.currentTimeMillis();
                     if (subprocessor.canProcess(formatId)) {
                         // if so, then extract the additional information from the
                         // document.
+                        end = System.currentTimeMillis();
+                        log.info("SolrIndex.process - the time for checking if the subprocessor " + subprocessor.getClass().getName() + " can process the pid " + id + " is " + (end-start));
                         try {
                             // docObject = the resource map document or science
                             // metadata document.
                             // note that resource map processing touches all objects
                             // referenced by the resource map.
+                            start = System.currentTimeMillis();
                             FileInputStream dataStream = new FileInputStream(objectPath);
+                            end = System.currentTimeMillis();
+                            log.info("SolrIndex.process - the time for reading the file input stream " + " for the pid " + id + " is " + (end-start));
                             if (!dataStream.getFD().valid()) {
                                 log.error("SolrIndex.process - subprocessor "+ subprocessor.getClass().getName() +" couldn't process since it could not load OBJECT file for ID,Path=" + id + ", "
                                         + objectPath);
                                 //throw new Exception("Could not load OBJECT for ID " + id );
                             } else {
+                                start = System.currentTimeMillis();
                                 docs = subprocessor.processDocument(id, docs, dataStream);
+                                end = System.currentTimeMillis();
+                                log.info("SolrIndex.process - the time for calling processDocument for the subprocessor " + subprocessor.getClass().getName() +" for the pid " + id + " is " + (end-start));
                                 log.debug("SolrIndex.process - subprocessor "+ subprocessor.getClass().getName() +" generated solr doc for id "+id);
                             }
                         } catch (Exception e) {
