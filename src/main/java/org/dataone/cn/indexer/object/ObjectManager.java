@@ -169,11 +169,14 @@ public class ObjectManager {
     public SystemMetadata getSystemMetadata(String id, String relativeObjPath) throws InvalidToken, NotAuthorized, NotImplemented, 
                                                                                     ServiceFailure, NotFound, InstantiationException, IllegalAccessException, IOException, MarshallingException {
         SystemMetadata sysmeta = null;
+        long start = System.currentTimeMillis();
         //try to get the system metadata from the file system first
         File sysmetaFile = getSysmetaFile(relativeObjPath);
         if (sysmetaFile != null) {
             sysmeta = TypeMarshaller.unmarshalTypeFromFile(SystemMetadata.class, sysmetaFile);
-            logger.debug("ObjectManager.getSystemMetadata - finish getting the system metadata via the file system for the pid " + id);
+            long end = System.currentTimeMillis();
+            logger.info("ObjectManager.getSystemMetadata - finish getting the system metadata via the file system for the pid " + id + 
+                        " and it took " + (end - start) + "milliseconds");
         } else {
             //if we can't get it from the file system, get it from dataone API
             Identifier identifier = new Identifier();
@@ -187,7 +190,9 @@ public class ObjectManager {
                 refreshD1Node();
                 sysmeta = d1Node.getSystemMetadata(session, identifier);
             }
-            logger.debug("ObjectManager.getSystemMetadata - finish getting the system metadata via DataONE API for the pid " + id);
+            long end = System.currentTimeMillis();
+            logger.info("ObjectManager.getSystemMetadata - finish getting the system metadata via DataONE API for the pid " + id +
+                        " and it took " + (end - start) + "milliseconds");
         }
         return sysmeta;
     }
