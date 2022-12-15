@@ -84,7 +84,7 @@ public class OntologyModelService {
 
   protected Map<String, Set<String>> expandConcepts(String uri) {
     long start = System.currentTimeMillis();
-    log.debug("expandConcepts " + uri);
+    log.info("expandConcepts " + uri);
     Map<String, Set<String>> conceptFields = new HashMap<String, Set<String>>();
 
     if (uri == null || uri.length() < 1) {
@@ -106,10 +106,13 @@ public class OntologyModelService {
         q = ((SparqlField) field).getQuery();
         q = q.replaceAll("\\$CONCEPT_URI", uri);
 
-        log.debug("SPARQL Query" + q.toString());
+        log.info("SPARQL Query" + q.toString());
         Query query = QueryFactory.create(q);
         QueryExecution qexec = QueryExecutionFactory.create(query, ontModel);
+        start = System.currentTimeMillis();
         ResultSet results = qexec.execSelect();
+        long end = System.currentTimeMillis();
+        log.info("OntologyModelService.expandConcept - the query time is "  + (end - start) + " milliseconds.");
 
         // each field might have multiple solution values
         String name = field.getName();
