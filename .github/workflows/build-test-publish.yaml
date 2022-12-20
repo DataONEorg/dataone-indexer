@@ -18,6 +18,8 @@ jobs:
   maven-build:
     name: Maven Build and Test
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK
@@ -26,6 +28,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
+
+      - name: Extract Maven project version
+        run: echo "version="$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec) >> $GITHUB_OUTPUT
+        id: get_version
+      - name: Show extracted Maven project version
+        run: echo "Version from pom: ${{ steps.project.outputs.version }}"
+
       - name: Build and Test
         run: mvn --batch-mode --update-snapshots test
       - name: Package
@@ -78,7 +87,7 @@ jobs:
         with:
           context: .
           file: docker/Dockerfile
-          build-args: TAG=2.4.0
+          build-args: TAG=${{needs.maven-build.outputs.version}}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
