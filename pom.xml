@@ -26,6 +26,13 @@
           <solr.test.home>solr8home</solr.test.home>
         </properties>
       </profile>
+      <profile>
+        <id>java8</id>
+        <properties>
+          <maven.compiler.source>1.8</maven.compiler.source>
+          <maven.compiler.target>1.8</maven.compiler.target>
+        </properties>
+      </profile>
     </profiles>
 
     <repositories>
