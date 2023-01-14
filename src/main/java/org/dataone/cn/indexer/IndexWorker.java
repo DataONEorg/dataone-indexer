@@ -345,6 +345,7 @@ public class IndexWorker {
      * @param multipleThread  the task was handled by multiple thread or not (for the log information only)
      */
     private void indexOjbect(IndexQueueMessageParser parser, long deliveryTag, boolean multipleThread) {
+        long start = System.currentTimeMillis();
         Identifier pid = parser.getIdentifier();
         String indexType = parser.getIndexType();
         int priority = parser.getPriority();
@@ -375,10 +376,11 @@ public class IndexWorker {
                         pid.getValue() + " , the index type: " + indexType + ", sending acknowledgement back to rabbitmq failed since " 
                         + e.getMessage()  + ". So rabbitmq may resend the message again");
             }
+            long end = System.currentTimeMillis();
             logger.info("IndexWorker.indexOjbect with the thread id " +  threadId +
                     " - Completed the index task from the index queue with the identifier: "+
                     pid.getValue() + " , the index type: " + indexType + ", the file path (null means not to have): " + finalFilePath + 
-                    ", the priotity: " + priority);
+                    ", the priotity: " + priority + " and the time taking is " + (end-start) + " milliseconds");
             
         } catch (InvalidToken e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier  " + 
