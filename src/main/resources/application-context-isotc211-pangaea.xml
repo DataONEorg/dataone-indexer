@@ -51,6 +51,8 @@
 		    	<ref bean="isotc.distribServiceEndpoint" />
 		    	<ref bean="isotc.distribServiceInput" />
 		    	<ref bean="isotc.distribServiceOutput" />
+		    	<ref bean="isotc.licenseDescription" />
+		    	<ref bean="isotc.licenseName" />
 		    	
 		    	<ref bean="isotc.fileID" />
 		    	<ref bean="isotc.fullText" />
