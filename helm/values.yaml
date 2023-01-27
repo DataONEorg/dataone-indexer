@@ -190,4 +190,6 @@ solr:
   #      mountPath: /solrconfig
   #    - name: data
   #      mountPath: /bitnami/solr
+  containerSecurityContext:
+    runAsUser: 1000
 
