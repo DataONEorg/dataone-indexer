@@ -26,6 +26,7 @@
 		    	<ref bean="dc.keywords" />
 		    	<ref bean="dc:relation" />
 		    	<ref bean="dc.fullText" />
+                <ref bean="dc.rights" />
 		   	</list>
 	  	</property>
 	</bean>
@@ -58,6 +59,13 @@
     <bean id="dc.contributor" class="org.dataone.cn.indexer.parser.SolrField">
         <constructor-arg name="name" value="investigator" />
         <constructor-arg name="xpath" value="//*[local-name() = 'contributor']/text()" />
+        <property name="multivalue" value="true" />
+        <property name="dedupe" value="true" />
+    </bean>
+
+    <bean id="dc.rights" class="org.dataone.cn.indexer.parser.SolrField">
+        <constructor-arg name="name" value="licenseName" />
+        <constructor-arg name="xpath" value="//*[local-name() = 'rights']/text()" />
         <property name="multivalue" value="true" />
         <property name="dedupe" value="true" />
     </bean>

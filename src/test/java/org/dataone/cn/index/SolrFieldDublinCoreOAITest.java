@@ -79,6 +79,7 @@ public class SolrFieldDublinCoreOAITest extends BaseSolrFieldXPathTest {
         //dcxExpected.put("serviceType", "HTTP");
         dcxExpected.put("abstract", "Fileset contains data file, including dataset metadata, as well as R scripts.<br>");
         //dcxExpected.put("fileID", "https://figsh.com/articles/Chestnut_Oak_Quercus_Prinus_Response_to_Browsing_by_White_Tailed_Deer_Implications_for_Carbon_and_Nitrogen_Allocation/5853507");
+        dcxExpected.put("licenseName", "CC BY");
         dcxExpected
                 .put("text",
                         "Chestnut Oak (Quercus Prinus) Response to Browsing by White Tailed Deer: Implications for Carbon and Nitrogen Allocation  figshare admin Cary Institute (1246804)  Jen Nieves (1725067)  Ecology  White tailed deer  chestnut oak  Fileset contains data file, including dataset metadata, as well as R scripts.<br>  e-journal  e-journal-2  John Smith  Mary Alex  2018-04-19T19:54:04Z  2017-05-19T19:54:04Z  Dataset  Fileset  10.5072/fk2.stagefigshare.5853507.v1  https://figsh.com/articles/Chestnut_Oak_Quercus_Prinus_Response_to_Browsing_by_White_Tailed_Deer_Implications_for_Carbon_and_Nitrogen_Allocation/5853507  CC BY oai_dc.1.1.xml");
