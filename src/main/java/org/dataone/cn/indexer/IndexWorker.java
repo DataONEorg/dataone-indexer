@@ -136,7 +136,7 @@ public class IndexWorker {
      * If the attempt fails, it will try to use the default path - /etc/dataone/dataone-indexer.properties
      * If it fails again, it will give up
      */
-    protected static void loadExternalPropertiesFile() {
+    public static void loadExternalPropertiesFile() {
         propertyFilePath = System.getenv(ENV_NAME_OF_PROPERTIES_FILE);
         logger.debug("IndexWorker.loadExternalPropertiesFile - the configuration path from the env variable is " + propertyFilePath);
         if (propertyFilePath != null && !propertyFilePath.trim().equals("")) {
