@@ -125,37 +125,59 @@ public class IndexWorker {
      */
     public static void main(String[] args) throws IOException, TimeoutException, ServiceFailure {
         logger.info("IndexWorker.main - Starting index worker...");
-        loadExternalPropertiesFile();
+        String propertyFile = null;
+        loadExternalPropertiesFile(propertyFile);
         IndexWorker worker = new IndexWorker();
         worker.start();
     }
     
     /**
      * Load properties from an external file.  
-     * DataONE-indexer first tries to read it from an env variable - DATAONE_INDEXER_CONFIG.
-     * If the attempt fails, it will try to use the default path - /etc/dataone/dataone-indexer.properties
-     * If it fails again, it will give up
+     * DataONE-indexer will try to load the property file by this order
+     * 1. try to read it from the user specified
+     * 2. try to read it from an env variable - DATAONE_INDEXER_CONFIG.
+     * 3  try to use the default path - /etc/dataone/dataone-indexer.properties
+     * If all attempts fail, it will give up and use the one embedded in the jar file
+     * @param propertyFile  the property file user specified
      */
-    public static void loadExternalPropertiesFile() {
-        propertyFilePath = System.getenv(ENV_NAME_OF_PROPERTIES_FILE);
-        logger.debug("IndexWorker.loadExternalPropertiesFile - the configuration path from the env variable is " + propertyFilePath);
-        if (propertyFilePath != null && !propertyFilePath.trim().equals("")) {
+    public static void loadExternalPropertiesFile(String propertyFile) {
+        // try the users specified path
+        if (propertyFile != null && !propertyFile.trim().equals("")) {
+            propertyFilePath = propertyFile;
+            logger.info("IndexWorker.loadExternalPropertiesFile - the configuration path specified by users is " + propertyFilePath);
             File defaultFile = new File (propertyFilePath);
             if (defaultFile.exists() && defaultFile.canRead()) {
-                logger.info("IndexWorker.loadExternalPropertiesFile - the configuration path can be read from the env variable " + ENV_NAME_OF_PROPERTIES_FILE +
-                           " and its value is " + propertyFilePath + ". The file exists and it will be used.");
+                logger.info("IndexWorker.loadExternalPropertiesFile - the configuration path users specified is  " + 
+                            propertyFilePath + ". The file exists and is readable. So it will be used.");
             } else {
-                logger.info("IndexWorker.loadExternalPropertiesFile - the configuration path can be read from the env variable " + ENV_NAME_OF_PROPERTIES_FILE +
-                        " and its value is " + propertyFilePath + ". But the file does NOT exist or be readable. So it will NOT be used.");
+                logger.info("IndexWorker.loadExternalPropertiesFile - the configuration path users specified is  " + 
+                        propertyFilePath + ". But the file does NOT exist or is NOT readable. So it will NOT be used.");
                 propertyFilePath = null;
             }
-          
-        }
+        } 
+        
+        //try the path from the env variable 
         if (propertyFilePath == null || propertyFilePath.trim().equals("")) {
-            //The attempt to read the configuration file from the env variable failed. We will try the default external path
+            propertyFilePath = System.getenv(ENV_NAME_OF_PROPERTIES_FILE);
+            logger.info("IndexWorker.loadExternalPropertiesFile - the configuration path from the env variable is " + propertyFilePath);
+            if (propertyFilePath != null && !propertyFilePath.trim().equals("")) {
+                File defaultFile = new File (propertyFilePath);
+                if (defaultFile.exists() && defaultFile.canRead()) {
+                    logger.info("IndexWorker.loadExternalPropertiesFile - the configuration path can be read from the env variable " + ENV_NAME_OF_PROPERTIES_FILE +
+                               " and its value is " + propertyFilePath + ". The file exists and it will be used.");
+                } else {
+                    logger.info("IndexWorker.loadExternalPropertiesFile - the configuration path can be read from the env variable " + ENV_NAME_OF_PROPERTIES_FILE +
+                            " and its value is " + propertyFilePath + ". But the file does NOT exist or is NOT readable. So it will NOT be used.");
+                    propertyFilePath = null;
+                }
+            }
+        }
+        
+        //The attempts to read the configuration file specified by users and from the env variable failed. We will try the default external path
+        if (propertyFilePath == null || propertyFilePath.trim().equals("")) {
             File defaultFile = new File (defaultExternalPropertiesFile);
             if (defaultFile.exists() && defaultFile.canRead()) {
-                logger.info("IndexWorker.loadExternalPropertiesFile - the configure path can't be read from the env variable " + ENV_NAME_OF_PROPERTIES_FILE +
+                logger.info("IndexWorker.loadExternalPropertiesFile - the configure path can't be read either by users specified or from the env variable " + ENV_NAME_OF_PROPERTIES_FILE +
                            ". However, the default external file " + defaultExternalPropertiesFile + " exists and it will be used.");
                 propertyFilePath = defaultExternalPropertiesFile;
             }

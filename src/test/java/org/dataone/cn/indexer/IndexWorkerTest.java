@@ -95,7 +95,7 @@ public class IndexWorkerTest {
     @Test
     public void testLoadExternalPropertiesFile() throws Exception {
         boolean readFromEnv = false;
-        IndexWorker.loadExternalPropertiesFile();
+        IndexWorker.loadExternalPropertiesFile(null);
         String propertyFilePath = System.getenv("DATAONE_INDEXER_CONFIG");
         if (propertyFilePath != null && !propertyFilePath.trim().equals("")) {
             File defaultFile = new File (propertyFilePath);
@@ -120,6 +120,26 @@ public class IndexWorkerTest {
                 assertTrue(IndexWorker.propertyFilePath == null);
             }
         }
+    }
+    
+    /**
+     * Test the loadExternalPropertiesFile method
+     * @throws Exception
+     */
+    @Test
+    public void testLoadUserSpecifiedExternalPropertiesFile() throws Exception {
+        String propertyFilePath = "./src/main/resources/org/dataone/configuration/index-processor.properties";
+        IndexWorker.loadExternalPropertiesFile(propertyFilePath);
+        File defaultFile = new File (propertyFilePath);
+        if (defaultFile.exists() && defaultFile.canRead()) {
+            //The one from the user specified location
+            assertTrue(IndexWorker.propertyFilePath.equals(propertyFilePath));
+        } else {
+            //read from jar file
+            System.out.println("read from the property file embedded in the jar file " + IndexWorker.propertyFilePath);
+            assertTrue(IndexWorker.propertyFilePath == null);
+        }
+       
     }
 
 }
