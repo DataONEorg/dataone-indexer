@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.dataone.client.auth.AuthTokenSession;
 import org.dataone.client.exception.ClientSideException;
@@ -61,6 +62,7 @@ public class ObjectManager {
     private static String DataONEauthToken = null;
     private static Logger logger = Logger.getLogger(ObjectManager.class);
     private static final String TOKEN_VARIABLE_NAME = "DATAONE_AUTH_TOKEN";
+    private static final String TOKEN_FILE_PATH_PROP_NAME = "dataone.nodeToken.file";
     private static final String SYSTEMMETA_FILE_NAME = "systemmetadata.xml";
 
     private static MultipartD1Node d1Node = null;
@@ -265,9 +267,19 @@ public class ObjectManager {
        //get the token
         DataONEauthToken = System.getenv(TOKEN_VARIABLE_NAME);
         if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
-            DataONEauthToken =  Settings.getConfiguration().getString(TOKEN_VARIABLE_NAME);
-            if (DataONEauthToken != null && !DataONEauthToken.trim().equals("")) {
-                logger.info("ObjectManager.refreshD1Node - Got the auth token from the properties file");
+            //can't get the token from the env variable. So try to get it from a file specified in the property
+            String tokenFilePath = Settings.getConfiguration().getString(TOKEN_FILE_PATH_PROP_NAME);
+            if (tokenFilePath != null && !tokenFilePath.trim().equals("")) {
+                logger.info("ObjectManager.refreshD1Node - We can't get the token from the env variable so try to get the auth token from the file " + tokenFilePath);
+                try {
+                    DataONEauthToken = FileUtils.readFileToString(new File(tokenFilePath), "UTF-8");
+                } catch (IOException e) {
+                    DataONEauthToken = null;
+                    logger.warn("ObjectManager.refreshD1Node - can NOT get the authen token from the file " + tokenFilePath + " since " + e.getMessage());
+                }
+                if (DataONEauthToken != null && !DataONEauthToken.trim().equals("")) {
+                    logger.info("ObjectManager.refreshD1Node - Got the auth token from the file "+ tokenFilePath);
+                }
             }
         } else {
             logger.info("ObjectManager.refreshD1Node - Got the auth token from an env. variable");
