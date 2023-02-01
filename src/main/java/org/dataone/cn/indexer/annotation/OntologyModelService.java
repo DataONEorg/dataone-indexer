@@ -114,10 +114,12 @@ public class OntologyModelService {
         // each field might have multiple solution values
         String name = field.getName();
         Set<String> values = new HashSet<String>();
-
+        long start = System.currentTimeMillis();
         while (results.hasNext()) {
           QuerySolution solution = results.next();
           log.debug("Solution SPARQL result: " + solution.toString());
+          long end = System.currentTimeMillis();
+          log.info("OntologyMondelService.expandConcepts - the time to execute results.hasNext() " + (end - start) + "milliseconds.");
           if (!solution.contains(name)) {
             continue;
           }
@@ -130,6 +132,7 @@ public class OntologyModelService {
           String value = solution.get(name).toString();
           log.debug("Adding value " + value);
           values.add(value);
+          start = System.currentTimeMillis();
         }
 
         conceptFields.put(name, values);
