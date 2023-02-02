@@ -16,10 +16,20 @@ RUN apt install figlet
 RUN apt install curl
 RUN apt install nano
 
+#Add a user with name d1indexer
+RUN useradd d1indexer
+
 # The most recently built jar file is copied from the maven build directory to this dir by maven, so that
 # it can be copied to the image.
 COPY ../target/dataone-index-worker-${TAG}-shaded.jar .
 COPY ./docker/entrypoint.sh .
+
+# Change the ownership of the jar and sh files
+RUN chown d1indexer dataone-index-worker-${TAG}-shaded.jar
+RUN chown d1indexer entrypoint.sh
+
+#Run Container as d1indexer
+USER d1indexer
 
 # Connect this image to a GitHub repository
 LABEL org.opencontainers.image.source https://github.com/dataoneorg/dataone-indexer
