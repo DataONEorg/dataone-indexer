@@ -141,5 +141,36 @@ public class IndexWorkerTest {
         }
        
     }
+    
+    /**
+     * Test the loadAdditionalPropertiesFile method
+     * @throws Exception
+     */
+    @Test
+    public void testLoadAdditionalPropertiesFile() throws Exception {
+        String propertyFilePath = "./src/main/resources/org/dataone/configuration/index-processor.properties";
+        IndexWorker.loadExternalPropertiesFile(propertyFilePath);
+        File defaultFile = new File (propertyFilePath);
+        //The one from the user specified location
+        assertTrue(IndexWorker.propertyFilePath.equals(propertyFilePath));
+        assertTrue(Settings.getConfiguration().getString("index.d1node.baseURL").
+                equals("https://valley.duckdns.org/metacat/d1/mn"));
+        assertTrue(Settings.getConfiguration().
+                getString("index.data.root.directory").equals("/var/metacat/data"));
+        assertTrue(Settings.getConfiguration().
+                getString("index.document.root.directory").equals("/var/metacat/documents"));
+        assertTrue(Settings.getConfiguration().getString("cn.router.hostname2") == null);
+        //load another file, it will overwrite the properties which have different values
+        String propertyFilePath2 = "./src/test/resources/org/dataone/configuration/index-processor-2.properties";
+        IndexWorker.loadAdditionalPropertyFile(propertyFilePath2);
+        assertTrue(IndexWorker.propertyFilePath.equals(propertyFilePath));
+        assertTrue(Settings.getConfiguration().getString("index.d1node.baseURL").
+                equals("https://valley.duckdns.org/metacat/d1/mn"));
+        assertTrue(Settings.getConfiguration().
+                getString("index.data.root.directory").equals("/objects"));
+        assertTrue(Settings.getConfiguration().
+                getString("index.document.root.directory").equals("/objects"));
+        assertTrue(Settings.getConfiguration().getString("cn.router.hostname2").equals("cn.dataone.org"));
+    }
 
 }

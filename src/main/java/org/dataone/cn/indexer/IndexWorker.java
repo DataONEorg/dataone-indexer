@@ -198,6 +198,28 @@ public class IndexWorker {
     }
     
     /**
+     * Load an additional property file to the worker when it is necessary.
+     * The main reason to have this method is that metacat has two property files
+     * - the site property file and metacat property file. We should use this
+     * method to load the site property file after loading the metacat property file
+     * @param propertyFile
+     */
+    public static void loadAdditionalPropertyFile (String propertyFile) {
+        if (propertyFile != null && !propertyFile.trim().equals("")) {
+            try {
+                //Settings.getConfiguration();
+                Settings.augmentConfiguration(propertyFile);
+                logger.info("IndexWorker.loadAdditionalPropertyFile - loaded the properties from the file " + propertyFile);
+            } catch (ConfigurationException e) {
+               logger.error("IndexWorker.loadAdditionalPropertyFile - can't load any properties from the file " + propertyFile + 
+                            " since " + e.getMessage() + ".");
+            }
+        } else {
+            logger.info("IndexWorker.loadAdditionalPropertyFile - can't load an additional property file since its path is null or blank.");
+        }
+    }
+    
+    /**
      * Default constructor to initialize the RabbitMQ service
      * @throws IOException
      * @throws TimeoutException
