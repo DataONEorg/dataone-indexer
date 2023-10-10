@@ -175,4 +175,3 @@ properties={\"headers\":{\"myKey\":\"MyValue\"}}
 This is a refactored version of the original DataONE [d1_cn_index_processor](https://github.com/DataONEorg/d1_cn_index_processor) that runs completely independently of other
 DataONE Coordinating Node services. It is intended to be deployed in a Kubernetes cluster environment, but is written such 
 that it can be deployed in other environments as well as needed.
-
