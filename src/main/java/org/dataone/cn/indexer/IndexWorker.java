@@ -22,7 +22,10 @@
 package org.dataone.cn.indexer;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +38,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.cn.indexer.annotation.OntologyModelService;
@@ -129,6 +133,18 @@ public class IndexWorker {
         loadExternalPropertiesFile(propertyFile);
         IndexWorker worker = new IndexWorker();
         worker.start();
+
+        try (OutputStream outputStream = new FileOutputStream("/etc/dataone/health-status")) {
+            IOUtils.write("INDEXWORKER OK", outputStream, Charset.defaultCharset());
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to write /etc/dataone/health-status file", e);
+        }
+
+//        // Start the health check server
+//        new Thread(new HealthCheckServer()).start();
+//
+//        // Set the health check flag
+//        HealthCheckServer.setStarted(true);
     }
     
     /**
