@@ -5,7 +5,7 @@ on:
     branches:
       - feature*
       - develop
-      - '*-image-auto-build'
+      - '*-image-auto-publish'
     tags: [ 'v*.*.*' ]
 
 env:
