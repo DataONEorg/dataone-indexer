@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.dataone</groupId>
     <artifactId>dataone-index-worker</artifactId>
-    <version>DEVELOP</version>
+    <version>2.4.0</version>
     <packaging>jar</packaging>
     <name>dataone-index-worker</name>
     <url>http://maven.apache.org</url>
