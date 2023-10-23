@@ -21,18 +21,16 @@ RUN useradd d1indexer
 
 # The most recently built jar file is copied from the maven build directory to this dir by maven, so that
 # it can be copied to the image.
-COPY ../target/dataone-index-worker-${TAG}-shaded.jar .
-COPY ./docker/entrypoint.sh .
-
-# Change the ownership of the jar and sh files
-RUN chown d1indexer dataone-index-worker-${TAG}-shaded.jar
-RUN chown d1indexer entrypoint.sh
+COPY --chown=d1indexer ../target/dataone-index-worker-${TAG}-shaded.jar .
+COPY --chown=d1indexer ./docker/entrypoint.sh .
 
 #Run Container as d1indexer
 USER d1indexer
 
 # Connect this image to a GitHub repository
-LABEL org.opencontainers.image.source https://github.com/dataoneorg/dataone-indexer
+LABEL org.opencontainers.image.source="https://github.com/dataoneorg/dataone-indexer"
+LABEL org.opencontainers.image.title="DataONE Indexer"
+LABEL org.opencontainers.image.version=${TAG}
 
 # Run the Worker process
 CMD ./entrypoint.sh
