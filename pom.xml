@@ -370,7 +370,8 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputFile>${basedir}/target/${name}-${version}-shaded.jar</outputFile>
+                            <outputFile>${basedir}/target/${project.name}-${project.version}-shaded
+                                .jar</outputFile>
                             <outputDirectory>${basedir}</outputDirectory>
                             <artifactSet>
                                 <excludes>
