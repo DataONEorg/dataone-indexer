@@ -65,7 +65,7 @@
     -->
         <repository>
             <id>maven-restlet</id>
-            <url>https://maven.restlet.org</url>
+            <url>https://maven.restlet.talend.com</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -335,10 +335,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.1</version>
             </plugin>
             <plugin>
                 <groupId>com.mycila.maven-license-plugin</groupId>
                 <artifactId>maven-license-plugin</artifactId>
+                <version>1.10.b1</version>
                 <configuration>
                     <header>src/license-header.txt</header>
                 </configuration>
@@ -346,6 +348,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.2</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -370,7 +373,8 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputFile>${basedir}/target/${name}-${version}-shaded.jar</outputFile>
+                            <outputFile>${basedir}/target/${project.name}-${project.version}-shaded
+                                .jar</outputFile>
                             <outputDirectory>${basedir}</outputDirectory>
                             <artifactSet>
                                 <excludes>
