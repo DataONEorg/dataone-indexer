@@ -94,7 +94,7 @@ public class IndexWorker {
     
     private static final String springConfigFileURL = "/index-parser-context.xml";
     private static final String ENV_NAME_OF_PROPERTIES_FILE = "DATAONE_INDEXER_CONFIG";
-    
+    private static final String ENV_VAR_RABBITMQ_PASSWORD = "RABBITMQ_PASSWORD";
     private static Logger logger = Logger.getLogger(IndexWorker.class);
     private static String defaultExternalPropertiesFile = "/etc/dataone/dataone-indexer.properties";
     
@@ -256,7 +256,7 @@ public class IndexWorker {
         RabbitMQhost = Settings.getConfiguration().getString("index.rabbitmq.hostname", "localhost");
         RabbitMQport = Settings.getConfiguration().getInt("index.rabbitmq.hostport", 5672);
         RabbitMQusername = Settings.getConfiguration().getString("index.rabbitmq.username", "guest");
-        RabbitMQpassword = Settings.getConfiguration().getString("index.rabbitmq.password", "guest");
+        RabbitMQpassword = getRabbitMQPassword();
         RabbitMQMaxPriority = Settings.getConfiguration().getInt("index.rabbitmq.max.priority");
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(RabbitMQhost);
@@ -608,5 +608,19 @@ public class IndexWorker {
         RabbitMQchannel.close();
         RabbitMQconnection.close();
         logger.info("IndexWorker.stop - stop the index queue conection.");
+    }
+    private static String getRabbitMQPassword() {
+
+        String rmqPwd = System.getenv(ENV_VAR_RABBITMQ_PASSWORD);
+
+        if (rmqPwd == null || rmqPwd.trim().isEmpty()) {
+            //can't get the password from the env variable. So try to get it from properties file
+            rmqPwd = Settings.getConfiguration().getString("index.rabbitmq.password", "guest");
+            logger.info("getRabbitMQPassword - Unable to get RabbitMQ Password from env. variable; "
+                            + "falling back to properties file or default");
+        } else {
+            logger.info("getRabbitMQPassword - Success: got RabbitMQ Password from env. variable");
+        }
+        return rmqPwd;
     }
 }

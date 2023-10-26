@@ -111,7 +111,8 @@ rabbitmq:
   enabled: true
   auth:
     username: rmq
-    password: change-to-using-a-secret
+    existingPasswordSecret: ""      ## (must contain key: `rabbitmq-password`)
+
   hostname: d1index-rabbitmq-headless.d1index.svc
   hostport: 5672
   persistence:
@@ -192,4 +193,3 @@ solr:
   #      mountPath: /bitnami/solr
   containerSecurityContext:
     runAsUser: 1000
-

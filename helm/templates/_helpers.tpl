@@ -60,3 +60,14 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Get the rabbitmq password secret.
+*/}}
+{{- define "rabbitmq.secretPasswordName" -}}
+    {{- if .Values.rabbitmq.auth.existingPasswordSecret -}}
+        {{- printf "%s" (tpl .Values.rabbitmq.auth.existingPasswordSecret $) -}}
+    {{- else -}}
+        {{- printf "NEED_TO_SET_.Values.rabbitmq.auth.existingPasswordSecret_!!" -}}
+    {{- end -}}
+{{- end -}}
