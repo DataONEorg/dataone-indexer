@@ -15,8 +15,8 @@ nameOverride: ""
 fullnameOverride: ""
 
 global:
-    storageClass: csi-rbd-sc
-    solrPort: &global-solr-port 8983
+  storageClass: csi-rbd-sc
+  solrPort: &global-solr-port 8983
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -116,8 +116,8 @@ rabbitmq:
   hostname: d1index-rabbitmq-headless.d1index.svc
   hostport: 5672
   persistence:
-      storageClass: csi-rbd-sc
-      size: 10Gi
+    storageClass: csi-rbd-sc
+    size: 10Gi
   #replicaCount: 3
   #If you change the number of the max priority, the existing queue must be deleted. And consumers must use the same number.
   #max.priority: 10
@@ -131,9 +131,9 @@ solr:
   hostname: d1index-solr-headless.d1index.svc
   service:
     ports:
-        http: *global-solr-port
+      http: *global-solr-port
     nodePorts:
-        http: *global-solr-port
+      http: *global-solr-port
   containerPorts:
     http: *global-solr-port
   auth:
@@ -176,10 +176,10 @@ solr:
   #        - |
   #          curl --silent --connect-timeout 15000 --user ${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD} http://localhost:${SOLR_PORT_NUMBER}/api/node/health | grep --quiet  '\"status\":\"OK\"'
   lifecycleHooks:
-      postStart:
-        exec:
-          #command: ["/bin/bash", "-c", "env > /tmp/lifecycle-env"]
-          command: ["/bin/bash", "-c", "/solrconfig/config-solr.sh"]
+    postStart:
+      exec:
+        #command: ["/bin/bash", "-c", "env > /tmp/lifecycle-env"]
+        command: ["/bin/bash", "-c", "/solrconfig/config-solr.sh"]
   #sidecars:
   #- name: solr-cfg-sidecar
   #  image: ubuntu:22.04
