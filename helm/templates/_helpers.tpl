@@ -73,3 +73,16 @@ Get the rabbitmq password secret.
         {{- printf "NEED_TO_SET_.Values.rabbitmq.auth.existingPasswordSecret_!!" -}}
     {{- end -}}
 {{- end -}}
+
+{{/*
+Get the solr password secret.
+*/}}
+{{- define "idx.solr.secretPasswordName" -}}
+    {{- $solr := default dict .Values.solr -}}
+    {{- $solrauth := default dict $solr.auth -}}
+    {{- if $solrauth.existingSecret -}}
+        {{- printf "%s" (tpl .Values.solr.auth.existingSecret $) -}}
+    {{- else -}}
+        {{- printf "NEED_TO_SET_.Values.solr.auth.existingPasswordSecret_!!" -}}
+    {{- end -}}
+{{- end -}}

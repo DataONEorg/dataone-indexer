@@ -137,9 +137,10 @@ solr:
   containerPorts:
     http: *global-solr-port
   auth:
-    adminUsername: solradmin
-    adminPassword: change-to-using-a-solr-secret
-    #existingSecret: solr-secret
+    enabled: true
+    adminUsername: solrAdmin
+    existingSecret: ""
+    existingSecretPasswordKey: SOLR_ADMIN_PASSWORD
   persistence:
       storageClass: csi-rbd-sc
       size: 10Gi

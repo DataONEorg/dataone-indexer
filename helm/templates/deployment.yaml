@@ -68,6 +68,12 @@ spec:
                   name: {{ template "idx.rabbitmq.secretPasswordName" . }}
                   key: rabbitmq-password
                   optional: false
+            - name: SOLR_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "idx.solr.secretPasswordName" . }}
+                  key: SOLR_ADMIN_PASSWORD
+                  optional: false
       initContainers:
         - name: init-solr
           image: busybox:latest
