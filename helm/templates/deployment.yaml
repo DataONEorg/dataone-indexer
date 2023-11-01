@@ -51,6 +51,8 @@ spec:
             - mountPath: {{ .Values.persistence.mountPath }}
               name: {{ .Values.persistence.volumeName }}
               readOnly: true
+            - mountPath: /etc/dataone/tdb-cache
+              name: {{ .Release.Name }}-temp-tripledb-volume
           env:
             - name: DEBUG
               value: "{{ .Values.idxworker.debug }}"
@@ -77,7 +79,16 @@ spec:
       initContainers:
         - name: init-solr
           image: busybox:latest
-          command: ['sh', '-c', "until nc -z {{ .Values.solr.hostname}} {{ .Values.solr.service.ports.http }} > /dev/null; do echo waiting for Solr; sleep 5; done"]
+          command:
+            - sh
+            - -c
+            - >
+              until [[ $(wget -O- "{{- .Values.solr.hostname -}}:
+              {{- .Values.solr.service.ports.http -}}/solr/
+              {{- .Values.solr.customCollection -}}
+              /admin/file?file=schema.xml&contentType=text/xml"{{- printf " " -}}
+              | grep -c "<schema name=\"dataone\"") == 1 ]]; do
+                echo waiting for Solr Schema to be accessible at ; sleep 1; done
         - name: init-rabbitmq
           image: busybox:latest
           command: ['sh', '-c', "until nc -z {{ .Values.rabbitmq.hostname }} {{ .Values.rabbitmq.hostport}} > /dev/null; do echo waiting for RabbitMQ; sleep 2; done"]
@@ -102,3 +113,12 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.claimName }}
             readOnly: true
+        - name: {{ .Release.Name }}-temp-tripledb-volume
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: [ "ReadWriteOnce" ]
+                {{ include "common.storage.class" (dict "persistence" .Values.persistence "global" .Values.global) }}
+                resources:
+                  requests:
+                    storage: 1Gi
