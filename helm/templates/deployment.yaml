@@ -88,7 +88,7 @@ spec:
               {{- .Values.solr.customCollection -}}
               /admin/file?file=schema.xml&contentType=text/xml"{{- printf " " -}}
               | grep -c "<schema name=\"dataone\"") == 1 ]]; do
-                echo waiting for Solr Schema to be accessible at ; sleep 1; done
+                echo waiting for Solr Schema to be accessible; sleep 1; done
         - name: init-rabbitmq
           image: busybox:latest
           command: ['sh', '-c', "until nc -z {{ .Values.rabbitmq.hostname }} {{ .Values.rabbitmq.hostport}} > /dev/null; do echo waiting for RabbitMQ; sleep 2; done"]

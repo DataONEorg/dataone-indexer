@@ -95,7 +95,8 @@ rabbitmq:
   persistence:
     size: 10Gi
   #replicaCount: 3
-  #If you change the number of the max priority, the existing queue must be deleted. And consumers must use the same number.
+  #If you change the number of the max priority, the existing queue must be deleted, and consumers
+  # must use the same number.
   #max.priority: 10
 
 solr:
@@ -133,7 +134,6 @@ solr:
   lifecycleHooks:
     postStart:
       exec:
-        #command: ["/bin/bash", "-c", "env > /tmp/lifecycle-env"]
         command: ["/bin/bash", "-c", "/solrconfig/config-solr.sh"]
   containerSecurityContext:
     runAsUser: 1000
