@@ -67,15 +67,17 @@ spec:
             - name: RABBITMQ_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "idx.rabbitmq.secretPasswordName" . }}
+                  name: {{ .Values.rabbitmq.auth.existingPasswordSecret }}
                   key: rabbitmq-password
                   optional: false
+            {{- if .Values.solr.auth.enabled }}
             - name: SOLR_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "idx.solr.secretPasswordName" . }}
+                  name: {{ .Values.solr.auth.existingSecret }}
                   key: SOLR_ADMIN_PASSWORD
-                  optional: false
+                  optional: true
+            {{ end }}
       initContainers:
         - name: init-solr
           image: busybox:latest
@@ -83,15 +85,21 @@ spec:
             - sh
             - -c
             - >
-              until [[ $(wget -O- "{{- .Values.solr.hostname -}}:
-              {{- .Values.solr.service.ports.http -}}/solr/
-              {{- .Values.solr.customCollection -}}
-              /admin/file?file=schema.xml&contentType=text/xml"{{- printf " " -}}
-              | grep -c "<schema name=\"dataone\"") == 1 ]]; do
-                echo waiting for Solr Schema to be accessible; sleep 1; done
+              URI="/solr/{{- .Values.solr.customCollection -}}
+                  /admin/file?file=schema.xml&contentType=text/xml";
+              until [[ $(echo -e "GET $URI HTTP/1.1\r\nHost: {{ .Values.solr.hostname -}}
+              \r\n\r\n" | nc {{ .Values.solr.hostname }}{{ print " " -}}
+              {{ .Values.solr.service.ports.http }} | grep -c "<schema name=\"dataone") == 1 ]]; do
+              echo waiting for Solr Schema to be accessible at http://{{ .Values.solr.hostname }}:
+              {{- .Values.solr.service.ports.http }}$URI; sleep 1; done;
         - name: init-rabbitmq
           image: busybox:latest
-          command: ['sh', '-c', "until nc -z {{ .Values.rabbitmq.hostname }} {{ .Values.rabbitmq.hostport}} > /dev/null; do echo waiting for RabbitMQ; sleep 2; done"]
+          command:
+            - sh
+            - -c
+            - >
+              until nc -z {{ .Values.rabbitmq.hostname }} {{ .Values.rabbitmq.hostport }} >
+              {{- print " " }}/dev/null; do echo waiting for RabbitMQ; sleep 2; done;
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
