@@ -2,6 +2,11 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+global:
+  solrPort: &global-solr-port 8983
+  ## Leave commented out to use default, if one is set on your cluster
+  # storageClass:
+
 replicaCount: 1
 
 image:
@@ -13,10 +18,6 @@ image:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
-
-global:
-    storageClass: csi-rbd-sc
-    solrPort: &global-solr-port 8983
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -39,31 +40,6 @@ securityContext: {}
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
-
-service:
-  type: ClusterIP
-  port: 80
-
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-          backend:
-            service:
-              name: d1index-solr
-              port:
-                number: *global-solr-port
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -105,20 +81,22 @@ idxworker:
   pool_size: 5
   debug: "FALSE"
   d1_serviceType_url: https://cn.dataone.org/mnServiceTypes.xml
+  tripleDbDirectory: /etc/dataone/tdb-cache
 
 # The section for the rabbitMQ configuration
 rabbitmq:
   enabled: true
   auth:
     username: rmq
-    password: change-to-using-a-secret
+    existingPasswordSecret: ""      ## (must contain key: `rabbitmq-password`)
+
   hostname: d1index-rabbitmq-headless.d1index.svc
   hostport: 5672
   persistence:
-      storageClass: csi-rbd-sc
-      size: 10Gi
+    size: 10Gi
   #replicaCount: 3
-  #If you change the number of the max priority, the existing queue must be deleted. And consumers must use the same number.
+  #If you change the number of the max priority, the existing queue must be deleted, and consumers
+  # must use the same number.
   #max.priority: 10
 
 solr:
@@ -130,17 +108,18 @@ solr:
   hostname: d1index-solr-headless.d1index.svc
   service:
     ports:
-        http: *global-solr-port
+      http: *global-solr-port
     nodePorts:
-        http: *global-solr-port
+      http: *global-solr-port
   containerPorts:
     http: *global-solr-port
   auth:
-    adminUsername: solradmin
-    adminPassword: change-to-using-a-solr-secret
-    #existingSecret: solr-secret
+    ## Nov 2023: Agreed with Matt we don't need solr auth for now, since solr isn't exposed
+    ## outside the cluster. Can add later if needed by anyone not using the subchart, and
+    ## instead connecting to a solr instance outside the cluster
+    ##
+    enabled: false
   persistence:
-      storageClass: csi-rbd-sc
       size: 10Gi
   extraVolumes:
     - name: solr-config
@@ -153,43 +132,9 @@ solr:
     - name: solr-config
       mountPath: /opt/bitnami/scripts/solr/entrypoint.sh
       subPath: entrypoint.sh
-  #initContainers:
-  #  - name: zk-ready
-  #readinessProbe:
-  #    enabled: false
-  #customReadinessProbe:
-  #    failureThreshold: 6
-  #    initialDelaySeconds: 60
-  #    periodSeconds: 10
-  #    successThreshold: 1
-  #    timeoutSeconds: 15
-  #    initialDelaySeconds: 60
-  #    timeoutSeconds: 15
-  #    failureThreshold: 6
-  #    periodSeconds: 10
-  #    successThreshold: 1
-  #    exec:
-  #      command:
-  #        - /bin/bash
-  #        - -ec
-  #        - |
-  #          curl --silent --connect-timeout 15000 --user ${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD} http://localhost:${SOLR_PORT_NUMBER}/api/node/health | grep --quiet  '\"status\":\"OK\"'
   lifecycleHooks:
-      postStart:
-        exec:
-          #command: ["/bin/bash", "-c", "env > /tmp/lifecycle-env"]
-          command: ["/bin/bash", "-c", "/solrconfig/config-solr.sh"]
-  #sidecars:
-  #- name: solr-cfg-sidecar
-  #  image: ubuntu:22.04
-  #  imagePullPolicy: IfNotPresent
-  #  #command: ['bash', '-c', "/solrconfig/config-solr.sh"]
-  #  command: ['bash', '-c', "df -h && ls -l / && sleep 3600"]
-  #  volumeMounts:
-  #    - name: solr-config
-  #      mountPath: /solrconfig
-  #    - name: data
-  #      mountPath: /bitnami/solr
+    postStart:
+      exec:
+        command: ["/bin/bash", "-c", "/solrconfig/config-solr.sh"]
   containerSecurityContext:
     runAsUser: 1000
-
