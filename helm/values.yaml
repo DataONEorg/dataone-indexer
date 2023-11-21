@@ -35,7 +35,7 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext:
-  fsGroup: 1001
+  fsGroup: 1000 # must match metacat group for shared volume at /var/metacat
 
 securityContext:
   runAsNonRoot: true
@@ -72,8 +72,11 @@ persistence:
   claimName: d1index-metacat-pvc
   volumeName: d1index-metacat-pv
   mountPath: /var/metacat
-  ## Optional storage class that allows ephemeral volumes to get cleaned up automatically
-  ephemeralVolumeStorageClass: csi-cephfs-sc
+  ## @param persistence.ephemeralVolumeStorageClass Optional override of global.storageClass.
+  ## Can be used to assign a storageClass that has a `Delete` Reclaim Policy, thus allowing
+  ## ephemeral volumes to be cleaned up automatically
+  ##
+  # ephemeralVolumeStorageClass: csi-cephfs-sc
 
 # Values for the IndexWorker
 idxworker:
