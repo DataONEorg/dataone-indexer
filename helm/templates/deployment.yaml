@@ -79,6 +79,14 @@ spec:
                   optional: true
             {{ end }}
       initContainers:
+        - name: init-rabbitmq
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - >
+              until nc -z {{ .Values.rabbitmq.hostname }} {{ .Values.rabbitmq.hostport }} >
+              {{- print " " }}/dev/null; do echo waiting for RabbitMQ; sleep 2; done;
         - name: init-solr
           image: busybox:latest
           command:
@@ -92,14 +100,6 @@ spec:
               {{ .Values.solr.service.ports.http }} | grep -c "<schema name=\"dataone") == 1 ]]; do
               echo waiting for Solr Schema to be accessible at http://{{ .Values.solr.hostname }}:
               {{- .Values.solr.service.ports.http }}$URI; sleep 1; done;
-        - name: init-rabbitmq
-          image: busybox:latest
-          command:
-            - sh
-            - -c
-            - >
-              until nc -z {{ .Values.rabbitmq.hostname }} {{ .Values.rabbitmq.hostport }} >
-              {{- print " " }}/dev/null; do echo waiting for RabbitMQ; sleep 2; done;
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -126,7 +126,9 @@ spec:
             volumeClaimTemplate:
               spec:
                 accessModes: [ "ReadWriteOnce" ]
-                {{ include "common.storage.class" (dict "persistence" .Values.persistence "global" .Values.global) }}
+                {{- if .Values.persistence.ephemeralVolumeStorageClass }}
+                storageClassName: {{ .Values.persistence.ephemeralVolumeStorageClass }}
+                {{ end -}}
                 resources:
                   requests:
                     storage: 1Gi
