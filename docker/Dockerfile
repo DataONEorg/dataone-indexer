@@ -1,4 +1,5 @@
-# Build from parent dir with a command like: `nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 .`
+# Build from parent dir with a command like:
+#     `nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 .`
 # Use an OpenJDK runtime as a parent image
 # Note: the prior alpine-based openjdk image had network DNS issues, so replacing with Eclipse Temurin
 FROM eclipse-temurin:17.0.8.1_1-jre-jammy
@@ -16,8 +17,8 @@ RUN apt update && apt -y install \
     curl \
     nano
 
-#Add a user with name d1indexer
-RUN useradd d1indexer
+#Add a user & group with id=1001 and name=d1indexer
+RUN groupadd -g 1001 d1indexer && useradd -u 1001 -g 1001 d1indexer
 
 # The most recently built jar file is copied from the maven build directory to this dir by maven, so that
 # it can be copied to the image.
@@ -29,10 +30,10 @@ RUN chown d1indexer dataone-index-worker-${TAG}-shaded.jar
 RUN chown d1indexer entrypoint.sh
 
 #Run Container as d1indexer
-USER d1indexer
+USER 1001
 
 # Connect this image to a GitHub repository
-LABEL org.opencontainers.image.source https://github.com/dataoneorg/dataone-indexer
+LABEL org.opencontainers.image.source="https://github.com/dataoneorg/dataone-indexer"
 
 # Run the Worker process
 CMD ./entrypoint.sh
