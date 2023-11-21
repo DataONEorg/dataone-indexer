@@ -4,10 +4,14 @@
 
 global:
   solrPort: &global-solr-port 8983
-  ## Leave commented out to use default, if one is set on your cluster
-  # storageClass:
 
-replicaCount: 1
+  ## @param global.storageClass default name of the storageClass to use for PVs
+  ## Comment out to use default, if one is set on your cluster
+  ##
+  ## To inspect your cluster to see what storageClass names are supported:
+  ##    $  kubectl get storageclass
+  ## (e.g. for Rancher Desktop, use:   storageClass: local-path)
+  storageClass: csi-rbd-sc
 
 image:
   repository: ghcr.io/dataoneorg/dataone-index-worker
@@ -30,16 +34,11 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext:
+  fsGroup: 1001
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+securityContext:
+  runAsNonRoot: true
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -60,6 +59,9 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+## @param replicaCount Number of desired index worker pods. NOTE ignored if autoscaling.enabled=true
+#replicaCount: 1
+
 nodeSelector: {}
 
 tolerations: []
@@ -70,11 +72,20 @@ persistence:
   claimName: d1index-metacat-pvc
   volumeName: d1index-metacat-pv
   mountPath: /var/metacat
+  ## Optional storage class that allows ephemeral volumes to get cleaned up automatically
+  ephemeralVolumeStorageClass: csi-cephfs-sc
 
 # Values for the IndexWorker
 idxworker:
+  ## @param idxworker.mn_url URL of the metacat instance that depends upon this indexer
+  ##
   mn_url: "https://valley.duckdns.org/metacat/d1/mn"
+
+  ## @param idxworker.cn_url URL of the CN
+  ##
   cn_url: "https://cn.dataone.org/cn"
+
+  ## Location of docs/data within the metacat shared volume
   data_directory: /var/metacat/data
   document_directory: /var/metacat/documents
   # The size of the thread pool which processes the index tasks
