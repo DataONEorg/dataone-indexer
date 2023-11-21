@@ -18,7 +18,7 @@ RUN apt update && apt -y install \
     nano
 
 #Add a user & group with id=1001 and name=d1indexer
-RUN groupadd -g 1001 d1indexer && useradd -u 1001 -g 1001 d1indexer
+RUN groupadd -g 1000 d1indexer && useradd -u 1000 -g 1000 d1indexer
 
 # The most recently built jar file is copied from the maven build directory to this dir by maven, so that
 # it can be copied to the image.
@@ -30,7 +30,7 @@ RUN chown d1indexer dataone-index-worker-${TAG}-shaded.jar
 RUN chown d1indexer entrypoint.sh
 
 #Run Container as d1indexer
-USER 1001
+USER 1000
 
 # Connect this image to a GitHub repository
 LABEL org.opencontainers.image.source="https://github.com/dataoneorg/dataone-indexer"
