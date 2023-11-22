@@ -16,13 +16,15 @@ This is applicable when no passwords are set and therefore the random password i
 
 More information about the credentials may be found at https://docs.bitnami.com/general/how-to/troubleshoot-helm-chart-issues/#credential-errors-while-upgrading-chart-releases.
 
-RabbitMQ can be accessed within the cluster on port {{ .Values.rabbitmq.hostport }} at {{ .Values.rabbitmq.hostname }}
+{{- $rmqHostPort := default .Values.rabbitmq.service.ports.amqp .Values.rabbitmq.hostport -}}
+
+RabbitMQ can be accessed within the cluster on port {{ $rmqHostPort }} at {{ include "idxworker.rabbitmq.hostname" . }}
 
 Access the web console by port-forwarding:
 
-kubectl -n {{ .Release.Namespace }} port-forward pod/{{ .Release.Name }}-rabbitmq-0 {{ .Values.rabbitmq.hostport }}:{{ .Values.rabbitmq.hostport }} &
+kubectl -n {{ .Release.Namespace }} port-forward pod/{{ .Release.Name }}-rabbitmq-0 {{ $rmqHostPort }}:{{ $rmqHostPort }} &
 
-...then login to the Rabbitmq web console: http://localhost:{{ .Values.rabbitmq.hostport }}
+...then login to the Rabbitmq web console: http://localhost:{{ $rmqHostPort }}
 
 {{- if .Values.rabbitmq.metrics.enabled }}
 
@@ -53,9 +55,9 @@ To get the Solr credentials execute the following commands:
 
 Connect to the SOLR Dashboard by creating a kube proxy, and then browse to the local address:
 
-kubectl -n {{ .Release.Namespace }} port-forward service/{{ .Release.Name }}-solr {{ .Values.global.solrPort }}:{{ .Values.rabbitmq.hostport }} &
+kubectl -n {{ .Release.Namespace }} port-forward service/{{ .Release.Name }}-solr {{ .Values.global.solrPort }}:{{ .Values.global.solrPort }} &
 
-Solr URL: http://127.0.0.1:{{ .Values.rabbitmq.hostport }}/solr/
+Solr URL: http://127.0.0.1:{{ .Values.global.solrPort }}/solr/
 
 {{- if .Values.solr.metrics.enabled  }}
 

@@ -60,3 +60,14 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+set RabbitMQ HostName
+*/}}
+{{- define "idxworker.rabbitmq.hostname" -}}
+{{- if not .Values.rabbitmq.hostname }}
+{{- .Release.Name }}-rabbitmq-headless
+{{- else }}
+{{- .Values.rabbitmq.hostname }}
+{{- end }}
+{{- end }}

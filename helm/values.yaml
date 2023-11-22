@@ -114,7 +114,7 @@ rabbitmq:
   ## Leave this value unset (`hostname: ""`) to have it automatically populated
   ##
   hostname: ""
-  ## @param rabbitmq.hostname idxworker param: hostport of the rabbitmq service
+  ## @param rabbitmq.hostport idxworker param: hostport of the rabbitmq service
   ## Leave this value unset (`hostport: ""`) to have it automatically populated
   ##
   hostport: ""

@@ -85,7 +85,8 @@ spec:
             - sh
             - -c
             - >
-              until nc -z {{ .Values.rabbitmq.hostname }} {{ .Values.rabbitmq.hostport }} >
+              until nc -z {{ include "idxworker.rabbitmq.hostname" . }}{{- print " " }}
+              {{- default .Values.rabbitmq.service.ports.amqp .Values.rabbitmq.hostport }} >
               {{- print " " }}/dev/null; do echo waiting for RabbitMQ; sleep 2; done;
         - name: init-solr
           image: busybox:latest
