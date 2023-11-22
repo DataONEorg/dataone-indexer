@@ -101,11 +101,24 @@ idxworker:
 rabbitmq:
   enabled: true
   auth:
+    ## @param rabbitmq.username the username for rabbitmq access
+    ##
     username: rmq
-    existingPasswordSecret: ""      ## (must contain key: `rabbitmq-password`)
 
-  hostname: d1index-rabbitmq-headless.d1index.svc
-  hostport: 5672
+    ## @param rabbitmq.existingPasswordSecret the k8s secret holding the rabbitmq password
+    ## (must be associated with key: `rabbitmq-password`)
+    ##
+    existingPasswordSecret: ""
+
+  ## @param rabbitmq.hostname idxworker param: hostname of the rabbitmq service to use
+  ## Leave this value unset (`hostname: ""`) to have it automatically populated
+  ##
+  hostname: ""
+  ## @param rabbitmq.hostname idxworker param: hostport of the rabbitmq service
+  ## Leave this value unset (`hostport: ""`) to have it automatically populated
+  ##
+  hostport: ""
+
   persistence:
     size: 10Gi
   #replicaCount: 3
