@@ -41,7 +41,7 @@ spec:
           #   httpGet:
           #     path: /
           #     port: http
-          #     initialDelaySeconds: {{ .Values.initialDelaySeconds }}
+          #     initialDelaySeconds:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
@@ -127,7 +127,7 @@ spec:
             volumeClaimTemplate:
               spec:
                 accessModes: [ "ReadWriteOnce" ]
-                {{- if .Values.persistence.ephemeralVolumeStorageClass }}
+                {{- if ne (quote .Values.persistence.ephemeralVolumeStorageClass) "" }}
                 storageClassName: {{ .Values.persistence.ephemeralVolumeStorageClass }}
                 {{ end -}}
                 resources:
