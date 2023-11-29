@@ -62,6 +62,34 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
+set MN url
+If we're running as a subchart, can use direct access without needing to go through ingress/https;
+  e.g. http://metacatbrooke-hl:8080/metacat/d1/mn
+If connecting to an instance outside the cluster, should use https;
+  e.g. https://metacat-dev.test.dataone.org/metacat/d1/mn
+*/}}
+{{- define "idxworker.mn.url" -}}
+{{- if not .Values.idxworker.mn_url }}
+{{- printf "http://%s-hl:8080/%s/d1/mn" .Release.Name .Values.global.metacatAppContext }}
+{{- else }}
+{{- .Values.idxworker.mn_url }}
+{{- end }}
+{{- end }}
+
+{{/*
+set Claim Name of existing PVC to use (typically the volume that is shared with metacat)
+Either use the value set in .Values.persistence.claimName, or if blank, autopopulate with
+  {podname}-metacat-{releaseName}-0 (e.g. metacatbrooke-metacat-metacatbrooke-0)
+*/}}
+{{- define "idxworker.shared.claimName" -}}
+{{- if not .Values.persistence.claimName }}
+{{- .Release.Name }}-metacat-{{- .Release.Name }}-0
+{{- else }}
+{{- .Values.persistence.claimName }}
+{{- end }}
+{{- end }}
+
+{{/*
 set RabbitMQ HostName
 */}}
 {{- define "idxworker.rabbitmq.hostname" -}}
@@ -69,5 +97,16 @@ set RabbitMQ HostName
 {{- .Release.Name }}-rabbitmq-headless
 {{- else }}
 {{- .Values.rabbitmq.hostname }}
+{{- end }}
+{{- end }}
+
+{{/*
+set Solr HostName
+*/}}
+{{- define "idxworker.solr.hostname" -}}
+{{- if not .Values.solr.hostname }}
+{{- .Release.Name }}-solr-headless
+{{- else }}
+{{- .Values.solr.hostname }}
 {{- end }}
 {{- end }}
