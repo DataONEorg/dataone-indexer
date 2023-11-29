@@ -4,6 +4,7 @@
 
 global:
   solrPort: &global-solr-port 8983
+  metacatAppContext: metacat
 
   ## @param global.storageClass default name of the storageClass to use for PVs
   ## Comment out to use default, if one is set on your cluster
@@ -11,7 +12,16 @@ global:
   ## To inspect your cluster to see what storageClass names are supported:
   ##    $  kubectl get storageclass
   ## (e.g. for Rancher Desktop, use:   storageClass: local-path)
-  storageClass: csi-rbd-sc
+  storageClass: csi-cephfs-sc
+
+  ## @param global.ephemeralVolumeStorageClass Optional override of global.storageClass.
+  ## Can be used to assign a storageClass that has a 'Delete' Reclaim Policy, thus allowing
+  ## ephemeral volumes to be cleaned up automatically (eg "csi-cephfs-sc-ephemeral")
+  ##
+  ephemeralVolumeStorageClass: csi-cephfs-sc-ephemeral
+
+
+## @section Dataone-Indexer Application-Specific Properties
 
 image:
   repository: ghcr.io/dataoneorg/dataone-index-worker
@@ -69,56 +79,56 @@ tolerations: []
 affinity: {}
 
 persistence:
-  claimName: d1index-metacat-pvc
-  volumeName: d1index-metacat-pv
+  ## @param persistence.claimName Name of existing PVC to use (typically shared with metacat)
+  ## Set a value for 'claimName' only if you want to re-use a Persistent Volume Claim that has
+  ## already been set up by a k8s admin ahead of time.
+  ## Leaving it blank will cause the value to be autopopulated with:
+  ## claimName: {podname}-metacat-{releaseName}-metacat-0
+  ##
+  claimName: ""
   mountPath: /var/metacat
-  ## @param persistence.ephemeralVolumeStorageClass Optional override of global.storageClass.
-  ## Can be used to assign a storageClass that has a `Delete` Reclaim Policy, thus allowing
-  ## ephemeral volumes to be cleaned up automatically (eg "csi-cephfs-sc-ephemeral")
-  ##
-  ephemeralVolumeStorageClass: ""
 
-# Values for the IndexWorker
+
+## @section IndexWorker properties
+##
 idxworker:
+  debug: "FALSE"
+
   ## @param idxworker.mn_url URL of the metacat instance that depends upon this indexer
+  ## Leave this value unset (mn_url: "") to have it automatically populated
   ##
-  mn_url: "https://valley.duckdns.org/metacat/d1/mn"
+  mn_url: ""
 
   ## @param idxworker.cn_url URL of the CN
   ##
   cn_url: "https://cn.dataone.org/cn"
 
-  ## Location of docs/data within the metacat shared volume
+  ## @param idxworker.data_directory Location of data within the metacat shared volume
+  ##
   data_directory: /var/metacat/data
+
+  ## @param idxworker.document_directory Location of docs within the metacat shared volume
+  ##
   document_directory: /var/metacat/documents
+
   # The size of the thread pool which processes the index tasks
   pool_size: 5
-  debug: "FALSE"
   d1_serviceType_url: https://cn.dataone.org/mnServiceTypes.xml
 
   ## @param idxworker.tripleDbDirectory path to indexer cache for triples (usually on a mount)
   ##
   tripleDbDirectory: /etc/dataone/tdb-cache
 
-# The section for the rabbitMQ configuration
+## @section RabbitMQ Configuration
+##
 rabbitmq:
   enabled: true
-  auth:
-    ## @param rabbitmq.username the username for rabbitmq access
-    ##
-    username: rmq
-
-    ## @param rabbitmq.existingPasswordSecret the k8s secret holding the rabbitmq password
-    ## (must be associated with key: `rabbitmq-password`)
-    ##
-    existingPasswordSecret: ""
-
-  ## @param rabbitmq.hostname idxworker param: hostname of the rabbitmq service to use
-  ## Leave this value unset (`hostname: ""`) to have it automatically populated
+  ## @param rabbitmq.hostname (idxworker-specific param): hostname of the rabbitmq service to use
+  ## Leave this value unset (hostname: "") to have it automatically populated
   ##
   hostname: ""
-  ## @param rabbitmq.hostport idxworker param: hostport of the rabbitmq service
-  ## Leave this value unset (`hostport: ""`) to have it automatically populated
+  ## @param rabbitmq.hostport (idxworker-specific param): hostport of the rabbitmq service
+  ## Leave this value unset (hostport: "") to have it automatically populated
   ##
   hostport: ""
 
@@ -129,15 +139,39 @@ rabbitmq:
   # must use the same number.
   #max.priority: 10
 
+  auth:
+    ## @param rabbitmq.username the username for rabbitmq access
+    ##
+    username: rmq
+
+    ## @param rabbitmq.existingPasswordSecret the k8s secret holding the rabbitmq password
+    ## (must be associated with key: 'rabbitmq-password')
+    ##
+    existingPasswordSecret: ""
+
+
+## @section Solr Configuration
+##
 solr:
   collection: temp_collection
+
+  ## @param solr.customCollection (required) name of the solr collection to use
+  ##
   customCollection: dataone_index
+
   coreNames:
     - dataone_core
   #javaMem: "-Xms512m -Xmx2g"
-  hostname: d1index-solr-headless.d1index.svc
+
+  ## @param solr.hostname (idxworker-specific param): hostname of the solr service to use
+  ## Leave this value unset (hostname: "") to have it automatically populated
+  ##
+  hostname: ""
+
   service:
     ports:
+      ## @param solr.service.ports.http: see global.solrPort (required)
+      ##
       http: *global-solr-port
     nodePorts:
       http: *global-solr-port
@@ -154,7 +188,7 @@ solr:
   extraVolumes:
     - name: solr-config
       configMap:
-        name: d1index-configfiles
+        name: d1index-indexer-configfiles
         defaultMode: 0777
   extraVolumeMounts:
     - name: solr-config
