@@ -74,9 +74,9 @@ persistence:
   mountPath: /var/metacat
   ## @param persistence.ephemeralVolumeStorageClass Optional override of global.storageClass.
   ## Can be used to assign a storageClass that has a `Delete` Reclaim Policy, thus allowing
-  ## ephemeral volumes to be cleaned up automatically
+  ## ephemeral volumes to be cleaned up automatically (eg "csi-cephfs-sc-ephemeral")
   ##
-  # ephemeralVolumeStorageClass: csi-cephfs-sc
+  ephemeralVolumeStorageClass: ""
 
 # Values for the IndexWorker
 idxworker:
@@ -95,6 +95,9 @@ idxworker:
   pool_size: 5
   debug: "FALSE"
   d1_serviceType_url: https://cn.dataone.org/mnServiceTypes.xml
+
+  ## @param idxworker.tripleDbDirectory path to indexer cache for triples (usually on a mount)
+  ##
   tripleDbDirectory: /etc/dataone/tdb-cache
 
 # The section for the rabbitMQ configuration
