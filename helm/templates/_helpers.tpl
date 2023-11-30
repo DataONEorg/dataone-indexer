@@ -69,10 +69,11 @@ If connecting to an instance outside the cluster, should use https;
   e.g. https://metacat-dev.test.dataone.org/metacat/d1/mn
 */}}
 {{- define "idxworker.mn.url" -}}
-{{- if not .Values.idxworker.mn_url }}
+{{- $mn_url := .Values.idxworker.mn_url }}
+{{- if not $mn_url }}
 {{- printf "http://%s-hl:8080/%s/d1/mn" .Release.Name .Values.global.metacatAppContext }}
 {{- else }}
-{{- .Values.idxworker.mn_url }}
+{{- $mn_url }}
 {{- end }}
 {{- end }}
 
@@ -82,10 +83,11 @@ Either use the value set in .Values.persistence.claimName, or if blank, autopopu
   {podname}-metacat-{releaseName}-0 (e.g. metacatbrooke-metacat-metacatbrooke-0)
 */}}
 {{- define "idxworker.shared.claimName" -}}
-{{- if not .Values.persistence.claimName }}
+{{- $claimName := .Values.persistence.claimName }}
+{{- if not $claimName }}
 {{- .Release.Name }}-metacat-{{- .Release.Name }}-0
 {{- else }}
-{{- .Values.persistence.claimName }}
+{{- $claimName }}
 {{- end }}
 {{- end }}
 
