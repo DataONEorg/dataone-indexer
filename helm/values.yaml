@@ -105,17 +105,17 @@ idxworker:
   cn_url: "https://cn.dataone.org/cn"
 
   ## @param idxworker.solrHostname hostname of the solr service to use
-  ## Leave this value unset (solrHostname: "") to automatically populate when using solr subchart
+  ## Leave unset (solrHostname: "") to automatically populate when using solr bitnami subchart
   ##
   solrHostname: ""
 
-  ## @param rabbitmq.hostname (idxworker-specific param): hostname of the rabbitmq service to use
-  ## Leave this value unset (hostname: "") to have it automatically populated
+  ## @param idxworker.rabbitmqHostname hostname of the rabbitmq service to use
+  ## Leave unset (rabbitmqHostname: "") to automatically populate when using rmq bitnami subchart
   ##
   rabbitmqHostname: ""
 
-  ## @param rabbitmq.hostport (idxworker-specific param): hostport of the rabbitmq service
-  ## Leave this value unset (hostport: "") to have it automatically populated
+  ## @param idxworker.rabbitmqHostPort hostport of the rabbitmq service
+  ## Leave unset (rabbitmqHostPort: "") to automatically populate when using rmq bitnami subchart
   ##
   rabbitmqHostPort: ""
 
