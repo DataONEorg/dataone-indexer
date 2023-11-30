@@ -17,6 +17,7 @@ global:
   ## @param global.ephemeralVolumeStorageClass Optional override of global.storageClass.
   ## Can be used to assign a storageClass that has a 'Delete' Reclaim Policy, thus allowing
   ## ephemeral volumes to be cleaned up automatically (eg "csi-cephfs-sc-ephemeral")
+  ## Comment out to use default StorageClass, if one is set on your cluster
   ##
   ephemeralVolumeStorageClass: csi-cephfs-sc-ephemeral
 
@@ -103,6 +104,21 @@ idxworker:
   ##
   cn_url: "https://cn.dataone.org/cn"
 
+  ## @param idxworker.solrHostname hostname of the solr service to use
+  ## Leave unset (solrHostname: "") to automatically populate when using solr bitnami subchart
+  ##
+  solrHostname: ""
+
+  ## @param idxworker.rabbitmqHostname hostname of the rabbitmq service to use
+  ## Leave unset (rabbitmqHostname: "") to automatically populate when using rmq bitnami subchart
+  ##
+  rabbitmqHostname: ""
+
+  ## @param idxworker.rabbitmqHostPort hostport of the rabbitmq service
+  ## Leave unset (rabbitmqHostPort: "") to automatically populate when using rmq bitnami subchart
+  ##
+  rabbitmqHostPort: ""
+
   ## @param idxworker.data_directory Location of data within the metacat shared volume
   ##
   data_directory: /var/metacat/data
@@ -119,19 +135,10 @@ idxworker:
   ##
   tripleDbDirectory: /etc/dataone/tdb-cache
 
-## @section RabbitMQ Configuration
+## @section RabbitMQ Bitnami Sub-Chart Configuration
 ##
 rabbitmq:
   enabled: true
-  ## @param rabbitmq.hostname (idxworker-specific param): hostname of the rabbitmq service to use
-  ## Leave this value unset (hostname: "") to have it automatically populated
-  ##
-  hostname: ""
-  ## @param rabbitmq.hostport (idxworker-specific param): hostport of the rabbitmq service
-  ## Leave this value unset (hostport: "") to have it automatically populated
-  ##
-  hostport: ""
-
   persistence:
     size: 10Gi
   #replicaCount: 3
@@ -150,9 +157,10 @@ rabbitmq:
     existingPasswordSecret: ""
 
 
-## @section Solr Configuration
+## @section Solr Bitnami Sub-Chart Configuration
 ##
 solr:
+  enabled: true
   collection: temp_collection
 
   ## @param solr.customCollection (required) name of the solr collection to use
@@ -163,11 +171,10 @@ solr:
     - dataone_core
   #javaMem: "-Xms512m -Xmx2g"
 
-  ## @param solr.hostname (idxworker-specific param): hostname of the solr service to use
-  ## Leave this value unset (hostname: "") to have it automatically populated
-  ##
-  hostname: ""
-
+  containerSecurityContext:
+    runAsUser: 1000
+  persistence:
+    size: 10Gi
   service:
     ports:
       ## @param solr.service.ports.http: see global.solrPort (required)
@@ -183,8 +190,6 @@ solr:
     ## instead connecting to a solr instance outside the cluster
     ##
     enabled: false
-  persistence:
-      size: 10Gi
   extraVolumes:
     - name: solr-config
       configMap:
@@ -200,5 +205,3 @@ solr:
     postStart:
       exec:
         command: ["/bin/bash", "-c", "/solrconfig/config-solr.sh"]
-  containerSecurityContext:
-    runAsUser: 1000

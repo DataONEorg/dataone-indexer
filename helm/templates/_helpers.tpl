@@ -63,14 +63,17 @@ Create the name of the service account to use
 
 {{/*
 set MN url
-e.g. https://metacat-dev.test.dataone.org/metacat/d1/mn
+If we're running as a subchart, can use direct access without needing to go through ingress/https;
+  e.g. http://metacatbrooke-hl:8080/metacat/d1/mn
+If connecting to an instance outside the cluster, should use https;
+  e.g. https://metacat-dev.test.dataone.org/metacat/d1/mn
 */}}
 {{- define "idxworker.mn.url" -}}
-{{- if not .Values.idxworker.mn_url }}
-{{- printf "https://%s-metacat-hl/%s/d1/mn" .Release.Name .Values.global.metacatAppContext }}
-{{- else }}
-{{- .Values.idxworker.mn_url }}
+{{- $mn_url := .Values.idxworker.mn_url }}
+{{- if not $mn_url }}
+{{- $mn_url = printf "http://%s-hl:8080/%s/d1/mn" .Release.Name .Values.global.metacatAppContext }}
 {{- end }}
+{{- $mn_url }}
 {{- end }}
 
 {{/*
@@ -79,31 +82,49 @@ Either use the value set in .Values.persistence.claimName, or if blank, autopopu
   {podname}-metacat-{releaseName}-0 (e.g. metacatbrooke-metacat-metacatbrooke-0)
 */}}
 {{- define "idxworker.shared.claimName" -}}
-{{- if not .Values.persistence.claimName }}
-{{- .Release.Name }}-metacat-{{- .Release.Name }}-0
-{{- else }}
-{{- .Values.persistence.claimName }}
+{{- $claimName := .Values.persistence.claimName }}
+{{- if not $claimName }}
+{{- $claimName = .Release.Name }}-metacat-{{- .Release.Name }}-0
 {{- end }}
+{{- $claimName }}
 {{- end }}
+
+{{/*
+Check if RabbitMQ SubChart is enabled
+*/}}
+{{- define "rmq.enabled" -}}
+{{ $rmqEnabled := (or (((.Values.global).rabbitmq).enabled) ((.Values.rabbitmq).enabled)) }}
+{{ end }}
 
 {{/*
 set RabbitMQ HostName
 */}}
 {{- define "idxworker.rabbitmq.hostname" -}}
-{{- if not .Values.rabbitmq.hostname }}
-{{- .Release.Name }}-rabbitmq-headless
-{{- else }}
-{{- .Values.rabbitmq.hostname }}
+{{- $rmqHost := .Values.idxworker.rabbitmqHostname }}
+{{- if and (include "rmq.enabled" .) (not $rmqHost) -}}
+{{- $rmqHost = printf "%s-rabbitmq-headless" .Release.Name -}}
 {{- end }}
+{{- $rmqHost }}
+{{- end }}
+
+{{/*
+set RabbitMQ HostPort
+*/}}
+{{- define "idxworker.rabbitmq.hostport" }}
+{{- $rmqPort := .Values.idxworker.rabbitmqHostPort }}
+{{- if and (include "rmq.enabled" .) (not $rmqPort) -}}
+{{ $rmqPort = .Values.rabbitmq.service.ports.amqp }}
+{{- end }}
+{{- $rmqPort }}
 {{- end }}
 
 {{/*
 set Solr HostName
 */}}
 {{- define "idxworker.solr.hostname" -}}
-{{- if not .Values.solr.hostname }}
-{{- .Release.Name }}-solr-headless
-{{- else }}
-{{- .Values.solr.hostname }}
+{{- $solrHost := .Values.idxworker.solrHostname }}
+{{- if and (or (((.Values.global).solr).enabled) ((.Values.solr).enabled)) (not $solrHost) -}}
+    {{- $solrHost = printf "%s-solr-headless" .Release.Name -}}
 {{- end }}
+{{- $solrHost }}
 {{- end }}
