@@ -71,10 +71,9 @@ If connecting to an instance outside the cluster, should use https;
 {{- define "idxworker.mn.url" -}}
 {{- $mn_url := .Values.idxworker.mn_url }}
 {{- if not $mn_url }}
-{{- printf "http://%s-hl:8080/%s/d1/mn" .Release.Name .Values.global.metacatAppContext }}
-{{- else }}
-{{- $mn_url }}
+{{- $mn_url = printf "http://%s-hl:8080/%s/d1/mn" .Release.Name .Values.global.metacatAppContext }}
 {{- end }}
+{{- $mn_url }}
 {{- end }}
 
 {{/*
@@ -85,10 +84,9 @@ Either use the value set in .Values.persistence.claimName, or if blank, autopopu
 {{- define "idxworker.shared.claimName" -}}
 {{- $claimName := .Values.persistence.claimName }}
 {{- if not $claimName }}
-{{- .Release.Name }}-metacat-{{- .Release.Name }}-0
-{{- else }}
-{{- $claimName }}
+{{- $claimName = .Release.Name }}-metacat-{{- .Release.Name }}-0
 {{- end }}
+{{- $claimName }}
 {{- end }}
 
 {{/*
