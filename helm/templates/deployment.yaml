@@ -41,7 +41,7 @@ spec:
           #   httpGet:
           #     path: /
           #     port: http
-          #     initialDelaySeconds: {{ .Values.initialDelaySeconds }}
+          #     initialDelaySeconds:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
@@ -49,7 +49,7 @@ spec:
               subPath: dataone-indexer.properties
               name: {{ .Release.Name }}-config-volume
             - mountPath: {{ .Values.persistence.mountPath }}
-              name: {{ .Values.persistence.volumeName }}
+              name: indexer-metacat-pv
               readOnly: true
             - mountPath: /etc/dataone/tdb-cache
               name: {{ .Release.Name }}-temp-tripledb-volume
@@ -85,7 +85,8 @@ spec:
             - sh
             - -c
             - >
-              until nc -z {{ .Values.rabbitmq.hostname }} {{ .Values.rabbitmq.hostport }} >
+              until nc -z {{ include "idxworker.rabbitmq.hostname" . }}{{- print " " }}
+              {{- default .Values.rabbitmq.service.ports.amqp .Values.rabbitmq.hostport }} >
               {{- print " " }}/dev/null; do echo waiting for RabbitMQ; sleep 2; done;
         - name: init-solr
           image: busybox:latest
@@ -93,13 +94,16 @@ spec:
             - sh
             - -c
             - >
-              URI="/solr/{{- .Values.solr.customCollection -}}
+              URI="/solr/
+              {{- required "solr.customCollection IS REQUIRED" .Values.solr.customCollection -}}
                   /admin/file?file=schema.xml&contentType=text/xml";
-              until [[ $(echo -e "GET $URI HTTP/1.1\r\nHost: {{ .Values.solr.hostname -}}
-              \r\n\r\n" | nc {{ .Values.solr.hostname }}{{ print " " -}}
-              {{ .Values.solr.service.ports.http }} | grep -c "<schema name=\"dataone") == 1 ]]; do
-              echo waiting for Solr Schema to be accessible at http://{{ .Values.solr.hostname }}:
-              {{- .Values.solr.service.ports.http }}$URI; sleep 1; done;
+              {{- $solrHost := (include "idxworker.solr.hostname" .) }}
+  {{- $solrPort := (required "solr.service.ports.http REQUIRED" .Values.solr.service.ports.http) }}
+              until [[ $(echo -e "GET $URI HTTP/1.1\r\nHost: {{ $solrHost -}}
+              \r\n\r\n" | nc {{ $solrHost }} {{ $solrPort -}}
+              | grep -c "<schema name=\"dataone") == 1 ]]; do
+              echo waiting for Solr Schema to be accessible at http://{{ $solrHost }}:
+              {{- $solrPort }}$URI; sleep 1; done;
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -115,19 +119,19 @@ spec:
       volumes:
         - name: {{ .Release.Name }}-config-volume
           configMap:
-            name: {{ .Release.Name }}-configfiles
+            name: {{ .Release.Name }}-indexer-configfiles
             defaultMode: 0644
-        - name: {{ .Values.persistence.volumeName }}
+        - name:  indexer-metacat-pv
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.claimName }}
+            claimName: {{ include "idxworker.shared.claimName" . }}
             readOnly: true
         - name: {{ .Release.Name }}-temp-tripledb-volume
           ephemeral:
             volumeClaimTemplate:
               spec:
                 accessModes: [ "ReadWriteOnce" ]
-                {{- if .Values.persistence.ephemeralVolumeStorageClass }}
-                storageClassName: {{ .Values.persistence.ephemeralVolumeStorageClass }}
+                {{- if ne (quote .Values.global.ephemeralVolumeStorageClass) "" }}
+                storageClassName: {{ .Values.global.ephemeralVolumeStorageClass }}
                 {{ end -}}
                 resources:
                   requests:

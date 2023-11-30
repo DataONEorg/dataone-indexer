@@ -60,3 +60,50 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+set MN url
+e.g. https://metacat-dev.test.dataone.org/metacat/d1/mn
+*/}}
+{{- define "idxworker.mn.url" -}}
+{{- if not .Values.idxworker.mn_url }}
+{{- printf "https://%s-metacat-hl/%s/d1/mn" .Release.Name .Values.global.metacatAppContext }}
+{{- else }}
+{{- .Values.idxworker.mn_url }}
+{{- end }}
+{{- end }}
+
+{{/*
+set Claim Name of existing PVC to use (typically the volume that is shared with metacat)
+Either use the value set in .Values.persistence.claimName, or if blank, autopopulate with
+  {podname}-metacat-{releaseName}-0 (e.g. metacatbrooke-metacat-metacatbrooke-0)
+*/}}
+{{- define "idxworker.shared.claimName" -}}
+{{- if not .Values.persistence.claimName }}
+{{- .Release.Name }}-metacat-{{- .Release.Name }}-0
+{{- else }}
+{{- .Values.persistence.claimName }}
+{{- end }}
+{{- end }}
+
+{{/*
+set RabbitMQ HostName
+*/}}
+{{- define "idxworker.rabbitmq.hostname" -}}
+{{- if not .Values.rabbitmq.hostname }}
+{{- .Release.Name }}-rabbitmq-headless
+{{- else }}
+{{- .Values.rabbitmq.hostname }}
+{{- end }}
+{{- end }}
+
+{{/*
+set Solr HostName
+*/}}
+{{- define "idxworker.solr.hostname" -}}
+{{- if not .Values.solr.hostname }}
+{{- .Release.Name }}-solr-headless
+{{- else }}
+{{- .Values.solr.hostname }}
+{{- end }}
+{{- end }}
