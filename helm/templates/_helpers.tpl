@@ -90,23 +90,41 @@ Either use the value set in .Values.persistence.claimName, or if blank, autopopu
 {{- end }}
 
 {{/*
+Check if RabbitMQ SubChart is enabled
+*/}}
+{{- define "rmq.enabled" -}}
+{{ $rmqEnabled := (or (((.Values.global).rabbitmq).enabled) ((.Values.rabbitmq).enabled)) }}
+{{ end }}
+
+{{/*
 set RabbitMQ HostName
 */}}
 {{- define "idxworker.rabbitmq.hostname" -}}
-{{- if not .Values.rabbitmq.hostname }}
-{{- .Release.Name }}-rabbitmq-headless
-{{- else }}
-{{- .Values.rabbitmq.hostname }}
+{{- $rmqHost := .Values.idxworker.rabbitmqHostname }}
+{{- if and (include "rmq.enabled" .) (not $rmqHost) -}}
+{{- $rmqHost = printf "%s-rabbitmq-headless" .Release.Name -}}
 {{- end }}
+{{- $rmqHost }}
+{{- end }}
+
+{{/*
+set RabbitMQ HostPort
+*/}}
+{{- define "idxworker.rabbitmq.hostport" }}
+{{- $rmqPort := .Values.idxworker.rabbitmqHostPort }}
+{{- if and (include "rmq.enabled" .) (not $rmqPort) -}}
+{{ $rmqPort = .Values.rabbitmq.service.ports.amqp }}
+{{- end }}
+{{- $rmqPort }}
 {{- end }}
 
 {{/*
 set Solr HostName
 */}}
 {{- define "idxworker.solr.hostname" -}}
-{{- if not .Values.solr.hostname }}
-{{- .Release.Name }}-solr-headless
-{{- else }}
-{{- .Values.solr.hostname }}
+{{- $solrHost := .Values.idxworker.solrHostname }}
+{{- if and (or (((.Values.global).solr).enabled) ((.Values.solr).enabled)) (not $solrHost) -}}
+    {{- $solrHost = printf "%s-solr-headless" .Release.Name -}}
 {{- end }}
+{{- $solrHost }}
 {{- end }}

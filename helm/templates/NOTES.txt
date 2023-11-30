@@ -16,7 +16,7 @@ This is applicable when no passwords are set and therefore the random password i
 
 More information about the credentials may be found at https://docs.bitnami.com/general/how-to/troubleshoot-helm-chart-issues/#credential-errors-while-upgrading-chart-releases.
 
-{{- $rmqHostPort := default .Values.rabbitmq.service.ports.amqp .Values.rabbitmq.hostport -}}
+{{- $rmqHostPort := include "idxworker.rabbitmq.hostport" . -}}
 
 RabbitMQ can be accessed within the cluster on port {{ $rmqHostPort }} at {{ include "idxworker.rabbitmq.hostname" . }}
 
@@ -42,7 +42,7 @@ SOLR:
 Solr can be accessed via port {{ .Values.global.solrPort }} on the following DNS name from within
 your cluster:
 
-    {{ .Values.solr.hostname }}:{{ .Values.global.solrPort }}
+    {{ include "idxworker.solr.hostname" . }}:{{ .Values.global.solrPort }}
 
 {{- if .Values.solr.auth.enabled }}
 
