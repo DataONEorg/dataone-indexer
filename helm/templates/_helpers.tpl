@@ -84,7 +84,7 @@ Either use the value set in .Values.persistence.claimName, or if blank, autopopu
 {{- define "idxworker.shared.claimName" -}}
 {{- $claimName := .Values.persistence.claimName }}
 {{- if not $claimName }}
-{{- $claimName = .Release.Name }}-metacat-{{- .Release.Name }}-0
+{{- $claimName = printf "%s-metacat-%s-0" .Release.Name .Release.Name }}
 {{- end }}
 {{- $claimName }}
 {{- end }}
