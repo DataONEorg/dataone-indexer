@@ -58,7 +58,7 @@ public class ObjectManager {
     private static ObjectManager manager = null;
     private static String dataRootDir = Settings.getConfiguration().getString("index.data.root.directory");
     private static String documentRootDir = Settings.getConfiguration().getString("index.document.root.directory");
-    private static String nodeBaseURL = Settings.getConfiguration().getString("index.d1node.baseURL");
+    private static String nodeBaseURL = Settings.getConfiguration().getString("dataone.mn.baseURL");
     private static String DataONEauthToken = null;
     private static Logger logger = Logger.getLogger(ObjectManager.class);
     private static final String TOKEN_VARIABLE_NAME = "DATAONE_AUTH_TOKEN";
