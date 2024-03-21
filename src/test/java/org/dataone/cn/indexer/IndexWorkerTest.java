@@ -153,7 +153,7 @@ public class IndexWorkerTest {
         File defaultFile = new File (propertyFilePath);
         //The one from the user specified location
         assertTrue(IndexWorker.propertyFilePath.equals(propertyFilePath));
-        assertTrue(Settings.getConfiguration().getString("index.d1node.baseURL").
+        assertTrue(Settings.getConfiguration().getString("dataone.mn.baseURL").
                 equals("https://valley.duckdns.org/metacat/d1/mn"));
         assertTrue(Settings.getConfiguration().
                 getString("index.data.root.directory").equals("/var/metacat/data"));
@@ -164,7 +164,7 @@ public class IndexWorkerTest {
         String propertyFilePath2 = "./src/test/resources/org/dataone/configuration/index-processor-2.properties";
         IndexWorker.loadAdditionalPropertyFile(propertyFilePath2);
         assertTrue(IndexWorker.propertyFilePath.equals(propertyFilePath));
-        assertTrue(Settings.getConfiguration().getString("index.d1node.baseURL").
+        assertTrue(Settings.getConfiguration().getString("dataone.mn.baseURL").
                 equals("https://valley.duckdns.org/metacat/d1/mn"));
         assertTrue(Settings.getConfiguration().
                 getString("index.data.root.directory").equals("/objects"));
