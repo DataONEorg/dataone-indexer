@@ -165,10 +165,12 @@ solr:
 
   ## @param solr.customCollection (required) name of the solr collection to use
   ##
-  customCollection: dataone_index
+  customCollection: dataone-index
 
+  ## @param solr.coreNames Solr core names to be created
   coreNames:
-    - dataone_core
+    - dataone-core
+
   #javaMem: "-Xms512m -Xmx2g"
 
   containerSecurityContext:
