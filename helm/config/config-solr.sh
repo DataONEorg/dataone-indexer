@@ -23,7 +23,7 @@ echo "** Sourced Bitnami scripts... **" >> ${LOG}
 export SOLR_AUTH_TYPE=basic
 export SOLR_AUTHENTICATION_OPTS="-Dbasicauth=${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD}"
 export CONFIG='/bitnami/solr/server/solr/configsets'
-export SOLR_COLLECTION=dataone_index
+export SOLR_COLLECTION={{ .Values.solr.customCollection }}
 export SOLR_CMD='/opt/bitnami/solr/bin/solr'
 while [ ! -d "${CONFIG}"/sample_techproducts_configs ] ;
 do

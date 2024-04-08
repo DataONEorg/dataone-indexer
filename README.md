@@ -139,7 +139,9 @@ rabbitmq:
 ```
 
 ...where `existingPasswordSecret` is the name of a Kubernetes secret that contains the password,
-identified by a key named `rabbitmq-password`. NOTE: it appears that this information is cached
+identified by a key named `rabbitmq-password`. 
+
+> **NOTE:** it appears that this information is cached
 on a PersistentVolumeClaim that is created automatically by rabbitmq. If the credentials are changed
 in `values.yaml` and/or the secret, therefore, authentication will fail because they will conflict
 with the cached values in the PVC. If you are just testing, the problem can be resolved by deleting
@@ -168,16 +170,6 @@ The helm installation does not currently configure solr with authentication enab
 service is not exposed outside the Kubernetes cluster. Mentions of logins in the following sections
 can therefore be ignored. However, this should be changed to use authentication if connecting to a
 solr instance outside the cluster.
-
-
-## Manual steps to customize the Solr servers
-
-After installing the standard solr servers via helm, we need to create the DataONE collections with
-the specific DataONE schema. A shell script `/solrconfig/config-solr.sh` is provided that
-authenticates against solr, and creates the new configuration. After logging into the solr-0 pod,
-this script can be run to create the configuration. It only needs to be run on one node, as the
-config values are created in zookeeper.
-
 
 ## Checking if SOLR is configured
 
@@ -219,7 +211,7 @@ Once the proxy is set up, you can also run API calls from the [ConfigSet API](ht
 [Collections API](https://solr.apache.org/guide/6_6/collections-api.html).
 
 ```shell
-curl -u ${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD} http://localhost:8983/solr/admin/configs?action=CREATE\&name=dataone_index --header "Content-Type:text/xml" -X POST -d @dataone_index.zip
+curl -u ${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD} http://localhost:8983/solr/admin/configs?action=CREATE\&name=dataone-index --header "Content-Type:text/xml" -X POST -d @dataone-index.zip
 {
   "responseHeader":{
     "status":0,

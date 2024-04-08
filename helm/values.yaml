@@ -164,6 +164,13 @@ solr:
   collection: temp_collection
 
   ## @param solr.customCollection (required) name of the solr collection to use
+  ## Forms part of the Solr url, as follows:
+  ##
+  ## http://idxworker.solrHostname:global.solrPort/
+  ##                                           solr/solr.customCollection/admin/file?file=schema.xml
+  ##
+  ## NOTE: if you change this value after having deployed this chart, you will need to delete the
+  ##       existing solr PVCs and PVs before re-deploying with the new name.
   ##
   customCollection: dataone-index
 
