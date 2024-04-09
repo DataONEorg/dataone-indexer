@@ -127,7 +127,19 @@ helm -n d1index uninstall d1index
 Note that this helm chart also installs rabbitmq and solr, which can be partially configured
 through the values.yaml file in the parent chart through exported child properties.
 
-### Authentication note
+### Authentication Notes
+
+#### DataONE Authentication Token
+
+In order to access and index private datasets on a Metacat instance, the dataone-indexer needs an
+authentication token, which may be obtained from DataONE administrators (see the [Metacat Helm 
+README](https://github.com/NCEAS/metacat/blob/develop/helm/README.md#setting-up-a-token-and-optional-ca-certificate-for-indexer-access)).
+Upon startup, the indexer expects to find a Kubernetes Secret named:
+`{{ .Release.Name }}-indexer-token`, which contains the auth token associated with the key 
+`DataONEauthToken`. The indexer can operate without this Secret, but will only be able to index 
+public-readable datasets.
+
+#### RabbitMQ
 
 The rabbitmq service runs under the username and password that are set via values.yaml
 
