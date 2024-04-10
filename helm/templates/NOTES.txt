@@ -8,8 +8,9 @@ APP VERSION: {{ .Chart.AppVersion }}
 RABBITMQ:
 =========
 Credentials:
-    echo "Username: {{ .Values.rabbitmq.auth.username }}"
-    echo "To get password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ .Values.rabbitmq.auth.existingPasswordSecret }} -o jsonpath="{.data.rabbitmq-password}" | base64 -d)"
+    Username: {{ .Values.rabbitmq.auth.username }}
+    To get password:
+    echo $(kubectl get secret --namespace {{ .Release.Namespace }} {{ .Values.rabbitmq.auth.existingPasswordSecret }} -o jsonpath="{.data.rabbitmq-password}" | base64 -d)
 
 IMPORTANT NOTE: the credentials are saved in persistent volume claims and will not be changed upon upgrade or re-installation unless the persistent volume claim has been deleted. If this is not the first installation of this chart, the credentials may not be valid.
 
@@ -17,15 +18,22 @@ This is applicable when no passwords are set and therefore the random password i
 
 More information about the credentials may be found at https://docs.bitnami.com/general/how-to/troubleshoot-helm-chart-issues/#credential-errors-while-upgrading-chart-releases.
 
-{{- $rmqHostPort := include "idxworker.rabbitmq.hostport" . -}}
+{{- $rmqMgrPort := .Values.rabbitmq.service.ports.manager }}
 
-RabbitMQ can be accessed within the cluster on port {{ $rmqHostPort }} at {{ include "idxworker.rabbitmq.hostname" . }}
+The RabbitMQ Manager API or Web UI can be accessed within the cluster on port {{ $rmqMgrPort }} at
+{{ include "idxworker.rabbitmq.hostname" . }}
 
-Access the web console by port-forwarding:
+Access the web console or API by port-forwarding:
 
-kubectl -n {{ .Release.Namespace }} port-forward pod/{{ .Release.Name }}-rabbitmq-0 {{ $rmqHostPort }}:{{ $rmqHostPort }} &
+kubectl -n {{ .Release.Namespace }} port-forward svc/{{ .Release.Name }}--rabbitmq-headless {{ $rmqMgrPort }}:{{ $rmqMgrPort }} &
 
-...then login to the Rabbitmq web console: http://localhost:{{ $rmqHostPort }}
+...then login to the Rabbitmq web console: http://localhost:{{ $rmqMgrPort }} using the credentials
+above, and/or use the API - for example, to see the number of messages on the 'index' queue:
+
+$ curl  -u username:password http://localhost:15672/api/queues/%2f/index | jq | grep "messages\":"
+
+API documentation is available at:
+https://rawcdn.githack.com/rabbitmq/rabbitmq-server/v3.13.1/deps/rabbitmq_management/priv/www/api/index.html
 
 {{- if .Values.rabbitmq.metrics.enabled }}
 
