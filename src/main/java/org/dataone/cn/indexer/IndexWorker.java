@@ -1,24 +1,3 @@
-/**
- * This work was created by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For 
- * more information on DataONE, see our web site at http://dataone.org.
- *
- *   Copyright 2022
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- * 
- */
-
 package org.dataone.cn.indexer;
 
 import java.io.File;
@@ -250,7 +229,6 @@ public class IndexWorker {
      * Initialize the RabbitMQ service
      * @throws IOException 
      * @throws TimeoutException 
-     * @throws ServiceException
      */
     private void initIndexQueue() throws IOException, TimeoutException {
         rabbitMQhost = Settings.getConfiguration().getString("index.rabbitmq.hostname", "localhost");
@@ -310,7 +288,7 @@ public class IndexWorker {
     protected void initExecutorService() {
         specifiedThreadNumberStr = Settings.getConfiguration().getString("index.thread.number", "0");
         try {
-            specifiedThreadNumber = (new Integer(specifiedThreadNumberStr)).intValue();
+            specifiedThreadNumber = Integer.parseInt(specifiedThreadNumberStr);
         } catch (NumberFormatException e) {
             specifiedThreadNumber = 0;
             logger.warn("IndexWorker.initExecutorService - IndexWorker cannot parse the string " + specifiedThreadNumberStr +
@@ -400,7 +378,7 @@ public class IndexWorker {
             // Set multiple false
             rabbitMQchannel.basicAck(deliveryTag, false);
         } catch (Exception e) {
-            logger.error("IndexWorker.indexOjbect " + " - identifier: " + pid.getValue()
+            logger.error("IndexWorker.indexOjbect - identifier: " + pid.getValue()
                     + " , the index type: " + indexType
                     + ", sending acknowledgement back to rabbitmq failed since "
                     + e.getMessage()  + ". So rabbitmq may resend the message again");
