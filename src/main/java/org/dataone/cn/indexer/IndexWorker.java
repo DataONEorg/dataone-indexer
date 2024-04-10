@@ -362,7 +362,7 @@ public class IndexWorker {
     
     /**
      * Process the index task. This method is called by a single or multiple thread(s) determined by the configuration.
-     @param paser  the parser parsed the index queue message and holds the index information
+     * @param parser  the parser parsed the index queue message and holds the index information
      * @param deliveryTag  the tag of the rabbitmq message
      * @param multipleThread  the task was handled by multiple thread or not (for the log information only)
      */
