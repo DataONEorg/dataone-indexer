@@ -50,6 +50,9 @@ spec:
               name: {{ .Release.Name }}-config-volume
             - mountPath: {{ .Values.persistence.mountPath }}
               name: indexer-metacat-pv
+              {{- if .Values.persistence.subPath }}
+              subPath: {{ .Values.persistence.subPath }}
+              {{- end }}
               readOnly: true
             - mountPath: /etc/dataone/tdb-cache
               name: {{ .Release.Name }}-temp-tripledb-volume

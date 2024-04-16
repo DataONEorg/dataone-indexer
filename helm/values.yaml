@@ -31,7 +31,14 @@ image:
   #tag: ""
 
 imagePullSecrets: []
-nameOverride: ""
+
+## @param dataone-indexer.nameOverride partial override for resource name
+## used by k8s for the pods etc.
+## Will maintain the release name, so the resulting resource name for the pods etc. will begin:
+## myrelease-nameOverride-...
+##
+nameOverride: d1index
+
 fullnameOverride: ""
 
 serviceAccount:
@@ -87,8 +94,15 @@ persistence:
   ## claimName: {podname}-metacat-{releaseName}-metacat-0
   ##
   claimName: ""
+
+  ## @param persistence.mountPath The directory at which to mount the volume, inside this container
+  ##
   mountPath: /var/metacat
 
+  ## @param persistence.subPath The subdirectory of the volume (see persistence.volumeName) to mount
+  ## Useful in dev environments and one PV for multiple services
+  ##
+  subPath: ""
 
 ## @section IndexWorker properties
 ##
