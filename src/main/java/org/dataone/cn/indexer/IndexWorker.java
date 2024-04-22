@@ -423,46 +423,46 @@ public class IndexWorker {
                     + pid.getValue() + " since " + e.getMessage());
         } catch (ServiceFailure e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
+                    + pid.getValue() + " since " + e.getMessage(), e);
         } catch (NotFound e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
                     + pid.getValue() + " since " + e.getMessage());
         } catch (XPathExpressionException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
+                    + pid.getValue() + " since " + e.getMessage(), e);
         } catch (UnsupportedType e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
+                    + pid.getValue() + " since " + e.getMessage(), e);
         } catch (SAXException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
+                    + pid.getValue() + " since " + e.getMessage(), e);
         } catch (ParserConfigurationException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
+                    + pid.getValue() + " since " + e.getMessage(), e);
         } catch (SolrServerException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
+                    + pid.getValue() + " since " + e.getMessage(), e);
         } catch (MarshallingException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
+                    + pid.getValue() + " since " + e.getMessage(), e);
         } catch (EncoderException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
+                    + pid.getValue() + " since " + e.getMessage(), e);
         } catch (InterruptedException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
+                    + pid.getValue() + " since " + e.getMessage(), e);
         } catch (IOException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
+                    + pid.getValue() + " since " + e.getMessage(), e);
         } catch (InvalidRequest e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
                     + pid.getValue() + " since " + e.getMessage());
         } catch (InstantiationException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
+                    + pid.getValue() + " since " + e.getMessage(), e);
         } catch (IllegalAccessException e) {
             logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
+                    + pid.getValue() + " since " + e.getMessage(), e);
         }
     }
     
