@@ -48,6 +48,9 @@ spec:
             - mountPath: /etc/dataone/dataone-indexer.properties
               subPath: dataone-indexer.properties
               name: {{ .Release.Name }}-config-volume
+            - mountPath: /var/lib/dataone-indexer/config/log4j.properties
+              subPath: log4j2.properties
+              name: {{ .Release.Name }}-config-volume
             - mountPath: {{ .Values.persistence.mountPath }}
               name: indexer-metacat-pv
               {{- if .Values.persistence.subPath }}
