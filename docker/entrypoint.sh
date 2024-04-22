@@ -10,6 +10,6 @@ else
           -XX:+UnlockExperimentalVMOptions \
           -XX:+UseContainerSupport \
           -XX:+UseSerialGC \
-          -cp ./dataone-index-worker-${TAG}-shaded.jar \
+          -cp /etc/dataone/:./dataone-index-worker-${TAG}-shaded.jar \
           org.dataone.cn.indexer.IndexWorker
 fi
