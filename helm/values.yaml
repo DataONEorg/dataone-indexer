@@ -123,6 +123,26 @@ idxworker:
   ##
   solrHostname: ""
 
+  ## @param idxworker.solrVerConflictWaitMs wait time (mS) before indexer grabs a newer version
+  ## of solr doc after a version conflict
+  ##
+  solrVerConflictWaitMs: 1000
+
+  ## @param idxworker.solrVerConflictMaxTries Number of tries to get a newer version of solr doc
+  ## after a version conflict
+  ##
+  solrVerConflictMaxTries: 50
+
+  ## @param idxworker.resourcemapWaitMs resource map processor wait time (mS) for solr doc readiness
+  ## of its components
+  ##
+  resourcemapWaitMs: 800
+
+  ## @param idxworker.resourcemapMaxTries resource map processor number of tries for solr doc
+  ## readiness of its components
+  ##
+  resourcemapMaxTries: 25
+
   ## @param idxworker.rabbitmqHostname hostname of the rabbitmq service to use
   ## Leave unset (rabbitmqHostname: "") to automatically populate when using rmq bitnami subchart
   ##
