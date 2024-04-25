@@ -184,7 +184,22 @@ public class ObjectManager {
             Identifier identifier = new Identifier();
             identifier.setValue(id);
             try {
-                sysmeta = d1Node.getSystemMetadata(session, identifier);
+                for (int i=0; i<5; i++) {
+                    try {
+                        sysmeta = d1Node.getSystemMetadata(session, identifier);
+                        break;
+                    } catch (ServiceFailure ee) {
+                        logger.warn("The DataONE api call doesn't get the system metadata since "
+                                    + ee.getMessage() + ". This is " + i
+                                    + " try and Indexer will try again.");
+                        try {
+                            Thread.sleep(300);
+                        } catch (InterruptedException ie) {
+                            logger.info("The sleep of the thread was interrupted.");
+                        }
+                        continue;
+                    }
+                }
                 logger.debug("ObjectManager.getSystemMetadata - finish getting the system metadata via the DataONE API call for the pid " + id);
             } catch (NotAuthorized e) {
                 logger.info("ObjectManager.getSystemMetadata - failed to get the system metadata via the DataONE API call for the pid " + id +
