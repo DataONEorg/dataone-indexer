@@ -56,10 +56,11 @@ public class SolrIndexAnnotatorTest extends DataONESolrJettyTestBase {
         // document
         String pid = "peggym.130.4";
         Resource systemMetadataResource = (Resource) context.getBean("peggym1304Sys");
+        Resource scienceMetadataResource = (Resource) context.getBean("peggym1304Sci");
 
         // add peggym.130.4 to solr index, using XPathDocumentParser (used by
         // index-task-processor)
-        addEmlToSolrIndex(systemMetadataResource);
+        indexObjectToSolr(pid, scienceMetadataResource);
 
         // retrieve solrDocument for peggym130.4 from solr server by pid
         SolrDocument result = assertPresentInSolrIndex(pid);
@@ -69,7 +70,7 @@ public class SolrIndexAnnotatorTest extends DataONESolrJettyTestBase {
         ScienceMetadataDocumentSubprocessor eml210 = (ScienceMetadataDocumentSubprocessor) context
                 .getBean("eml210Subprocessor");
 
-        Resource scienceMetadataResource = (Resource) context.getBean("peggym1304Sci");
+        
         Document scienceMetadataDoc = XmlDocumentUtility
                 .generateXmlDocument(scienceMetadataResource.getInputStream());
         for (ISolrField field : eml210.getFieldList()) {
@@ -90,7 +91,7 @@ public class SolrIndexAnnotatorTest extends DataONESolrJettyTestBase {
         //byte[] annotationBytes = IOUtils.toByteArray(annotationResource.getInputStream());
 
         //add the annotation
-        addSysAndSciMetaToSolrIndex(annotationSysMeta, annotationResource);
+        indexObjectToSolr("annotation.130.4", annotationResource);
 
         result = assertPresentInSolrIndex(pid);
         for (String field : result.getFieldNames()) {
@@ -123,6 +124,7 @@ public class SolrIndexAnnotatorTest extends DataONESolrJettyTestBase {
         super.setUp();
         systemMetadata200Subprocessor = (BaseXPathDocumentSubprocessor) context
                 .getBean("systemMetadata200Subprocessor");
+        sendSolrDeleteAll();
     }
 
     @After

@@ -3,6 +3,8 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<bean id="resourceMapSubprocessor" class="org.dataone.cn.indexer.parser.ResourceMapSubprocessor">
+        <property name="httpService" ref="httpService" />
+        <property name="processorUtility"  ref="subprocessorUtility" />
 		<property name="matchDocuments">
 			<list>
 				<value>http://www.openarchives.org/ore/terms</value>

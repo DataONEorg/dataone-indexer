@@ -24,10 +24,19 @@ package org.dataone.cn.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
+import org.apache.commons.codec.EncoderException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.SolrJettyTestBase;
@@ -40,17 +49,30 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ModifiableSolrParams;
-import org.dataone.cn.indexer.SolrIndexService;
+import org.dataone.cn.indexer.SolrIndex;
+import org.dataone.cn.indexer.object.MockMNode;
+import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.ISolrField;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.configuration.Settings;
+import org.dataone.service.exceptions.NotFound;
+import org.dataone.service.exceptions.NotImplemented;
+import org.dataone.service.exceptions.ServiceFailure;
+import org.dataone.service.exceptions.UnsupportedType;
+import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v2.SystemMetadata;
 import org.dataone.service.util.DateTimeMarshaller;
 import org.dataone.service.util.TypeMarshaller;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.Assert;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * Solr unit test framework is dependent on JUnit 4.7. Later versions of junit
@@ -62,26 +84,65 @@ import org.w3c.dom.Document;
 @SuppressSSL
 public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
 
-    protected ApplicationContext context;
-    private SolrIndexService solrIndexService;
+    protected static ApplicationContext context;
+    private SolrIndex solrIndexService;
+    private int solrPort = Settings.getConfiguration().getInt("test.solr.port", 8985);
+    private static final String DEFAULT_SOL_RHOME = "solr8home";
+    
+    /**
+     * Index the given object into solr
+     * @param identifier  the identifier of the object which needs to be indexed
+     * @param objectFile  the file path of the object which needs to be indexed
+     * @throws Exception
+     */
+    protected void indexObjectToSolr(String identifier, Resource objectFile) throws Exception {
+        boolean isSysmetaChangeOnly = false;
+        String relativePath = objectFile.getFile().getPath();
+        Identifier pid = new Identifier();
+        pid.setValue(identifier);
+        solrIndexService.update(pid, relativePath, isSysmetaChangeOnly);
+    }
+    
+    /**
+     * Delete the given identifier from the solr server
+     * @param identifier
+     * @throws XPathExpressionException
+     * @throws ServiceFailure
+     * @throws NotImplemented
+     * @throws NotFound
+     * @throws UnsupportedType
+     * @throws IOException
+     * @throws EncoderException
+     * @throws SolrServerException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     */
+    protected void deleteSolrDoc(String identifier) throws XPathExpressionException, ServiceFailure, NotImplemented, 
+                            NotFound, UnsupportedType, IOException, EncoderException, SolrServerException, 
+                            ParserConfigurationException, SAXException {
+        Identifier pid = new Identifier();
+        pid.setValue(identifier);
+        solrIndexService.remove(pid);
+    }
 
     protected void addEmlToSolrIndex(Resource sysMetaFile) throws Exception {
-        SolrIndexService indexService = solrIndexService;
+        SolrIndex indexService = solrIndexService;
         SystemMetadata smd = TypeMarshaller.unmarshalTypeFromStream(SystemMetadata.class,
                 sysMetaFile.getInputStream());
         // path to actual science metadata document
         String path = StringUtils.remove(sysMetaFile.getFile().getPath(), File.separator + "SystemMetadata");
-        indexService.insertIntoIndex(smd.getIdentifier().getValue(), sysMetaFile.getInputStream(),
-                path);
+        boolean isSysmetaChangeOnly = false;
+        indexService.update(smd.getIdentifier(), path, isSysmetaChangeOnly);
+       
     }
 
     protected void addSysAndSciMetaToSolrIndex(Resource sysMeta, Resource sciMeta) throws Exception {
-        SolrIndexService indexService = solrIndexService;
+        SolrIndex indexService = solrIndexService;
         SystemMetadata smd = TypeMarshaller.unmarshalTypeFromStream(SystemMetadata.class,
                 sysMeta.getInputStream());
         String path = sciMeta.getFile().getAbsolutePath();
-        indexService
-                .insertIntoIndex(smd.getIdentifier().getValue(), sysMeta.getInputStream(), path);
+        boolean isSysmetaChangeOnly = false;
+        indexService.update(smd.getIdentifier(), path, isSysmetaChangeOnly);
     }
 
     protected SolrDocument assertPresentInSolrIndex(String pid) throws SolrServerException,
@@ -112,6 +173,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
 
     public void sendSolrDeleteAll() throws SolrServerException, IOException {
         getSolrClient().deleteByQuery("*:*");
+        getSolrClient().commit();
     }
 
     protected void assertNotPresentInSolrIndex(String pid) throws SolrServerException, IOException {
@@ -200,6 +262,12 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         super.setUp();
         loadSpringContext();
         startJettyAndSolr();
+        //set up MockMnode for the ObjectManager
+        MockMNode mockMNode = new MockMNode("http://mnode.foo");
+        mockMNode.setContext(context);
+        ObjectManager.setD1Node(mockMNode);
+        System.out.println("--------------After setting mockNode for object manager in the test base setup method");
+        sendSolrDeleteAll();
     }
 
     public void tearDown() throws Exception {
@@ -210,16 +278,22 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         if (context == null) {
             context = new ClassPathXmlApplicationContext("org/dataone/cn/index/test-context.xml");
         }
-        solrIndexService = (SolrIndexService) context.getBean("solrIndexService");
+        solrIndexService = (SolrIndex) context.getBean("solrIndex");
     }
 
     protected void startJettyAndSolr() throws Exception {
         if (jetty == null) {
-            JettyConfig jconfig = JettyConfig.builder().setPort(8983).build();
+            String solrTestHome = System.getProperty("solrTestHome");
+            System.out.println("===========================The test solr home from the system property is " + solrTestHome);
+            if (solrTestHome == null || solrTestHome.trim().equals("")) {
+                solrTestHome = DEFAULT_SOL_RHOME;
+            }
+            System.out.println("============================The final test solr home  is " + solrTestHome);
+            JettyConfig jconfig = JettyConfig.builder().setPort(solrPort).build();
             File f = new File(".");
             String localPath = f.getAbsolutePath();
             createJettyWithPort(localPath
-                    + "/src/test/resources/org/dataone/cn/index/resources/solr5home", jconfig);
+                    + "/src/test/resources/org/dataone/cn/index/resources/" + solrTestHome, jconfig);
         }
     }
 
@@ -229,7 +303,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     // port.
     protected static JettySolrRunner createJettyWithPort(String solrHome, JettyConfig config)
             throws Exception {
-        createJetty(solrHome, config);
+        createAndStartJetty(solrHome, config);
         return jetty;
     }
     
@@ -245,5 +319,81 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         System.out.println("+++++++++++++++++++The value of the field "+ fieldName + " from Solr is " + value);
         System.out.println("The expected value of the field " + fieldName + " is " + expectedValue);
         return expectedValue.equals(value);
+    }
+    protected boolean compareFieldValue(String id, String fieldName, String[] expectedValues) throws SolrServerException, IOException {
+
+        boolean equal = true;
+        ModifiableSolrParams solrParams = new ModifiableSolrParams();
+        solrParams.set("q", "id:" + ClientUtils.escapeQueryChars(id));
+        solrParams.set("fl", "*");
+        QueryResponse qr = getSolrClient().query(solrParams);
+        SolrDocument result = qr.getResults().get(0);
+        Collection<Object> solrValues = result.getFieldValues(fieldName);
+        Object testResult = result.getFirstValue(fieldName);
+        String[] solrValuesArray = new String[solrValues.size()];
+        if(testResult instanceof Float) {
+            // Solr returned a 'Float' value, so convert it to a string so that it can
+            // be compared to the expected value.
+            System.out.println("++++++++++++++++ Solr returned a 'Float'.");
+            int iObj = 0;
+            float fval;
+            for (Object obj : solrValues) {
+               fval = (Float) obj;
+               solrValuesArray[iObj] = Float.toString(fval);
+               iObj++;
+            }
+        } else if (testResult instanceof String) {
+            System.out.println("++++++++++++++++ Solr returned a 'String'.");
+            solrValuesArray = solrValues.toArray(new String[solrValues.size()]);
+        } else if (testResult instanceof Date) {
+            // Solr returned a 'Date' value, so convert it to a string so that it can
+            // be compared to the expected value.
+            System.out.println("++++++++++++++++ Solr returned a 'Date'.");
+            TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+            int iObj = 0;
+
+            DateTimeZone.setDefault(DateTimeZone.UTC);
+            DateTimeFormatter dtfOut = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+            Date dateObj;
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+            for (Object obj : solrValues) {
+                DateTime dateTime = new DateTime(obj);
+                solrValuesArray[iObj] = dtfOut.print(dateTime);
+                iObj++;
+            }
+        }
+
+        System.out.println("++++++++++++++++ the solr result array for the field " + fieldName + " is " + solrValuesArray);
+        System.out.println("++++++++++++++++ the expected values for the field " + fieldName + " is " + expectedValues);
+        if (solrValuesArray.length != expectedValues.length) {
+            equal = false;
+            return equal;
+        }
+        if (solrValuesArray.length > 1) {
+            Arrays.sort(expectedValues);
+            Arrays.sort(solrValuesArray);
+        }
+        for (int i=0; i<solrValuesArray.length; i++) {
+            System.out.println("++++++++++++++++ compare values for field " + "\"" + fieldName + "\"" + " Solr: " + solrValuesArray[i] + " expected value: " + expectedValues[i]);
+
+            if (!solrValuesArray[i].equals(expectedValues[i])) {
+                equal = false;
+                break;
+            }
+        }
+        return equal;
+        
+    }
+    
+    /**
+     * Get the context
+     * @return  the context
+     */
+    public static ApplicationContext getContext() {
+        if (context == null) {
+            context = new ClassPathXmlApplicationContext("org/dataone/cn/index/test-context.xml");
+        }
+        return context;
     }
 }

@@ -26,11 +26,7 @@ import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dataone.cn.hazelcast.HazelcastClientFactory;
-import org.dataone.cn.index.processor.IndexTaskProcessor;
-import org.dataone.cn.indexer.parser.JsonLdSubprocessor;
 import org.dataone.cn.indexer.parser.ScienceMetadataDocumentSubprocessor;
-import org.dataone.cn.indexer.resourcemap.RdfXmlProcessorTest;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v1.NodeReference;
 import org.dataone.service.types.v2.SystemMetadata;
@@ -47,17 +43,18 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
  *
  */
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class SolrFieldXPathEmlAttributeTest extends JsonLdSubprocessorTest {
+public class SolrFieldXPathEmlAttributeTest extends DataONESolrJettyTestBase {
     
     /* Log it */
     private static Log log = LogFactory.getLog( SolrFieldXPathEmlAttributeTest.class);
 
     /* The EML objects */
     private Resource emlWithDataTable;
+    private String tableId = "eml2.2.0testdatatable";
     private Resource emlWithOtherEntity;
+    private String otherEntityId = "eml2.2.0testotherentity";
 
-    /* An instance of the EML220 Subprocessor */
-    private ScienceMetadataDocumentSubprocessor eml220Subprocessor;
+   
     
     /* Store a map of expected Solr fields and their values for testing */
     private HashMap<String, String> expectedFields = new HashMap<String, String>();
@@ -76,7 +73,6 @@ public class SolrFieldXPathEmlAttributeTest extends JsonLdSubprocessorTest {
         super.setUp();
         emlWithDataTable = (Resource) context.getBean("emlWithDataTableTestDoc");
         emlWithOtherEntity = (Resource) context.getBean("emlWithOtherEntityTestDoc");
-        eml220Subprocessor = (ScienceMetadataDocumentSubprocessor) context.getBean("eml220Subprocessor");
     }
 
     /**
@@ -95,62 +91,42 @@ public class SolrFieldXPathEmlAttributeTest extends JsonLdSubprocessorTest {
     //@Ignore
     @Test
     public void testInsertEmlWithDataTable() throws Exception {
-        /* variables used to populate system metadata for each resource */
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
-
-        // Insert the schema.org file into the task queue
-        String id = "urn:uuid:4ad48407-8044-4f4a-9596-18e9cb221656";
-        formatId = "https://eml.ecoinformatics.org/eml-2.2.0";
-        insertResource(id, formatId, emlWithDataTable, nodeid, userDN);
-        Identifier identifier = new Identifier();
-        SystemMetadata sysmeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
-        int count = 0;
-        while (sysmeta == null && count < TIMES) {
-            count ++;
-            Thread.sleep(SLEEPTIME);
-            sysmeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
-        }
         
+        indexObjectToSolr(tableId, emlWithDataTable);
         // now process the tasks
-        processor.processIndexTaskQueue();
-        count = 0;
+        //processor.processIndexTaskQueue();
+        int count = 0;
         while (count < TIMES) {
             try {
-                assertTrue(compareFieldValue(id, "title", "Chum salmon escapement on Bonanza River in Norton Sound, Alaska"));
+                assertTrue(compareFieldValue(tableId, "title", "Chum salmon escapement on Bonanza River in Norton Sound, Alaska"));
                 break;
             } catch (Exception e) {
                 count ++;
                 Thread.sleep(SLEEPTIME);
             }
         }
-        assertPresentInSolrIndex(id);
-        assertTrue(compareFieldValue(id, "title", "Chum salmon escapement on Bonanza River in Norton Sound, Alaska"));
+        assertPresentInSolrIndex(tableId);
+        assertTrue(compareFieldValue(tableId, "title", "Chum salmon escapement on Bonanza River in Norton Sound, Alaska"));
         String[] projects = {"Chum salmon escapement on Bonanza River in Norton Sound, Alaska"};
-        assertTrue(compareFieldValue(id, "project", projects));
+        assertTrue(compareFieldValue(tableId, "project", projects));
         String[] attributeNames = {"Species","Sp code","Sample Date","GumCard #","Fish #","External Sex","METF Length", "Comments", 
                                     "ageFresh", "ageSalt", "ageErrorID"};
-        assertTrue(compareFieldValue(id, "attributeName", attributeNames));
+        assertTrue(compareFieldValue(tableId, "attributeName", attributeNames));
         String[] attributeDescriptions = {"Species of salmon sampled","ADF&G species codes","Date that a salmon was collected",
                                         "Scale gum card identifier","Fish identifier/number",
                                         "Code which represents the sex of a sampled salmon. Sex was determined using external features.",
                                         "Mid-eye to fork of tail fish length measurement","comments about sample",
                                         "Freshwater age of fish in years","Saltwater age of fish in years","Source of error in age estimate"};
-        assertTrue(compareFieldValue(id, "attributeDescription", attributeDescriptions));
+        assertTrue(compareFieldValue(tableId, "attributeDescription", attributeDescriptions));
         String[] attributeUnits = {"millimeter","dimensionless","dimensionless"};
-        assertTrue(compareFieldValue(id, "attributeUnit", attributeUnits));
+        assertTrue(compareFieldValue(tableId, "attributeUnit", attributeUnits));
         String[] attributes = {"Species  Species of salmon sampled","Sp code  ADF&G species codes","Sample Date  Date that a salmon was collected",
                                 "GumCard #  Scale gum card identifier","Fish #  Fish identifier/number",
                                 "External Sex  Code which represents the sex of a sampled salmon. Sex was determined using external features.",
                                 "METF Length  Mid-eye to fork of tail fish length measurement millimeter","Comments  comments about sample",
                                 "ageFresh  Freshwater age of fish in years dimensionless","ageSalt  Saltwater age of fish in years dimensionless",
                                 "ageErrorID  Source of error in age estimate"};
-        assertTrue(compareFieldValue(id, "attribute", attributes));
+        assertTrue(compareFieldValue(tableId, "attribute", attributes));
     } 
     
     /**
@@ -160,61 +136,39 @@ public class SolrFieldXPathEmlAttributeTest extends JsonLdSubprocessorTest {
      */
     @Test
     public void testInsertEmlWithOtherEntity() throws Exception {
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
-
-        // Insert the schema.org file into the task queue
-        String id = "urn:uuid:4ad48407-8044-4f4a-9596-18e9cb221658";
-        formatId = "https://eml.ecoinformatics.org/eml-2.2.0";
-        insertResource(id, formatId, emlWithOtherEntity, nodeid, userDN);
-        Identifier identifier = new Identifier();
-        SystemMetadata sysmeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
+        indexObjectToSolr(otherEntityId, emlWithOtherEntity);
         int count = 0;
-        while (sysmeta == null && count < TIMES) {
-            count ++;
-            Thread.sleep(SLEEPTIME);
-            sysmeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
-        }
-        
-        // now process the tasks
-        processor.processIndexTaskQueue();
-        count = 0;
         while (count < TIMES) {
             try {
-                assertTrue(compareFieldValue(id, "title", "Chum salmon escapement on Bonanza River in Norton Sound, Alaska"));
+                assertTrue(compareFieldValue(otherEntityId, "title", "Chum salmon escapement on Bonanza River in Norton Sound, Alaska"));
                 break;
             } catch (Exception e) {
                 count ++;
                 Thread.sleep(SLEEPTIME);
             }
         }
-        assertPresentInSolrIndex(id);
-        assertTrue(compareFieldValue(id, "title", "Chum salmon escapement on Bonanza River in Norton Sound, Alaska"));
+        assertPresentInSolrIndex(otherEntityId);
+        assertTrue(compareFieldValue(otherEntityId, "title", "Chum salmon escapement on Bonanza River in Norton Sound, Alaska"));
         String[] projects = {"Chum salmon escapement on Bonanza River in Norton Sound, Alaska"};
-        assertTrue(compareFieldValue(id, "project", projects));
+        assertTrue(compareFieldValue(otherEntityId, "project", projects));
         String[] attributeNames = {"Species","Sp code","Sample Date","GumCard #","Fish #","External Sex","METF Length", "Comments", 
                                     "ageFresh", "ageSalt", "ageErrorID"};
-        assertTrue(compareFieldValue(id, "attributeName", attributeNames));
+        assertTrue(compareFieldValue(otherEntityId, "attributeName", attributeNames));
         String[] attributeDescriptions = {"Species of salmon sampled","ADF&G species codes","Date that a salmon was collected",
                                         "Scale gum card identifier","Fish identifier/number",
                                         "Code which represents the sex of a sampled salmon. Sex was determined using external features.",
                                         "Mid-eye to fork of tail fish length measurement","comments about sample",
                                         "Freshwater age of fish in years","Saltwater age of fish in years","Source of error in age estimate"};
-        assertTrue(compareFieldValue(id, "attributeDescription", attributeDescriptions));
+        assertTrue(compareFieldValue(otherEntityId, "attributeDescription", attributeDescriptions));
         String[] attributeUnits = {"millimeter","dimensionless", "dimensionless"};
-        assertTrue(compareFieldValue(id, "attributeUnit", attributeUnits));
+        assertTrue(compareFieldValue(otherEntityId, "attributeUnit", attributeUnits));
         String[] attributes = {"Species  Species of salmon sampled","Sp code  ADF&G species codes","Sample Date  Date that a salmon was collected",
                                 "GumCard #  Scale gum card identifier","Fish #  Fish identifier/number",
                                 "External Sex  Code which represents the sex of a sampled salmon. Sex was determined using external features.",
                                 "METF Length  Mid-eye to fork of tail fish length measurement millimeter","Comments  comments about sample",
                                 "ageFresh  Freshwater age of fish in years dimensionless","ageSalt  Saltwater age of fish in years dimensionless",
                                 "ageErrorID  Source of error in age estimate"};
-        assertTrue(compareFieldValue(id, "attribute", attributes));
+        assertTrue(compareFieldValue(otherEntityId, "attribute", attributes));
     }
     
     /**

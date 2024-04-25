@@ -1,0 +1,126 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:envo="http://purl.obolibrary.org/obo/envo#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns="http://purl.dataone.org/odo/SENSO_"
+    xmlns:odo="http://purl.dataone.org/odo/"
+    xmlns:terms="http://purl.org/dc/terms/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:obo="http://purl.obolibrary.org/obo/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:oboInOwl="http://www.geneontology.org/formats/oboInOwl#"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:about="http://purl.obolibrary.org/obo/IAO_0000119">
+    <rdfs:label xml:lang="en">definition source</rdfs:label>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2020-11-04T19:47:37Z</dc:date>
+    <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2004/02/skos/core#altLabel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.geneontology.org/formats/oboInOwl#shorthand">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.dataone.org/odo/SENSO_">
+    <terms:contributor rdf:resource="https://orcid.org/0000-0003-0632-7576"/>
+    <terms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-09-28</terms:created>
+    <terms:creator rdf:resource="https://orcid.org/0000-0003-0077-4738"/>
+    <terms:license rdf:resource="https://creativecommons.org/licenses/by/4.0/"/>
+    <owl:versionIRI rdf:resource="http://purl.dataone.org/odo/SENSO/0.1.0"/>
+    <terms:title xml:lang="en">Sensitive Data Ontology (SENSO)</terms:title>
+    <owl:versionInfo>Version 0.1.0</owl:versionInfo>
+    <terms:contributor rdf:resource="https://orcid.org/0000-0002-0381-3766"/>
+    <terms:description xml:lang="en">Ontology to support sensitive data annotation of datasets housed at the Arctic Data Center (https://arcticdata.io)</terms:description>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/dc/elements/1.1/creator">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/dc/terms/description">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/dc/elements/1.1/date">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.dataone.org/odo/SENSO_00000002">
+    <rdfs:label xml:lang="en">Non-sensitive data</rdfs:label>
+    <dc:description xml:lang="en">None of the data includes sensitive or protected information.</dc:description>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-09-28</dc:date>
+    <dc:creator rdf:resource="http://orcid.org/0000-0003-0077-4738"/>
+    <obo:IAO_0000115 xml:lang="en">Non-sensitive data</obo:IAO_0000115>
+    <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/SENSO_00000001"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.dataone.org/odo/SENSO_00000001">
+    <rdfs:label xml:lang="en">Data Sensitivity Category</rdfs:label>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-09-28</dc:date>
+    <dc:creator rdf:resource="http://orcid.org/0000-0003-0077-4738"/>
+    <obo:IAO_0000115>Data sensitivity categories assign a level of sensitivity for datasets and provide guidelines for acceptable distribution and use.</obo:IAO_0000115>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/dc/elements/1.1/description">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/XMLSchema#date">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.geneontology.org/formats/oboInOwl#id">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2000/01/rdf-schema#comment">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/dc/terms/creator">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/dc/terms/contributor">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/dc/terms/created">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.obolibrary.org/obo/IAO_0000115">
+    <rdfs:label xml:lang="en">definition</rdfs:label>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2021-09-28T19:46:54Z</dc:date>
+    <dc:creator rdf:resource="http://orcid.org/0000-0002-5300-3075"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.dataone.org/odo/SENSO_00000005">
+    <rdfs:label xml:lang="en">data sensitivity</rdfs:label>
+    <terms:creator rdf:resource="https://orcid.org/0000-0002-0381-3766"/>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-09-30</dc:date>
+    <obo:IAO_0000115 xml:lang="en">the sensitivity of the given data</obo:IAO_0000115>
+    <rdfs:range rdf:resource="http://purl.dataone.org/odo/SENSO_00000001"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/dc/terms/license">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.dataone.org/odo/SENSO_00000004">
+    <rdfs:label xml:lang="en">Sensitive data</rdfs:label>
+    <dc:description xml:lang="en">The data contains human subjects data or other sensitive data. Release of the data could cause harm or violate statutes, and must remain confidential following restrictions from an Institutional Review Board (IRB) or similar body.</dc:description>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-09-28</dc:date>
+    <dc:creator rdf:resource="http://orcid.org/0000-0003-0077-4738"/>
+    <obo:IAO_0000115 xml:lang="en">Some or all data is sensitive and should not be distributed</obo:IAO_0000115>
+    <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/SENSO_00000001"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.dataone.org/odo/SENSO_00000003">
+    <rdfs:label xml:lang="en">De-identified data</rdfs:label>
+    <dc:description xml:lang="en">Sensitive data has been de-identified, anonymized, aggregated, or summarized to remove sensitivities and enable safe data distribution. Examples include ensuring that human subjects data, protected species data, archaeological site locations and personally identifiable information have been properly anonymized, aggregated and summarized.</dc:description>
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2021-09-28</dc:date>
+    <dc:creator rdf:resource="http://orcid.org/0000-0003-0077-4738"/>
+    <obo:IAO_0000115 xml:lang="en">Some or all data is sensitive but has been made safe for open distribution</obo:IAO_0000115>
+    <rdfs:subClassOf rdf:resource="http://purl.dataone.org/odo/SENSO_00000001"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.obolibrary.org/obo/IAO_0000118">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/dc/terms/title">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </rdf:Description>
+</rdf:RDF>

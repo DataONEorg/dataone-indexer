@@ -94,6 +94,7 @@ public class OutputStreamHttpEntity implements HttpEntity {
         add.serialize(outputStream, encoding);
         outputStream.flush();
         outputStream.close();
+        log.info("OutputStreamHttpEntity.writeTo - after put the the solr doc into the http output stream.");
     }
 
     public boolean isStreaming() {

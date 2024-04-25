@@ -96,6 +96,7 @@ public class SolrFieldXPathDryad31Test extends BaseSolrFieldXPathTest {
         dryadDataPackage1Expected.put("rightsHolder", "admin@datadryad.org");
         dryadDataPackage1Expected.put("replicationAllowed", "");
         dryadDataPackage1Expected.put("numberReplicas", "");
+        dryadDataPackage1Expected.put("archived", "false");
         dryadDataPackage1Expected.put("preferredReplicationMN", "");
         dryadDataPackage1Expected.put("blockedReplicationMN", "");
         dryadDataPackage1Expected.put("obsoletes", "");
@@ -157,6 +158,7 @@ public class SolrFieldXPathDryad31Test extends BaseSolrFieldXPathTest {
         dryadDataFile1Expected.put("rightsHolder", "admin@datadryad.org");
         dryadDataFile1Expected.put("replicationAllowed", "");
         dryadDataFile1Expected.put("numberReplicas", "");
+        dryadDataFile1Expected.put("archived", "false");
         dryadDataFile1Expected.put("preferredReplicationMN", "");
         dryadDataFile1Expected.put("blockedReplicationMN", "");
         dryadDataFile1Expected.put("obsoletes", "");

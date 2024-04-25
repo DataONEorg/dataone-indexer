@@ -35,39 +35,37 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
+import org.dataone.cn.index.DataONESolrJettyTestBase;
 import org.dataone.service.types.v1.Identifier;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.OREParserException;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "test-context.xml" })
-public class OREResourceMapTest {
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(locations = { "test-context.xml" })
+public class OREResourceMapTest extends DataONESolrJettyTestBase{
 
-    @Autowired
+    //@Autowired
     private Resource testDoc;
 
-    @Autowired
+    //@Autowired
     private Resource incompleteResourceMap;
 
-    @Autowired
+    //@Autowired
     private Resource dryadDoc;
 
-    @Autowired
+    //@Autowired
     private Resource transitiveRelationshipsDoc;
 
-    @Autowired
+    //@Autowired
     private Resource incompleteTransitiveRelationshipsDoc;
 
     /**
@@ -722,5 +720,41 @@ public class OREResourceMapTest {
             return false;
         }
     }
+    
+    /**
+     * For each test, set up the Solr service and test data
+     * 
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        // Start up the embedded Jetty server and Solr service
+        super.setUp();
+        // load the prov context beans
+        configureSpringResources();
+    }
+    
+    
+    /* Load the indexer and provenance context beans */
+    protected void configureSpringResources() throws IOException {
+
+        // Instantiate the generator and processor from the test-context beans
+        //processor = (IndexTaskProcessor) context.getBean("indexTaskProcessor");
+        //generator = (IndexTaskGenerator) context.getBean("indexTaskGenerator");
+
+        // instantiate the RDF resource to be tested
+      
+        testDoc = (Resource) context.getBean("testDoc");
+
+        incompleteResourceMap = (Resource) context.getBean("incompleteResourceMap");
+
+        dryadDoc = (Resource) context.getBean("dryadDoc");
+
+        transitiveRelationshipsDoc = (Resource) context.getBean("transitiveRelationshipsDoc");
+
+        incompleteTransitiveRelationshipsDoc = (Resource) context.getBean("incompleteTransitiveRelationshipsDoc");
+
+    }
+
 
 }

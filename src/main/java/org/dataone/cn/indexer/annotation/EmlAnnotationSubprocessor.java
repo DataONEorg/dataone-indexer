@@ -16,12 +16,12 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.codec.EncoderException;
 
 import org.apache.log4j.Logger;
-import org.dataone.cn.index.util.PerformanceLogger;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrField;
 import org.dataone.cn.indexer.parser.SubprocessorUtility;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.indexer.performance.PerformanceLogger;
 import org.dataone.cn.indexer.XmlDocumentUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
@@ -43,7 +43,6 @@ public class EmlAnnotationSubprocessor implements IDocumentSubprocessor {
 
     private PerformanceLogger perfLog = PerformanceLogger.getInstance();
 
-    @Autowired
     private SubprocessorUtility processorUtility;
 
     private List<String> matchDocuments = null;
@@ -96,8 +95,10 @@ public class EmlAnnotationSubprocessor implements IDocumentSubprocessor {
 
                 for (SolrElementField field: fields) {
                     log.debug("Expanding concepts for " + field.getName() + ": " + field.getValue());
+                    //long start = System.currentTimeMillis();
                     Map<String, Set<String>> expandedConcepts = OntologyModelService.getInstance().expandConcepts(field.getValue());
-
+                    //long end = System.currentTimeMillis();
+                    //log.info("EmlAnnotation.processDocument - the time to get expandedConcepts is" + (end-start) + " milliseconds.");
                     for (Map.Entry<String, Set<String>> expandedField: expandedConcepts.entrySet()) {
                         for (String value: expandedField.getValue()) {
                             if (!expandedFields.containsKey(field.getName())) {

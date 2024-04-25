@@ -8,48 +8,51 @@
  http://www.springframework.org/schema/context
  http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<bean id="solrIndexService" class="org.dataone.cn.indexer.SolrIndexService">
-     	<property name="systemMetadataProcessor" ref="systemMetadata200Subprocessor" />
-     	<property name="subprocessors">
-      		<list>
-				<ref bean="eml200Subprocessor" />
-				<ref bean="eml201Subprocessor" />
-				<ref bean="eml210Subprocessor" />
-				<ref bean="eml211Subprocessor" />
-				<ref bean="eml220Subprocessor" />
-				<ref bean="emlAnnotationSubprocessor" />
-				<ref bean="resourceMapSubprocessor" />
-				<ref bean="fgdcstd0011998Subprocessor" />
-				<ref bean="fgdcstd00111999Subprocessor" />
-				<ref bean="fgdcstd00121999Subprocessor" />
-				<ref bean="fgdcEsri80Subprocessor" />
-				<ref bean="ornlMercury10Subprocessor" />
-				<ref bean="dryad30Subprocessor" />
-				<ref bean="dryad31Subprocessor" />
-				<ref bean="qualifiedDublicCoreSubprocessor" />
-				<ref bean="dublinCoreExtendedSubprocessor" />
-                <ref bean="datacite3Subprocessor" />
- 			  	<ref bean="rdfXMLSubprocessor" />
-			 	<ref bean="annotatorSubprocessor" />
-				<ref bean="isotc211Subprocessor" />
-				<ref bean="isotc211NoaaSubprocessor" />
-        <ref bean="isotc211PangaeaSubprocessor" />
-  				<ref bean="reprocessResourceMapSubprocessor" />
-  				<ref bean="dublinCoreOAISubprocessor" />
-  				<ref bean="collectionsSubprocessor" />
-                <ref bean="portalsSubprocessor" />
-                <ref bean="jsonLdSubprocessor" />
-			</list>
-     	</property>
-     	<property name="deleteSubprocessors">
-     		<list>
-     			<ref bean="resourceMapDeleteSubprocessor" />
-     			<ref bean="annotationDeleteSubprocessor" />
-     		</list>
-     	</property>
-	</bean>
+    <context:property-placeholder location="classpath:org/dataone/configuration/index-processor.properties"/>
+    <import resource="classpath:index-context-file-includes.xml" /> 
 
-	<bean id="subprocessorUtility" class="org.dataone.cn.indexer.parser.SubprocessorUtility" />
+    <bean id="solrIndex" class="org.dataone.cn.indexer.SolrIndex">
+     <constructor-arg name="xmlNamespaceConfig" ref="xmlNamespaceConfig" />
+     <constructor-arg name="systemMetadataProcessor" ref="systemMetadata200Subprocessor"/>
+     <constructor-arg name="httpService" ref="httpService" />
+     <property name="subprocessors">
+      <list>
+       <ref bean="eml200Subprocessor" />
+       <ref bean="eml201Subprocessor" />
+       <ref bean="eml210Subprocessor" />
+       <ref bean="eml211Subprocessor" />
+       <ref bean="eml220Subprocessor" />
+       <ref bean="emlAnnotationSubprocessor" />
+       <ref bean="resourceMapSubprocessor" />
+       <ref bean="fgdcstd0011998Subprocessor" />
+       <ref bean="fgdcstd00111999Subprocessor" />
+       <ref bean="fgdcstd00121999Subprocessor" />
+       <ref bean="fgdcEsri80Subprocessor" />
+       <ref bean="dryad30Subprocessor" />
+       <ref bean="dryad31Subprocessor" />
+       <ref bean="rdfXMLSubprocessor" />
+       <ref bean="annotatorSubprocessor" />
+       <ref bean="dublinCoreExtendedSubprocessor" />
+       <ref bean="isotc211Subprocessor" />
+       <ref bean="isotc211NoaaSubprocessor" />
+       <ref bean="isotc211PangaeaSubprocessor" />
+       <ref bean="dublinCoreOAISubprocessor" />
+       <ref bean="collectionsSubprocessor" />
+       <ref bean="portalsSubprocessor" />
+       <ref bean="jsonLdSubprocessor" />
+      </list>
+     </property>
+     <property name="deleteSubprocessors">
+      <list>
+       <ref bean="annotationDeleteSubprocessor" />
+      </list>
+     </property>
+ </bean>
+
+
+	<bean id="subprocessorUtility" class="org.dataone.cn.indexer.parser.SubprocessorUtility">
+        <property name="httpService" ref="httpService" />
+    </bean>
 	<bean id="dateConverter" class="org.dataone.cn.indexer.convert.SolrDateConverter" />
 	<bean id="fgdcDateConverter" class="org.dataone.cn.indexer.convert.FgdcDateConverter"/>
 	<bean id="solrLatitudeConverter" class="org.dataone.cn.indexer.convert.SolrLatitudeConverter" />
@@ -58,7 +61,9 @@
 		<constructor-arg value="public" />
 	</bean>
 	<bean id="formatIdToFormatTypeConverter" class="org.dataone.cn.indexer.convert.FormatIdToFormatTypeConverter" />
-	<bean id="serviceTypesConverter" class="org.dataone.cn.indexer.convert.MemberNodeServiceRegistrationTypeConverter" />
+	<bean id="serviceTypesConverter" class="org.dataone.cn.indexer.convert.MemberNodeServiceRegistrationTypeConverter">
+        <property name="mnServiceRegistrationTypeCacheService" ref="mnServiceRegistrationTypeCacheService"/>
+    </bean>
 
 	<bean id="geohashConverter_1" class="org.dataone.cn.indexer.convert.GeohashConverter">
 		<property name="length" value="1"/>
@@ -215,14 +220,6 @@
 	 	</constructor-arg>
 	</bean>
 
-	<bean id="solrQueryUri" class="java.lang.String">
-		<constructor-arg value="${solr.query.uri}"/>
-	</bean>
-
-	<bean id="solrIndexUri" class="java.lang.String">
-		<constructor-arg value="${solr.index.uri}"/>
-	</bean>
-
     <!--<bean id="httpConnectionManager" class="org.apache.http.impl.conn.SingleClientConnManager"/> -->
     <bean id="httpConnectionManager" class="org.apache.http.impl.conn.PoolingClientConnectionManager"  p:defaultMaxPerRoute="12" />
 
@@ -238,12 +235,14 @@
 
 	<bean id="httpService" class="org.dataone.cn.indexer.solrhttp.HTTPService">
 		<constructor-arg ref="httpClientFactory" />
-		<property name="solrSchemaPath" value="${solr.schema.path}" />
-		<property name="solrIndexUri" value="${solr.index.uri}" />
 	</bean>
 
-	<bean id="mnServiceRegistrationTypeDocumentService" class="org.dataone.cn.indexer.convert.MemberNodeServiceRegistrationTypeDocumentService"/>
+	<bean id="mnServiceRegistrationTypeDocumentService" class="org.dataone.cn.indexer.convert.MemberNodeServiceRegistrationTypeDocumentService">
+        <property name="httpRequestFactory" ref="httpClientFactory"/>
+    </bean>
 
-	<bean id="mnServiceRegistrationTypeCacheService" class="org.dataone.cn.indexer.parser.utility.MemberNodeServiceRegistrationTypeCache"/>
+	<bean id="mnServiceRegistrationTypeCacheService" class="org.dataone.cn.indexer.parser.utility.MemberNodeServiceRegistrationTypeCache">
+        <property name="mnServiceRegistrationTypeDocumentService" ref="mnServiceRegistrationTypeDocumentService"/>
+    </bean>
 
 </beans>

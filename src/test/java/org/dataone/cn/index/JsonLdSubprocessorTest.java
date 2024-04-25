@@ -62,23 +62,34 @@ import com.github.jsonldjava.utils.JsonUtils;
  *
  */
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
-public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
+public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
     
     /* Log it */
     private static Log log = LogFactory.getLog(JsonLdSubprocessorTest.class);
 
     /* The schema.org object */
     private Resource schemaOrgDoc;
+    private String schemaOrgDocPid = "bco-dmo.jsonld";
     private Resource schemaOrgDoc2;
+    private String schemaOrgDoc2Pid = "doi_A10.5061_dryad.m8s2r36.jsonld";
     private Resource schemaOrgDocSOSO;
+    private String schemaOrgDocSOSOPid = "ESIP-SOSO-v1.2.0-example-full.jsonld";
     private Resource schemaOrgTestWithoutVocab;
+    private String schemaOrgTestWithoutVocabPid = "context-http-without-vocab.jsonld";
     private Resource schemaOrgTestDocHttpVocab;
+    private String schemaOrgTestDocHttpVocabPid = "context-http-vocab.jsonld";
     private Resource schemaOrgTestDocHttpsVocab;
+    private String schemaOrgTestDocHttpsVocabPid = "context-https-vocab.jsonld";
     private Resource schemaOrgTestDocHttp;
+    private String schemaOrgTestDocHttpPid = "context-http.jsonld";
     private Resource schemaOrgTestDocHttps;
+    private String schemaOrgTestDocHttpsPid = "context-https.jsonld";
     private Resource schemaOrgTestDocDryad1;
+    private String schemaOrgTestDocDryad1Pid = "doi.org_10.5061_dryad.5qb78.jsonld";
     private Resource schemaOrgTestDocDryad2;
+    private String schemaOrgTestDocDryad2Pid = "doi.org_10.5061_dryad.41sk145.jsonld";
     private Resource schemaOrgTesHakaiDeep;
+    private String schemaOrgTesHakaiDeepPid = "hakai-deep-schema.jsonld";
 
     /* An instance of the RDF/XML Subprocessor */
     private JsonLdSubprocessor jsonLdSubprocessor;
@@ -86,7 +97,10 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
     /* Store a map of expected Solr fields and their values for testing */
     private HashMap<String, String> expectedFields = new HashMap<String, String>();
 
-    private static final int SLEEPTIME = 5000;
+    private static final int SLEEPTIME = 8000;
+    private static final int SLEEP = 2000;
+    private static final int TIMES = 10;
+    
 
     /**
      * For each test, set up the Solr service and test data
@@ -129,25 +143,21 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
     //@Ignore
     @Test
     public void testInsertSchemaOrg() throws Exception {
-        /* variables used to populate system metadata for each resource */
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
-
-        // Insert the schema.org file into the task queue
-        String id = "urn:uuid:f18812ac-7f4f-496c-82cc-3f4f54830289";
-        formatId = "science-on-schema.org/Dataset;ld+json";
-        insertResource(id, formatId, schemaOrgDoc, nodeid, userDN);
-
+        //index the object
+        String id = schemaOrgDocPid; 
+        indexObjectToSolr(id, schemaOrgDoc);
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
-        Thread.sleep(SLEEPTIME);
-        assertPresentInSolrIndex(id);
+        //processor.processIndexTaskQueue();
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(id);
+                break;
+            } catch (Throwable e) {
+                
+            }
+        }
         assertTrue(compareFieldValue(id, "title", "Neodymium isotopes, B/Ca and δ¹³C, and fresh sand volcanic glass count data from ODP Site 208-1267 and IODP Site 306-U1313 for MIS M2, MIS 100 and the Last Glacial-Holocene"));
         assertTrue(compareFieldValue(id, "abstract", "Marine Isotope Stage (MIS) M2, 3.3 Ma, is an isolated cold stage punctuating the benthic oxygen isotope (\u03b4\u00b9\u2078O)"));
         assertTrue(compareFieldValue(id, "label", "Neodymium isotopes"));
@@ -200,6 +210,10 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
                         "https://doi.pangaea.de/10.1594/PANGAEA.925562?format=zip"};
         assertTrue(compareFieldValue(id, "serviceEndpoint", urls));
         assertTrue(compareFieldLength(id, "text", 4269));
+        String[] license = {"https://creativecommons.org/licenses/by/4.0/"};
+        assertTrue(compareFieldValue(id, "licenseUrl", license));
+
+
     }
 
     /**
@@ -210,25 +224,20 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
      */
     @Test
     public void testInsertSchemaOrg2() throws Exception {
-        /* variables used to populate system metadata for each resource */
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
-
-        // Insert the schema.org file into the task queue
-        String id = "doi.org_10.5061_dryad.m8s2r36";
-        formatId = "science-on-schema.org/Dataset;ld+json";
-        insertResource(id, formatId, schemaOrgDoc2, nodeid, userDN);
-
+        String id = schemaOrgDoc2Pid;
+        indexObjectToSolr(id, schemaOrgDoc2);
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
-        Thread.sleep(SLEEPTIME);
-        assertPresentInSolrIndex(id);
+        //processor.processIndexTaskQueue();
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(id);
+                break;
+            } catch (Throwable e) {
+                
+            }
+        }
         assertTrue(compareFieldValue(id, "title", new String [] {"Context-dependent costs and benefits of a heterospecific nesting association"}));
         assertTrue(compareFieldValue(id, "author", new String [] {"Rose J Swift"}));
         assertTrue(compareFieldValue(id, "abstract", new String [] {"The costs and benefits of interactions among species"}));
@@ -246,6 +255,10 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
                          "http://datadryad.org/stash/dataset/doi%253A10.5061%252Fdryad.m8s2r36"};
         assertTrue(compareFieldValue(id, "serviceEndpoint", urls));
         assertTrue(compareFieldLength(id, "text", 691));
+        String[] licenseUrl = {"https://creativecommons.org/publicdomain/zero/1.0/"};
+        String[] licenseName = {"CC0 1.0 Universal (CC0 1.0) Public Domain Dedication"};
+        assertTrue(compareFieldValue(id, "licenseUrl", licenseUrl));
+        assertTrue(compareFieldValue(id, "licenseName", licenseName));
     }
 
     /**
@@ -257,24 +270,20 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
      */
     @Test
     public void testInsertSchemaOrgSOSO() throws Exception {
-        /* variables used to populate system metadata for each resource */
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
-
-        // Insert the schema.org file into the task queue
-        String id = "doi:10.1234/1234567890";
-        formatId = "science-on-schema.org/Dataset;ld+json";
-        insertResource(id, formatId, schemaOrgDocSOSO, nodeid, userDN);
-
+        String id = schemaOrgDocSOSOPid;
+        indexObjectToSolr(id, schemaOrgDocSOSO);
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
-        Thread.sleep(SLEEPTIME);
-        assertPresentInSolrIndex(id);
+        //processor.processIndexTaskQueue();
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(id);
+                break;
+            } catch (Throwable e) {
+                
+            }
+        }
         assertTrue(compareFieldValue(id, "title", new String[] {"Larval krill studies - fluorescence and clearance from ARSV Laurence M. Gould LMG0106, LMG0205 in the Southern Ocean from 2001-2002 (SOGLOBEC project)"}));
         assertTrue(compareFieldValue(id, "abstract", new String[] {"Winter ecology of larval krill: quantifying their interaction with the pack ice habitat."}));
         String [] urls = {"https://www.example-data-repository.org/dataset/3300/data/larval-krill.tsv",
@@ -306,6 +315,8 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         assertTrue(compareFieldValue(id, "geohash_8", new String [] {"4khsjfyj"}));
         assertTrue(compareFieldValue(id, "geohash_9", new String [] {"4khsjfyj7"}));
         assertTrue(compareFieldLength(id, "text", 3681));
+        String[] license = {"https://creativecommons.org/licenses/by/4.0/"};
+        assertTrue(compareFieldValue(id, "licenseUrl", license));
     }
 
     /**
@@ -317,13 +328,7 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
      */
     @Test
     public void testInsertSchemaNormalization() throws Exception {
-        /* variables used to populate system metadata for each resource */
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
+       
 
         ArrayList<Resource> resources = new ArrayList<>();
         resources.add(schemaOrgTestDocHttp);
@@ -333,24 +338,30 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
 
         // Insert the schema.org file into the task queue
         ArrayList<String> ids = new ArrayList<>();
-        ids.add("F7CD5CE0-E798-4BD0-911E-CFE6A2FE605C");
-        ids.add("54B393F9-E756-40D7-A88C-3B8CE7A54AD3");
-        ids.add("A5D04C9A-B9CA-43FD-8A97-BA7D2BD4D0E7");
-        ids.add("406A4A02-3426-4E99-9D84-1E3F40DDEF06");
-        formatId = "science-on-schema.org/Dataset;ld+json";
+        ids.add(schemaOrgTestDocHttpPid);
+        ids.add(schemaOrgTestDocHttpsPid);
+        ids.add(schemaOrgTestDocHttpVocabPid);
+        ids.add(schemaOrgTestDocHttpsVocabPid);
+       
         int i = -1;
         String thisId;
         for (Resource res : resources) {
             i++;
             thisId = ids.get(i);
             log.info("processing doc with id: " + thisId);
-            insertResource(thisId, formatId, res, nodeid, userDN);
+            indexObjectToSolr(thisId, res);
             Thread.sleep(SLEEPTIME);
             // now process the tasks
-            processor.processIndexTaskQueue();
-            Thread.sleep(SLEEPTIME);
-            assertPresentInSolrIndex(thisId);
-
+            //processor.processIndexTaskQueue();
+            for (int j=0; j<TIMES; j++) {
+                try {
+                    Thread.sleep(SLEEP);
+                    assertPresentInSolrIndex(thisId);
+                    break;
+                } catch (Throwable e) {
+                    
+                }
+            }
             assertTrue(compareFieldValue(thisId, "title", new String [] {"test of context normalization"}));
             assertTrue(compareFieldValue(thisId, "author", new String [] {"creator_03"}));
             String[] origins = {"creator_03", "creator_02", "creator_01"};
@@ -366,33 +377,31 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
      */
     @Test
     public void testInsertSchemaOrgDryad() throws Exception {
-        /* variables used to populate system metadata for each resource */
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
-
         ArrayList<Resource> resources = new ArrayList<>();
         resources.add(schemaOrgTestDocDryad1);
         resources.add(schemaOrgTestDocDryad2);
 
         // Insert the schema.org file into the task queue
         ArrayList<String> ids = new ArrayList<>();
-        ids.add("BCD368D7-68B7-401A-86D4-35D1A3411C59");
-        ids.add("487C757E-5B71-4029-B165-C902A4E6CB8D");
-        formatId = "science-on-schema.org/Dataset;ld+json";
+        ids.add(schemaOrgTestDocDryad1Pid);
+        ids.add(schemaOrgTestDocDryad2Pid);
         String thisId;
 
         int iDoc = 0;
         thisId = ids.get(iDoc);
-        insertResource(thisId, formatId, resources.get(iDoc), nodeid, userDN);
+        indexObjectToSolr(thisId, resources.get(iDoc));
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
-        Thread.sleep(SLEEPTIME);
-        assertPresentInSolrIndex(thisId);
+        //processor.processIndexTaskQueue();
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(thisId);
+                break;
+            } catch (Throwable e) {
+                
+            }
+        }
         assertTrue(compareFieldValue(thisId, "title", new String [] {"Mate choice and the operational sex ratio: an experimental test with robotic crabs"}));
         assertTrue(compareFieldValue(thisId, "abstract", new String [] {"The operational sex ratio (OSR) in robotic crabs)."}));
         assertTrue(compareFieldValue(thisId, "author", new String [] {"Catherine L. Hayes"}));
@@ -402,12 +411,19 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
 
         iDoc++;
         thisId = ids.get(iDoc);
-        insertResource(thisId, formatId, resources.get(iDoc), nodeid, userDN);
+        indexObjectToSolr(thisId, resources.get(iDoc));
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
-        Thread.sleep(SLEEPTIME);
-        assertPresentInSolrIndex(thisId);
+        //processor.processIndexTaskQueue();
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(thisId);
+                break;
+            } catch (Throwable e) {
+                
+            }
+        }
         assertTrue(compareFieldValue(thisId, "title", new String [] {"Flow of CO2 from soil may not correspond with CO2 concentration in soil"}));
         assertTrue(compareFieldValue(thisId, "abstract", new String [] {"Soil CO2 concentration was investigated in the northwest of the Czechia."}));
         assertTrue(compareFieldValue(thisId, "author", new String [] {"Jan Frouz"}));
@@ -415,72 +431,10 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
                 "http://datadryad.org/api/v2/datasets/doi%253A10.5061%252Fdryad.41sk145/download"};
         assertTrue(compareFieldValue(thisId, "serviceEndpoint", urls));
         assertTrue(compareFieldLength(thisId, "text", 2501));
-    }
-
-    protected boolean compareFieldValue(String id, String fieldName, String[] expectedValues) throws SolrServerException, IOException {
-
-        boolean equal = true;
-        ModifiableSolrParams solrParams = new ModifiableSolrParams();
-        solrParams.set("q", "id:" + ClientUtils.escapeQueryChars(id));
-        solrParams.set("fl", "*");
-        QueryResponse qr = getSolrClient().query(solrParams);
-        SolrDocument result = qr.getResults().get(0);
-        Collection<Object> solrValues = result.getFieldValues(fieldName);
-        Object testResult = result.getFirstValue(fieldName);
-        String[] solrValuesArray = new String[solrValues.size()];
-        if(testResult instanceof Float) {
-            // Solr returned a 'Float' value, so convert it to a string so that it can
-            // be compared to the expected value.
-            System.out.println("++++++++++++++++ Solr returned a 'Float'.");
-            int iObj = 0;
-            float fval;
-            for (Object obj : solrValues) {
-               fval = (Float) obj;
-               solrValuesArray[iObj] = Float.toString(fval);
-               iObj++;
-            }
-        } else if (testResult instanceof String) {
-            System.out.println("++++++++++++++++ Solr returned a 'String'.");
-            solrValuesArray = solrValues.toArray(new String[solrValues.size()]);
-        } else if (testResult instanceof Date) {
-            // Solr returned a 'Date' value, so convert it to a string so that it can
-            // be compared to the expected value.
-            System.out.println("++++++++++++++++ Solr returned a 'Date'.");
-            TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
-            int iObj = 0;
-
-            DateTimeZone.setDefault(DateTimeZone.UTC);
-            DateTimeFormatter dtfOut = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-            Date dateObj;
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-            for (Object obj : solrValues) {
-                DateTime dateTime = new DateTime(obj);
-                solrValuesArray[iObj] = dtfOut.print(dateTime);
-                iObj++;
-            }
-        }
-
-        System.out.println("++++++++++++++++ the solr result array for the field " + fieldName + " is " + solrValuesArray);
-        System.out.println("++++++++++++++++ the expected values for the field " + fieldName + " is " + expectedValues);
-        if (solrValuesArray.length != expectedValues.length) {
-            equal = false;
-            return equal;
-        }
-        if (solrValuesArray.length > 1) {
-            Arrays.sort(expectedValues);
-            Arrays.sort(solrValuesArray);
-        }
-        for (int i=0; i<solrValuesArray.length; i++) {
-            System.out.println("++++++++++++++++ compare values for field " + "\"" + fieldName + "\"" + " Solr: " + solrValuesArray[i] + " expected value: " + expectedValues[i]);
-
-            if (!solrValuesArray[i].equals(expectedValues[i])) {
-                equal = false;
-                break;
-            }
-        }
-        return equal;
-        
+        String[] licenseUrl = {"https://creativecommons.org/publicdomain/zero/1.0/"};
+        String[] licenseName = {"CC0 1.0 Universal (CC0 1.0) Public Domain Dedication"};
+        assertTrue(compareFieldValue(thisId, "licenseUrl", licenseUrl));
+        assertTrue(compareFieldValue(thisId, "licenseName", licenseName));
     }
 
     /**
@@ -525,24 +479,21 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
     
     @Test
     public void testHakaiDeep() throws Exception {
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
-
-        // Insert the schema.org file into the task queue
-        String id = "urn:uuid:f18812ac-7f4f-496c-82cc-3f4f548303690";
-        formatId = "science-on-schema.org/Dataset;ld+json";
-        insertResource(id, formatId, schemaOrgTesHakaiDeep, nodeid, userDN);
+        String id = schemaOrgTesHakaiDeepPid;
+        indexObjectToSolr(id, schemaOrgTesHakaiDeep);
 
         Thread.sleep(2*SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
-        Thread.sleep(2*SLEEPTIME);
-        assertPresentInSolrIndex(id);
+        //processor.processIndexTaskQueue();
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(id);
+                break;
+            } catch (Throwable e) {
+                
+            }
+        }
         assertTrue(compareFieldValue(id, "title", "Salmon Blood Analyses from the 2020 Gulf of Alaska International Year of the Salmon Expedition"));
         assertTrue(compareFieldValue(id, "abstract", "Salmon blood analyses from salmon collected in the Northeast Pacific Ocean. These data were collected as part of the International Year of the Salmon (IYS) Gulf of Alaska High Seas Expedition conducted in March and April 2020, to further improve the understanding of factors impacting salmon early marine winter survival. Blood was collected for assessment of IGF-1 (growth), stress indices (cortisol, glucose, lactate), ionoregulation (osmolality, ions)."));
         assertTrue(compareFieldValue(id, "author", "Chrys Neville"));
@@ -578,6 +529,8 @@ public class JsonLdSubprocessorTest extends RdfXmlProcessorTest {
         String[] urls = {"https://iys.hakai.org/dataset/ca-cioos_02784c0c-72f7-4887-b1d0-d1fb6dacbcb4",
                         "https://international-year-of-the-salmon.github.io/about/data-unavailable.html"};
         assertTrue(compareFieldValue(id, "serviceEndpoint", urls));
+        String[] license = {"https://creativecommons.org/licenses/by/4.0/"};
+        assertTrue(compareFieldValue(id, "licenseUrl", license));
     }
     
 }

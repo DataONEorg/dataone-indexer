@@ -39,12 +39,17 @@ import java.util.Set;
 
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.log4j.Logger;
-import org.dataone.cn.hazelcast.HazelcastClientFactory;
-import org.dataone.cn.index.processor.IndexVisibilityDelegateHazelcastImpl;
+import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.utility.SeriesIdResolver;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.exceptions.MarshallingException;
 import org.dataone.ore.ResourceMapFactory;
+import org.dataone.service.exceptions.InvalidToken;
+import org.dataone.service.exceptions.NotAuthorized;
+import org.dataone.service.exceptions.NotFound;
+import org.dataone.service.exceptions.NotImplemented;
+import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v2.SystemMetadata;
 import org.dspace.foresite.OREException;
@@ -64,7 +69,7 @@ public class ForesiteResourceMap implements ResourceMap {
     private String identifier = null;
     private HashMap<String, ForesiteResourceEntry> resourceMap = null;
 
-    private IndexVisibilityDelegate indexVisibilityDelegate = new IndexVisibilityDelegateHazelcastImpl();
+    private IndexVisibilityDelegate indexVisibilityDelegate = new IndexVisibilityDelegateImpl();
 
     public ForesiteResourceMap(String fileObjectPath) throws OREParserException {
         FileInputStream fileInputStream = null;
@@ -249,11 +254,14 @@ public class ForesiteResourceMap implements ResourceMap {
         return isHead;
     }
 
-    private SolrDoc _mergeMappedReference(ResourceEntry resourceEntry, SolrDoc mergeDocument) {
+    private SolrDoc _mergeMappedReference(ResourceEntry resourceEntry, SolrDoc mergeDocument) throws InvalidToken, NotAuthorized, NotImplemented, 
+                                    ServiceFailure, NotFound, InstantiationException, IllegalAccessException, IOException, MarshallingException {
 
     	Identifier identifier = new Identifier();
     	identifier.setValue(mergeDocument.getIdentifier());
-    	SystemMetadata sysMeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
+    	//SystemMetadata sysMeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
+    	String relativeObjPath = null; //we don't know the path
+    	SystemMetadata sysMeta = ObjectManager.getInstance().getSystemMetadata(identifier.getValue(), relativeObjPath);
     	if (sysMeta.getSeriesId() != null && sysMeta.getSeriesId().getValue() != null && !sysMeta.getSeriesId().getValue().trim().equals("")) {
     		// skip this one
     	    if(!isHeadVersion(identifier, sysMeta.getSeriesId())) {
@@ -363,7 +371,12 @@ public class ForesiteResourceMap implements ResourceMap {
                
                 if (doc.getIdentifier().equals(resourceEntry.getIdentifier())
                         || resourceEntry.getIdentifier().equals(doc.getSeriesId())) {
-                    mergedDocuments.add(_mergeMappedReference(resourceEntry, doc));
+                    try {
+                        mergedDocuments.add(_mergeMappedReference(resourceEntry, doc));
+                    } catch (Exception e) {
+                        logger.error("ForestieResourceMap.mergeIndexedDocuments - cannot merge the document since " + e.getMessage());
+                    }
+                    
                 }
             }
         }

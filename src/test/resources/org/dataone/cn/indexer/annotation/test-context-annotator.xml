@@ -46,12 +46,12 @@
 
 	<bean id="annotation1304Sys" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/annotation/annotation.130.4.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/annotation/annotation.130.4/systemmetadata.xml"/>
     </bean>
 
     <bean id="annotation1304" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/annotation/annotation.130.4.json"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/annotation/annotation.130.4/annotation.130.4.json"/>
     </bean>
 
 </beans>

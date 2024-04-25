@@ -30,7 +30,7 @@ public class TripleStoreService {
 	
 	public Dataset getDataset() throws IOException {
 		String directory = Settings.getConfiguration().getString("index.tdb.directory", "./tdb");
-		log.info("TripleStoreService.getDataset - the parent directory of the triple store location ================= is "+directory);
+		log.debug("TripleStoreService.getDataset - the parent directory of the triple store location ================= is "+directory);
     	// for testing, delete the triplestore each time
     	File dir = new File(directory);
     	if (!dir.exists()) {

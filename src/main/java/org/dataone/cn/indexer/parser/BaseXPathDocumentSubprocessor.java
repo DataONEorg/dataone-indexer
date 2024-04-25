@@ -34,10 +34,10 @@ import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
 import org.apache.commons.codec.EncoderException;
-import org.dataone.cn.index.util.PerformanceLogger;
 import org.dataone.cn.indexer.XMLNamespaceConfig;
 import org.dataone.cn.indexer.XmlDocumentUtility;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
+import org.dataone.indexer.performance.PerformanceLogger;
 import org.w3c.dom.Document;
 
 import net.sf.saxon.lib.NamespaceConstant;

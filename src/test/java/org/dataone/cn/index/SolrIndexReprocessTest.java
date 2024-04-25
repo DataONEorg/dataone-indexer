@@ -30,9 +30,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
-import org.dataone.cn.hazelcast.HazelcastClientFactory;
-import org.dataone.cn.index.generator.IndexTaskGenerator;
-import org.dataone.cn.index.processor.IndexTaskProcessor;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.service.types.v2.SystemMetadata;
@@ -57,30 +54,33 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 public class SolrIndexReprocessTest extends DataONESolrJettyTestBase {
 
     private static Logger logger = Logger.getLogger(SolrIndexReprocessTest.class.getName());
-
-    private IndexTaskProcessor processor;
-    private IndexTaskGenerator generator;
-
-    private Resource peggym1271Sys;
-    private Resource peggym1281Sys;
-    private Resource peggym1281SysObsoletedBy;
-    private Resource peggym1282Sys;
-    private Resource peggym1291Sys;
-    private Resource peggym1304Sys;
-    private Resource peggym1305Sys;
-    private Resource peggym1304SysObsoletedBy;
-    private Resource peggymResourcemapSeriesSys;
+    private Resource peggym1271Sci;
+    private String pid1271 = "peggym.127.1";
+    private Resource peggym1281Sci;
+    private Resource peggym1281SciObsoletedBy;
+    private String pid1281 = "peggym.128.1";
+    private Resource peggym1282Sci;
+    private String pid1282 = "peggym.128.2";
+    private Resource peggym1291Sci;
+    private String pid1291 = "peggym.129.1";
+    private Resource peggym1304Sci;
+    private Resource peggym1304SciObsoletedBy;
+    private String pid1304 = "peggym.130.4";
+    private Resource peggym1305Sci;
+    private String pid1305 = "peggym.130.5";
+    private Resource peggymResourcemapSeriesSci;
+    private String pidresourcemap = "peggym.resourcemap.series";
     
     private static final int SLEEPTIME = 2000;
 
     @BeforeClass
     public static void init() {
-        HazelcastClientFactoryTest.setUp();
+        //HazelcastClientFactoryTest.setUp();
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        HazelcastClientFactoryTest.shutDown();
+        //HazelcastClientFactoryTest.shutDown();
     }
 
     /**
@@ -89,60 +89,41 @@ public class SolrIndexReprocessTest extends DataONESolrJettyTestBase {
     @Ignore
     @Test
     public void testReprocessDataPackage() throws Exception {
-        // create/index data package
-        deleteAll();
         indexTestDataPackage();
         //verify in index correct
         verifyTestDataPackageIndexed();
         System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&finished the initial index and everything is good.");
-        indexNewRevision(peggym1304SysObsoletedBy);
-        //Thread.sleep(2000);
-        processor.processIndexTaskQueue();
-        //Thread.sleep(2000);
-        
-        
-        indexNewRevision(peggym1305Sys);
+        indexNewRevision(pid1304, peggym1304SciObsoletedBy);      
+        indexNewRevision(pid1305, peggym1305Sci);
         Thread.sleep(2000);
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         // verify data package info correct in index
         verifyDataPackageNewRevision();
 
         // add data revision
-        indexNewRevision(peggym1281SysObsoletedBy);
-        indexNewRevision(peggym1282Sys);
-        processor.processIndexTaskQueue();
+        indexNewRevision(pid1281, peggym1281SciObsoletedBy);
+        indexNewRevision(pid1282, peggym1282Sci);
+        //processor.processIndexTaskQueue();
         // verify data package info correct in index
         verifyDataPackageNewDataRevision();
     }
 
-    private void deleteAll() {
-        HTTPService httpService = (HTTPService) context.getBean("httpService");
-        httpService.sendSolrDelete("peggym.130.4");
-        httpService.sendSolrDelete("peggym.130.5");
-        httpService.sendSolrDelete("peggym.127.1");
-        httpService.sendSolrDelete("peggym.128.1");
-        httpService.sendSolrDelete("peggym.128.2");
-        httpService.sendSolrDelete("peggym.129.1");
-        httpService.sendSolrDelete("peggym.resourcemap.series");
-    }
+   
 
     private void indexTestDataPackage() throws Exception {
-        addSystemMetadata(peggym1271Sys);
-        addSystemMetadata(peggym1281Sys);
-        addSystemMetadata(peggym1291Sys);
-        addSystemMetadata(peggym1304Sys);
+        indexObjectToSolr(pid1271, peggym1271Sci);
+        indexObjectToSolr(pid1281, peggym1281Sci);
+        indexObjectToSolr(pid1291, peggym1291Sci);
+        indexObjectToSolr(pid1304, peggym1304Sci);
         Thread.sleep(SLEEPTIME);
-        processor.processIndexTaskQueue();
         Thread.sleep(SLEEPTIME);
-        addSystemMetadata(peggymResourcemapSeriesSys);
+        indexObjectToSolr(pidresourcemap, peggymResourcemapSeriesSci);
         Thread.sleep(SLEEPTIME);
-        processor.processIndexTaskQueue();
     }
 
-    private void indexNewRevision(Resource resource) throws Exception{
-        addSystemMetadata(resource);
+    private void indexNewRevision(String pid, Resource resource) throws Exception{
+        indexObjectToSolr(pid, resource);
         Thread.sleep(SLEEPTIME);
-        processor.processIndexTaskQueue();
     }
 
     private void verifyDataPackageNewRevision() throws Exception {
@@ -305,10 +286,6 @@ public class SolrIndexReprocessTest extends DataONESolrJettyTestBase {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
-        HazelcastClientFactory.getSystemMetadataMap().put(sysmeta.getIdentifier(), sysmeta);
-        //sysMetaMap.put(sysmeta.getIdentifier(), sysmeta);
-        HazelcastClientFactory.getObjectPathMap().putAsync(sysmeta.getIdentifier(), path);
-        generator.processSystemMetaDataUpdate(sysmeta, path);
     }
 
     public void setUp() throws Exception {
@@ -321,19 +298,15 @@ public class SolrIndexReprocessTest extends DataONESolrJettyTestBase {
     }
 
     private void configureSpringResources() {
-        processor = (IndexTaskProcessor) context.getBean("indexTaskProcessor");
-        generator = (IndexTaskGenerator) context.getBean("indexTaskGenerator");
-
-        peggym1271Sys = (Resource) context.getBean("peggym1271Sys");
-        peggym1281Sys = (Resource) context.getBean("peggym1281Sys");
-        peggym1281SysObsoletedBy = (Resource) context.getBean("peggym1281SysObsoletedBy");
-        peggym1282Sys = (Resource) context.getBean("peggym1282Sys");
-        peggym1291Sys = (Resource) context.getBean("peggym1291Sys");
-        peggym1304Sys = (Resource) context.getBean("peggym1304Sys");
-        peggym1305Sys = (Resource) context.getBean("peggym1305Sys");
-        
-        peggym1304SysObsoletedBy = (Resource) context.getBean("peggym1304SysObsoletedBy");
-        peggymResourcemapSeriesSys = (Resource) context.getBean("peggymResourcemapSeriesSys");
+        peggym1271Sci = (Resource) context.getBean("peggym1271Sci");
+        peggym1281Sci = (Resource) context.getBean("peggym1281Sci");
+        peggym1281SciObsoletedBy = (Resource) context.getBean("peggym1281SciObsoletedBy");
+        peggym1282Sci = (Resource) context.getBean("peggym1282Sci");
+        peggym1291Sci = (Resource) context.getBean("peggym1291Sci");
+        peggym1304Sci = (Resource) context.getBean("peggym1304Sci");
+        peggym1304SciObsoletedBy = (Resource) context.getBean("peggym1304SciObsoletedBy");
+        peggym1305Sci = (Resource) context.getBean("peggym1305Sci");
+        peggymResourcemapSeriesSci = (Resource) context.getBean("peggymResourcemapSeriesSci");
 
     }
 

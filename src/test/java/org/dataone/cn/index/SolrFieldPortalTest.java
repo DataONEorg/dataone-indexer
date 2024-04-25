@@ -99,6 +99,7 @@ public class SolrFieldPortalTest extends BaseSolrFieldXPathTest {
         portalExpected.put("blockedReplicationMN", "");
         portalExpected.put("obsoletes", "urn:uuid:9174cac2-363c-4f18-ba23-a5bcd8db407d");
         portalExpected.put("obsoletedBy", "");
+        portalExpected.put("archived", "false");
         portalExpected.put("dateUploaded", dateConverter.convert("2019-10-11T14:26:05.59Z"));
         portalExpected.put("dateModified", dateConverter.convert("2019-10-11T14:26:06.066Z"));
         portalExpected.put("datasource", "urn:node:mnTestKNB");

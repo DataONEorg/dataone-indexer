@@ -47,12 +47,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.params.ModifiableSolrParams;
-import org.dataone.cn.hazelcast.HazelcastClientFactory;
 import org.dataone.cn.index.DataONESolrJettyTestBase;
-import org.dataone.cn.index.HazelcastClientFactoryTest;
-import org.dataone.cn.index.generator.IndexTaskGenerator;
-import org.dataone.cn.index.processor.IndexTaskProcessor;
-import org.dataone.cn.index.task.IndexTask;
 import org.dataone.cn.indexer.annotation.RdfXmlSubprocessor;
 import org.dataone.cn.indexer.convert.SolrDateConverter;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
@@ -95,36 +90,46 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
     private ApplicationContext provenanceContext = null;
 
     /* The index task processor used to process tasks in the queue */
-    protected IndexTaskProcessor processor;
+    //protected IndexTaskProcessor processor;
 
     /* The task generator that adds tasks to the queue */
-    private IndexTaskGenerator generator;
+    //private IndexTaskGenerator generator;
 
     /* the RDF/XML resource map to parse */
     private Resource provAlaWaiNS02MatlabProcessing2RDF;
+    private String provAlaWaiNS02MatlabProcessing2RDFPid = "ala-wai-ns02-matlab-processing.2.rdf";
 
     /* The three Matlab scripts involved in the processing */
     private Resource provAlaWaiNS02MatlabProcessingDataProcessor1m;
+    private String provAlaWaiNS02MatlabProcessingDataProcessor1mPid = "ala-wai-canal-ns02-matlab-processing-DataProcessor.1.m";
     private Resource provAlaWaiNS02MatlabProcessingConfigure1m;
+    private String provAlaWaiNS02MatlabProcessingConfigure1mPid = "ala-wai-canal-ns02-matlab-processing-Configure.1.m";
     private Resource provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1m;
+    private String provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1mPid = "ala-wai-canal-ns02-matlab-processing-schedule_AW02XX_001CTDXXXXR00_processing.1.m";
 
     /* The EML science metadata describing the processing */
     private Resource provAlaWaiNS02MatlabProcessingEML1xml;
+    private String provAlaWaiNS02MatlabProcessingEML1xmlPid = "ala-wai-canal-ns02-matlab-processing.eml.1.xml";
 
     /* The input data being processed */
     private Resource provAlaWaiNS02CTDData1txt;
+    private String provAlaWaiNS02CTDData1txtPid = "ala-wai-canal-ns02-ctd-data.1.txt";
 
     /* The processed output image */
     private Resource provAlaWaiNS02ImageDataAW02XX_001CTDXXXXR00_20150203_10day1jpg;
+    private String provAlaWaiNS02ImageDataAW02XX_001CTDXXXXR00_20150203_10day1jpgPid = "ala-wai-canal-ns02-image-data-AW02XX_001CTDXXXXR00_20150203_10day.1.jpg";
     
     /* The eml 2.2.0 object is part of a portal */
     private Resource partEml220;
+    private String partEml220Pid = "eml-test-doc";
     
     /* The portal object which has the part eml 220 object*/
     private Resource partPortal;
+    private String partPortalPid = "urn:uuid:b210adf0-f08a-4cae-aa86-5b64605e9297";
     
     /* The resource map describing the hasPart/isPartOf relationship */
     private Resource partResourcemap;
+    private String partResourcemapPid = "resourcemap-with-part.xml";
 
     /* An instance of the RDF/XML Subprocessor */
     private RdfXmlSubprocessor provRdfXmlSubprocessor;
@@ -157,12 +162,12 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
 
     @BeforeClass
     public static void init() {
-        HazelcastClientFactoryTest.setUp();
+        //HazelcastClientFactoryTest.setUp();
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        HazelcastClientFactoryTest.shutDown();
+        //HazelcastClientFactoryTest.shutDown();
     }
 
     /**
@@ -181,6 +186,7 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
 
         // instantiate the subprocessor
         provRdfXmlSubprocessor = (RdfXmlSubprocessor) context.getBean("rdfXMLSubprocessor");
+        sendSolrDeleteAll();
 
     }
 
@@ -354,60 +360,39 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
     //@Ignore
     @Test
     public void testInsertProvResourceMap() throws Exception {
+        String script1 = provAlaWaiNS02MatlabProcessingDataProcessor1mPid;
+        indexObjectToSolr(script1, provAlaWaiNS02MatlabProcessingDataProcessor1m);
 
-        /* variables used to populate system metadata for each resource */
-        File object = null;
-        String formatId = null;
+        String script2 = provAlaWaiNS02MatlabProcessingConfigure1mPid;
+        indexObjectToSolr(script2,provAlaWaiNS02MatlabProcessingConfigure1m);
 
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
-
-        // Insert the three processing files into the task queue
-        String script1 = "ala-wai-canal-ns02-matlab-processing-DataProcessor.1.m";
-        formatId = "text/plain";
-        insertResource(script1, formatId, provAlaWaiNS02MatlabProcessingDataProcessor1m, nodeid,
-                userDN);
-
-        String script2 = "ala-wai-canal-ns02-matlab-processing-Configure.1.m";
-        formatId = "text/plain";
-        insertResource(script2, formatId, provAlaWaiNS02MatlabProcessingConfigure1m, nodeid, userDN);
-
-        String script3 = "ala-wai-canal-ns02-matlab-processing-schedule_AW02XX_001CTDXXXXR00_processing.1.m";
-        formatId = "text/plain";
-        insertResource(script3, formatId,
-                provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1m, nodeid,
-                userDN);
+        String script3 = provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1mPid;
+        indexObjectToSolr(script3, provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1m);
 
         // Insert the EML file into the task queue
-        String emlDoc = "ala-wai-canal-ns02-matlab-processing.eml.1.xml";
-        formatId = "eml://ecoinformatics.org/eml-2.1.1";
-        insertResource(emlDoc, formatId, provAlaWaiNS02MatlabProcessingEML1xml, nodeid, userDN);
+        String emlDoc = provAlaWaiNS02MatlabProcessingEML1xmlPid;
+        indexObjectToSolr(emlDoc, provAlaWaiNS02MatlabProcessingEML1xml);
 
         // Insert the output image into the task queue
-        String jpgImage = "ala-wai-ns02-image-data-AW02XX_001CTDXXXXR00_20150203_10day.1.jpg";
-        formatId = "image/jpeg";
-        insertResource(jpgImage, formatId,
-                provAlaWaiNS02ImageDataAW02XX_001CTDXXXXR00_20150203_10day1jpg, nodeid, userDN);
+        String jpgImage = provAlaWaiNS02ImageDataAW02XX_001CTDXXXXR00_20150203_10day1jpgPid;
+        indexObjectToSolr(jpgImage, provAlaWaiNS02ImageDataAW02XX_001CTDXXXXR00_20150203_10day1jpg);
 
         // Insert the CTD data into the task queue
-        String ctdData = "ala-wai-ns02-ctd-data.1.txt";
-        formatId = "text/plain";
-        insertResource(ctdData, formatId, provAlaWaiNS02CTDData1txt, nodeid, userDN);
+        String ctdData = provAlaWaiNS02CTDData1txtPid;
+        indexObjectToSolr(ctdData, provAlaWaiNS02CTDData1txt);
         
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
 
         // Insert the resource map into the task queue
-        String resourceMap = "ala-wai-canal-ns02-matlab-processing.2.rdf";
-        formatId = "http://www.openarchives.org/ore/terms";
-        insertResource(resourceMap, formatId, provAlaWaiNS02MatlabProcessing2RDF, nodeid, userDN);
+        String resourceMap = provAlaWaiNS02MatlabProcessing2RDFPid;
+        //formatId = "http://www.openarchives.org/ore/terms";
+        indexObjectToSolr(resourceMap, provAlaWaiNS02MatlabProcessing2RDF);
 
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
         
 
         Thread.sleep(SLEEPTIME);
@@ -432,41 +417,28 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
     //@Ignore
     @Test
     public void testInsertPartsResourceMap() throws Exception {
-
-        /* variables used to populate system metadata for each resource */
-        File object = null;
-        String formatId = null;
-
-        NodeReference nodeid = new NodeReference();
-        nodeid.setValue("urn:node:mnTestXXXX");
-
-        String userDN = "uid=tester,o=testers,dc=dataone,dc=org";
-        
         // Insert the EML file into the task queue
-        String emlId = "urn:uuid:f18812ac-7f4f-496c-82cc-3f4f54830274";
-        formatId = "https://eml.ecoinformatics.org/eml-2.2.0";
-        insertResource(emlId, formatId, partEml220, nodeid, userDN);
+        String emlId = partEml220Pid;
+        //formatId = "https://eml.ecoinformatics.org/eml-2.2.0";
+        indexObjectToSolr(emlId, partEml220);
 
         // Insert the portal document into the task queue
-        String portalId = "urn:uuid:b210adf0-f08a-4cae-aa86-5b64605e9297";
-        formatId = "https://purl.dataone.org/portals-1.0.0";
+        String portalId = partPortalPid;
+        //formatId = "https://purl.dataone.org/portals-1.0.0";
         String serieId = "urn:uuid:27ae3627-be62-4963-859a-8c96d940cadc";
-        insertResource(portalId, formatId,
-                partPortal, nodeid, userDN, serieId);
+        indexObjectToSolr(portalId, partPortal);
 
         Thread.sleep(SLEEPTIME);
         // now process the tasks
-        processor.processIndexTaskQueue();
+        //processor.processIndexTaskQueue();
 
         // Insert the resource map into the task queue
         String resourceMapId = "resource_map_urn:uuid:cd489c7e-be88-4d57-b13a-911b25a0b47f";
-        formatId = "http://www.openarchives.org/ore/terms";
+        //formatId = "http://www.openarchives.org/ore/terms";
+        //The following statement was commented before we created the dataone-indexer project
         //insertResource(resourceMapId, formatId, partResourcemap, nodeid, userDN);
 
         Thread.sleep(SLEEPTIME);
-        // now process the tasks
-        processor.processIndexTaskQueue();
-        
         Thread.sleep(SLEEPTIME);
         assertPresentInSolrIndex(emlId);
         assertPresentInSolrIndex(portalId);
@@ -489,8 +461,8 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
     protected void configureSpringResources() throws IOException {
 
         // Instantiate the generator and processor from the test-context beans
-        processor = (IndexTaskProcessor) context.getBean("indexTaskProcessor");
-        generator = (IndexTaskGenerator) context.getBean("indexTaskGenerator");
+        //processor = (IndexTaskProcessor) context.getBean("indexTaskProcessor");
+        //generator = (IndexTaskGenerator) context.getBean("indexTaskGenerator");
 
         // instantiate the RDF resource to be tested
         if (provenanceContext == null) {
@@ -525,176 +497,5 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
         partResourcemap = (Resource) provenanceContext.getBean("partResourceMap");
     }
 
-    /* Delete a solr entry based on its identifier */
-    private void deleteFromSolr(String pid) throws Exception {
-        HTTPService httpService = (HTTPService) context.getBean("httpService");
-        httpService.sendSolrDelete(pid);
-
-    }
-
-    /*
-     * Generate system metadata for the object being uploaded
-     * 
-     * @param pidStr  the identifier string of this object
-     * @param formatIdStr  the object format identifier of this object
-     * @param nodeId  the Member Node identifier
-     * @param subjectStr  the subject DN string of the submitter/rightsholder
-     * @param object  the object to be uploaded
-     * @return
-     */
-    protected SystemMetadata generateSystemMetadata(String pidStr, String formatIdStr,
-            NodeReference nodeId, String subjectStr, File object) {
-        SystemMetadata sysmeta = new SystemMetadata();
-
-        // Used to calculate checksum
-        InputStream fileInputStream = null;
-
-        try {
-            fileInputStream = new FileInputStream(object);
-        } catch (FileNotFoundException fnfe) {
-            log.debug("Couldn't find file. Error was: " + fnfe.getMessage());
-            fnfe.printStackTrace();
-
-        }
-
-        // Set the serial version, although the CN will modify it
-        sysmeta.setSerialVersion(new BigInteger("1"));
-
-        // Set the identifier
-        Identifier pid = new Identifier();
-        pid.setValue(pidStr);
-        sysmeta.setIdentifier(pid);
-
-        // Set the object format identifier
-        ObjectFormatIdentifier formatId = new ObjectFormatIdentifier();
-        formatId.setValue(formatIdStr);
-        sysmeta.setFormatId(formatId);
-
-        // Set the size
-        long size = object.length();
-        sysmeta.setSize(new BigInteger(String.valueOf(size)));
-
-        // Set the checksum
-        try {
-            Checksum checksum = ChecksumUtil.checksum(fileInputStream, "SHA-1");
-            sysmeta.setChecksum(checksum);
-
-        } catch (NoSuchAlgorithmException e) {
-            log.debug("Unknown algorithm. Error was: " + e.getMessage());
-            e.printStackTrace();
-
-        } catch (IOException fnfe) {
-            log.debug("Couldn't find file. Error was: " + fnfe.getMessage());
-            fnfe.printStackTrace();
-
-        }
-
-        // Set the submitter and rightsholder
-        Subject subject = new Subject();
-        subject.setValue(subjectStr);
-        sysmeta.setSubmitter(subject);
-        sysmeta.setRightsHolder(subject);
-
-        // Set the access policy to allow public read
-        AccessPolicy policy = AccessUtil.createSingleRuleAccessPolicy(new String[] { "public" },
-                new Permission[] { Permission.READ });
-        sysmeta.setAccessPolicy(policy);
-
-        // Set the upload and modification dates
-        Date now = new Date();
-        sysmeta.setDateUploaded(now);
-        sysmeta.setDateSysMetadataModified(now);
-
-        // Set the node fields
-        sysmeta.setOriginMemberNode(nodeId);
-        sysmeta.setAuthoritativeMemberNode(nodeId);
-
-        if (log.isTraceEnabled()) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            try {
-                TypeMarshaller.marshalTypeToOutputStream(sysmeta, baos);
-                log.trace(baos.toString());
-
-            } catch (MarshallingException e) {
-                fail("System metadata could not be parsed. Check for errors: " + e.getMessage());
-
-            } catch (IOException e) {
-                fail("System metadata could not be read. Check for errors: " + e.getMessage());
-
-            }
-        }
-        return sysmeta;
-
-    }
-
-    /*
-     * Insert members of the resource map into the index task queue by first generating
-     * system metadata for each, then crating the tasks
-     */
-    protected void insertResource(String pid, String formatId, Resource resource,
-            NodeReference nodeid, String userDN) throws IOException {
-
-        // Get the File object of the resource to calculate size, checksum, etc.
-        File object = resource.getFile();
-
-        // Build the system metadata
-        SystemMetadata sysMeta = generateSystemMetadata(pid, formatId, nodeid, userDN, object);
-        // Add the system metadata to hazelcast, and create an index task in the queue
-        addSystemMetadata(resource, sysMeta);
-    }
-    
-    /*
-     * Insert members of the resource map into the index task queue by first generating
-     * system metadata for each, then crating the tasks. This method offers an extra field -
-     * series id for the system metadata
-     */
-    private void insertResource(String pid, String formatId, Resource resource,
-            NodeReference nodeid, String userDN, String seriesId) throws IOException {
-
-        // Get the File object of the resource to calculate size, checksum, etc.
-        File object = resource.getFile();
-
-        // Build the system metadata
-        SystemMetadata sysMeta = generateSystemMetadata(pid, formatId, nodeid, userDN, object);
-        Identifier seriesIdentifier = new Identifier();
-        seriesIdentifier.setValue(seriesId);
-        sysMeta.setSeriesId(seriesIdentifier);
-        // Add the system metadata to hazelcast, and create an index task in the queue
-        addSystemMetadata(resource, sysMeta);
-    }
-
-    /*
-     * Trigger an index task to be processed given an object as a Resource and the 
-     * system metadata describing it
-     * 
-     * @param object  the object as a Resource
-     * @param sysmeta  the system metadata describing the object
-     */
-    private void addSystemMetadata(Resource object, SystemMetadata sysmeta) {
-
-        String path = null;
-        try {
-            path = object.getFile().getPath();
-
-        } catch (IOException e) {
-            fail("Couldn't get the path to the resource: " + object.getFilename());
-
-        }
-        try {
-            // insert the system metadata into Hazelcast
-            HazelcastClientFactory.getSystemMetadataMap().put(sysmeta.getIdentifier(), sysmeta);
-            // insert the object path into Hazelcast
-            HazelcastClientFactory.getObjectPathMap().put(sysmeta.getIdentifier(), path);
-
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            fail("Couldn't insert into Hazelcast: " + e.getMessage());
-
-        }
-
-        // Trigger the index task creation
-        IndexTask task = generator.processSystemMetaDataUpdate(sysmeta, path);
-        log.debug("Index task returned: " + task.getPid());
-
-    }
+  
 }

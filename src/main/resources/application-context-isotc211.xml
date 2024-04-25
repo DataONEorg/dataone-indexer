@@ -54,6 +54,8 @@
 		    	
 		    	<ref bean="isotc.fileID" />
 		    	<ref bean="isotc.fullText" />
+		    	<ref bean="isotc.licenseDescription" />
+		    	<ref bean="isotc.licenseName" />
 		   	</list>
 	  	</property>
 	</bean>

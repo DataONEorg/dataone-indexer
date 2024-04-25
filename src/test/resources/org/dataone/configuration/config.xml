@@ -2,5 +2,4 @@
 <!-- Apache Commons Configuration -->
 <configuration>
   <properties fileName="index-processor.properties"/>
-  <properties fileName="solr.properties"/>
 </configuration>

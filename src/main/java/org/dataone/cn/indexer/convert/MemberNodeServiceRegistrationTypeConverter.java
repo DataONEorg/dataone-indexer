@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class MemberNodeServiceRegistrationTypeConverter implements IConverter {
 
-    @Autowired
     private MemberNodeServiceRegistrationTypeCache mnServiceRegistrationTypeCacheService;
 
     @Override
@@ -43,6 +42,15 @@ public class MemberNodeServiceRegistrationTypeConverter implements IConverter {
                     return serviceType.getName();
 
         return data;
+    }
+    
+    public MemberNodeServiceRegistrationTypeCache getMnServiceRegistrationTypeCacheService() {
+        return mnServiceRegistrationTypeCacheService;
+    }
+
+    public void setMnServiceRegistrationTypeCacheService(
+            MemberNodeServiceRegistrationTypeCache mnServiceRegistrationTypeCacheService) {
+        this.mnServiceRegistrationTypeCacheService = mnServiceRegistrationTypeCacheService;
     }
 
 }

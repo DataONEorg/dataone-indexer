@@ -35,7 +35,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.dataone.cn.index.processor.IndexVisibilityDelegateHazelcastImpl;
 import org.dataone.cn.indexer.XMLNamespace;
 import org.dataone.cn.indexer.XMLNamespaceConfig;
 import org.dataone.cn.indexer.XmlDocumentUtility;
@@ -69,7 +68,7 @@ public class XPathResourceMap implements ResourceMap {
 
     private XPathFactory factory = null;
 
-    private IndexVisibilityDelegate indexVisibilityDelegate = new IndexVisibilityDelegateHazelcastImpl();
+    private IndexVisibilityDelegate indexVisibilityDelegate = new IndexVisibilityDelegateImpl();
 
     public static String XPATH_RESOURCE_MAP_IDENTIFIER = "/rdf:RDF/rdf:Description/rdf:type[@rdf:resource='http://www.openarchives.org/ore/terms/ResourceMap']/parent::*/dcterms:identifier/text()";
     static private NamespaceContext nameSpaceContext;

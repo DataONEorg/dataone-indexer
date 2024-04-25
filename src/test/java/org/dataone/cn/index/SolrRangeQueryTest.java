@@ -23,6 +23,7 @@
 package org.dataone.cn.index;
 
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,7 +34,7 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class SolrRangeQueryTest extends DataONESolrJettyTestBase {
 
-    private Resource peggym1304Sys;
+    private Resource peggym1304Sci;
 
     @Test
     public void testSimpleRangeQuery() throws Exception {
@@ -55,7 +56,6 @@ public class SolrRangeQueryTest extends DataONESolrJettyTestBase {
     public void testFourFieldRangeQuery() throws Exception {
         sendSolrDeleteAll();
         loadTestResource();
-
         SolrDocumentList sdl = findByQueryString("westBoundCoord:[\\-130 TO 0] " //
                 + "AND southBoundCoord:[0 TO 30] " //
                 + "AND eastBoundCoord:[\\-150 TO 20] " //
@@ -65,8 +65,8 @@ public class SolrRangeQueryTest extends DataONESolrJettyTestBase {
 
     private void loadTestResource() throws Exception, SolrServerException {
         String pid = "peggym.130.4";
-        peggym1304Sys = (Resource) context.getBean("peggym1304Sys");
-        addEmlToSolrIndex(peggym1304Sys);
+        peggym1304Sci = (Resource) context.getBean("peggym1304Sci");
+        indexObjectToSolr(pid, peggym1304Sci);
         assertPresentInSolrIndex(pid);
     }
 }

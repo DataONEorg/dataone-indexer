@@ -6,7 +6,11 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
@@ -27,6 +31,9 @@ import org.dataone.cn.indexer.annotation.SparqlField;
 
 public class OntologyModelService {
   private static Logger log = Logger.getLogger(OntologyModelService.class);
+  private static String jarPrefix = "jar:file:";
+  private static String jarAppendix = "!/";
+  private static String filePrefix = "file:src/main/resources/";
   private static OntologyModelService instance = null;
   private static OntModel ontModel = null;
   public static final String FIELD_ANNOTATION = "sem_annotation";
@@ -37,18 +44,21 @@ public class OntologyModelService {
 
   public static OntologyModelService getInstance() {
     if (instance == null) {
-      instance = new OntologyModelService();
-
-      // Populate the ontology model with registered ontologies and alternate
-      // entries (local cache locations)
-      instance.init();
+        synchronized(OntologyModelService.class) {
+            if (instance == null) {
+                instance = new OntologyModelService();
+                // Populate the ontology model with registered ontologies and alternate
+                // entries (local cache locations)
+                instance.init();
+            }
+        }
     }
-
+    log.info("OntologyModelService.getInstance - the instance is " + instance.toString());
     return instance;
   }
 
   private void init() {
-    log.debug(OntologyModelService.class.getName() + " init() called");
+    log.info(OntologyModelService.class.getName() + " init() called");
 
     if (ontModel != null) {
       return;
@@ -73,6 +83,7 @@ public class OntologyModelService {
   }
 
   protected Map<String, Set<String>> expandConcepts(String uri) {
+    long start_method = System.currentTimeMillis();
     log.debug("expandConcepts " + uri);
     Map<String, Set<String>> conceptFields = new HashMap<String, Set<String>>();
 
@@ -99,14 +110,16 @@ public class OntologyModelService {
         Query query = QueryFactory.create(q);
         QueryExecution qexec = QueryExecutionFactory.create(query, ontModel);
         ResultSet results = qexec.execSelect();
-
+        
         // each field might have multiple solution values
         String name = field.getName();
         Set<String> values = new HashSet<String>();
-
+        long start = System.currentTimeMillis();
         while (results.hasNext()) {
           QuerySolution solution = results.next();
           log.debug("Solution SPARQL result: " + solution.toString());
+          long end = System.currentTimeMillis();
+          log.info("OntologyMondelService.expandConcepts - the time to execute results.hasNext() " + (end - start) + "milliseconds.");
           if (!solution.contains(name)) {
             continue;
           }
@@ -119,6 +132,7 @@ public class OntologyModelService {
           String value = solution.get(name).toString();
           log.debug("Adding value " + value);
           values.add(value);
+          start = System.currentTimeMillis();
         }
 
         conceptFields.put(name, values);
@@ -126,7 +140,8 @@ public class OntologyModelService {
     } catch (QueryException ex) {
       log.error("OntologyModelService.expandConcepts(" + uri + ") encountered an exception while querying.");
     }
-
+    long end = System.currentTimeMillis();
+    log.info("OntologyModelService.expandConcept - the total time for the method is " + (end -start_method) + " milliseconds.");
     return conceptFields;
   }
 
@@ -154,7 +169,7 @@ public class OntologyModelService {
     altEntryList = entryList;
   }
 
-  public void loadAltEntries() {
+  protected void loadAltEntries() {
     log.debug("OntologyModelService - Loading altEntries of size " + altEntryList.size());
 
     OntDocumentManager ontManager = ontModel.getDocumentManager();
@@ -163,9 +178,49 @@ public class OntologyModelService {
     // to grab imported OWL files in OWL files contained in the altEntries
     // list. I did this for speed and for security.
     ontManager.setProcessImports(false);
-
+    
+    boolean firstEntry = true;
+    String prefix = null;
     for (Map.Entry<String, String> entry: altEntryList.entrySet()) {
-      ontManager.addAltEntry(entry.getKey(),  entry.getValue());
+        String path = entry.getValue();//this is the relative path
+        if (firstEntry) {
+            firstEntry = false;
+            String jarFilePath = getJarFilePath();
+            if (jarFilePath != null && !jarFilePath.trim().equals("")) {
+                //if the file path doesn't exist, we will try the jar file path
+                prefix = jarPrefix + jarFilePath + jarAppendix;
+            } else {
+                //the file exists and we will use the file path
+                prefix = filePrefix;
+            }
+            log.info("OntologyModelService.loadAltEntries - the final prefix for ontology files is " + prefix);
+        }
+        ontManager.addAltEntry(entry.getKey(), prefix + path);
     }
+  }
+  
+  /**
+   * Get the current jar file path 
+   * @return  the jar file path
+   */
+  protected String getJarFilePath() {
+      String jarPath = "";
+      URL classResource = OntologyModelService.class.getResource(OntologyModelService.class.getSimpleName() + ".class");
+      if (classResource == null) {
+          return jarPath;
+      }
+      String url = classResource.toString();
+      log.info("OntologyModelService.getJarFilePrefix - the full path of the class is " + url);
+      if (url.startsWith(jarPrefix)) {
+          // extract 'file:......jarName.jar' part from the url string
+          String path = url.replaceAll("^jar:(file:.*[.]jar)!/.*", "$1");
+          try {
+              jarPath =  Paths.get(new URL(path).toURI()).toString();
+        } catch (MalformedURLException | URISyntaxException e) {
+            jarPath = "";
+        }
+      }
+      log.info("OntologyModelService.getJarFilePrefix - the full path of the jar file is " + jarPath);
+      return jarPath;
   }
 }

@@ -1,0 +1,250 @@
+# Default values for idxworker.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  solrPort: &global-solr-port 8983
+  metacatAppContext: metacat
+
+  ## @param global.storageClass default name of the storageClass to use for PVs
+  ## Comment out to use default, if one is set on your cluster
+  ##
+  ## To inspect your cluster to see what storageClass names are supported:
+  ##    $  kubectl get storageclass
+  ## (e.g. for Rancher Desktop, use:   storageClass: local-path)
+  storageClass: csi-cephfs-sc
+
+  ## @param global.ephemeralVolumeStorageClass Optional override of global.storageClass.
+  ## Can be used to assign a storageClass that has a 'Delete' Reclaim Policy, thus allowing
+  ## ephemeral volumes to be cleaned up automatically (eg "csi-cephfs-sc-ephemeral")
+  ## Comment out to use default StorageClass, if one is set on your cluster
+  ##
+  ephemeralVolumeStorageClass: csi-cephfs-sc-ephemeral
+
+
+## @section Dataone-Indexer Application-Specific Properties
+
+image:
+  repository: ghcr.io/dataoneorg/dataone-index-worker
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  #tag: ""
+
+imagePullSecrets: []
+
+## @param dataone-indexer.nameOverride partial override for resource name
+## used by k8s for the pods etc.
+## Will maintain the release name, so the resulting resource name for the pods etc. will begin:
+## myrelease-nameOverride-...
+##
+nameOverride: d1index
+
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1000 # must match metacat group for shared volume at /var/metacat
+
+securityContext:
+  runAsNonRoot: true
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+## @param replicaCount Number of desired index worker pods. NOTE ignored if autoscaling.enabled=true
+#replicaCount: 1
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+persistence:
+  ## @param persistence.claimName Name of existing PVC to use (typically shared with metacat)
+  ## Set a value for 'claimName' only if you want to re-use a Persistent Volume Claim that has
+  ## already been set up by a k8s admin ahead of time.
+  ## Leaving it blank will cause the value to be autopopulated with:
+  ## claimName: {podname}-metacat-{releaseName}-metacat-0
+  ##
+  claimName: ""
+
+  ## @param persistence.mountPath The directory at which to mount the volume, inside this container
+  ##
+  mountPath: /var/metacat
+
+  ## @param persistence.subPath The subdirectory of the volume (see persistence.volumeName) to mount
+  ## Useful in dev environments and one PV for multiple services
+  ##
+  subPath: ""
+
+## @section IndexWorker properties
+##
+idxworker:
+  debug: "FALSE"
+
+  ## @param idxworker.mn_url URL of the metacat instance that depends upon this indexer
+  ## Leave this value unset (mn_url: "") to have it automatically populated
+  ##
+  mn_url: ""
+
+  ## @param idxworker.cn_url URL of the CN
+  ##
+  cn_url: "https://cn.dataone.org/cn"
+
+  ## @param idxworker.solrHostname hostname of the solr service to use
+  ## Leave unset (solrHostname: "") to automatically populate when using solr bitnami subchart
+  ##
+  solrHostname: ""
+
+  ## @param idxworker.solrVerConflictWaitMs wait time (mS) before indexer grabs a newer version
+  ## of solr doc after a version conflict
+  ##
+  solrVerConflictWaitMs: 1000
+
+  ## @param idxworker.solrVerConflictMaxTries Number of tries to get a newer version of solr doc
+  ## after a version conflict
+  ##
+  solrVerConflictMaxTries: 50
+
+  ## @param idxworker.resourcemapWaitMs resource map processor wait time (mS) for solr doc readiness
+  ## of its components
+  ##
+  resourcemapWaitMs: 800
+
+  ## @param idxworker.resourcemapMaxTries resource map processor number of tries for solr doc
+  ## readiness of its components
+  ##
+  resourcemapMaxTries: 25
+
+  ## @param idxworker.rabbitmqHostname hostname of the rabbitmq service to use
+  ## Leave unset (rabbitmqHostname: "") to automatically populate when using rmq bitnami subchart
+  ##
+  rabbitmqHostname: ""
+
+  ## @param idxworker.rabbitmqHostPort hostport of the rabbitmq service
+  ## Leave unset (rabbitmqHostPort: "") to automatically populate when using rmq bitnami subchart
+  ##
+  rabbitmqHostPort: ""
+
+  ## @param idxworker.data_directory Location of data within the metacat shared volume
+  ##
+  data_directory: /var/metacat/data
+
+  ## @param idxworker.document_directory Location of docs within the metacat shared volume
+  ##
+  document_directory: /var/metacat/documents
+
+  # The size of the thread pool which processes the index tasks
+  pool_size: 5
+  d1_serviceType_url: https://cn.dataone.org/mnServiceTypes.xml
+
+  ## @param idxworker.tripleDbDirectory path to indexer cache for triples (usually on a mount)
+  ##
+  tripleDbDirectory: /etc/dataone/tdb-cache
+
+## @section RabbitMQ Bitnami Sub-Chart Configuration
+##
+rabbitmq:
+  enabled: true
+  persistence:
+    size: 10Gi
+  #replicaCount: 3
+  #If you change the number of the max priority, the existing queue must be deleted, and consumers
+  # must use the same number.
+  #max.priority: 10
+
+  auth:
+    ## @param rabbitmq.username the username for rabbitmq access
+    ##
+    username: rmq
+
+    ## @param rabbitmq.existingPasswordSecret the k8s secret holding the rabbitmq password
+    ## (must be associated with key: 'rabbitmq-password')
+    ##
+    existingPasswordSecret: ""
+
+
+## @section Solr Bitnami Sub-Chart Configuration
+##
+solr:
+  enabled: true
+  collection: temp_collection
+
+  ## @param solr.customCollection (required) name of the solr collection to use
+  ## Forms part of the Solr url, as follows:
+  ##
+  ## http://idxworker.solrHostname:global.solrPort/
+  ##                                           solr/solr.customCollection/admin/file?file=schema.xml
+  ##
+  ## NOTE: if you change this value after having deployed this chart, you will need to delete the
+  ##       existing solr PVCs and PVs before re-deploying with the new name.
+  ##
+  customCollection: dataone-index
+
+  ## @param solr.coreNames Solr core names to be created
+  coreNames:
+    - dataone-core
+
+  #javaMem: "-Xms512m -Xmx2g"
+
+  containerSecurityContext:
+    runAsUser: 1000
+  persistence:
+    size: 10Gi
+  service:
+    ports:
+      ## @param solr.service.ports.http: see global.solrPort (required)
+      ##
+      http: *global-solr-port
+    nodePorts:
+      http: *global-solr-port
+  containerPorts:
+    http: *global-solr-port
+  auth:
+    ## Nov 2023: Agreed with Matt we don't need solr auth for now, since solr isn't exposed
+    ## outside the cluster. Can add later if needed by anyone not using the subchart, and
+    ## instead connecting to a solr instance outside the cluster
+    ##
+    enabled: false
+  extraVolumes:
+    - name: solr-config
+      configMap:
+        name: d1index-indexer-configfiles
+        defaultMode: 0777
+  extraVolumeMounts:
+    - name: solr-config
+      mountPath: /solrconfig
+    - name: solr-config
+      mountPath: /opt/bitnami/scripts/solr/entrypoint.sh
+      subPath: entrypoint.sh
+  lifecycleHooks:
+    postStart:
+      exec:
+        command: ["/bin/bash", "-c", "/solrconfig/config-solr.sh"]

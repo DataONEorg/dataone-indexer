@@ -329,5 +329,26 @@
 			value="//gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorFormat/gmd:MD_Format/gmd:version/gco:CharacterString/text()"/>
 		<property name="multivalue" value="true" />
 	</bean>	
+
+	<bean id="isotc.licenseName" class="org.dataone.cn.indexer.parser.SolrField">
+		<constructor-arg name="name" value="licenseName" />
+		<constructor-arg name="xpath"
+			value="//gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/text()[normalize-space()] |
+        //gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useConstraints/gmd:MD_RestrictionCode/text()[normalize-space()] |
+        //gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints/gmd:MD_RestrictionCode/text()[normalize-space()]"/>
+		<property name="multivalue" value="true" />
+		<property name="dedupe" value="true" />
+	</bean>
+
+	<bean id="isotc.licenseDescription" class="org.dataone.cn.indexer.parser.SolrField">
+		<constructor-arg name="name" value="licenseDescription" />
+		<constructor-arg name="xpath"
+			value="//gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gco:CharacterString/text()[normalize-space()] |
+        //gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useConstraints/gco:CharacterString/text()[normalize-space()] |
+        //gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints/gco:CharacterString/text()[normalize-space()] |
+        //gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useLimitation/gco:CharacterString/text()[normalize-space()] |
+        //gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation/gco:CharacterString/text()[normalize-space()]"/>
+		<property name="multivalue" value="true" />
+	</bean>
 	
 </beans>

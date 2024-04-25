@@ -146,4 +146,20 @@
 		<constructor-arg name="xpath" value="//*/text()" />
 		<property name="combineNodes" value="true"/>
 	</bean>		
+
+	<bean id="datacite.licenseName" class="org.dataone.cn.indexer.parser.SolrField">
+		<constructor-arg name="name" value="licenseName" />
+		<constructor-arg name="xpath"
+			value="/datacite:resource/datacite:rightsList/datacite:rights/text()" />
+		<property name="multivalue" value="true" />
+		<property name="dedupe" value="true" />
+	</bean>
+
+	<bean id="datacite.licenseUrl" class="org.dataone.cn.indexer.parser.SolrField">
+		<constructor-arg name="name" value="licenseUrl" />
+		<constructor-arg name="xpath"
+			value="datacite:resource/datacite:rightsList/datacite:rights/@rightsURI" />
+		<property name="multivalue" value="true" />
+		<property name="dedupe" value="true" />
+	</bean>
 </beans>

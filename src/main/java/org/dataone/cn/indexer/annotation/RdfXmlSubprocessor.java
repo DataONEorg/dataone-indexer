@@ -34,7 +34,6 @@ import org.apache.commons.codec.EncoderException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dataone.cn.index.util.PerformanceLogger;
 import org.dataone.cn.indexer.annotation.SparqlField;
 import org.dataone.cn.indexer.annotation.TripleStoreService;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
@@ -43,6 +42,8 @@ import org.dataone.cn.indexer.parser.SubprocessorUtility;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.configuration.Settings;
+import org.dataone.indexer.performance.PerformanceLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -74,13 +75,11 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
 
     private List<String> fieldsToMerge = new ArrayList<String>();
 
-    @Autowired
+ 
     private HTTPService httpService = null;
 
-    @Autowired
-    private String solrQueryUri = null;
+    private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
 
-    @Autowired
     private SubprocessorUtility processorUtility;
 
     /**
@@ -475,5 +474,38 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
 
     public void setFieldsToMerge(List<String> fieldsToMerge) {
         this.fieldsToMerge = fieldsToMerge;
+    }
+    
+    /**
+     * Get the http service object
+     * @return  the http service object 
+     */
+    public HTTPService getHttpService() {
+        return httpService;
+    }
+
+    /**
+     * Set the http service object for this class
+     * @param httpService  the object will be set
+     */
+    public void setHttpService(HTTPService httpService) {
+        this.httpService = httpService;
+    }
+
+
+    /**
+     * Get the subprocessor utility
+     * @return  the subprocessor utility object
+     */
+    public SubprocessorUtility getProcessorUtility() {
+        return processorUtility;
+    }
+
+    /**
+     * Set the subprocessor utility object for this class
+     * @param processorUtility  the subprocessor utility object will be set
+     */
+    public void setProcessorUtility(SubprocessorUtility processorUtility) {
+        this.processorUtility = processorUtility;
     }
 }

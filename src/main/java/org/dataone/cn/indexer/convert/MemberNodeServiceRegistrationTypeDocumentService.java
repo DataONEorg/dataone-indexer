@@ -46,8 +46,16 @@ public class MemberNodeServiceRegistrationTypeDocumentService {
     private static final String SERVICE_DOC_LOCATION_URL = Settings.getConfiguration().getString(
             "dataone.mn.registration.serviceType.url");
 
-    @Autowired
     private HttpComponentsClientHttpRequestFactory httpRequestFactory;
+
+    public HttpComponentsClientHttpRequestFactory getHttpRequestFactory() {
+        return httpRequestFactory;
+    }
+
+    public void setHttpRequestFactory(
+            HttpComponentsClientHttpRequestFactory httpRequestFactory) {
+        this.httpRequestFactory = httpRequestFactory;
+    }
 
     public MemberNodeServiceRegistrationTypeDocumentService() {
     }

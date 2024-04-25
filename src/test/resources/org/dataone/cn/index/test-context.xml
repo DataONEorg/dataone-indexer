@@ -7,14 +7,12 @@ xmlns:context="http://www.springframework.org/schema/context"
 	http://www.springframework.org/schema/context
    		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <context:property-placeholder location="classpath:org/dataone/configuration/jdbc.properties, classpath:org/dataone/configuration/solr.properties"/>
-
-    <import resource="classpath:index-processor-context.xml"/>
+  
+    <import resource="classpath:index-parser-context.xml"/>
 
     <import resource="classpath:application-context-systemmeta200.xml" />
  	<import resource="classpath:application-context-resourcemap.xml" />
     <import resource="classpath:application-context-delete-subprocessors.xml" />
-    <import resource="classpath:application-context-reprocess-subprocessors.xml" />
 
 	<import resource="classpath:application-context-eml-base.xml" />
  	<import resource="classpath:application-context-eml200.xml" />
@@ -64,24 +62,22 @@ xmlns:context="http://www.springframework.org/schema/context"
 
     <import resource="classpath:org/dataone/cn/indexer/annotation/test-context-annotator.xml"/>
 
-    <!--
-    This import overrides default postgres datasource for testing.
-    	 To test with postgres, comment out the following import
-	-->
-	<import resource="classpath:org/dataone/configuration/hsql-datasource.xml" />
-
 	<bean id="fgdc_scan_Sys" class="org.springframework.core.io.ClassPathResource">
 		<constructor-arg type="java.lang.String"
-		value="org/dataone/cn/index/resources/d1_testdocs/fgdc/68e96cf6-fb14-42aa-bbea-6da546ccb507-scan_201407_2172.SystemMetadata.xml" />
+		value="org/dataone/cn/index/resources/d1_testdocs/fgdc/fgdc_scan/systemmetadata.xml" />
 	</bean>
 	<bean id="fgdc_scan_Sci" class="org.springframework.core.io.ClassPathResource">
 		<constructor-arg type="java.lang.String"
-		value="org/dataone/cn/index/resources/d1_testdocs/fgdc/68e96cf6-fb14-42aa-bbea-6da546ccb507-scan_201407_2172.xml" />
+		value="org/dataone/cn/index/resources/d1_testdocs/fgdc/fgdc_scan/68e96cf6-fb14-42aa-bbea-6da546ccb507-scan_201407_2172.xml" />
 	</bean>
 
 	<bean id="peggym1271Sys" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.127.1"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.127.1/systemmetadata.xml"/>
+    </bean>
+    <bean id="peggym1271Sci" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.127.1/peggym.127.1"/>
     </bean>
 	<bean id="peggym1271SysArchived" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
@@ -89,67 +85,79 @@ xmlns:context="http://www.springframework.org/schema/context"
     </bean>
 	<bean id="peggym1281Sys" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.128.1"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.128.1/systemmetadata.xml"/>
     </bean>
-    <bean id="peggym1281SysObsoletedBy" class="org.springframework.core.io.ClassPathResource" >
+    <bean id="peggym1281Sci" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.128.1-obsoletedBy"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.128.1/peggym.128.1"/>
     </bean>
-    <bean id="peggym1282Sys" class="org.springframework.core.io.ClassPathResource" >
+    <bean id="peggym1281SciObsoletedBy" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.128.2"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.128.1-obsoletedBy/peggym.128.1-obsoletedBy"/>
+    </bean>
+    <bean id="peggym1282Sci" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.128.2/peggym.128.2"/>
     </bean>
 	<bean id="peggym1291Sys" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.129.1"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.129.1/systemmetadata.xml"/>
+    </bean>
+    <bean id="peggym1291Sci" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.129.1/peggym.129.1"/>
     </bean>
 	<bean id="peggym1304Sys" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.130.4"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.4/systemmetadata.xml"/>
     </bean>
-    <bean id="peggym1305Sys" class="org.springframework.core.io.ClassPathResource" >
+    <bean id="peggym1305Sci" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.130.5"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.5/peggym.130.5"/>
     </bean>
     <bean id="peggym1304SysArchived" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
         value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.130.4-archived"/>
     </bean>
+    <bean id="peggym1304SciObsoletedBy" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.4-obsoletedBy/peggym.130.4-obsoletedBy"/>
+    </bean>
     <bean id="peggym1304SysObsoletedBy" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.130.4-obsoletedBy"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.4-obsoletedBy/systemmetadata.xml"/>
     </bean>
 	<bean id="peggym1304Sci" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.4"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.130.4/peggym.130.4"/>
     </bean>
-    <bean id="peggymResourcemapSys" class="org.springframework.core.io.ClassPathResource" >
+    <bean id="peggymResourcemapSci" class="org.springframework.core.io.ClassPathResource" >
          <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.resourcemap"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.resourcemap/peggym.resourcemap"/>
     </bean>
-    <bean id="peggymResourcemapSeriesSys" class="org.springframework.core.io.ClassPathResource" >
+    <bean id="peggymResourcemapSeriesSci" class="org.springframework.core.io.ClassPathResource" >
          <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.resourcemap.series"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.resourcemap.series/peggym.resourcemap.series"/>
     </bean>
-    <bean id="peggymResourcemap2Sys" class="org.springframework.core.io.ClassPathResource" >
+    <bean id="peggymResourcemap2Sci" class="org.springframework.core.io.ClassPathResource" >
          <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.resourcemap2"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.resourcemap2/peggym.resourcemap2"/>
     </bean>
-    <bean id="peggymResourcemapComplicatedSys" class="org.springframework.core.io.ClassPathResource" >
+    <bean id="peggymResourcemapComplicatedSci" class="org.springframework.core.io.ClassPathResource" >
          <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.resourcemap-complicated"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.resourcemap-complicated/peggym.resourcemap-complicated"/>
     </bean>
-    <bean id="peggymResourcemap2ComplicatedSys" class="org.springframework.core.io.ClassPathResource" >
+    <bean id="peggymResourcemap2ComplicatedSci" class="org.springframework.core.io.ClassPathResource" >
          <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.resourcemap2-complicated"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.resourcemap2-complicated/peggym.resourcemap2-complicated"/>
     </bean>
-     <bean id="peggymResourcemap1OverlapSys" class="org.springframework.core.io.ClassPathResource" >
+     <bean id="peggymResourcemap1OverlapSci" class="org.springframework.core.io.ClassPathResource" >
          <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.resourcemap1-overlap"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.resourcemap1-overlap/peggym.resourcemap1-overlap"/>
     </bean>
-    <bean id="peggymResourcemap2OverlapSys" class="org.springframework.core.io.ClassPathResource" >
+    <bean id="peggymResourcemap2OverlapSci" class="org.springframework.core.io.ClassPathResource" >
          <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/peggym.resourcemap2-overlap"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.resourcemap2-overlap/peggym.resourcemap2-overlap"/>
     </bean>
     <bean id="peggymResourcemapSysArchived" class="org.springframework.core.io.ClassPathResource" >
          <constructor-arg type="java.lang.String"
@@ -172,12 +180,12 @@ xmlns:context="http://www.springframework.org/schema/context"
 
     <bean id="fdgc01111999SciMeta" class="org.springframework.core.io.ClassPathResource">
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/fgdc/csiro_d_abayadultprawns.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/fgdc/csiro_d_abayadultprawns/csiro_d_abayadultprawns.xml"/>
     </bean>
 
     <bean id="fdgc01111999SysMeta" class="org.springframework.core.io.ClassPathResource">
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/fgdc/csiro_d_abayadultprawnsSysmeta.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/fgdc/csiro_d_abayadultprawns/systemmetadata.xml"/>
     </bean>
 
      <bean id="fgdcNasaSciMeta" class="org.springframework.core.io.ClassPathResource">
@@ -235,11 +243,11 @@ xmlns:context="http://www.springframework.org/schema/context"
 
 	<bean id="tao129301" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/tao.12930.1"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/tao.12930.1/tao.12930.1"/>
     </bean>
     <bean id="tao129301Sys" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml210/SystemMetadata/tao.12930.1"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml210/tao.12930.1/systemmetadata.xml"/>
     </bean>
 
    	<bean id="ornl_mercury_science_metadata" class="org.springframework.core.io.ClassPathResource" >
@@ -422,32 +430,32 @@ xmlns:context="http://www.springframework.org/schema/context"
 
 	<bean id="eml220TestDocSysMeta" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml220testdocsysmeta.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml220testdocscimeta/systemmetadata.xml"/>
     </bean>
 
     <bean id="eml220TestDocSciMeta" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml220testdocscimeta.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml220testdocscimeta/eml220testdocscimeta.xml"/>
     </bean>
     
     <bean id="portalTestDocSysMeta" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/portal/portalsysmeta.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/portal/portal/systemmetadata.xml"/>
     </bean>
 
     <bean id="portalTestDoc" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/portal/portal.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/portal/portal/portal.xml"/>
     </bean>
     
      <bean id="schemaOrgTestDocSysMeta" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/json-ld/bco-dmo-sysmeta.xml"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/json-ld/bco-dmo/systemmetadata.xml"/>
     </bean>
 
     <bean id="schemaOrgTestDoc" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-        value="org/dataone/cn/index/resources/d1_testdocs/json-ld/bco-dmo.jsonld"/>
+        value="org/dataone/cn/index/resources/d1_testdocs/json-ld/bco-dmo/bco-dmo.jsonld"/>
     </bean>
 
 <!--    <bean id="schemaOrgTestDocSysMeta2" class="org.springframework.core.io.ClassPathResource" >-->
@@ -457,59 +465,86 @@ xmlns:context="http://www.springframework.org/schema/context"
 
     <bean id="schemaOrgTestDoc2" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/doi_A10.5061_dryad.m8s2r36.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/doi_A10.5061_dryad.m8s2r36/doi_A10.5061_dryad.m8s2r36.jsonld"/>
     </bean>
     <bean id="schemaOrgTestDocSOSO" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/ESIP-SOSO-v1.2.0-example-full.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/ESIP-SOSO-v1.2.0-example-full/ESIP-SOSO-v1.2.0-example-full.jsonld"/>
     </bean>
     <bean id="schemaOrgTestWithoutVocab" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-http-without-vocab.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-http-without-vocab/context-http-without-vocab.jsonld"/>
     </bean>
 
     <bean id="schemaOrgTestHttpVocab" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-http-vocab.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-http-vocab/context-http-vocab.jsonld"/>
     </bean>
 
     <bean id="schemaOrgTestHttpsVocab" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-https-vocab.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-https-vocab/context-https-vocab.jsonld"/>
     </bean>
 
     <bean id="schemaOrgTestHttp" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-http.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-http/context-http.jsonld"/>
     </bean>
 
     <bean id="schemaOrgTestHttps" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-https.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/context-https/context-https.jsonld"/>
     </bean>
 
     <bean id="schemaOrgTestDryad1" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/doi.org_10.5061_dryad.5qb78.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/doi.org_10.5061_dryad.5qb78/doi.org_10.5061_dryad.5qb78.jsonld"/>
     </bean>
 
     <bean id="schemaOrgTestDryad2" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/doi.org_10.5061_dryad.41sk145.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/doi.org_10.5061_dryad.41sk145/doi.org_10.5061_dryad.41sk145.jsonld"/>
     </bean>
     
     <bean id="emlWithDataTableTestDoc" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml2.2.0testdatatable.xml"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml2.2.0testdatatable/eml2.2.0testdatatable.xml"/>
     </bean>
     
     <bean id="emlWithOtherEntityTestDoc" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml2.2.0testotherentity.xml"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml220/eml2.2.0testotherentity/eml2.2.0testotherentity.xml"/>
     </bean>
 
     <bean id="schemaOrgTesHakaiDeep" class="org.springframework.core.io.ClassPathResource" >
         <constructor-arg type="java.lang.String"
-                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/hakai-deep-schema.jsonld"/>
+                         value="org/dataone/cn/index/resources/d1_testdocs/json-ld/hakai-deep-schema/hakai-deep-schema.jsonld"/>
     </bean>
+    
+    <bean id="testDoc" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String" 
+        value="org/dataone/cn/indexer/resourcemap/resources/mpcOre1"/>
+    </bean>
+    
+    <bean id="incompleteResourceMap" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String" 
+        value="org/dataone/cn/indexer/resourcemap/resources/incomplete_resourceMap_ALEXXX_015MTBD009R00_20110122.50.1.rdf"/>
+    </bean>
+    
+    <bean id="dryadDoc" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg type="java.lang.String" 
+        value="org/dataone/cn/indexer/resourcemap/resources/dryad.12"/>
+    </bean>
+ 
+    <bean id="transitiveRelationshipsDoc" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg type="java.lang.String" 
+        value="org/dataone/cn/indexer/resourcemap/resources/transitive_resourcemap.rdf"/>
+    </bean>
+    
+    <bean id="incompleteTransitiveRelationshipsDoc" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg type="java.lang.String" 
+        value="org/dataone/cn/indexer/resourcemap/resources/incomplete_transitive_resourcemap.rdf"/>
+    </bean>
+    
+    <bean id="oreResourceMapTest" class="org.dataone.cn.indexer.resourcemap.OREResourceMapTest"/>
 </beans>

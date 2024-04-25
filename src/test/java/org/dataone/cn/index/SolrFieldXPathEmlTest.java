@@ -170,6 +170,7 @@ public class SolrFieldXPathEmlTest extends BaseSolrFieldXPathTest {
         eml210Expected.put("rightsHolder", "dataone_integration_test_user");
         eml210Expected.put("replicationAllowed", "true");
         eml210Expected.put("numberReplicas", "");
+        eml210Expected.put("archived", "false");
         eml210Expected.put("preferredReplicationMN", "");
         eml210Expected.put("blockedReplicationMN", "");
         eml210Expected.put("obsoletes", "peggym.130.3");
@@ -191,6 +192,7 @@ public class SolrFieldXPathEmlTest extends BaseSolrFieldXPathTest {
         eml210Expected.put("serviceTitle", "");
         eml210Expected.put("serviceDescription", "");
         eml210Expected.put("serviceEndpoint", "");
+        eml210Expected.put("licenseDescription", "");
         
         emlRefExpected
                 .put("abstract",
@@ -259,6 +261,7 @@ public class SolrFieldXPathEmlTest extends BaseSolrFieldXPathTest {
         emlRefExpected.put("serviceTitle", "");
         emlRefExpected.put("serviceDescription", "");
         emlRefExpected.put("serviceEndpoint", "");
+        emlRefExpected.put("licenseDescription", "This material is based upon work funded by the Exxon Valdez Oil Spill Trustee Council.  Any opinions, findings, conclusions, or recommendations expressed herein are those of the author(s) and do not necessarily reflect the views or positions of the Trustee Council.Standard scientific norms for attribution and credit should be followed when using this data including to the Owners, Exxon Valdez Oil Spill Trustee Council and other sources of funding. Please let the Owner know when this data is used.This data is licensed under CC0. The person who associated a work with this deed has dedicated the work to the public domain by waiving all of his or her rights to the work worldwide under copyright law, including all related and neighboring rights, to the extent allowed by law. You can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission.");
     }
 
     public void setUpEml220() throws Exception {
@@ -324,7 +327,11 @@ public class SolrFieldXPathEmlTest extends BaseSolrFieldXPathTest {
         eml220Expected.put("fileID", "https://" + hostname + "/cn/v2/resolve/eml-test-doc");
         eml220Expected
                 .put("text",
-                        "EML Annotation Example   EML  Annotator     EML  Annotator    MY PROJECT    EML  Annotator   principalInvestigator   SOME_RANDOM_FUNDING_INFO   My Funder  MY_FUNDER  AWARD1  An example award title  https://example.org/someaward eml-test-doc SOME_ATTRIBUTE SOME_ATTRIBUTE's definition");
+                        "EML Annotation Example   EML  Annotator    Creative Commons Attribution 4.0 International  https://spdx.org/licenses/CC-BY-4.0.html  CC-BY-4.0    EML  Annotator    MY PROJECT    EML  Annotator   principalInvestigator   SOME_RANDOM_FUNDING_INFO   My Funder  MY_FUNDER  AWARD1  An example award title  https://example.org/someaward eml-test-doc SOME_ATTRIBUTE SOME_ATTRIBUTE's definition");
+
+        eml220Expected.put("licenseDescription", "");
+        eml220Expected.put("licenseName", "Creative Commons Attribution 4.0 International");
+        eml220Expected.put("licenseUrl", "https://spdx.org/licenses/CC-BY-4.0.html");
 
         // system metadata
         eml220Expected.put("id", "eml-test-doc");
@@ -341,6 +348,7 @@ public class SolrFieldXPathEmlTest extends BaseSolrFieldXPathTest {
         eml220Expected.put("rightsHolder", "dataone_integration_test_user");
         eml220Expected.put("replicationAllowed", "true");
         eml220Expected.put("numberReplicas", "");
+        eml220Expected.put("archived", "false");
         eml220Expected.put("preferredReplicationMN", "");
         eml220Expected.put("blockedReplicationMN", "");
         eml220Expected.put("obsoletes", "");
@@ -435,6 +443,7 @@ public class SolrFieldXPathEmlTest extends BaseSolrFieldXPathTest {
         emlServiceExpected.put("rightsHolder", "dataone_integration_test_user");
         emlServiceExpected.put("replicationAllowed", "true");
         emlServiceExpected.put("numberReplicas", "");
+        emlServiceExpected.put("archived", "false");
         emlServiceExpected.put("preferredReplicationMN", "");
         emlServiceExpected.put("blockedReplicationMN", "");
         emlServiceExpected.put("obsoletes", "");
@@ -451,6 +460,8 @@ public class SolrFieldXPathEmlTest extends BaseSolrFieldXPathTest {
         emlServiceExpected.put("changePermission", "");
         emlServiceExpected.put("isPublic", "true");
         emlServiceExpected.put("dataUrl", "https://" + hostname + "/cn/v2/resolve/" + serviceEmlPid);
+        emlServiceExpected.put("licenseDescription", "");
+
     }
     
     /**

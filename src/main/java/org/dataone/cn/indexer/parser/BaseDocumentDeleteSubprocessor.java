@@ -37,15 +37,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.configuration.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class BaseDocumentDeleteSubprocessor implements IDocumentDeleteSubprocessor {
 
-    @Autowired
     private HTTPService httpService;
 
-    @Autowired
-    private String solrQueryUri;
+    private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
 
     private String relationSourceFormatId;
     private String relationSourceField;
@@ -174,5 +173,21 @@ public class BaseDocumentDeleteSubprocessor implements IDocumentDeleteSubprocess
 
     public void setUniDirectionalRelationFields(List<String> uniDirectionalRelationFields) {
         this.uniDirectionalRelationFields = uniDirectionalRelationFields;
+    }
+    
+    /**
+     * Set the http service
+     * @param service
+     */
+    public void setHttpService(HTTPService service) {
+        this.httpService = service;
+    }
+
+    /**
+     * Get the http service
+     * @return  the http service
+     */
+    public HTTPService getHttpService() {
+        return httpService;
     }
 }

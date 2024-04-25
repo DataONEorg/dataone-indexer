@@ -1,0 +1,164 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "idxworker.fullname" . }}
+  labels:
+    {{- include "idxworker.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "idxworker.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "idxworker.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity: {{- include "idxhelpers.tplvalues.render" (dict "value" .Values.affinity "context"
+      $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{- include "idxhelpers.tplvalues.render" (dict "value" .Values.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations: {{- include "idxhelpers.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "idxhelpers.tplvalues.render" (dict "value" .Values.topologySpreadConstraints "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
+      {{- if .Values.schedulerName }}
+      schedulerName: {{ .Values.schedulerName }}
+      {{- end }}
+      serviceAccountName: {{ include "idxworker.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          #     initialDelaySeconds:
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /etc/dataone/dataone-indexer.properties
+              subPath: dataone-indexer.properties
+              name: {{ .Release.Name }}-config-volume
+            - mountPath: /etc/dataone/log4j.properties
+              subPath: log4j2.properties
+              name: {{ .Release.Name }}-config-volume
+            - mountPath: {{ .Values.persistence.mountPath }}
+              name: indexer-metacat-pv
+              {{- if .Values.persistence.subPath }}
+              subPath: {{ .Values.persistence.subPath }}
+              {{- end }}
+              readOnly: true
+            - mountPath: /etc/dataone/tdb-cache
+              name: {{ .Release.Name }}-temp-tripledb-volume
+          env:
+            - name: DEBUG
+              value: "{{ .Values.idxworker.debug }}"
+            - name: DATAONE_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-indexer-token
+                  key: DataONEauthToken
+                  # If 'false', the secret must exist before the pod can start
+                  # App versions before v2.3.4 will read this value from a config file, not the env var.
+                  optional: true
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.rabbitmq.auth.existingPasswordSecret }}
+                  key: rabbitmq-password
+                  optional: false
+            {{- if .Values.solr.auth.enabled }}
+            - name: SOLR_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.solr.auth.existingSecret }}
+                  key: SOLR_ADMIN_PASSWORD
+                  optional: true
+            {{ end }}
+      initContainers:
+        - name: init-rabbitmq
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - >
+              HOST="{{ include "idxworker.rabbitmq.hostname" . }}";
+              PORT={{ include "idxworker.rabbitmq.hostport" . }};
+              until nc -z $HOST $PORT > /dev/null; do
+              echo waiting for RabbitMQ at $HOST - port $PORT; sleep 1; done;
+        - name: init-solr
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - >
+              URI="/solr/
+              {{- required "solr.customCollection IS REQUIRED" .Values.solr.customCollection -}}
+                  /admin/file?file=schema.xml&contentType=text/xml";
+              {{- $solrHost := (include "idxworker.solr.hostname" .) }}
+  {{- $solrPort := (required "solr.service.ports.http REQUIRED" .Values.solr.service.ports.http) }}
+              until [[ $(echo -e "GET $URI HTTP/1.1\r\nHost: {{ $solrHost -}}
+              \r\n\r\n" | nc {{ $solrHost }} {{ $solrPort -}}
+              | grep -c "<schema name=\"dataone") == 1 ]]; do
+              echo waiting for Solr Schema to be accessible at http://{{ $solrHost }}:
+              {{- $solrPort }}$URI; sleep 1; done;
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: {{ .Release.Name }}-config-volume
+          configMap:
+            name: {{ .Release.Name }}-indexer-configfiles
+            defaultMode: 0644
+        - name:  indexer-metacat-pv
+          persistentVolumeClaim:
+            claimName: {{ include "idxworker.shared.claimName" . }}
+            readOnly: true
+        - name: {{ .Release.Name }}-temp-tripledb-volume
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: [ "ReadWriteOnce" ]
+                {{- if ne (quote .Values.global.ephemeralVolumeStorageClass) "" }}
+                storageClassName: {{ .Values.global.ephemeralVolumeStorageClass }}
+                {{ end -}}
+                resources:
+                  requests:
+                    storage: 1Gi
