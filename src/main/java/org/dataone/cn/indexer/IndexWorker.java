@@ -99,8 +99,7 @@ public class IndexWorker {
     private String specifiedThreadNumberStr = null;
     private int specifiedThreadNumber = 0;
     private ExecutorService executor = null;
-    private ScheduledExecutorService scheduler;
-    
+
     /**
      * Commandline main for the IndexWorker to be started.
      * @param args
@@ -114,6 +113,7 @@ public class IndexWorker {
         loadExternalPropertiesFile(propertyFile);
         IndexWorker worker = new IndexWorker();
         worker.start();
+        startLivenessProbe();
     }
     
     /**
@@ -228,23 +228,7 @@ public class IndexWorker {
             initIndexParsers();
             ObjectManager.getInstance();
             OntologyModelService.getInstance();
-            startLivenessProbe();
         }
-    }
-
-    private void startLivenessProbe() {
-        scheduler = Executors.newScheduledThreadPool(1);
-        Runnable task = () -> {
-            Path path = Paths.get("./livenessprobe");
-            try {
-                Files.createFile(path);
-                Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
-                logger.info("IndexWorker.startLivenessProbe - starting livenessProbe");
-            } catch (IOException e) {
-                logger.error("IndexWorker.startLivenessProbe - failed to touch file: " + path, e);
-            }
-        };
-        scheduler.scheduleAtFixedRate(task, 0, 10, TimeUnit.SECONDS);
     }
 
     /**
@@ -379,7 +363,7 @@ public class IndexWorker {
          };
          boolean autoAck = false;
          rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, autoAck, consumer);
-         logger.info("IndexWorker.start - Calling basicConsume and waiting for the comming messages");
+         logger.info("IndexWorker.start - Calling basicConsume and waiting for the coming messages");
     }
     
     /**
@@ -496,6 +480,20 @@ public class IndexWorker {
     public void stop() throws IOException, TimeoutException {
         rabbitMQchannel.close();
         rabbitMQconnection.close();
-        logger.info("IndexWorker.stop - stop the index queue conection.");
+        logger.info("IndexWorker.stop - stop the index queue connection.");
+    }
+
+    private static void startLivenessProbe() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        Path path = Paths.get("./livenessprobe");
+        Runnable task = () -> {
+            try {
+                Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
+            } catch (IOException e) {
+                logger.error("IndexWorker.startLivenessProbe - failed to update file: " + path, e);
+            }
+        };
+        scheduler.scheduleAtFixedRate(task, 0, 10, TimeUnit.SECONDS);
+        logger.info("IndexWorker.startLivenessProbe - livenessProbe started");
     }
 }
