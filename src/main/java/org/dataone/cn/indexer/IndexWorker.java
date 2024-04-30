@@ -2,12 +2,18 @@ package org.dataone.cn.indexer;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -93,7 +99,7 @@ public class IndexWorker {
     private String specifiedThreadNumberStr = null;
     private int specifiedThreadNumber = 0;
     private ExecutorService executor = null;
-    
+    private ScheduledExecutorService scheduler;
     
     /**
      * Commandline main for the IndexWorker to be started.
@@ -222,9 +228,25 @@ public class IndexWorker {
             initIndexParsers();
             ObjectManager.getInstance();
             OntologyModelService.getInstance();
+            startLivenessProbe();
         }
     }
-    
+
+    private void startLivenessProbe() {
+        scheduler = Executors.newScheduledThreadPool(1);
+        Runnable task = () -> {
+            Path path = Paths.get("./livenessprobe");
+            try {
+                Files.createFile(path);
+                Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
+                logger.info("IndexWorker.startLivenessProbe - starting livenessProbe");
+            } catch (IOException e) {
+                logger.error("IndexWorker.startLivenessProbe - failed to touch file: " + path, e);
+            }
+        };
+        scheduler.scheduleAtFixedRate(task, 0, 10, TimeUnit.SECONDS);
+    }
+
     /**
      * Initialize the RabbitMQ service
      * @throws IOException 
