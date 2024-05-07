@@ -4,6 +4,9 @@
 
 global:
   solrPort: &global-solr-port 8983
+
+  ## @param global.metacatAppContext The application context used by the metacat installation
+  ##
   metacatAppContext: metacat
 
   ## @param global.storageClass default name of the storageClass to use for PVs
@@ -108,6 +111,15 @@ persistence:
 ##
 idxworker:
   debug: "FALSE"
+
+  ## @param idxworker.metacatK8sFullName ignored if deployed as subchart, else use metacat.fullname
+  ## If deployed as a subchart, metacatK8sFullName will be ignored, and metacat.fullname will be
+  ## retrieved automatically from the top-level metacat chart. If this not a subchart, set
+  ## metacatK8sFullName to reflect the k8s "fullname" of the metacat installation being indexed.
+  ## Note there is some tricky logic involved in deciding what the fullname should be - see
+  ## "idxworker.fullname" in templates/_helpers.tpl, as an example.
+  ##
+  metacatK8sFullName: ""
 
   ## @param idxworker.mn_url URL of the metacat instance that depends upon this indexer
   ## Leave this value unset (mn_url: "") to have it automatically populated

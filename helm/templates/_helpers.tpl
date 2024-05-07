@@ -62,6 +62,20 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
+Check to see if '.Values.global "dataone-indexer.enabled' is set to true in the top-level metacat
+chart. If so, we know we can get the output from the metacat chart's 'metacat.fullname' template.
+If we're not running as a sub-chart, then we need to read the user-provided value from
+.Values.idxworker.metacatK8sFullName
+*/}}
+{{- define "get.metacat.fullname" -}}
+{{- if (index .Values.global "dataone-indexer.enabled") }}
+{{- include "metacat.fullname" . -}}
+{{- else }}
+{{- default "MISSING-idxworker.metacatK8sFullName-MISSING" .Values.idxworker.metacatK8sFullName }}
+{{- end }}
+{{- end }}
+
+{{/*
 set MN url
 If we're running as a subchart, can use direct access without needing to go through ingress/https;
   e.g. http://metacatbrooke-hl:8080/metacat/d1/mn
@@ -71,7 +85,8 @@ If connecting to an instance outside the cluster, should use https;
 {{- define "idxworker.mn.url" -}}
 {{- $mn_url := .Values.idxworker.mn_url }}
 {{- if not $mn_url }}
-{{- $mn_url = printf "http://%s-hl:8080/%s/d1/mn" (include "idxworker.fullname" .) .Values.global.metacatAppContext }}
+{{- $fullname := (include "get.metacat.fullname" .) }}
+{{- $mn_url = printf "http://%s-hl:8080/%s/d1/mn" $fullname .Values.global.metacatAppContext }}
 {{- end }}
 {{- $mn_url }}
 {{- end }}
@@ -79,12 +94,14 @@ If connecting to an instance outside the cluster, should use https;
 {{/*
 set Claim Name of existing PVC to use (typically the volume that is shared with metacat)
 Either use the value set in .Values.persistence.claimName, or if blank, autopopulate with
-  {podname}-metacat-{releaseName}-0 (e.g. metacatbrooke-metacat-metacatbrooke-metacat-0)
+  {podname}-metacat-{fullName}-0 (e.g. metacatbrooke-metacat-metacatbrooke-metacat-0)
+  (see 'idxworker.fullname' for logic behind how a 'fullname' is defined)
 */}}
 {{- define "idxworker.shared.claimName" -}}
 {{- $claimName := .Values.persistence.claimName }}
 {{- if not $claimName }}
-{{- $claimName = printf "%s-metacat-%s-0" .Release.Name (include "idxworker.fullname" .) }}
+{{- $fullname := (include "get.metacat.fullname" .) }}
+{{- $claimName = printf "%s-metacat-%s-0" .Release.Name $fullname }}
 {{- end }}
 {{- $claimName }}
 {{- end }}
