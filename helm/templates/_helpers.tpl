@@ -71,7 +71,7 @@ If connecting to an instance outside the cluster, should use https;
 {{- define "idxworker.mn.url" -}}
 {{- $mn_url := .Values.idxworker.mn_url }}
 {{- if not $mn_url }}
-{{- $mn_url = printf "http://%s-hl:8080/%s/d1/mn" .Release.Name .Values.global.metacatAppContext }}
+{{- $mn_url = printf "http://%s-hl:8080/%s/d1/mn" (include "idxworker.fullname" .) .Values.global.metacatAppContext }}
 {{- end }}
 {{- $mn_url }}
 {{- end }}
@@ -79,12 +79,12 @@ If connecting to an instance outside the cluster, should use https;
 {{/*
 set Claim Name of existing PVC to use (typically the volume that is shared with metacat)
 Either use the value set in .Values.persistence.claimName, or if blank, autopopulate with
-  {podname}-metacat-{releaseName}-0 (e.g. metacatbrooke-metacat-metacatbrooke-0)
+  {podname}-metacat-{releaseName}-0 (e.g. metacatbrooke-metacat-metacatbrooke-metacat-0)
 */}}
 {{- define "idxworker.shared.claimName" -}}
 {{- $claimName := .Values.persistence.claimName }}
 {{- if not $claimName }}
-{{- $claimName = printf "%s-metacat-%s-0" .Release.Name .Release.Name }}
+{{- $claimName = printf "%s-metacat-%s-0" .Release.Name (include "idxworker.fullname" .) }}
 {{- end }}
 {{- $claimName }}
 {{- end }}
