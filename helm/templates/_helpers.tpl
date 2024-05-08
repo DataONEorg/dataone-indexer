@@ -63,13 +63,17 @@ Create the name of the service account to use
 
 {{/*
 Check to see if '.Values.global "dataone-indexer.enabled' is set to true in the top-level metacat
-chart. If so, we know we can get the output from the metacat chart's 'metacat.fullname' template.
+chart. If so, we know we're running as a subchart, and can infer the 'metacat.fullname'.
 If we're not running as a sub-chart, then we need to read the user-provided value from
 .Values.idxworker.metacatK8sFullName
 */}}
 {{- define "get.metacat.fullname" -}}
 {{- if (index .Values.global "dataone-indexer.enabled") }}
-{{- include "metacat.fullname" . -}}
+{{- if contains "metacat" (lower .Release.Name) }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-metacat" .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- end }}
 {{- else }}
 {{- default "MISSING-idxworker.metacatK8sFullName-MISSING" .Values.idxworker.metacatK8sFullName }}
 {{- end }}
