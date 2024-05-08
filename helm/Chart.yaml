@@ -33,9 +33,7 @@ appVersion: "3.0.0"
 dependencies:
   - name: rabbitmq
     repository: https://charts.bitnami.com/bitnami
-    # version: 10.1.14    # rabbitmq version 3.10.5 is deployed by chart version 10.1.14
-    # version: 10.1.19    # rabbitmq version 3.10.7 is deployed by chart version 10.1.19
-    version: 14.1.0     # rabbitmq version 3.13.1 is deployed by chart version 14.1.0
+    version: 10.1.14    # rabbitmq version 3.10.5 is deployed by chart version 10.1.14
     condition: rabbitmq.enabled, global.rabbitmq.enabled
   - name: solr
     repository: https://charts.bitnami.com/bitnami
