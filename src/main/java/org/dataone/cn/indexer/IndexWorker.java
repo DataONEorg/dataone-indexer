@@ -102,17 +102,19 @@ public class IndexWorker {
 
     /**
      * Commandline main for the IndexWorker to be started.
-     * @param args
-     * @throws TimeoutException 
-     * @throws IOException 
-     * @throws ServiceFailure 
+     * @param args (not used -- command line args)
      */
-    public static void main(String[] args) throws IOException, TimeoutException, ServiceFailure {
+    public static void main(String[] args) {
         logger.info("IndexWorker.main - Starting index worker...");
         String propertyFile = null;
         loadExternalPropertiesFile(propertyFile);
-        IndexWorker worker = new IndexWorker();
-        worker.start();
+        try {
+            IndexWorker worker = new IndexWorker();
+            worker.start();
+        } catch (Exception e) {
+            logger.fatal("IndexWorker.main() exiting due to fatal error: " + e.getMessage(), e);
+            System.exit(1);
+        }
         startLivenessProbe();
     }
     
