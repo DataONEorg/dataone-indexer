@@ -20,12 +20,16 @@
  */
 package org.dataone.cn.indexer.object;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.log4j.Logger;
 import org.dataone.client.auth.AuthTokenSession;
 import org.dataone.client.exception.ClientSideException;
@@ -37,6 +41,8 @@ import org.dataone.client.v2.impl.MultipartD1Node;
 import org.dataone.client.v2.impl.MultipartMNode;
 import org.dataone.configuration.Settings;
 import org.dataone.exceptions.MarshallingException;
+import org.dataone.indexer.storage.Storage;
+import org.dataone.indexer.storage.StorageFactory;
 import org.dataone.service.exceptions.InvalidToken;
 import org.dataone.service.exceptions.NotAuthorized;
 import org.dataone.service.exceptions.NotFound;
@@ -56,65 +62,50 @@ import org.dataone.service.util.TypeMarshaller;
  */
 public class ObjectManager {
     private static ObjectManager manager = null;
-    private static String dataRootDir = Settings.getConfiguration().getString("index.data.root.directory");
-    private static String documentRootDir = Settings.getConfiguration().getString("index.document.root.directory");
     private static String nodeBaseURL = Settings.getConfiguration().getString("dataone.mn.baseURL");
     private static String DataONEauthToken = null;
     private static Logger logger = Logger.getLogger(ObjectManager.class);
+    private static Storage storage = null;
     private static final String TOKEN_VARIABLE_NAME = "DATAONE_AUTH_TOKEN";
     private static final String TOKEN_FILE_PATH_PROP_NAME = "dataone.nodeToken.file";
     private static final String SYSTEMMETA_FILE_NAME = "systemmetadata.xml";
 
     private static MultipartD1Node d1Node = null;
     private static Session session = null;
-    private static boolean ifDataAndDocRootSame = false;
-  
+
+
     /**
      * Private constructor
-     * @throws ServiceFailure 
+     * @throws ServiceFailure
+     * @throws IOException
+     * @throws IllegalArgumentException
      */
-    private ObjectManager() throws ServiceFailure {
-        if (dataRootDir == null || dataRootDir.trim().equals("")) {
-            throw new ServiceFailure("0000", "The data root directory specified by the property index.data.root.directory is blank in the properties file");
+    private ObjectManager() throws ServiceFailure, IllegalArgumentException, IOException {
+        if (storage == null) {
+            if (storage == null) {
+                    storage = StorageFactory.getStorage();
+            }
         }
-        if (documentRootDir == null || documentRootDir.trim().equals("")) {
-            throw new ServiceFailure("0000", "The metadata root directory specified by the property index.document.root.directory is blank in the properties file");
-        }
-        if (!Files.exists(FileSystems.getDefault().getPath(dataRootDir))) {
-            throw new ServiceFailure("0000", "The data root directory " + dataRootDir + 
-                                    " specified in the properties file doesn't exist");
-        }
-        if (!Files.exists(FileSystems.getDefault().getPath(documentRootDir))) {
-            throw new ServiceFailure("0000", "The document root directory " + documentRootDir + 
-                                    " specified in the properties file doesn't exist");
-        }
-        if (!dataRootDir.endsWith("/")) {
-            dataRootDir = dataRootDir + "/";
-        }
-        if (!documentRootDir.endsWith("/")) {
-            documentRootDir = documentRootDir + "/";
-        }
-        
-        if (documentRootDir.equals(dataRootDir)) {
-            ifDataAndDocRootSame = true;
-        }
-        logger.info("ObjectManager.constructor - the root document directory is " + 
-                documentRootDir + " and the root data directory is " + dataRootDir + 
-                " Are they same?" + ifDataAndDocRootSame);
         if (d1Node == null) {
-            refreshD1Node();
+            if (d1Node == null) {
+                refreshD1Node();
+            }
         } else {
-            logger.info("ObjectManager ---NOT going to create the d1node with the url " + nodeBaseURL + 
-                       " since the ObjectManager already was assigned a d1node with the url " + d1Node.getNodeBaseServiceUrl());
+            logger.info("ObjectManager ---NOT going to create the d1node with the url " + nodeBaseURL
+                        + " since the ObjectManager already was assigned a d1node with the url "
+                        + d1Node.getNodeBaseServiceUrl());
         }
     }
-    
+
     /**
      * Get an ObjectManager instance through the singleton pattern.
      * @return  the instance of ObjectManager
-     * @throws ServiceFailure 
+     * @throws ServiceFailure
+     * @throws IOException
+     * @throws IllegalArgumentException
      */
-    public static ObjectManager getInstance() throws ServiceFailure {
+    public static ObjectManager getInstance() throws ServiceFailure,
+                                                        IllegalArgumentException, IOException {
         if (manager == null) {
             synchronized (ObjectManager.class) {
                 if (manager == null)  {
@@ -124,63 +115,37 @@ public class ObjectManager {
         }
         return manager;
     }
-    
-    /**
-     * Get the absolute file path for a given relative path. If the relativePath is null or blank,
-     * null will be returned
-     * @param relativePath
-     * @param objectFormat
-     * @return  the absolute file path 
-     * @throws NotFound
-     */
-    public String getFilePath(String relativePath, String objectFormat) throws NotFound {
-        String absolutePath = null;
-        if (relativePath != null && !relativePath.trim().equals("")) {
-            if (ifDataAndDocRootSame) {
-                absolutePath = documentRootDir + relativePath;
-            } else if (objectFormat != null && !objectFormat.trim().equals("")) {
-                ObjectFormat format =ObjectFormatCache.getInstance().getFormat(objectFormat);
-                if (format.getFormatType().equals("METADATA")) {
-                    absolutePath = documentRootDir + relativePath;
-                } else {
-                    absolutePath = dataRootDir + relativePath;
-                }
-            }
-        }
-        logger.debug("ObjectManager.getFilePath - the absolute file path for the relative file path " + 
-                        relativePath + " is " + absolutePath);
-        return absolutePath;
-    }
-    
+
     /**
      * Get the system metadata for the given id
      * @param id  the id to identify the system metadata
-     * @param objectRelativePath  the object path for this id. It can help to determine 
-     * the system metadata file if the system metadata file exists.
-     * @return  the system metadata associated with the id
+     * @return  the input stream of the system metadata associated with the id. It may be null.
      * @throws InvalidToken
      * @throws NotAuthorized
      * @throws NotImplemented
      * @throws ServiceFailure
      * @throws NotFound
-     * @throws MarshallingException 
-     * @throws IOException 
-     * @throws IllegalAccessException 
-     * @throws InstantiationException 
+     * @throws MarshallingException
+     * @throws IOException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
      */
-    public SystemMetadata getSystemMetadata(String id, String relativeObjPath) throws InvalidToken, NotAuthorized, NotImplemented, 
-                                                                                    ServiceFailure, NotFound, InstantiationException, IllegalAccessException, IOException, MarshallingException {
-        SystemMetadata sysmeta = null;
+    public InputStream getSystemMetadataStream(String id) throws InvalidToken, NotAuthorized,
+                                NotImplemented, ServiceFailure, NotFound, InstantiationException,
+                                         IllegalAccessException, IOException, MarshallingException {
         long start = System.currentTimeMillis();
-        //try to get the system metadata from the file system first
-        File sysmetaFile = getSysmetaFile(relativeObjPath);
-        if (sysmetaFile != null) {
-            sysmeta = TypeMarshaller.unmarshalTypeFromFile(SystemMetadata.class, sysmetaFile);
+        //try to get the system metadata from the storage system first
+        InputStream sysmetaInputStream = null;
+        try {
+            sysmetaInputStream = storage.retrieveSystemMetadata(id);
             long end = System.currentTimeMillis();
-            logger.info("ObjectManager.getSystemMetadata - finish getting the system metadata via the file system for the pid " + id + 
-                        " and it took " + (end - start) + "milliseconds");
-        } else {
-            //if we can't get it from the file system, get it from dataone API
+            logger.info("ObjectManager.getSystemMetadata - finish getting the system metadata via "
+                        + "the file system for the pid " + id
+                        + " and it took " + (end - start) + "milliseconds");
+        } catch (FileNotFoundException exception ) {
+            // Metacat can't find the system metadata from the storage system.
+            // So try to get it from the dataone api
+            SystemMetadata sysmeta = null;
             Identifier identifier = new Identifier();
             identifier.setValue(id);
             try {
@@ -200,20 +165,67 @@ public class ObjectManager {
                         continue;
                     }
                 }
-                logger.debug("ObjectManager.getSystemMetadata - finish getting the system metadata via the DataONE API call for the pid " + id);
+                logger.debug("ObjectManager.getSystemMetadata - finish getting the system metadata "
+                            + "via the DataONE API call for the pid " + id);
             } catch (NotAuthorized e) {
-                logger.info("ObjectManager.getSystemMetadata - failed to get the system metadata via the DataONE API call for the pid " + id +
-                            " since it is not authorized. We will refresh the token and try again");
+                logger.info("ObjectManager.getSystemMetadata - failed to get the system metadata "
+                          + "via the DataONE API call for the pid " + id
+                          + " since it is not authorized. We will refresh the token and try again");
                 refreshD1Node();
                 sysmeta = d1Node.getSystemMetadata(session, identifier);
             }
+            if (sysmeta != null) {
+                ByteArrayOutputStream systemMetadataOutputStream = new ByteArrayOutputStream();
+                TypeMarshaller.marshalTypeToOutputStream(sysmeta, systemMetadataOutputStream);
+                sysmetaInputStream = new ByteArrayInputStream(systemMetadataOutputStream.toByteArray());
+            }
             long end = System.currentTimeMillis();
-            logger.info("ObjectManager.getSystemMetadata - finish getting the system metadata via DataONE API for the pid " + id +
-                        " and it took " + (end - start) + "milliseconds");
+            logger.info("ObjectManager.getSystemMetadata - finish getting the system metadata via "
+                        + "DataONE API for the pid " + id + " and it took "
+                        + (end - start) + "milliseconds");
+        }
+        return sysmetaInputStream;
+    }
+
+    /**
+     * Get the system metadata object for the given identifier
+     * @param id  the id to identify the system metadata
+     * @return the system metadata object associated with the id. It may be null.
+     * @throws InvalidToken
+     * @throws NotAuthorized
+     * @throws NotImplemented
+     * @throws ServiceFailure
+     * @throws NotFound
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws IOException
+     * @throws MarshallingException
+     */
+    public org.dataone.service.types.v1.SystemMetadata getSystemMetadata(String id)
+                                                throws InvalidToken, NotAuthorized,
+                                                NotImplemented, ServiceFailure, NotFound,
+                                                InstantiationException, IllegalAccessException,
+                                                IOException, MarshallingException {
+        org.dataone.service.types.v1.SystemMetadata sysmeta = null;
+        try (InputStream input = getSystemMetadataStream(id)) {
+            if (input != null) {
+                try {
+                    SystemMetadata sysmeta2 = TypeMarshaller
+                                            .unmarshalTypeFromStream(SystemMetadata.class, input);
+                    sysmeta = sysmeta2;
+                } catch (Exception e) {
+                    try (InputStream input2 = getSystemMetadataStream(id)) {
+                        if (input2 != null) {
+                            sysmeta = TypeMarshaller.unmarshalTypeFromStream(
+                                         org.dataone.service.types.v1.SystemMetadata.class, input2);
+                        }
+                    }
+                }
+            }
         }
         return sysmeta;
     }
-    
+
     /**
      * Set the d1 node for this object manager.
      * We only use it for testing
@@ -222,58 +234,7 @@ public class ObjectManager {
     public static void setD1Node(MultipartD1Node node) {
         d1Node = node;
     }
-    
-    /**
-     * Get the system metadata file path from the objectPath.
-     * We assume the object and system metadata file are in the same directory. 
-     * The system metadata file has a fixed name - systemmetadata.xml
-     * @param  relativeObjPath  the relative path of the object
-     * @return  the file of system metadata. If it is null, this means the system metadata file does not exist.
-     */
-    protected static File getSysmetaFile(String relativeObjPath) {
-        File sysmetaFile = null;
-        String sysmetaPath = null;
-        String relativeSysmetaPath = null;
-        if (relativeObjPath != null) {
-            if (relativeObjPath.contains(File.separator)) {
-                logger.debug("ObjectManager.getSysmetaFile - the object file path " + relativeObjPath + " has at least one path separator " + File.pathSeparator);
-                relativeSysmetaPath = relativeObjPath.substring(0, relativeObjPath.lastIndexOf(File.separator) + 1) + SYSTEMMETA_FILE_NAME;
-            } else {
-                logger.debug("ObjectManager.getSysmetaFile - the object file path " + relativeObjPath + " doesnot have any path separator " + File.pathSeparator);
-                //There is not path information in the object path ( it only has the file name). So we just simply return systemmetadata.xml
-                relativeSysmetaPath = SYSTEMMETA_FILE_NAME;
-            }
-            logger.debug("ObjectManager.getSysmetaFile - the relative system metadata file path for the object path " + 
-                        relativeObjPath + " is " + relativeSysmetaPath);
-            if (ifDataAndDocRootSame) {
-                sysmetaPath = documentRootDir + relativeSysmetaPath;
-                sysmetaFile = new File(sysmetaPath);
-                if (!sysmetaFile.exists()) {
-                    //the system metadata file doesn't exist and we set it to null
-                    sysmetaPath = null;
-                    sysmetaFile = null;
-                }
-            } else {
-                //try if this object is a document first since we have no idea if the object is metadata or data.
-                sysmetaPath = documentRootDir + relativeSysmetaPath;
-                sysmetaFile = new File(sysmetaPath);
-                if (!sysmetaFile.exists()) {
-                    // try data 
-                    sysmetaPath = dataRootDir + relativeSysmetaPath;
-                    sysmetaFile = new File(sysmetaPath);
-                    if (!sysmetaFile.exists()) {
-                        //the system metadata file doesn't exist and we set it to null
-                        sysmetaPath = null;
-                        sysmetaFile = null;
-                    }
-                }
-            }
-        }
-        logger.debug("ObjectManager.getSysmetaFile - the final system metadata file path for the object path " + 
-                relativeObjPath + " is " + sysmetaPath + ". Null means that not system metadata file exists.");
-        return sysmetaFile;
-    }
-    
+
     /**
      * In case the token expired, the method will retrieve the token and create a new d1 node
      * @throws ServiceFailure 
