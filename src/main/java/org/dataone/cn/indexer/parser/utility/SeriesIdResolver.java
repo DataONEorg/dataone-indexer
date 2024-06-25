@@ -100,18 +100,11 @@ public class SeriesIdResolver {
         InstantiationException, IllegalAccessException, IOException, MarshallingException {
 
         // if we have system metadata available via HZ map, then it's a PID
-        String relativeObjPath = null;//we don't know the path
-        SystemMetadata systemMetadata =
-            ObjectManager.getInstance().getSystemMetadata(identifier.getValue(), relativeObjPath);
+        org.dataone.service.types.v1.SystemMetadata systemMetadata = ObjectManager.getInstance()
+                                                        .getSystemMetadata(identifier.getValue());
         if (systemMetadata != null) {
             return false;
         }
-
-        //TODO: check that it's not just bogus value by looking up the pid?
-//		Identifier pid = getPid(identifier);
-//		if (pid.equals(identifier)) {
-//			return false;
-//		}
 
         // okay, it's a SID
         return true;
