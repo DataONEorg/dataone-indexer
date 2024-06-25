@@ -12,7 +12,7 @@ import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.types.v1.Identifier;
-import org.dataone.service.types.v2.SystemMetadata;
+import org.dataone.service.types.v1.SystemMetadata;
 
 public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
 
@@ -25,10 +25,8 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
     public boolean isDocumentVisible(Identifier pid) {
         boolean visible = false;
         try {
-
-            //SystemMetadata systemMetadata = HazelcastClientFactory.getSystemMetadataMap().get(pid);
-            String relativeObjPath = null; //we don't know the path
-            SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue(), relativeObjPath);
+            SystemMetadata systemMetadata = ObjectManager.getInstance()
+                                                            .getSystemMetadata(pid.getValue());
             // TODO: Is pid Identifier a SID?
             if (systemMetadata == null) {
                 return true;
@@ -63,9 +61,7 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
     public boolean documentExists(Identifier pid) {
         boolean exists = false;
         try {
-            //SystemMetadata systemMetadata = HazelcastClientFactory.getSystemMetadataMap().get(pid);
-            String relativeObjPath = null; //we don't know the path
-            SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue(), relativeObjPath);
+            SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
             if (systemMetadata != null) {
                 exists = true;
             } else {
