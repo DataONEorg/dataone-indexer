@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -129,10 +130,12 @@ public class ObjectManager {
      * @throws IOException
      * @throws IllegalAccessException
      * @throws InstantiationException
+     * @throws NoSuchAlgorithmException
      */
     public InputStream getSystemMetadataStream(String id) throws InvalidToken, NotAuthorized,
                                 NotImplemented, ServiceFailure, NotFound, InstantiationException,
-                                         IllegalAccessException, IOException, MarshallingException {
+                                NoSuchAlgorithmException, IllegalAccessException, IOException,
+                                                                            MarshallingException {
         long start = System.currentTimeMillis();
         //try to get the system metadata from the storage system first
         InputStream sysmetaInputStream = null;
@@ -200,9 +203,10 @@ public class ObjectManager {
      * @throws IllegalAccessException
      * @throws IOException
      * @throws MarshallingException
+     * @throws NoSuchAlgorithmException
      */
     public org.dataone.service.types.v1.SystemMetadata getSystemMetadata(String id)
-                                                throws InvalidToken, NotAuthorized,
+                                       throws InvalidToken, NotAuthorized, NoSuchAlgorithmException,
                                                 NotImplemented, ServiceFailure, NotFound,
                                                 InstantiationException, IllegalAccessException,
                                                 IOException, MarshallingException {
@@ -224,6 +228,20 @@ public class ObjectManager {
             }
         }
         return sysmeta;
+    }
+
+    /**
+     * Get the input stream of the content of the given pid
+     * @param pid  the identifier of the content
+     * @return the input stream of the content
+     * @throws IllegalArgumentException
+     * @throws FileNotFoundException
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     */
+    public InputStream getObject(String pid) throws IllegalArgumentException, FileNotFoundException,
+                                                            NoSuchAlgorithmException, IOException {
+        return storage.retrieveObject(pid);
     }
 
     /**

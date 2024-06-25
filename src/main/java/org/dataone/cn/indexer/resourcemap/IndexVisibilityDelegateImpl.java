@@ -1,6 +1,7 @@
 package org.dataone.cn.indexer.resourcemap;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.log4j.Logger;
 import org.dataone.cn.indexer.object.ObjectManager;
@@ -54,6 +55,8 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
             logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
         } catch (MarshallingException e) {
             logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
+        } catch (NoSuchAlgorithmException e) {
+            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
         }
         return visible;
     }
@@ -87,6 +90,8 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
         } catch (IOException e) {
             logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
         } catch (MarshallingException e) {
+            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
+        } catch (NoSuchAlgorithmException e) {
             logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
         }
         return exists;

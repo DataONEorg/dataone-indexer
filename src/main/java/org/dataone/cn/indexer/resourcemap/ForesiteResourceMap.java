@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -231,7 +232,7 @@ public class ForesiteResourceMap implements ResourceMap {
 
     private SolrDoc _mergeMappedReference(ResourceEntry resourceEntry, SolrDoc mergeDocument)
                                                 throws InvalidToken, NotAuthorized, NotImplemented,
-                                                  ServiceFailure, NotFound, InstantiationException,
+                         NoSuchAlgorithmException, ServiceFailure, NotFound, InstantiationException,
                                         IllegalAccessException, IOException, MarshallingException {
 
         Identifier identifier = new Identifier();
