@@ -1,6 +1,8 @@
 package org.dataone.cn.index;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -68,7 +70,8 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     private SolrIndex solrIndexService;
     private int solrPort = Settings.getConfiguration().getInt("test.solr.port", 8985);
     private static final String DEFAULT_SOL_RHOME = "solr8home";
-    
+    private static final String SYSTEMMETA_FILE_NAME = "systemmetadata.xml";
+
     /**
      * Index the given object into solr
      * @param identifier  the identifier of the object which needs to be indexed
@@ -78,13 +81,50 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     protected void indexObjectToSolr(String identifier, Resource objectFile) throws Exception {
         boolean isSysmetaChangeOnly = false;
         String relativePath = objectFile.getFile().getPath();
+        try {
+            StorageFactory.getStorage().retrieveObject(identifier);
+        } catch (FileNotFoundException e) {
+            // The pid is not in the hash store and we need to save the object into hashstore
+            try (InputStream object = objectFile.getInputStream()) {
+                StorageFactory.getStorage().storeObject(object, identifier);
+            }
+            File sysmetaFile = getSysmetaFile(relativePath);
+            if (sysmetaFile != null) {
+                try (InputStream sysmeta = new FileInputStream(sysmetaFile)) {
+                    StorageFactory.getStorage().storeMetadata(sysmeta, identifier);
+                }
+            }
+        }
         Identifier pid = new Identifier();
         pid.setValue(identifier);
-        // Save the object into hashstore
-        try (InputStream object = objectFile.getInputStream()) {
-            StorageFactory.getStorage().storeObject(object, identifier);
-        }
         solrIndexService.update(pid, relativePath, isSysmetaChangeOnly);
+    }
+
+    /**
+     * The convention method to get the system metadata file path from the objectPath.
+     * We assume the object and system metadata file are in the same directory.
+     * The system metadata file has a fixed name - systemmetadata.xml
+     * @param  relativeObjPath  the relative path of the object
+     * @return  the file of system metadata. If it is null, this means the system metadata file does not exist.
+     */
+    private static File getSysmetaFile(String relativeObjPath) {
+        File sysmetaFile = null;
+        String sysmetaPath = null;
+        String relativeSysmetaPath = null;
+        if (relativeObjPath != null) {
+            if (relativeObjPath.contains(File.separator)) {
+                relativeSysmetaPath = relativeObjPath.substring(0,
+                            relativeObjPath.lastIndexOf(File.separator) + 1) + SYSTEMMETA_FILE_NAME;
+            } else {
+                // There is not path information in the object path ( it only has the file name).
+                // So we just simply return systemmetadata.xml
+                relativeSysmetaPath = SYSTEMMETA_FILE_NAME;
+            }
+        }
+        if (relativeSysmetaPath != null) {
+            sysmetaFile = new File(relativeSysmetaPath);
+        }
+        return sysmetaFile;
     }
 
     /**
