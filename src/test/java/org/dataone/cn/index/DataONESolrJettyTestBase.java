@@ -1,25 +1,3 @@
-/**
- * This work was created by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For 
- * more information on DataONE, see our web site at http://dataone.org.
- *
- *   Copyright ${year}
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- * 
- * $Id$
- */
-
 package org.dataone.cn.index;
 
 import java.io.File;
@@ -102,7 +80,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         pid.setValue(identifier);
         solrIndexService.update(pid, relativePath, isSysmetaChangeOnly);
     }
-    
+
     /**
      * Delete the given identifier from the solr server
      * @param identifier
@@ -125,25 +103,6 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         solrIndexService.remove(pid);
     }
 
-    protected void addEmlToSolrIndex(Resource sysMetaFile) throws Exception {
-        SolrIndex indexService = solrIndexService;
-        SystemMetadata smd = TypeMarshaller.unmarshalTypeFromStream(SystemMetadata.class,
-                sysMetaFile.getInputStream());
-        // path to actual science metadata document
-        String path = StringUtils.remove(sysMetaFile.getFile().getPath(), File.separator + "SystemMetadata");
-        boolean isSysmetaChangeOnly = false;
-        indexService.update(smd.getIdentifier(), path, isSysmetaChangeOnly);
-       
-    }
-
-    protected void addSysAndSciMetaToSolrIndex(Resource sysMeta, Resource sciMeta) throws Exception {
-        SolrIndex indexService = solrIndexService;
-        SystemMetadata smd = TypeMarshaller.unmarshalTypeFromStream(SystemMetadata.class,
-                sysMeta.getInputStream());
-        String path = sciMeta.getFile().getAbsolutePath();
-        boolean isSysmetaChangeOnly = false;
-        indexService.update(smd.getIdentifier(), path, isSysmetaChangeOnly);
-    }
 
     protected SolrDocument assertPresentInSolrIndex(String pid) throws SolrServerException,
             IOException {
