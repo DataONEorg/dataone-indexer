@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 
+import org.dataone.hashstore.exceptions.PidRefsFileExistsException;
+
 
 /**
  * The Storage represents the interface to access the objects and system metadata
@@ -37,5 +39,17 @@ public interface Storage {
      */
     public InputStream retrieveSystemMetadata(String pid) throws IllegalArgumentException,
                             FileNotFoundException, IOException, NoSuchAlgorithmException;
+
+    /**
+     * Store the input stream object into hash store. This method is only for the test classes.
+     * @param object  the input stream of the object
+     * @param pid  the pid which will be stored
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     * @throws RuntimeException
+     * @throws InterruptedException
+     */
+    public void storeObject(InputStream object, String pid) throws NoSuchAlgorithmException,
+                                                IOException,RuntimeException, InterruptedException;
 
 }

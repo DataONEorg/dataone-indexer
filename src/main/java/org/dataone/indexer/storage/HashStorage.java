@@ -73,14 +73,20 @@ public class HashStorage implements Storage {
     public InputStream retrieveObject(String pid)
             throws IllegalArgumentException, FileNotFoundException, IOException,
             NoSuchAlgorithmException {
-        return hashStorage.retrieveObject(pid);
+        return hashStore.retrieveObject(pid);
     }
 
     @Override
     public InputStream retrieveSystemMetadata(String pid)
             throws IllegalArgumentException, FileNotFoundException, IOException,
             NoSuchAlgorithmException {
-        return hashStorage.retrieveSystemMetadata(pid);
+        return hashStore.retrieveMetadata(pid);
+    }
+
+    @Override
+    public void storeObject(InputStream object, String pid) throws NoSuchAlgorithmException,
+                                               IOException,RuntimeException, InterruptedException {
+        hashStore.storeObject(object, pid, null, null, null, -1);
     }
 
 }
