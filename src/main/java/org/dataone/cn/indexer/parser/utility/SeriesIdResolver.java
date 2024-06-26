@@ -80,35 +80,6 @@ public class SeriesIdResolver {
         return pid;
     }
 
-    /**
-     * Check if the given identifier is a PID or a SID
-     *
-     * @param identifier
-     * @return true if the identifier is a SID, false if a PID
-     * @throws NotFound
-     * @throws ServiceFailure
-     * @throws NotImplemented
-     * @throws NotAuthorized
-     * @throws InvalidToken
-     * @throws MarshallingException
-     * @throws IOException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
-     */
-    public static boolean isSeriesId(Identifier identifier)
-        throws InvalidToken, NotAuthorized, NotImplemented, ServiceFailure, NotFound,
-        InstantiationException, IllegalAccessException, IOException, MarshallingException {
 
-        // if we have system metadata available via HZ map, then it's a PID
-        org.dataone.service.types.v1.SystemMetadata systemMetadata = ObjectManager.getInstance()
-                                                        .getSystemMetadata(identifier.getValue());
-        if (systemMetadata != null) {
-            return false;
-        }
-
-        // okay, it's a SID
-        return true;
-
-    }
 
 }
