@@ -43,7 +43,7 @@ public interface Storage {
     /**
      * Store the input stream object into hash store. This method is only for the test classes.
      * @param object  the input stream of the object
-     * @param pid  the pid which will be stored
+     * @param pid  the identifier of the object which will be stored
      * @throws NoSuchAlgorithmException
      * @throws IOException
      * @throws RuntimeException
@@ -52,4 +52,17 @@ public interface Storage {
     public void storeObject(InputStream object, String pid) throws NoSuchAlgorithmException,
                                                 IOException,RuntimeException, InterruptedException;
 
+    /**
+     * Store the system metadata into hash store. This method is only for the test classes.
+     * @param metadata  the input stream of the sytem metadata
+     * @param pid  the identifier of the system metadata
+     * @throws IOException
+     * @throws IllegalArgumentException
+     * @throws FileNotFoundException
+     * @throws InterruptedException
+     * @throws NoSuchAlgorithmException
+     */
+    public void storeMetadata(InputStream metadata, String pid) throws IOException,
+                                        IllegalArgumentException, FileNotFoundException,
+                                        InterruptedException, NoSuchAlgorithmException;
 }

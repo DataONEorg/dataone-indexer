@@ -89,4 +89,11 @@ public class HashStorage implements Storage {
         hashStore.storeObject(object, pid, null, null, null, -1);
     }
 
+    @Override
+    public void storeMetadata(InputStream metadata, String pid) throws IOException,
+                                                IllegalArgumentException, FileNotFoundException,
+                                                InterruptedException, NoSuchAlgorithmException {
+        hashStore.storeMetadata(metadata, pid);
+    }
+
 }
