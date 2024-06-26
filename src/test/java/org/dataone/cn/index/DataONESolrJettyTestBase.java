@@ -2,6 +2,7 @@ package org.dataone.cn.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.ISolrField;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
+import org.dataone.indexer.storage.StorageFactory;
 import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
@@ -78,6 +80,10 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         String relativePath = objectFile.getFile().getPath();
         Identifier pid = new Identifier();
         pid.setValue(identifier);
+        // Save the object into hashstore
+        try (InputStream object = objectFile.getInputStream()) {
+            StorageFactory.getStorage().storeObject(object, identifier);
+        }
         solrIndexService.update(pid, relativePath, isSysmetaChangeOnly);
     }
 
