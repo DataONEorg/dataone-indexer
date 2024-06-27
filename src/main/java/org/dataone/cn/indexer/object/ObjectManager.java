@@ -69,7 +69,6 @@ public class ObjectManager {
     private static Storage storage = null;
     private static final String TOKEN_VARIABLE_NAME = "DATAONE_AUTH_TOKEN";
     private static final String TOKEN_FILE_PATH_PROP_NAME = "dataone.nodeToken.file";
-    private static final String SYSTEMMETA_FILE_NAME = "systemmetadata.xml";
 
     private static MultipartD1Node d1Node = null;
     private static Session session = null;
