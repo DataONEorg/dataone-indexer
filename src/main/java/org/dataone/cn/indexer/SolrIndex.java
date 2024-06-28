@@ -423,6 +423,8 @@ public class SolrIndex {
      *    remove the index for the previous version(s) and generate new index for the doc.
      * 2. Add a new doc - if the system metadata shows the value of the archive is false, generate the
      *    index for the doc.
+     * @param pid  the identifier of object which will be indexed
+     * @param isSysmetaChangeOnly  the flag indicating if the change is system metadata only
      * @throws NotFound 
      * @throws ServiceFailure 
      * @throws NotImplemented 
@@ -441,7 +443,7 @@ public class SolrIndex {
      * @throws IllegalAccessException 
      * @throws InstantiationException 
      */
-    public void update(Identifier pid, String relativePath, boolean isSysmetaChangeOnly)
+    public void update(Identifier pid, boolean isSysmetaChangeOnly)
                        throws InvalidToken, NotAuthorized, NotImplemented, ServiceFailure, NotFound,
                               XPathExpressionException, UnsupportedType, SAXException,
                               ParserConfigurationException, SolrServerException, MarshallingException,

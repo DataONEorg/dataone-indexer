@@ -97,7 +97,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         }
         Identifier pid = new Identifier();
         pid.setValue(identifier);
-        solrIndexService.update(pid, relativePath, isSysmetaChangeOnly);
+        solrIndexService.update(pid, isSysmetaChangeOnly);
     }
 
     /**

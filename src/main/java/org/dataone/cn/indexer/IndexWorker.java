@@ -379,7 +379,6 @@ public class IndexWorker {
         Identifier pid = parser.getIdentifier();
         String indexType = parser.getIndexType();
         int priority = parser.getPriority();
-        String finalFilePath = parser.getObjectPath();
         try {
             // Send the acknowledge back to RabbitMQ before processing index.
             // This is a temporary solution for the RabbitMQ timeout issue.
@@ -397,14 +396,13 @@ public class IndexWorker {
                     + ", with the thread id " + threadId
                     + " - Received the index task from the index queue with the identifier: "
                     + pid.getValue() + " , the index type: " + indexType
-                    + ", the file path (null means not to have): " + finalFilePath
                     + ", the priotity: " + priority);
             if (indexType.equals(CREATE_INDEXT_TYPE)) {
                 boolean sysmetaOnly = false;
-                solrIndex.update(pid, finalFilePath, sysmetaOnly);
+                solrIndex.update(pid, sysmetaOnly);
             } else if (indexType.equals(SYSMETA_CHANGE_TYPE)) {
                 boolean sysmetaOnly = true;
-                solrIndex.update(pid, finalFilePath, sysmetaOnly);
+                solrIndex.update(pid, sysmetaOnly);
             } else if (indexType.equals(DELETE_INDEX_TYPE)) {
                 solrIndex.remove(pid);
             } else {
@@ -416,7 +414,6 @@ public class IndexWorker {
             logger.info("IndexWorker.indexOjbect with the thread id " + threadId
                     + " - Completed the index task from the index queue with the identifier: "
                     + pid.getValue() + " , the index type: " + indexType
-                    + ", the file path (null means not to have): " + finalFilePath
                     + ", the priotity: " + priority + " and the time taking is "
                     + (end-start) + " milliseconds");
             
