@@ -14,6 +14,6 @@
 
 ## dataone-indexer version 3.0.0 & helm chart version 1.0.0
 
-* Release date: 2024-04-30
+* Release date: 2024-04-25
 * helm chart version 1.0.0 -- first release of helm chart
 * dataone-indexer version 3.0.0 -- first release of dataone-indexer
