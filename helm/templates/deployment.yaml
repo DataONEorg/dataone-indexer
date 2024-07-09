@@ -25,8 +25,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- if .Values.affinity }}
-      affinity: {{- include "idxhelpers.tplvalues.render" (dict "value" .Values.affinity "context"
-      $) | nindent 8 }}
+      affinity: {{- include "idxhelpers.tplvalues.render" (dict "value" .Values.affinity "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.nodeSelector }}
       nodeSelector: {{- include "idxhelpers.tplvalues.render" (dict "value" .Values.nodeSelector "context" $) | nindent 8 }}
@@ -52,15 +51,14 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          #     initialDelaySeconds:
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - test $(($(date +%s) - $(stat -c %Y /var/lib/dataone-indexer/livenessprobe))) -lt 20
+            initialDelaySeconds: 20
+            periodSeconds: 15
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
@@ -130,18 +128,6 @@ spec:
               | grep -c "<schema name=\"dataone") == 1 ]]; do
               echo waiting for Solr Schema to be accessible at http://{{ $solrHost }}:
               {{- $solrPort }}$URI; sleep 1; done;
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       volumes:
         - name: {{ .Release.Name }}-config-volume
           configMap:

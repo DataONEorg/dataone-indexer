@@ -1,5 +1,7 @@
 # DataONE Indexer
 
+Also see [RELEASE-NOTES.md](./RELEASE-NOTES.md)
+
 The DataONE Indexer is a system that processes index tasks created by other components. The DataONE
 Indexer comprises three main subsystems, each defined by its own helm subsystem chart:
 

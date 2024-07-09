@@ -4,6 +4,9 @@
 
 global:
   solrPort: &global-solr-port 8983
+
+  ## @param global.metacatAppContext The application context used by the metacat installation
+  ##
   metacatAppContext: metacat
 
   ## @param global.storageClass default name of the storageClass to use for PVs
@@ -20,6 +23,10 @@ global:
   ## Comment out to use default StorageClass, if one is set on your cluster
   ##
   ephemeralVolumeStorageClass: csi-cephfs-sc-ephemeral
+
+  ## @param global.d1ClientCnUrl URL of the CN
+  ##
+  d1ClientCnUrl: "https://cn.dataone.org/cn"
 
 
 ## @section Dataone-Indexer Application-Specific Properties
@@ -109,14 +116,19 @@ persistence:
 idxworker:
   debug: "FALSE"
 
+  ## @param idxworker.metacatK8sFullName ignored if deployed as subchart, else use metacat.fullname
+  ## If deployed as a subchart, metacatK8sFullName will be ignored, and metacat.fullname will be
+  ## retrieved automatically from the top-level metacat chart. If this not a subchart, set
+  ## metacatK8sFullName to reflect the k8s "fullname" of the metacat installation being indexed.
+  ## Note there is some tricky logic involved in deciding what the fullname should be - see
+  ## "idxworker.fullname" in templates/_helpers.tpl, as an example.
+  ##
+  metacatK8sFullName: ""
+
   ## @param idxworker.mn_url URL of the metacat instance that depends upon this indexer
   ## Leave this value unset (mn_url: "") to have it automatically populated
   ##
   mn_url: ""
-
-  ## @param idxworker.cn_url URL of the CN
-  ##
-  cn_url: "https://cn.dataone.org/cn"
 
   ## @param idxworker.solrHostname hostname of the solr service to use
   ## Leave unset (solrHostname: "") to automatically populate when using solr bitnami subchart

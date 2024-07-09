@@ -2,12 +2,18 @@ package org.dataone.cn.indexer;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -93,21 +99,23 @@ public class IndexWorker {
     private String specifiedThreadNumberStr = null;
     private int specifiedThreadNumber = 0;
     private ExecutorService executor = null;
-    
-    
+
     /**
      * Commandline main for the IndexWorker to be started.
-     * @param args
-     * @throws TimeoutException 
-     * @throws IOException 
-     * @throws ServiceFailure 
+     * @param args (not used -- command line args)
      */
-    public static void main(String[] args) throws IOException, TimeoutException, ServiceFailure {
+    public static void main(String[] args) {
         logger.info("IndexWorker.main - Starting index worker...");
         String propertyFile = null;
         loadExternalPropertiesFile(propertyFile);
-        IndexWorker worker = new IndexWorker();
-        worker.start();
+        try {
+            IndexWorker worker = new IndexWorker();
+            worker.start();
+        } catch (Exception e) {
+            logger.fatal("IndexWorker.main() exiting due to fatal error: " + e.getMessage(), e);
+            System.exit(1);
+        }
+        startLivenessProbe();
     }
     
     /**
@@ -224,7 +232,7 @@ public class IndexWorker {
             OntologyModelService.getInstance();
         }
     }
-    
+
     /**
      * Initialize the RabbitMQ service
      * @throws IOException 
@@ -357,7 +365,7 @@ public class IndexWorker {
          };
          boolean autoAck = false;
          rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, autoAck, consumer);
-         logger.info("IndexWorker.start - Calling basicConsume and waiting for the comming messages");
+         logger.info("IndexWorker.start - Calling basicConsume and waiting for the coming messages");
     }
     
     /**
@@ -474,6 +482,20 @@ public class IndexWorker {
     public void stop() throws IOException, TimeoutException {
         rabbitMQchannel.close();
         rabbitMQconnection.close();
-        logger.info("IndexWorker.stop - stop the index queue conection.");
+        logger.info("IndexWorker.stop - stop the index queue connection.");
+    }
+
+    private static void startLivenessProbe() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        Path path = Paths.get("./livenessprobe");
+        Runnable task = () -> {
+            try {
+                Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
+            } catch (IOException e) {
+                logger.error("IndexWorker.startLivenessProbe - failed to update file: " + path, e);
+            }
+        };
+        scheduler.scheduleAtFixedRate(task, 0, 10, TimeUnit.SECONDS);
+        logger.info("IndexWorker.startLivenessProbe - livenessProbe started");
     }
 }

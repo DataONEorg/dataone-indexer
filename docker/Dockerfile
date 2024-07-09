@@ -18,7 +18,8 @@ RUN apt update && apt -y install \
     nano
 
 #Add a user & group with id=1001 and name=d1indexer
-RUN groupadd -g 1000 d1indexer && useradd -u 1000 -g 1000 d1indexer
+RUN groupadd -g 1000 d1indexer && useradd -u 1000 -g 1000 d1indexer \
+    && touch ./livenessprobe
 
 # The most recently built jar file is copied from the maven build directory to this dir by maven, so that
 # it can be copied to the image.
@@ -28,6 +29,7 @@ COPY ./docker/entrypoint.sh .
 # Change the ownership of the jar and sh files
 RUN chown d1indexer dataone-index-worker-${TAG}-shaded.jar
 RUN chown d1indexer entrypoint.sh
+RUN chown d1indexer livenessprobe
 
 #Run Container as d1indexer
 USER 1000
