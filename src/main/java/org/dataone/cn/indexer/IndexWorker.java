@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,6 +17,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
+import com.rabbitmq.client.AlreadyClosedException;
+import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
@@ -46,9 +47,6 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.LongString;
-
-
 
 
 /**
@@ -260,7 +258,7 @@ public class IndexWorker {
         // this routine key be used. The routine key INDEX_ROUTING_KEY sends messages to the index worker,
         boolean durable = true;
         rabbitMQconnection = factory.newConnection();
-        rabbitMQchannel = rabbitMQconnection .createChannel();
+        rabbitMQchannel = rabbitMQconnection.createChannel();
         rabbitMQchannel.exchangeDeclare(EXCHANGE_NAME, "direct", durable);
 
         boolean exclusive = false;
@@ -321,7 +319,6 @@ public class IndexWorker {
                      ". Final computed thread pool size for index executor: " + nThreads + ". Since its value is 1, we do NOT need the executor service and use a single thread way.");
             multipleThread = false;
         }
-        
     }
 
   
@@ -336,61 +333,111 @@ public class IndexWorker {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) 
                                        throws IOException {
+                logger.debug("Received message with delivery tag: " + envelope.getDeliveryTag());
+
+                doAck(envelope, this);
+
                 String identifier = null;
                 try {
                     final IndexQueueMessageParser parser = new IndexQueueMessageParser();
                     parser.parse(properties, body);
-                    final Envelope finalEnvelop = envelope;
                     if (multipleThread) {
                         logger.debug("IndexWorker.start.handleDelivery - using multiple threads to index identifier " + parser.getIdentifier().getValue());
                         Runnable runner = new Runnable() {
                             @Override
                             public void run() {
-                                indexOjbect(parser, finalEnvelop.getDeliveryTag(), multipleThread);
+                                indexOjbect(parser, multipleThread);
                             }
                         };
                         // submit the task, and that's it
                         executor.submit(runner);
                     } else {
                         logger.debug("IndexWorker.start.handleDelivery - using single thread to index identifier " + parser.getIdentifier().getValue());
-                        indexOjbect(parser, finalEnvelop.getDeliveryTag(), multipleThread);
+                        indexOjbect(parser, multipleThread);
                     }
                 } catch (InvalidRequest e) {
-                    logger.error("IndexWorker.start.handleDelivery - cannot index the task for identifier  " + 
+                    logger.error("IndexWorker.start.handleDelivery - cannot index the task for identifier  " +
                                  identifier + " since " + e.getMessage());
                     boolean requeue = false;
                     rabbitMQchannel.basicReject(envelope.getDeliveryTag(), requeue);
                 }
             }
+
+            @Override
+            public void handleShutdownSignal(String consumerTag, ShutdownSignalException sig) {
+
+                logger.debug("handleShutdownSignal called by amqp client code. Consumer tag: "
+                                 + consumerTag + "; ShutdownSignalException" + sig.getMessage());
+                try {
+                    recreateConnection(this);
+                    logger.debug("handleShutdownSignal successfully recreated connection.");
+                } catch (IOException e) {
+                    logger.debug(
+                        "handleShutdownSignal unable to recreate connection. Consumer tag: "
+                            + consumerTag + "; ShutdownSignalException" + sig.getMessage());
+                }
+            }
          };
-         boolean autoAck = false;
-         rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, autoAck, consumer);
+
+         try {
+             // Set autoAck = false
+             rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
+
+         } catch (AlreadyClosedException arce) {
+             logger.debug(
+                 "rabbitMQchannel.basicConsume failed: Channel was already closed: "
+                     + arce.getMessage() + ". Re-creating connection...");
+             recreateConnection(consumer);
+         }
          logger.info("IndexWorker.start - Calling basicConsume and waiting for the coming messages");
     }
-    
+
+    private void doAck(Envelope envelope, Consumer consumer) throws IOException {
+        try {
+            // Send acknowledgment back to RabbitMQ before processing index.
+            // This is a temporary solution for the RabbitMQ timeout issue.
+            // Set multiple false
+            rabbitMQchannel.basicAck(envelope.getDeliveryTag(), false);
+            logger.debug("Sent acknowledgement to RabbitMQ for delivery tag: "
+                             + envelope.getDeliveryTag());
+
+        } catch (AlreadyClosedException arce) {
+            logger.debug("rabbitMQchannel.basicAck failed: Channel was already closed: "
+                             + arce.getMessage()
+                             + ". Message will remain on queue to be consumed again");
+            recreateConnection(consumer);
+        }
+    }
+
+    private void recreateConnection(Consumer consumer) throws IOException {
+
+        rabbitMQconnection.close();
+        try {
+            if (rabbitMQchannel.isOpen()) {
+                rabbitMQchannel.close();
+            }
+            initIndexQueue();
+
+        } catch (TimeoutException e) {
+            throw new IOException("TimeoutException trying to re-initialize Queue: "
+                + e.getMessage(), e);
+        }
+        // Tell RabbitMQ this worker is ready for tasks
+        rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
+        logger.debug("rabbitMQ connection successfully re-created");
+    }
+
     /**
      * Process the index task. This method is called by a single or multiple thread(s) determined by the configuration.
      * @param parser  the parser parsed the index queue message and holds the index information
-     * @param deliveryTag  the tag of the rabbitmq message
      * @param multipleThread  the task was handled by multiple thread or not (for the log information only)
      */
-    private void indexOjbect(IndexQueueMessageParser parser, long deliveryTag, boolean multipleThread) {
+    private void indexOjbect(IndexQueueMessageParser parser, boolean multipleThread) {
         long start = System.currentTimeMillis();
         Identifier pid = parser.getIdentifier();
         String indexType = parser.getIndexType();
         int priority = parser.getPriority();
         String finalFilePath = parser.getObjectPath();
-        try {
-            // Send the acknowledge back to RabbitMQ before processing index.
-            // This is a temporary solution for the RabbitMQ timeout issue.
-            // Set multiple false
-            rabbitMQchannel.basicAck(deliveryTag, false);
-        } catch (Exception e) {
-            logger.error("IndexWorker.indexOjbect - identifier: " + pid.getValue()
-                    + " , the index type: " + indexType
-                    + ", sending acknowledgement back to rabbitmq failed since "
-                    + e.getMessage()  + ". So rabbitmq may resend the message again");
-        }
         try {
             long threadId = Thread.currentThread().getId();
             logger.info("IndexWorker.consumer.indexOjbect by multiple thread? " + multipleThread
@@ -420,69 +467,14 @@ public class IndexWorker {
                     + ", the priotity: " + priority + " and the time taking is "
                     + (end-start) + " milliseconds");
             
-        } catch (InvalidToken e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
-        } catch (NotAuthorized e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    +  pid.getValue() + " since " + e.getMessage());
-        } catch (NotImplemented e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
-        } catch (ServiceFailure e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage(), e);
-        } catch (NotFound e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
-        } catch (XPathExpressionException e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage(), e);
-        } catch (UnsupportedType e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage(), e);
-        } catch (SAXException e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage(), e);
-        } catch (ParserConfigurationException e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage(), e);
-        } catch (SolrServerException e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage(), e);
-        } catch (MarshallingException e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage(), e);
-        } catch (EncoderException e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage(), e);
-        } catch (InterruptedException e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage(), e);
-        } catch (IOException e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage(), e);
-        } catch (InvalidRequest e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage());
-        } catch (InstantiationException e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage(), e);
-        } catch (IllegalAccessException e) {
-            logger.error("IndexWorker.indexOjbect - cannot index the task for identifier "
-                    + pid.getValue() + " since " + e.getMessage(), e);
+        } catch (InvalidToken | NotAuthorized | NotImplemented | NotFound | InvalidRequest |
+                 ServiceFailure | XPathExpressionException | UnsupportedType | SAXException |
+                 ParserConfigurationException | SolrServerException | MarshallingException |
+                 EncoderException | InterruptedException | IOException | InstantiationException |
+                 IllegalAccessException e) {
+            logger.error("Cannot index the task for identifier " + pid.getValue()
+                             + " since " + e.getMessage(), e);
         }
-    }
-    
-    /**
-     * Stop the RabbitMQ connection
-     * @throws TimeoutException 
-     * @throws IOException 
-     */
-    public void stop() throws IOException, TimeoutException {
-        rabbitMQchannel.close();
-        rabbitMQconnection.close();
-        logger.info("IndexWorker.stop - stop the index queue connection.");
     }
 
     private static void startLivenessProbe() {
