@@ -1,29 +1,10 @@
-/**
- * This work was created by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For 
- * more information on DataONE, see our web site at http://dataone.org.
- *
- *   Copyright ${year}
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- * 
- * $Id$
- */
-
 package org.dataone.cn.index;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,6 +36,7 @@ import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.ISolrField;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
+import org.dataone.indexer.storage.StorageFactory;
 import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
@@ -88,7 +70,8 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     private SolrIndex solrIndexService;
     private int solrPort = Settings.getConfiguration().getInt("test.solr.port", 8985);
     private static final String DEFAULT_SOL_RHOME = "solr8home";
-    
+    private static final String SYSTEMMETA_FILE_NAME = "systemmetadata.xml";
+
     /**
      * Index the given object into solr
      * @param identifier  the identifier of the object which needs to be indexed
@@ -98,11 +81,52 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     protected void indexObjectToSolr(String identifier, Resource objectFile) throws Exception {
         boolean isSysmetaChangeOnly = false;
         String relativePath = objectFile.getFile().getPath();
+        try {
+            StorageFactory.getStorage().retrieveObject(identifier);
+        } catch (FileNotFoundException e) {
+            // The pid is not in the hash store and we need to save the object into hashstore
+            try (InputStream object = objectFile.getInputStream()) {
+                StorageFactory.getStorage().storeObject(object, identifier);
+            }
+            File sysmetaFile = getSysmetaFile(relativePath);
+            if (sysmetaFile != null) {
+                try (InputStream sysmeta = new FileInputStream(sysmetaFile)) {
+                    StorageFactory.getStorage().storeMetadata(sysmeta, identifier);
+                }
+            }
+        }
         Identifier pid = new Identifier();
         pid.setValue(identifier);
-        solrIndexService.update(pid, relativePath, isSysmetaChangeOnly);
+        solrIndexService.update(pid, isSysmetaChangeOnly);
     }
-    
+
+    /**
+     * The convention method to get the system metadata file path from the objectPath.
+     * We assume the object and system metadata file are in the same directory.
+     * The system metadata file has a fixed name - systemmetadata.xml
+     * @param  relativeObjPath  the relative path of the object
+     * @return  the file of system metadata. If it is null, this means the system metadata file does not exist.
+     */
+    private static File getSysmetaFile(String relativeObjPath) {
+        File sysmetaFile = null;
+        String sysmetaPath = null;
+        String relativeSysmetaPath = null;
+        if (relativeObjPath != null) {
+            if (relativeObjPath.contains(File.separator)) {
+                relativeSysmetaPath = relativeObjPath.substring(0,
+                            relativeObjPath.lastIndexOf(File.separator) + 1) + SYSTEMMETA_FILE_NAME;
+            } else {
+                // There is not path information in the object path ( it only has the file name).
+                // So we just simply return systemmetadata.xml
+                relativeSysmetaPath = SYSTEMMETA_FILE_NAME;
+            }
+        }
+        if (relativeSysmetaPath != null) {
+            sysmetaFile = new File(relativeSysmetaPath);
+        }
+        return sysmetaFile;
+    }
+
     /**
      * Delete the given identifier from the solr server
      * @param identifier
@@ -125,25 +149,6 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         solrIndexService.remove(pid);
     }
 
-    protected void addEmlToSolrIndex(Resource sysMetaFile) throws Exception {
-        SolrIndex indexService = solrIndexService;
-        SystemMetadata smd = TypeMarshaller.unmarshalTypeFromStream(SystemMetadata.class,
-                sysMetaFile.getInputStream());
-        // path to actual science metadata document
-        String path = StringUtils.remove(sysMetaFile.getFile().getPath(), File.separator + "SystemMetadata");
-        boolean isSysmetaChangeOnly = false;
-        indexService.update(smd.getIdentifier(), path, isSysmetaChangeOnly);
-       
-    }
-
-    protected void addSysAndSciMetaToSolrIndex(Resource sysMeta, Resource sciMeta) throws Exception {
-        SolrIndex indexService = solrIndexService;
-        SystemMetadata smd = TypeMarshaller.unmarshalTypeFromStream(SystemMetadata.class,
-                sysMeta.getInputStream());
-        String path = sciMeta.getFile().getAbsolutePath();
-        boolean isSysmetaChangeOnly = false;
-        indexService.update(smd.getIdentifier(), path, isSysmetaChangeOnly);
-    }
 
     protected SolrDocument assertPresentInSolrIndex(String pid) throws SolrServerException,
             IOException {

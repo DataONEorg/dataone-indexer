@@ -1,25 +1,3 @@
-/**
- * This work was created by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For 
- * more information on DataONE, see our web site at http://dataone.org.
- *
- *   Copyright ${year}
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- * 
- * $Id$
- */
-
 package org.dataone.cn.indexer.resourcemap;
 
 import java.io.ByteArrayOutputStream;
@@ -29,6 +7,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -218,60 +197,65 @@ public class ForesiteResourceMap implements ResourceMap {
     public static boolean representsResourceMap(String formatId) {
         return RESOURCE_MAP_FORMAT.equals(formatId);
     }
-    
+
     private boolean isHeadVersion(Identifier pid, Identifier sid) {
         boolean isHead = true;
         if(pid != null && sid != null) {
-            /*Identifier newId = new Identifier();
-            newId.setValue("peggym.130.5");
-            if(pid.getValue().equals("peggym.130.4") && HazelcastClientFactory.getSystemMetadataMap().get(newId) != null) {
-                isHead =false;
-            } else if (pid.getValue().equals("peggym.130.4") && HazelcastClientFactory.getSystemMetadataMap().get(newId) == null) {
-                isHead = true;
-            }*/
             Identifier head = null;
             try {
-               head = SeriesIdResolver.getPid(sid);//if the passed sid actually is a pid, the method will return the pid.
+               //if the passed sid actually is a pid, the method will return the pid.
+               head = SeriesIdResolver.getPid(sid);
             } catch (Exception e) {
-                System.out.println(""+e.getStackTrace());
                 isHead = true;
             }
             if(head != null ) {
-                //System.out.println("||||||||||||||||||| the head version is "+ head.getValue()+" for sid "+sid.getValue());
-                logger.info("||||||||||||||||||| the head version is "+ head.getValue()+" for sid "+sid.getValue());
+
+                logger.info("||||||||||||||||||| the head version is " + head.getValue()
+                            + " for sid " + sid.getValue());
                 if(head.equals(pid)) {
-                    logger.info("||||||||||||||||||| the pid "+ pid.getValue()+" is the head version for sid "+sid.getValue());
+                    logger.info("||||||||||||||||||| the pid " + pid.getValue()
+                                + " is the head version for sid " + sid.getValue());
                     isHead=true;
                 } else {
-                    logger.info("||||||||||||||||||| the pid "+ pid.getValue()+" is NOT the head version for sid "+sid.getValue());
+                    logger.info("||||||||||||||||||| the pid " + pid.getValue()
+                                   + " is NOT the head version for sid " + sid.getValue());
                     isHead=false;
                 }
             } else {
-                //System.out.println("||||||||||||||||||| can't find the head version for sid "+sid.getValue());
-                logger.info("||||||||||||||||||| can't find the head version for sid "+sid.getValue() + " and we think the given pid "+pid.getValue()+" is the head version.");
+                logger.info("||||||||||||||||||| can't find the head version for sid "
+                              + sid.getValue() + " and we think the given pid " + pid.getValue()
+                              + " is the head version.");
             }
         }
         return isHead;
     }
 
-    private SolrDoc _mergeMappedReference(ResourceEntry resourceEntry, SolrDoc mergeDocument) throws InvalidToken, NotAuthorized, NotImplemented, 
-                                    ServiceFailure, NotFound, InstantiationException, IllegalAccessException, IOException, MarshallingException {
+    private SolrDoc _mergeMappedReference(ResourceEntry resourceEntry, SolrDoc mergeDocument)
+                                                throws InvalidToken, NotAuthorized, NotImplemented,
+                         NoSuchAlgorithmException, ServiceFailure, NotFound, InstantiationException,
+                                        IllegalAccessException, IOException, MarshallingException {
 
-    	Identifier identifier = new Identifier();
-    	identifier.setValue(mergeDocument.getIdentifier());
-    	//SystemMetadata sysMeta = HazelcastClientFactory.getSystemMetadataMap().get(identifier);
-    	String relativeObjPath = null; //we don't know the path
-    	SystemMetadata sysMeta = ObjectManager.getInstance().getSystemMetadata(identifier.getValue(), relativeObjPath);
-    	if (sysMeta.getSeriesId() != null && sysMeta.getSeriesId().getValue() != null && !sysMeta.getSeriesId().getValue().trim().equals("")) {
-    		// skip this one
-    	    if(!isHeadVersion(identifier, sysMeta.getSeriesId())) {
-    	        //System.out.println("The id "+identifier+" is not the head of the serial id "+sysMeta.getSeriesId().getValue()+" So, skip merge this one!!!!!!!!!!!!!!!!!!!!!!"+mergeDocument.getIdentifier());
-    	        logger.info("The id "+identifier+" is not the head of the serial id "+sysMeta.getSeriesId().getValue()+" So, skip merge this one!!!!!!!!!!!!!!!!!!!!!!"+mergeDocument.getIdentifier());
-    	        return mergeDocument;
-    	    }
-    	    
-    	}
-    	
+        Identifier identifier = new Identifier();
+        identifier.setValue(mergeDocument.getIdentifier());
+        try {
+            SystemMetadata sysMeta = (SystemMetadata) ObjectManager.getInstance()
+                                                        .getSystemMetadata(identifier.getValue());
+            if (sysMeta.getSeriesId() != null && sysMeta.getSeriesId().getValue() != null
+                                       && !sysMeta.getSeriesId().getValue().trim().equals("")) {
+                // skip this one
+                if(!isHeadVersion(identifier, sysMeta.getSeriesId())) {
+                    logger.info("The id " + identifier + " is not the head of the serial id "
+                               + sysMeta.getSeriesId().getValue()
+                               + " So, skip merge this one!!!!!!!!!!!!!!!!!!!!!!"
+                               + mergeDocument.getIdentifier());
+                    return mergeDocument;
+                }
+            }
+        } catch (ClassCastException e) {
+            logger.warn("The systemmetadata is a v1 object and we need to do nothing");
+        }
+
+
         if (mergeDocument.hasField(SolrElementField.FIELD_ID) == false) {
             mergeDocument.addField(new SolrElementField(SolrElementField.FIELD_ID, resourceEntry
                     .getIdentifier()));
@@ -362,19 +346,22 @@ public class ForesiteResourceMap implements ResourceMap {
         List<SolrDoc> mergedDocuments = new ArrayList<SolrDoc>();
         for (ResourceEntry resourceEntry : this.resourceMap.values()) {
             for (SolrDoc doc : docs) {
-                //System.out.println(">>>>>>>>in mergeIndexedDocuments of ForesiteResourceMap, the doc id is  "+doc.getIdentifier() +" in the thread "+Thread.currentThread().getId());
-                //System.out.println(">>>>>>>>in mergeIndexedDocuments of ForesiteResourceMap, the doc series id is  "+doc.getSeriesId()+" in the thread "+Thread.currentThread().getId());
-                //System.out.println(">>>>>>>>in mergeIndexedDocuments of ForesiteResourceMap, the resource entry id is  "+resourceEntry.getIdentifier()+" in the thread "+Thread.currentThread().getId());
-                logger.debug(">>>>>>>>in mergeIndexedDocuments of ForesiteResourceMap, the doc id is  "+doc.getIdentifier() +" in the thread "+Thread.currentThread().getId());
-                logger.debug(">>>>>>>>in mergeIndexedDocuments of ForesiteResourceMap, the doc series id is  "+doc.getSeriesId()+" in the thread "+Thread.currentThread().getId());
-                logger.debug(">>>>>>>>in mergeIndexedDocuments of ForesiteResourceMap, the resource entry id is  "+resourceEntry.getIdentifier()+" in the thread "+Thread.currentThread().getId());
+
+                logger.debug("in mergeIndexedDocuments of ForesiteResourceMap, the doc id is "
+                          + doc.getIdentifier() + " in the thread "+Thread.currentThread().getId());
+                logger.debug("in mergeIndexedDocuments of ForesiteResourceMap, the doc series id is "
+                          + doc.getSeriesId() + " in the thread "+Thread.currentThread().getId());
+                logger.debug("in mergeIndexedDocuments of ForesiteResourceMap, the resource entry id is "
+                              + resourceEntry.getIdentifier() + " in the thread "
+                              + Thread.currentThread().getId());
                
                 if (doc.getIdentifier().equals(resourceEntry.getIdentifier())
                         || resourceEntry.getIdentifier().equals(doc.getSeriesId())) {
                     try {
                         mergedDocuments.add(_mergeMappedReference(resourceEntry, doc));
                     } catch (Exception e) {
-                        logger.error("ForestieResourceMap.mergeIndexedDocuments - cannot merge the document since " + e.getMessage());
+                        logger.error("ForestieResourceMap.mergeIndexedDocuments - cannot merge the document since "
+                                    + e.getMessage());
                     }
                     
                 }

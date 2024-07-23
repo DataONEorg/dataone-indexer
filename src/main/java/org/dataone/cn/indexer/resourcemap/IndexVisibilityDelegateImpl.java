@@ -1,6 +1,7 @@
 package org.dataone.cn.indexer.resourcemap;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.log4j.Logger;
 import org.dataone.cn.indexer.object.ObjectManager;
@@ -12,7 +13,7 @@ import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.types.v1.Identifier;
-import org.dataone.service.types.v2.SystemMetadata;
+import org.dataone.service.types.v1.SystemMetadata;
 
 public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
 
@@ -25,10 +26,8 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
     public boolean isDocumentVisible(Identifier pid) {
         boolean visible = false;
         try {
-
-            //SystemMetadata systemMetadata = HazelcastClientFactory.getSystemMetadataMap().get(pid);
-            String relativeObjPath = null; //we don't know the path
-            SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue(), relativeObjPath);
+            SystemMetadata systemMetadata = ObjectManager.getInstance()
+                                                            .getSystemMetadata(pid.getValue());
             // TODO: Is pid Identifier a SID?
             if (systemMetadata == null) {
                 return true;
@@ -56,6 +55,8 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
             logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
         } catch (MarshallingException e) {
             logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
+        } catch (NoSuchAlgorithmException e) {
+            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
         }
         return visible;
     }
@@ -63,9 +64,7 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
     public boolean documentExists(Identifier pid) {
         boolean exists = false;
         try {
-            //SystemMetadata systemMetadata = HazelcastClientFactory.getSystemMetadataMap().get(pid);
-            String relativeObjPath = null; //we don't know the path
-            SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue(), relativeObjPath);
+            SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
             if (systemMetadata != null) {
                 exists = true;
             } else {
@@ -91,6 +90,8 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
         } catch (IOException e) {
             logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
         } catch (MarshallingException e) {
+            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
+        } catch (NoSuchAlgorithmException e) {
             logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
         }
         return exists;
