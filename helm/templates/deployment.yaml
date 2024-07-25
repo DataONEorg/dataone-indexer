@@ -90,7 +90,7 @@ spec:
             - name: RABBITMQ_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.rabbitmq.auth.existingPasswordSecret }}
+                  name: {{  required "rabbitmq.auth.existingPasswordSecret IS REQUIRED" .Values.rabbitmq.auth.existingPasswordSecret }}
                   key: rabbitmq-password
                   optional: false
             {{- if .Values.solr.auth.enabled }}

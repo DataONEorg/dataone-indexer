@@ -248,6 +248,9 @@ solr:
   extraVolumes:
     - name: solr-config
       configMap:
+        ## @param solr.extraVolumes.configMap.name must be edited to include your release name!
+        ## format:  releasename-indexer-configfiles
+        ##
         name: d1index-indexer-configfiles
         defaultMode: 0777
   extraVolumeMounts:

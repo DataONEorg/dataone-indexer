@@ -38,4 +38,4 @@ USER 1000
 LABEL org.opencontainers.image.source="https://github.com/dataoneorg/dataone-indexer"
 
 # Run the Worker process
-CMD ./entrypoint.sh
+CMD ["./entrypoint.sh"]
