@@ -12,7 +12,6 @@
 ## dataone-indexer version 3.0.1 & helm chart version 1.0.1
 
 * Release date: 2024-07-08
-
 * dataone-indexer version 3.0.1
   * Bump rmq amqp client to 5.21.0
   * Add healthcheck code
