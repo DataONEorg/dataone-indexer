@@ -24,6 +24,10 @@ global:
   ##
   ephemeralVolumeStorageClass: csi-cephfs-sc-ephemeral
 
+  ## @param global.d1ClientCnUrl URL of the CN
+  ##
+  d1ClientCnUrl: "https://cn.dataone.org/cn"
+
 
 ## @section Dataone-Indexer Application-Specific Properties
 
@@ -125,10 +129,6 @@ idxworker:
   ## Leave this value unset (mn_url: "") to have it automatically populated
   ##
   mn_url: ""
-
-  ## @param idxworker.cn_url URL of the CN
-  ##
-  cn_url: "https://cn.dataone.org/cn"
 
   ## @param idxworker.solrHostname hostname of the solr service to use
   ## Leave unset (solrHostname: "") to automatically populate when using solr bitnami subchart
@@ -248,6 +248,9 @@ solr:
   extraVolumes:
     - name: solr-config
       configMap:
+        ## @param solr.extraVolumes.configMap.name must be edited to include your release name!
+        ## format:  releasename-indexer-configfiles
+        ##
         name: d1index-indexer-configfiles
         defaultMode: 0777
   extraVolumeMounts:
