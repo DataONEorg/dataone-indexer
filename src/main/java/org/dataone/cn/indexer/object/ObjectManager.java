@@ -1,23 +1,3 @@
-/**
- * This work was created by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For 
- * more information on DataONE, see our web site at http://dataone.org.
- *
- *   Copyright 2022
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- * 
- */
 package org.dataone.cn.indexer.object;
 
 import java.io.ByteArrayInputStream;
@@ -25,8 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.io.FileUtils;
@@ -36,7 +14,6 @@ import org.dataone.client.auth.AuthTokenSession;
 import org.dataone.client.exception.ClientSideException;
 import org.dataone.client.rest.HttpMultipartRestClient;
 import org.dataone.client.rest.MultipartRestClient;
-import org.dataone.client.v2.formats.ObjectFormatCache;
 import org.dataone.client.v2.impl.MultipartCNode;
 import org.dataone.client.v2.impl.MultipartD1Node;
 import org.dataone.client.v2.impl.MultipartMNode;
@@ -51,7 +28,6 @@ import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v1.Session;
-import org.dataone.service.types.v2.ObjectFormat;
 import org.dataone.service.types.v2.SystemMetadata;
 import org.dataone.service.util.TypeMarshaller;
 
@@ -73,6 +49,14 @@ public class ObjectManager {
     private static MultipartD1Node d1Node = null;
     private static Session session = null;
 
+    static {
+        try {
+            manager = new ObjectManager();
+        } catch (ServiceFailure | IOException e) {
+            logger.error("Metacat cannot initialize the ObjectManager class since " + e.getMessage());
+        }
+    }
+
 
     /**
      * Private constructor
@@ -82,14 +66,10 @@ public class ObjectManager {
      */
     private ObjectManager() throws ServiceFailure, IllegalArgumentException, IOException {
         if (storage == null) {
-            if (storage == null) {
-                    storage = StorageFactory.getStorage();
-            }
+            storage = StorageFactory.getStorage();
         }
         if (d1Node == null) {
-            if (d1Node == null) {
-                refreshD1Node();
-            }
+            refreshD1Node();
         } else {
             logger.info("ObjectManager ---NOT going to create the d1node with the url " + nodeBaseURL
                         + " since the ObjectManager already was assigned a d1node with the url "
@@ -106,13 +86,6 @@ public class ObjectManager {
      */
     public static ObjectManager getInstance() throws ServiceFailure,
                                                         IllegalArgumentException, IOException {
-        if (manager == null) {
-            synchronized (ObjectManager.class) {
-                if (manager == null)  {
-                    manager = new ObjectManager();
-                }
-            }
-        }
         return manager;
     }
 
@@ -127,22 +100,18 @@ public class ObjectManager {
      * @throws NotFound
      * @throws MarshallingException
      * @throws IOException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
      * @throws NoSuchAlgorithmException
      */
     public InputStream getSystemMetadataStream(String id) throws InvalidToken, NotAuthorized,
-                                NotImplemented, ServiceFailure, NotFound, InstantiationException,
-                                NoSuchAlgorithmException, IllegalAccessException, IOException,
-                                                                            MarshallingException {
+                                NotImplemented, ServiceFailure, NotFound,
+                                NoSuchAlgorithmException, IOException, MarshallingException {
         long start = System.currentTimeMillis();
         //try to get the system metadata from the storage system first
         InputStream sysmetaInputStream = null;
         try {
             sysmetaInputStream = storage.retrieveSystemMetadata(id);
             long end = System.currentTimeMillis();
-            logger.info("ObjectManager.getSystemMetadata - finish getting the system metadata via "
-                        + "the file system for the pid " + id
+            logger.info("Finish getting the system metadata via the file system for the pid " + id
                         + " and it took " + (end - start) + "milliseconds");
         } catch (FileNotFoundException exception ) {
             // Metacat can't find the system metadata from the storage system.
@@ -150,41 +119,18 @@ public class ObjectManager {
             SystemMetadata sysmeta = null;
             Identifier identifier = new Identifier();
             identifier.setValue(id);
-            try {
-                for (int i=0; i<5; i++) {
-                    try {
-                        sysmeta = d1Node.getSystemMetadata(session, identifier);
-                        break;
-                    } catch (ServiceFailure ee) {
-                        logger.warn("The DataONE api call doesn't get the system metadata since "
-                                    + ee.getMessage() + ". This is " + i
-                                    + " try and Indexer will try again.");
-                        try {
-                            Thread.sleep(300);
-                        } catch (InterruptedException ie) {
-                            logger.info("The sleep of the thread was interrupted.");
-                        }
-                        continue;
-                    }
-                }
-                logger.debug("ObjectManager.getSystemMetadata - finish getting the system metadata "
-                            + "via the DataONE API call for the pid " + id);
-            } catch (NotAuthorized e) {
-                logger.info("ObjectManager.getSystemMetadata - failed to get the system metadata "
-                          + "via the DataONE API call for the pid " + id
-                          + " since it is not authorized. We will refresh the token and try again");
-                refreshD1Node();
-                sysmeta = d1Node.getSystemMetadata(session, identifier);
-            }
+            sysmeta = d1Node.getSystemMetadata(session, identifier);
+            logger.debug("Finish getting the system metadata via the DataONE API call for the pid "
+                             + id);
             if (sysmeta != null) {
                 ByteArrayOutputStream systemMetadataOutputStream = new ByteArrayOutputStream();
                 TypeMarshaller.marshalTypeToOutputStream(sysmeta, systemMetadataOutputStream);
-                sysmetaInputStream = new ByteArrayInputStream(systemMetadataOutputStream.toByteArray());
+                sysmetaInputStream =
+                    new ByteArrayInputStream(systemMetadataOutputStream.toByteArray());
             }
             long end = System.currentTimeMillis();
-            logger.info("ObjectManager.getSystemMetadata - finish getting the system metadata via "
-                        + "DataONE API for the pid " + id + " and it took "
-                        + (end - start) + "milliseconds");
+            logger.info("Finish getting the system metadata via DataONE API for the pid " + id
+                            + " and it took " + (end - start) + "milliseconds");
         }
         return sysmetaInputStream;
     }
@@ -318,8 +264,7 @@ public class ObjectManager {
      * @param serviceUrl the service URL for the node we are connecting to
      * @return a DataONE MultipartCNode object
      * @throws ClientSideException 
-     * @throws IOException 
-     * @throws MetadigException
+     * @throws IOException
      */
     private MultipartD1Node getMultipartD1Node(Session session, String serviceUrl) throws IOException, ClientSideException {
         MultipartRestClient mrc = null;
