@@ -15,7 +15,7 @@ import java.security.MessageDigest;
 import javax.xml.bind.DatatypeConverter;
 
 
-import org.dataone.indexer.storage.StorageFactory;
+import org.dataone.indexer.storage.Storage;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v2.SystemMetadata;
 import org.dataone.service.util.TypeMarshaller;
@@ -37,7 +37,7 @@ public class ObjectManagerTest {
         File objectFile = new File("src/test/resources/org/dataone/cn/index/resources/d1_testdocs/"
                                     + "fgdc/nasa_d_FEDGPS1293.xml");
         try (InputStream object = new FileInputStream(objectFile)) {
-            StorageFactory.getStorage().storeObject(object, identifier);
+            Storage.getInstance().storeObject(object, identifier);
         }
         File sysmetaFile = new File("src/test/resources/org/dataone/cn/index/resources/"
                                     + "d1_testdocs/fgdc/nasa_d_FEDGPS1293Sysmeta.xml");
@@ -50,7 +50,7 @@ public class ObjectManagerTest {
             try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
                 TypeMarshaller.marshalTypeToOutputStream(sysmeta, output);
                 try (ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray())) {
-                    StorageFactory.getStorage().storeMetadata(input, identifier);
+                    Storage.getInstance().storeMetadata(input, identifier);
                 }
             }
         }

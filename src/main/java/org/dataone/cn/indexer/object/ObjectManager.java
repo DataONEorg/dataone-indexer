@@ -20,7 +20,6 @@ import org.dataone.client.v2.impl.MultipartMNode;
 import org.dataone.configuration.Settings;
 import org.dataone.exceptions.MarshallingException;
 import org.dataone.indexer.storage.Storage;
-import org.dataone.indexer.storage.StorageFactory;
 import org.dataone.service.exceptions.InvalidToken;
 import org.dataone.service.exceptions.NotAuthorized;
 import org.dataone.service.exceptions.NotFound;
@@ -66,7 +65,7 @@ public class ObjectManager {
      */
     private ObjectManager() throws ServiceFailure, IllegalArgumentException, IOException {
         if (storage == null) {
-            storage = StorageFactory.getStorage();
+            storage = Storage.getInstance();
         }
         if (d1Node == null) {
             refreshD1Node();
