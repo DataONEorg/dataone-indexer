@@ -19,7 +19,6 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.SolrJettyTestBase;
 import org.apache.solr.SolrTestCaseJ4.SuppressSSL;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -36,15 +35,13 @@ import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.ISolrField;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
-import org.dataone.indexer.storage.StorageFactory;
+import org.dataone.indexer.storage.Storage;
 import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.exceptions.UnsupportedType;
 import org.dataone.service.types.v1.Identifier;
-import org.dataone.service.types.v2.SystemMetadata;
 import org.dataone.service.util.DateTimeMarshaller;
-import org.dataone.service.util.TypeMarshaller;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -82,16 +79,16 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         boolean isSysmetaChangeOnly = false;
         String relativePath = objectFile.getFile().getPath();
         try {
-            StorageFactory.getStorage().retrieveObject(identifier);
+            Storage.getInstance().retrieveObject(identifier);
         } catch (FileNotFoundException e) {
             // The pid is not in the hash store and we need to save the object into hashstore
             try (InputStream object = objectFile.getInputStream()) {
-                StorageFactory.getStorage().storeObject(object, identifier);
+                Storage.getInstance().storeObject(object, identifier);
             }
             File sysmetaFile = getSysmetaFile(relativePath);
             if (sysmetaFile != null) {
                 try (InputStream sysmeta = new FileInputStream(sysmetaFile)) {
-                    StorageFactory.getStorage().storeMetadata(sysmeta, identifier);
+                    Storage.getInstance().storeMetadata(sysmeta, identifier);
                 }
             }
         }
