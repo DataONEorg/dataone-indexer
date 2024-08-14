@@ -26,7 +26,8 @@ public class Storage {
             instance = new Storage();
         } catch (IOException e) {
             log.error(
-                "Dataone-indexer cannot initialize the Storage class since " + e.getMessage());
+                "Dataone-indexer cannot initialize the Storage class since " + e.getMessage(), e);
+            System.exit(1);
         }
     }
 
@@ -63,9 +64,8 @@ public class Storage {
     /**
      * Get the instance of the class through the singleton pattern
      * @return the instance of the class
-     * @throws IOException
      */
-    public static Storage getInstance() throws IOException {
+    public static Storage getInstance() {
         return instance;
     }
 

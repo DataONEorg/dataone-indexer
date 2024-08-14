@@ -50,41 +50,26 @@ public class ObjectManager {
 
     static {
         try {
-            manager = new ObjectManager();
-        } catch (ServiceFailure | IOException e) {
-            logger.error("Metacat cannot initialize the ObjectManager class since " + e.getMessage());
+            refreshD1Node();
+        } catch (ServiceFailure e) {
+            logger.warn("Metacat cannot initialize the d1Node since " + e.getMessage());
         }
+        storage = Storage.getInstance();
+        manager = new ObjectManager();
     }
 
 
     /**
      * Private constructor
-     * @throws ServiceFailure
-     * @throws IOException
-     * @throws IllegalArgumentException
      */
-    private ObjectManager() throws ServiceFailure, IllegalArgumentException, IOException {
-        if (storage == null) {
-            storage = Storage.getInstance();
-        }
-        if (d1Node == null) {
-            refreshD1Node();
-        } else {
-            logger.info("ObjectManager ---NOT going to create the d1node with the url " + nodeBaseURL
-                        + " since the ObjectManager already was assigned a d1node with the url "
-                        + d1Node.getNodeBaseServiceUrl());
-        }
+    private ObjectManager() {
     }
 
     /**
      * Get an ObjectManager instance through the singleton pattern.
      * @return  the instance of ObjectManager
-     * @throws ServiceFailure
-     * @throws IOException
-     * @throws IllegalArgumentException
      */
-    public static ObjectManager getInstance() throws ServiceFailure,
-                                                        IllegalArgumentException, IOException {
+    public static ObjectManager getInstance() {
         return manager;
     }
 
@@ -113,23 +98,25 @@ public class ObjectManager {
             logger.info("Finish getting the system metadata via the file system for the pid " + id
                         + " and it took " + (end - start) + "milliseconds");
         } catch (FileNotFoundException exception ) {
-            // Metacat can't find the system metadata from the storage system.
-            // So try to get it from the dataone api
-            SystemMetadata sysmeta = null;
-            Identifier identifier = new Identifier();
-            identifier.setValue(id);
-            sysmeta = d1Node.getSystemMetadata(session, identifier);
-            logger.debug("Finish getting the system metadata via the DataONE API call for the pid "
-                             + id);
-            if (sysmeta != null) {
-                ByteArrayOutputStream systemMetadataOutputStream = new ByteArrayOutputStream();
-                TypeMarshaller.marshalTypeToOutputStream(sysmeta, systemMetadataOutputStream);
-                sysmetaInputStream =
-                    new ByteArrayInputStream(systemMetadataOutputStream.toByteArray());
+            if (d1Node != null) {
+                // Metacat can't find the system metadata from the storage system.
+                // So try to get it from the dataone api
+                SystemMetadata sysmeta = null;
+                Identifier identifier = new Identifier();
+                identifier.setValue(id);
+                sysmeta = d1Node.getSystemMetadata(session, identifier);
+                logger.debug("Finish getting the system metadata via the DataONE API call for the pid "
+                                 + id);
+                if (sysmeta != null) {
+                    ByteArrayOutputStream systemMetadataOutputStream = new ByteArrayOutputStream();
+                    TypeMarshaller.marshalTypeToOutputStream(sysmeta, systemMetadataOutputStream);
+                    sysmetaInputStream =
+                        new ByteArrayInputStream(systemMetadataOutputStream.toByteArray());
+                }
+                long end = System.currentTimeMillis();
+                logger.info("Finish getting the system metadata via DataONE API for the pid " + id
+                                + " and it took " + (end - start) + "milliseconds");
             }
-            long end = System.currentTimeMillis();
-            logger.info("Finish getting the system metadata via DataONE API for the pid " + id
-                            + " and it took " + (end - start) + "milliseconds");
         }
         return sysmetaInputStream;
     }
@@ -201,7 +188,7 @@ public class ObjectManager {
      * In case the token expired, the method will retrieve the token and create a new d1 node
      * @throws ServiceFailure 
      */
-    private void refreshD1Node() throws ServiceFailure {
+    private static void refreshD1Node() throws ServiceFailure {
        //get the token
         DataONEauthToken = System.getenv(TOKEN_VARIABLE_NAME);
         if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
@@ -244,7 +231,7 @@ public class ObjectManager {
      * @param authToken the authentication token
      * @return the DataONE session
      */
-    private Session createSession(String authToken) {
+    private static Session createSession(String authToken) {
         Session session = null;
         if (authToken == null || authToken.trim().equals("")) {
             logger.info("ObjectManager.createSession - Creating the public session");
@@ -265,7 +252,7 @@ public class ObjectManager {
      * @throws ClientSideException 
      * @throws IOException
      */
-    private MultipartD1Node getMultipartD1Node(Session session, String serviceUrl) throws IOException, ClientSideException {
+    private static MultipartD1Node getMultipartD1Node(Session session, String serviceUrl) throws IOException, ClientSideException {
         MultipartRestClient mrc = null;
         MultipartD1Node d1Node = null;
         // First create a default HTTP client
@@ -288,7 +275,7 @@ public class ObjectManager {
      * @param nodeStr either a DataONE node serviceURL (e.g. https://knb.ecoinformatics.org/knb/d1/mn)
      *      or a DataONE node identifier (e.g. urn:node:CN)
      */
-    private Boolean isCN(String nodeStr) {
+    private static Boolean isCN(String nodeStr) {
         Boolean isCN = false;
         // match node urn, e.g. "https://cn.dataone.org/cn"
         if (nodeStr.matches("^\\s*urn:node:.*")) {
