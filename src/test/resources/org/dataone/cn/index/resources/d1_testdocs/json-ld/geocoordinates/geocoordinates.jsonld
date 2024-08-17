@@ -1,0 +1,123 @@
+{
+    "@context": {
+      "@vocab": "https://schema.org/",
+      "datacite": "http://purl.org/spar/datacite/"
+    },
+    "@id": "https://doi.org/10.26022/IEDA/111561",
+    "@type": "Dataset",
+    "author": {
+      "@list": [
+        {
+          "@type": "Role",
+          "author": [
+            {
+              "@type": "Person",
+              "familyName": "Carlin",
+              "givenName": "Joseph",
+              "name": "Joseph A Carlin"
+            }
+          ],
+          "roleName": "Lead Author"
+        },
+        {}
+      ]
+    },
+    "citation": [
+      "https://doi.org/10.3389/feart.2019.00113 "
+    ],
+    "dateCreated": "2020-06-01",
+    "description": "This dataset contains sedimentological and geochronological data from 5 sediment cores collected from Monterey Bay, CA, USA. The purpose of this data was to investigate changes in sedimentation on the Monterey Bay shelf over decadal and centennial time scales. All cores were collected from continental shelf areas, in water depths of ~100 m or less, and the cores were collected in 2014 and 2017. Four of the cores were collected using a multi-corer and were less than ~35 cm in length, the fifth core was collected using a gravity corer and was ~90 cm in length. The data include grain size data, 210Pb activities, 137Cs activities, and 14C dates.  ",
+    "distribution": {
+      "@type": "DataDownload",
+      "contentUrl": "https://ecl.earthchem.org/view.php?id=1561",
+      "datePublished": "2020-06-01 00:00:00",
+      "encodingFormat": "application/vnd.ms-excel"
+    },
+    "funding": [
+      {
+        "@id": "http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=9530299",
+        "@type": "MonetaryGrant",
+        "funder": {
+          "@type": "Organization",
+          "name": "National Science Foundation"
+        },
+        "identifier": "9530299",
+        "url": "http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=9530299"
+      },
+      {
+        "@type": "MonetaryGrant",
+        "funder": {
+          "@type": "Organization",
+          "name": "American Chemical Society Petroleum Research Fund"
+        },
+        "identifier": "57363-UNI8"
+      }
+    ],
+    "identifier": {
+      "@type": "PropertyValue",
+      "propertyID": "https://registry.identifiers.org/registry/doi",
+      "url": "https://doi.org/10.26022/IEDA/111561",
+      "value": "doi:10.26022/IEDA/111561"
+    },
+    "inLanguage": "English",
+    "isAccessibleForFree": true,
+    "isBasedOn": [],
+    "keywords": [
+      "Monterey Bay",
+      "California Coast",
+      "Pacific Ocean",
+      "Regional (Continents, Oceans)",
+      "sediment",
+      "continental shelf",
+      "grain size",
+      "210Pb",
+      "137Cs",
+      "14C"
+    ],
+    "license": "https://spdx.org/licenses/CC-BY-SA-4.0",
+    "name": "Variability in Shelf Sedimentation in Response to Fluvial Sediment Supply and Coastal Erosion over the Past 1,000 Years in Monterey Bay, CA, USA. ",
+    "provider": {
+      "@type": "Organization",
+      "name": "EarthChem Library"
+    },
+    "publisher": {
+      "@id": "https://www.earthchem.org",
+      "@type": "Organization",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Customer Service",
+        "email": "info@earthchem.org",
+        "name": "Information Desk",
+        "url": "https://www.earthchem.org/contact/"
+      },
+      "name": "EarthChem Library",
+      "url": "https://www.earthchem.org/library"
+    },
+    "sameAs": "https://ecl.earthchem.org/view.php?id=1561",
+    "spatialCoverage": {
+      "@type": "Place",
+      "geo": [
+        {
+          "@type": "GeoCoordinates",
+          "latitude": "36.7016",
+          "longitude": "-121.90504"
+        },
+        {
+          "@type": "GeoCoordinates",
+          "latitude": "36.837017",
+          "longitude": "-121.88215"
+        },
+        {
+          "@type": "GeoCoordinates",
+          "latitude": "36.873",
+          "longitude": "-122.03484"
+        },
+        {
+          "@type": "GeoCoordinates",
+          "latitude": "37.04653",
+          "longitude": "-122.404"
+        }
+      ]
+    },
+    "url": "https://doi.org/10.26022/IEDA/111561"
+}
