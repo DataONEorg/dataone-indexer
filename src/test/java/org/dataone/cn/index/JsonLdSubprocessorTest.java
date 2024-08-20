@@ -90,8 +90,8 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
     private String schemaOrgTestDocDryad2Pid = "doi.org_10.5061_dryad.41sk145.jsonld";
     private Resource schemaOrgTesHakaiDeep;
     private String schemaOrgTesHakaiDeepPid = "hakai-deep-schema.jsonld";
-    private Resource schemaOrgTestGeo;
-    private String schemaOrgTestGeoCoordinates = "geocoordinates.jsonld";
+    private Resource schemaOrgTestGeoCoordinates;
+    private String schemaOrgTestGeoCoordinatesPid = "geocoordinates.jsonld";
 
     /* An instance of the RDF/XML Subprocessor */
     private JsonLdSubprocessor jsonLdSubprocessor;
@@ -124,6 +124,7 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
         schemaOrgTestDocDryad1 = (Resource) context.getBean("schemaOrgTestDryad1");
         schemaOrgTestDocDryad2 = (Resource) context.getBean("schemaOrgTestDryad2");
         schemaOrgTesHakaiDeep = (Resource) context.getBean("schemaOrgTesHakaiDeep");
+        schemaOrgTestGeoCoordinates = (Resource) context.getBean("schemaOrgTestGeoCoordinates");
 
         // instantiate the subprocessor
         jsonLdSubprocessor = (JsonLdSubprocessor) context.getBean("jsonLdSubprocessor");
@@ -542,8 +543,8 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
      */
     @Test
     public void testGeoCoordinates() throws Exception {
-        String id = schemaOrgTestGeoCoordinates;
-        indexObjectToSolr(id, schemaOrgTestGeo);
+        String id = schemaOrgTestGeoCoordinatesPid;
+        indexObjectToSolr(id, schemaOrgTestGeoCoordinates);
 
         Thread.sleep(2*SLEEPTIME);
         // now process the tasks
