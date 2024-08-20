@@ -90,6 +90,8 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
     private String schemaOrgTestDocDryad2Pid = "doi.org_10.5061_dryad.41sk145.jsonld";
     private Resource schemaOrgTesHakaiDeep;
     private String schemaOrgTesHakaiDeepPid = "hakai-deep-schema.jsonld";
+    private Resource schemaOrgTestGeo;
+    private String schemaOrgTestGeoCoordinates = "geocoordinates.jsonld";
 
     /* An instance of the RDF/XML Subprocessor */
     private JsonLdSubprocessor jsonLdSubprocessor;
@@ -531,6 +533,38 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
         assertTrue(compareFieldValue(id, "serviceEndpoint", urls));
         String[] license = {"https://creativecommons.org/licenses/by/4.0/"};
         assertTrue(compareFieldValue(id, "licenseUrl", license));
+    }
+    
+    /**
+     * Test that the JsonLdSubprocessor can sucessfully index JSONLD Dataset description documents from Dryad.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGeoCoordinates() throws Exception {
+        String id = schemaOrgTestGeoCoordinates;
+        indexObjectToSolr(id, schemaOrgTestGeo);
+
+        Thread.sleep(2*SLEEPTIME);
+        // now process the tasks
+        //processor.processIndexTaskQueue();
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(id);
+                break;
+            } catch (Throwable e) {
+                
+            }
+        }
+        String [] coord = {"36.7016"};
+        assertTrue(compareFieldValue(id, "southBoundCoord", coord));
+        coord[0] = "-121.90504";
+        assertTrue(compareFieldValue(id, "westBoundCoord", coord));
+        coord[0] = "36.7016";
+        assertTrue(compareFieldValue(id, "northBoundCoord", coord));
+        coord[0] = "-121.90504";
+        assertTrue(compareFieldValue(id, "eastBoundCoord", coord));
     }
     
 }
