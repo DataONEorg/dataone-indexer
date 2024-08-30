@@ -1,33 +1,25 @@
-/**
- * This work was created by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For 
- * more information on DataONE, see our web site at http://dataone.org.
- *
- *   Copyright 2022
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- * 
- */
 package org.dataone.cn.indexer.object;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import java.nio.file.Paths;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 
-import org.dataone.cn.index.DataONESolrJettyTestBase;
-import org.dataone.service.exceptions.NotFound;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.MessageDigest;
+
+import javax.xml.bind.DatatypeConverter;
+
+
+import org.dataone.indexer.storage.Storage;
+import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v2.SystemMetadata;
+import org.dataone.service.util.TypeMarshaller;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -36,73 +28,61 @@ import org.junit.Test;
  *
  */
 public class ObjectManagerTest {
-    
+
+    private String identifier;
+
+    @Before
+    public void setUp() throws Exception {
+        identifier = "ObjectManagerTest-" + System.currentTimeMillis();
+        File objectFile = new File("src/test/resources/org/dataone/cn/index/resources/d1_testdocs/"
+                                    + "fgdc/nasa_d_FEDGPS1293.xml");
+        try (InputStream object = new FileInputStream(objectFile)) {
+            Storage.getInstance().storeObject(object, identifier);
+        }
+        File sysmetaFile = new File("src/test/resources/org/dataone/cn/index/resources/"
+                                    + "d1_testdocs/fgdc/nasa_d_FEDGPS1293Sysmeta.xml");
+        try (InputStream sysmetaStream = new FileInputStream(sysmetaFile)) {
+            SystemMetadata sysmeta = TypeMarshaller
+                                      .unmarshalTypeFromStream(SystemMetadata.class, sysmetaStream);
+            Identifier pid = new Identifier();
+            pid.setValue(identifier);
+            sysmeta.setIdentifier(pid);
+            try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+                TypeMarshaller.marshalTypeToOutputStream(sysmeta, output);
+                try (ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray())) {
+                    Storage.getInstance().storeMetadata(input, identifier);
+                }
+            }
+        }
+    }
+
     /**
-     * Test the getFilePath method
+     * Test the getObject and getSystemMetadata method
      * @throws Exception
      */
     @Test
-    public void testgetFilePath() throws Exception {
-        ObjectManager manager = ObjectManager.getInstance();
-        String path = null;
-        String format = "eml://ecoinformatics.org/eml-2.0.1";
-        String resultPath = manager.getFilePath(path, format);
-        assertTrue(resultPath == null);
-        format = "image/bmp";
-        resultPath = manager.getFilePath(path, format);
-        assertTrue(resultPath == null);
-        
-        path = "";
-        format = "eml://ecoinformatics.org/eml-2.0.1";
-        resultPath = manager.getFilePath(path, format);
-        assertTrue(resultPath == null);
-        format = "image/bmp";
-        resultPath = manager.getFilePath(path, format);
-        assertTrue(resultPath == null);
-        
-        path = "/var/metacat/documents/foo.1.1";
-        format = "eml://ecoinformatics.org/eml-2.0.1";
-        resultPath = manager.getFilePath(path, format);
-        assertTrue(resultPath.equals("//var/metacat/documents/foo.1.1"));
-        
-        path = "/var/metacat/documents/foo.2.1";
-        format = "image/bmp";;
-        resultPath = manager.getFilePath(path, format);
-        assertTrue(resultPath.equals("//var/metacat/documents/foo.2.1"));
-    }
-    
-    /**
-     * Test the getSystemMetadata method
-     * @throws Exception
-     */
-     @Test
-    public void testGetSystemMetadata() throws Exception {
-        //Test to get system metadata from a file
-        String currentDir = Paths.get(".").toAbsolutePath().normalize().toString();
-        System.out.println("current dir " + currentDir);
-        String path = currentDir + "/src/test/resources/org/dataone/cn/index/resources/d1_testdocs/json-ld/hakai-deep-schema/hakai-deep-schema.jsonld";
-        String id = "hakai-deep-schema.jsonld";
-        SystemMetadata sysmeta = ObjectManager.getInstance().getSystemMetadata(id, path);
-        assertTrue(sysmeta.getIdentifier().getValue().equals(id));
-        
-        //Test to get system metadata from the Mock dataone cn server.
-        id = "ala-wai-canal-ns02-matlab-processing.eml.1.xml";
-        path = null;
-        MockMNode mockMNode = new MockMNode("http://mnode.foo");
-        mockMNode.setContext(DataONESolrJettyTestBase.getContext());
-        ObjectManager.setD1Node(mockMNode);
-        sysmeta = ObjectManager.getInstance().getSystemMetadata(id, path);
-        assertTrue(sysmeta.getIdentifier().getValue().equals(id));
-        
-        //Test the system metadata not found
-        id = "foo.1.1";
-        path = "foo1";
-        try {
-            sysmeta = ObjectManager.getInstance().getSystemMetadata(id, path);
-            fail("We should reach here");
-        } catch (NotFound e) {
-            assert(true);
+    public void testGetObjectAndSystemMetadata() throws Exception {
+        try (InputStream input = ObjectManager.getInstance().getObject(identifier)) {
+            assertNotNull(input);
+            try (OutputStream os = new ByteArrayOutputStream()) {
+                MessageDigest md5 = MessageDigest.getInstance("MD5");
+                // Calculate hex digests
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = input.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                    md5.update(buffer, 0, bytesRead);
+                }
+                String md5Digest = DatatypeConverter.printHexBinary(md5.digest()).toLowerCase();
+                assertEquals("1755a557c13be7af44d676bb09274b0e", md5Digest);
+            }
         }
+        org.dataone.service.types.v1.SystemMetadata sysmeta = ObjectManager.getInstance()
+                .getSystemMetadata(identifier);
+        assertEquals(identifier, sysmeta.getIdentifier().getValue());
+        assertEquals("1755a557c13be7af44d676bb09274b0e", sysmeta.getChecksum().getValue());
+        assertEquals(14828, sysmeta.getSize().intValue());
     }
+
 
 }
