@@ -12,7 +12,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.version>5.3.39</spring.version>
+        <spring.version>6.1.13</spring.version>
         <d1_libclient_java.version>2.3.1</d1_libclient_java.version>
         <solr.version>8.11.2</solr.version>
         <solr.test.home>solr8home</solr.test.home>
