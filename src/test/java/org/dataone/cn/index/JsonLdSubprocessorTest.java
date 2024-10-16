@@ -546,9 +546,11 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
         String id = schemaOrgTestGeoCoordinatesPid;
         indexObjectToSolr(id, schemaOrgTestGeoCoordinates);
 
-        Thread.sleep(2*SLEEPTIME);
+        //Thread.sleep(2*SLEEPTIME);
         // now process the tasks
         //processor.processIndexTaskQueue();
+        int TIMES = 2*8 + 10*2;
+        int SLEEP = 500;
         for (int i=0; i<TIMES; i++) {
             try {
                 Thread.sleep(SLEEP);
