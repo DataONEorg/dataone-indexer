@@ -23,7 +23,7 @@ RUN groupadd -g 1000 d1indexer && useradd -u 1000 -g 1000 d1indexer \
 
 # The most recently built jar file is copied from the maven build directory to this dir by maven, so that
 # it can be copied to the image.
-COPY ../target/dataone-index-worker-${TAG}-shaded.jar .
+COPY ./target/dataone-index-worker-${TAG}-shaded.jar .
 COPY ./docker/entrypoint.sh .
 
 # Change the ownership of the jar and sh files
