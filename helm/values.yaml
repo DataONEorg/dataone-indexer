@@ -32,10 +32,23 @@ global:
 ## @section Dataone-Indexer Application-Specific Properties
 
 image:
+  ## @param image.repository repository that the image will be pulled from
+  ##
   repository: ghcr.io/dataoneorg/dataone-index-worker
+
+  ## @param image.pullPolicy image pull policy - Always, Never, or IfNotPresent
+  ##
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  #tag: ""
+
+  ## @param image.tag Overrides the image tag. Will default to the chart appVersion if set to ""
+  ##
+  tag: ""
+
+  ## @param image.debug Specify if container debugging should be enabled (sets log level to "DEBUG")
+  ## Set to true if you would like to see extra information in metacat/tomcat logs.
+  ## * * WARNING - FOR TESTING ONLY! * * May result in secrets being printed to logs in plain text.
+  ##
+  debug: false
 
 imagePullSecrets: []
 
@@ -181,6 +194,15 @@ idxworker:
   ##
   tripleDbDirectory: /etc/dataone/tdb-cache
 
+  storage:
+    hashStoreClassName: "org.dataone.hashstore.filehashstore.FileHashStore"
+    hashStoreRootDir: "/var/metacat/hashstore"
+    hashStoreDefaultNamespace: "https://ns.dataone.org/service/types/v2.0#SystemMetadata"
+    # The following three properties must NOT be modified after the hashstore is initialized
+    hashStoreAlgorithm: "SHA-256"
+    hashStoreDirWidth: 2
+    hashStoreDirDepth: 3
+
 ## @section RabbitMQ Bitnami Sub-Chart Configuration
 ##
 rabbitmq:
@@ -200,7 +222,7 @@ rabbitmq:
     ## @param rabbitmq.existingPasswordSecret the k8s secret holding the rabbitmq password
     ## (must be associated with key: 'rabbitmq-password')
     ##
-    existingPasswordSecret: ""
+    existingPasswordSecret: "ssss"
 
 
 ## @section Solr Bitnami Sub-Chart Configuration
