@@ -427,23 +427,21 @@ public class IndexWorker {
         Identifier pid = parser.getIdentifier();
         String indexType = parser.getIndexType();
         int priority = parser.getPriority();
-        String finalFilePath = parser.getObjectPath();
         try {
             long threadId = Thread.currentThread().getId();
             logger.info("IndexWorker.consumer.indexObject by multiple thread? " + multipleThread
                             + ", with the thread id " + threadId
                     + " - Received the index task from the index queue with the identifier: "
                             + pid.getValue() + " , the index type: " + indexType
-                            + ", the file path (null means not to have): " + finalFilePath
                             + ", the priority: " + priority);
             switch (indexType) {
                 case CREATE_INDEXT_TYPE -> {
                     boolean sysmetaOnly = false;
-                    solrIndex.update(pid, finalFilePath, sysmetaOnly);
+                    solrIndex.update(pid, sysmetaOnly);
                 }
                 case SYSMETA_CHANGE_TYPE -> {
                     boolean sysmetaOnly = true;
-                    solrIndex.update(pid, finalFilePath, sysmetaOnly);
+                    solrIndex.update(pid, sysmetaOnly);
                 }
                 case DELETE_INDEX_TYPE -> solrIndex.remove(pid);
                 default -> throw new InvalidRequest(
@@ -455,7 +453,6 @@ public class IndexWorker {
             logger.info("IndexWorker.indexOjbect with the thread id " + threadId
                     + " - Completed the index task from the index queue with the identifier: "
                             + pid.getValue() + " , the index type: " + indexType
-                            + ", the file path (null means not to have): " + finalFilePath
                             + ", the priority: " + priority + " and the time taking is "
                             + (end - start) + " milliseconds");
 

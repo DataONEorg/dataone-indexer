@@ -2,7 +2,7 @@
 #     `nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 .`
 # Use an OpenJDK runtime as a parent image
 # Note: the prior alpine-based openjdk image had network DNS issues, so replacing with Eclipse Temurin
-FROM eclipse-temurin:17.0.8.1_1-jre-jammy
+FROM eclipse-temurin:17.0.12_7-jre-jammy
 
 ARG TAG=3.0.0-SNAPSHOT
 ENV TAG=${TAG}
@@ -23,7 +23,7 @@ RUN groupadd -g 1000 d1indexer && useradd -u 1000 -g 1000 d1indexer \
 
 # The most recently built jar file is copied from the maven build directory to this dir by maven, so that
 # it can be copied to the image.
-COPY ../target/dataone-index-worker-${TAG}-shaded.jar .
+COPY ./target/dataone-index-worker-${TAG}-shaded.jar .
 COPY ./docker/entrypoint.sh .
 
 # Change the ownership of the jar and sh files

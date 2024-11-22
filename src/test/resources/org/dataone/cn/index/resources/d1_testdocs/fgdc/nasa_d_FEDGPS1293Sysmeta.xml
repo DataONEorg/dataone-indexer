@@ -9,8 +9,8 @@
   <serialVersion>22</serialVersion>
   <identifier>www.nbii.gov_metadata_mdata_NASA_nasa_d_FEDGPS1293</identifier>
   <formatId>FGDC-STD-001.1-1999</formatId>
-  <size>14880</size>
-  <checksum algorithm="MD5">c72ff66bbe7fa99e5fb399bab8cb6f85</checksum>
+  <size>14828</size>
+  <checksum algorithm="MD5">1755a557c13be7af44d676bb09274b0e</checksum>
   <submitter>CN=Dave Vieglais T799,O=Google,C=US,DC=cilogon,DC=org</submitter>
   <rightsHolder>CN=Dave Vieglais T799,O=Google,C=US,DC=cilogon,DC=org</rightsHolder>
   <accessPolicy>
