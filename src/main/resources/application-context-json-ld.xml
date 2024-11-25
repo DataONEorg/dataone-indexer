@@ -30,6 +30,10 @@
 				<ref bean="schema_org_geoShape_box_west" />
 				<ref bean="schema_org_geoShape_box_north" />
 				<ref bean="schema_org_geoShape_box_east" />
+				<ref bean="schema_org_geoCoordinates_south" />
+				<ref bean="schema_org_geoCoordinates_west" />
+				<ref bean="schema_org_geoCoordinates_north" />
+				<ref bean="schema_org_geoCoordinates_east" />
 				<ref bean="schema_org_geohash_1" />
 				<ref bean="schema_org_geohash_2" />
 				<ref bean="schema_org_geohash_3" />
