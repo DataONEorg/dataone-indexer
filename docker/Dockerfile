@@ -4,7 +4,7 @@
 # Note: the prior alpine-based openjdk image had network DNS issues, so replacing with Eclipse Temurin
 FROM eclipse-temurin:17.0.12_7-jre-jammy
 
-ARG TAG=3.0.0-SNAPSHOT
+ARG TAG="NO-TAG"
 ENV TAG=${TAG}
 ENV DATAONE_INDEXER_CONFIG=/etc/dataone/dataone-indexer.properties
 
