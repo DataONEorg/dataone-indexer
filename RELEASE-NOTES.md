@@ -1,9 +1,20 @@
 # dataone-indexer Release Notes
 
+## dataone-indexer version 3.1.1 & helm chart version 1.1.1
+
+* Release date: 2024-12-17
+* **dataone-indexer version 3.1.1**
+  * This is a minor release to fix logging issues. Changes were made to the `slf4j` and `log4j`
+    dependencies to ensure that log messages are written correctly
+    (see [PR #155](https://github.com/DataONEorg/dataone-indexer/pull/155)).
+* **helm chart version 1.1.1**
+  * Bump Application version to 3.1.1
+  * Change log4j properties configMap mount-point from `log4j.properties` to `log4j2.properties`
+
 ## dataone-indexer version 3.1.0 & helm chart version 1.1.0
 
 * Release date: 2024-11-21
-* dataone-indexer version 3.1.0
+* **dataone-indexer version 3.1.0**
   * Integrate with the new Dataone hash-based storage library
     [`hashstore-java`](https://github.com/DataONEorg/hashstore-java).
     * Indexer no longer needs access to an aut token in order to index private datasets.
@@ -18,27 +29,27 @@
     * org.apache.logging.log4j:log4j-jcl from 2.17.1 to 2.24.0
     * org.apache.maven.plugins:maven-clean-plugin from 3.2.0 to 3.4.0
     * com.fasterxml.jackson.core:jackson-annotations from 2.13.3 to 2.18.0
-* helm chart version 1.0.2
+* **helm chart version 1.1.0**
   * Bump Application version to 3.1.0
   * Add `storage` to values.yaml for new hashstore integration
 
 ## dataone-indexer version 3.0.2 & helm chart version 1.0.2
 
 * Release date: 2024-07-29
-* dataone-indexer version 3.0.2
+* **dataone-indexer version 3.0.2**
   * Bug fix - RabbitMQ Channel timeouts (PR #119)
-* helm chart version 1.0.2
+* **helm chart version 1.0.2**
   * Bump Application version to 3.0.2
   * Make .Values.rabbitmq.auth.existingPasswordSecret a required value
 
 ## dataone-indexer version 3.0.1 & helm chart version 1.0.1
 
 * Release date: 2024-07-08
-* dataone-indexer version 3.0.1
+* **dataone-indexer version 3.0.1**
   * Bump rmq amqp client to 5.21.0
   * Add healthcheck code
   * Exit app if unrecoverable exception occurs when started from `main()` method
-* helm chart version 1.0.1
+* **helm chart version 1.0.1**
   * Change `.Values.idxworker.cn_url` to `.Values.global.d1ClientCnUrl`
   * Get `fullname` from metacat chart or provide in values.yaml
   * Add simple 'exec' liveness probe. Remove readiness probe
@@ -46,5 +57,5 @@
 ## dataone-indexer version 3.0.0 & helm chart version 1.0.0
 
 * Release date: 2024-04-25
-* dataone-indexer version 3.0.0 -- first release of dataone-indexer
-* helm chart version 1.0.0 -- first release of helm chart
+* **dataone-indexer version 3.0.0** -- first release of dataone-indexer
+* **helm chart version 1.0.0** -- first release of helm chart
