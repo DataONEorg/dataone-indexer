@@ -156,7 +156,7 @@ idxworker:
   ## @param idxworker.solrVerConflictMaxTries Number of tries to get a newer version of solr doc
   ## after a version conflict
   ##
-  solrVerConflictMaxTries: 50
+  solrVerConflictMaxTries: 25000
 
   ## @param idxworker.resourcemapWaitMs resource map processor wait time (mS) for solr doc readiness
   ## of its components
