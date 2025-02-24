@@ -133,16 +133,10 @@ spec:
           configMap:
             name: {{ .Release.Name }}-indexer-configfiles
             defaultMode: 0644
-        - name: indexer-metacat-pv
-          {{- if and .Values.persistence.hostPath .Values.persistence.hostPath.path }}
-          hostPath:
-            path: {{ tpl .Values.persistence.hostPath.path . }}
-            type: {{ .Values.persistence.hostPath.type }}
-          {{- else }}
+        - name:  indexer-metacat-pv
           persistentVolumeClaim:
             claimName: {{ include "idxworker.shared.claimName" . }}
             readOnly: true
-          {{- end }}
         - name: {{ .Release.Name }}-temp-tripledb-volume
           ephemeral:
             volumeClaimTemplate:
