@@ -3,3 +3,4 @@ target
 .java-version
 tlog/
 charts/
+src/test/resources/org/dataone/cn/index/resources/solr8home/collection1/conf/schema.xml
