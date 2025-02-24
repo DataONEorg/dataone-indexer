@@ -124,6 +124,15 @@ persistence:
   ##
   subPath: ""
 
+  ## @param persistence.hostPath Use a hostPath volume for the index worker.
+  ## This will override the claimName and use the mountPath settings.
+  hostPath:
+    ## @param persistence.hostPath.path The path on the host to use for the hostPath volume
+    path: ""
+    ## @param persistence.hostPath.type The type of hostPath volume to use
+    type: Directory
+
+
 ## @section IndexWorker properties
 ##
 idxworker:
@@ -156,7 +165,7 @@ idxworker:
   ## @param idxworker.solrVerConflictMaxTries Number of tries to get a newer version of solr doc
   ## after a version conflict
   ##
-  solrVerConflictMaxTries: 50
+  solrVerConflictMaxTries: 25000
 
   ## @param idxworker.resourcemapWaitMs resource map processor wait time (mS) for solr doc readiness
   ## of its components
