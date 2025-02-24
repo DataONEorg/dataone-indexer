@@ -1,5 +1,13 @@
 # dataone-indexer Release Notes
 
+## dataone-indexer helm chart version 1.1.2
+
+* Release date: 2025-02-24
+  * Add [support for hostPath volume](https://github.com/DataONEorg/dataone-indexer/pull/164)
+  * Increase `.Values.idxworker.solrVerConflictMaxTries` from 50 to 25000 to resolve solr
+    version-conflict errors
+  * (Application software version remains unchanged at 3.1.1)
+
 ## dataone-indexer version 3.1.1 & helm chart version 1.1.1
 
 * Release date: 2024-12-17
