@@ -22,8 +22,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.solr.SolrJettyTestBase;
 import org.apache.solr.SolrTestCaseJ4.SuppressSSL;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.embedded.JettyConfig;
-import org.apache.solr.client.solrj.embedded.JettySolrRunner;
+import org.apache.solr.embedded.JettyConfig;
+import org.apache.solr.embedded.JettySolrRunner;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
@@ -66,7 +66,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     protected static ApplicationContext context;
     private SolrIndex solrIndexService;
     private int solrPort = Settings.getConfiguration().getInt("test.solr.port", 8985);
-    private static final String DEFAULT_SOL_RHOME = "solr8home";
+    private static final String DEFAULT_SOL_RHOME = "solr9home";
     private static final String SYSTEMMETA_FILE_NAME = "systemmetadata.xml";
 
     /**
@@ -284,18 +284,24 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     }
 
     protected void startJettyAndSolr() throws Exception {
-        if (jetty == null) {
+        try {
+            getJetty();
+        } catch (IllegalStateException e) {
             String solrTestHome = System.getProperty("solrTestHome");
-            System.out.println("===========================The test solr home from the system property is " + solrTestHome);
+            System.out.println(
+                "===========================The test solr home from the system property is "
+                    + solrTestHome);
             if (solrTestHome == null || solrTestHome.trim().equals("")) {
                 solrTestHome = DEFAULT_SOL_RHOME;
             }
-            System.out.println("============================The final test solr home  is " + solrTestHome);
+            System.out.println(
+                "============================The final test solr home  is " + solrTestHome);
             JettyConfig jconfig = JettyConfig.builder().setPort(solrPort).build();
             File f = new File(".");
             String localPath = f.getAbsolutePath();
-            createJettyWithPort(localPath
-                    + "/src/test/resources/org/dataone/cn/index/resources/" + solrTestHome, jconfig);
+            createJettyWithPort(
+                localPath + "/src/test/resources/org/dataone/cn/index/resources/" + solrTestHome,
+                jconfig);
         }
     }
 
@@ -305,8 +311,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     // port.
     protected static JettySolrRunner createJettyWithPort(String solrHome, JettyConfig config)
             throws Exception {
-        createAndStartJetty(solrHome, config);
-        return jetty;
+        return createAndStartJetty(solrHome, config);
     }
     
     protected boolean compareFieldValue(String id, String fieldName, String expectedValue) throws SolrServerException, IOException {
