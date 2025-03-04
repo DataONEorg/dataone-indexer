@@ -22,8 +22,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.solr.SolrJettyTestBase;
 import org.apache.solr.SolrTestCaseJ4.SuppressSSL;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.embedded.JettyConfig;
-import org.apache.solr.client.solrj.embedded.JettySolrRunner;
+import org.apache.solr.embedded.JettyConfig;
+import org.apache.solr.embedded.JettySolrRunner;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
@@ -66,7 +66,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     protected static ApplicationContext context;
     private SolrIndex solrIndexService;
     private int solrPort = Settings.getConfiguration().getInt("test.solr.port", 8985);
-    private static final String DEFAULT_SOL_RHOME = "solr8home";
+    private static final String DEFAULT_SOL_RHOME = "solr9home";
     private static final String SYSTEMMETA_FILE_NAME = "systemmetadata.xml";
 
     /**
@@ -102,7 +102,8 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
      * We assume the object and system metadata file are in the same directory.
      * The system metadata file has a fixed name - systemmetadata.xml
      * @param  relativeObjPath  the relative path of the object
-     * @return  the file of system metadata. If it is null, this means the system metadata file does not exist.
+     * @return the file of system metadata. If it is null, this means the system metadata file
+     * does not exist.
      */
     private static File getSysmetaFile(String relativeObjPath) {
         File sysmetaFile = null;
@@ -138,9 +139,10 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
      * @throws ParserConfigurationException
      * @throws SAXException
      */
-    protected void deleteSolrDoc(String identifier) throws XPathExpressionException, ServiceFailure, NotImplemented, 
-                            NotFound, UnsupportedType, IOException, EncoderException, SolrServerException, 
-                            ParserConfigurationException, SAXException {
+    protected void deleteSolrDoc(String identifier)
+        throws XPathExpressionException, ServiceFailure, NotImplemented, NotFound, UnsupportedType,
+        IOException, EncoderException, SolrServerException, ParserConfigurationException,
+        SAXException {
         Identifier pid = new Identifier();
         pid.setValue(identifier);
         solrIndexService.remove(pid);
@@ -268,7 +270,8 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         MockMNode mockMNode = new MockMNode("http://mnode.foo");
         mockMNode.setContext(context);
         ObjectManager.setD1Node(mockMNode);
-        System.out.println("--------------After setting mockNode for object manager in the test base setup method");
+        System.out.println(
+            "After setting mockNode for object manager in the test base setup method");
         sendSolrDeleteAll();
     }
 
@@ -284,18 +287,24 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     }
 
     protected void startJettyAndSolr() throws Exception {
-        if (jetty == null) {
+        try {
+            getJetty();
+        } catch (IllegalStateException e) {
             String solrTestHome = System.getProperty("solrTestHome");
-            System.out.println("===========================The test solr home from the system property is " + solrTestHome);
+            System.out.println(
+                "===========================The test solr home from the system property is "
+                    + solrTestHome);
             if (solrTestHome == null || solrTestHome.trim().equals("")) {
                 solrTestHome = DEFAULT_SOL_RHOME;
             }
-            System.out.println("============================The final test solr home  is " + solrTestHome);
+            System.out.println(
+                "============================The final test solr home  is " + solrTestHome);
             JettyConfig jconfig = JettyConfig.builder().setPort(solrPort).build();
             File f = new File(".");
             String localPath = f.getAbsolutePath();
-            createJettyWithPort(localPath
-                    + "/src/test/resources/org/dataone/cn/index/resources/" + solrTestHome, jconfig);
+            createJettyWithPort(
+                localPath + "/src/test/resources/org/dataone/cn/index/resources/" + solrTestHome,
+                jconfig);
         }
     }
 
@@ -305,11 +314,11 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     // port.
     protected static JettySolrRunner createJettyWithPort(String solrHome, JettyConfig config)
             throws Exception {
-        createAndStartJetty(solrHome, config);
-        return jetty;
+        return createAndStartJetty(solrHome, config);
     }
-    
-    protected boolean compareFieldValue(String id, String fieldName, String expectedValue) throws SolrServerException, IOException {
+
+    protected boolean compareFieldValue(String id, String fieldName, String expectedValue)
+        throws SolrServerException, IOException {
         System.out.println("==================== start of compare");
         boolean equal = false;
         ModifiableSolrParams solrParams = new ModifiableSolrParams();
@@ -318,11 +327,14 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         QueryResponse qr = getSolrClient().query(solrParams);
         SolrDocument result = qr.getResults().get(0);
         String value = (String)result.getFieldValue(fieldName);
-        System.out.println("+++++++++++++++++++The value of the field "+ fieldName + " from Solr is " + value);
+        System.out.println(
+            "+++++++++++++++++++The value of the field " + fieldName + " from Solr is " + value);
         System.out.println("The expected value of the field " + fieldName + " is " + expectedValue);
         return expectedValue.equals(value);
     }
-    protected boolean compareFieldValue(String id, String fieldName, String[] expectedValues) throws SolrServerException, IOException {
+
+    protected boolean compareFieldValue(String id, String fieldName, String[] expectedValues)
+        throws SolrServerException, IOException {
 
         boolean equal = true;
         ModifiableSolrParams solrParams = new ModifiableSolrParams();
@@ -366,8 +378,12 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
             }
         }
 
-        System.out.println("++++++++++++++++ the solr result array for the field " + fieldName + " is " + solrValuesArray);
-        System.out.println("++++++++++++++++ the expected values for the field " + fieldName + " is " + expectedValues);
+        System.out.println(
+            "++++++++++++++++ the solr result array for the field " + fieldName + " is "
+                + solrValuesArray);
+        System.out.println(
+            "++++++++++++++++ the expected values for the field " + fieldName + " is "
+                + expectedValues);
         if (solrValuesArray.length != expectedValues.length) {
             equal = false;
             return equal;
@@ -377,7 +393,9 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
             Arrays.sort(solrValuesArray);
         }
         for (int i=0; i<solrValuesArray.length; i++) {
-            System.out.println("++++++++++++++++ compare values for field " + "\"" + fieldName + "\"" + " Solr: " + solrValuesArray[i] + " expected value: " + expectedValues[i]);
+            System.out.println(
+                "++++++++++++++++ compare values for field " + "\"" + fieldName + "\"" + " Solr: "
+                    + solrValuesArray[i] + " expected value: " + expectedValues[i]);
 
             if (!solrValuesArray[i].equals(expectedValues[i])) {
                 equal = false;
