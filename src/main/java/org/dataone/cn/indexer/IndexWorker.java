@@ -89,6 +89,7 @@ public class IndexWorker {
     private ApplicationContext context = null;
     protected SolrIndex solrIndex = null;
     private ExecutorService executor = null;
+    private ConnectionFactory factory = null;
 
     /**
      * Commandline main for the IndexWorker to be started.
@@ -241,8 +242,7 @@ public class IndexWorker {
             Settings.getConfiguration().getString("index.rabbitmq.username", "guest");
         String rabbitMQpassword =
             Settings.getConfiguration().getString("index.rabbitmq.password", "guest");
-        int rabbitMQMaxPriority = Settings.getConfiguration().getInt("index.rabbitmq.max.priority");
-        ConnectionFactory factory = new ConnectionFactory();
+        factory = new ConnectionFactory();
         factory.setHost(rabbitMQhost);
         factory.setPort(rabbitMQport);
         factory.setPassword(rabbitMQpassword);
@@ -251,28 +251,27 @@ public class IndexWorker {
         factory.setAutomaticRecoveryEnabled(true);
         // attempt recovery every 10 seconds after a failure
         factory.setNetworkRecoveryInterval(10000);
-        logger.debug("IndexWorker.initIndexQueue - Set RabbitMQ host to: " + rabbitMQhost);
-        logger.debug("IndexWorker.initIndexQueue - Set RabbitMQ port to: " + rabbitMQport);
+        logger.debug("Set RabbitMQ host to: " + rabbitMQhost);
+        logger.debug("Set RabbitMQ port to: " + rabbitMQport);
+        generateConectionAndChannel();
+    }
 
-        // Setup the 'InProcess' queue with a routing key - messages consumed by this queue require that
-        // this routine key be used. The routine key INDEX_ROUTING_KEY sends messages to the index worker,
+    private void generateConectionAndChannel() throws IOException, TimeoutException {
+        int rabbitMQMaxPriority = Settings.getConfiguration().getInt("index.rabbitmq.max.priority");
         boolean durable = true;
         rabbitMQconnection = factory.newConnection();
         rabbitMQchannel = rabbitMQconnection.createChannel();
         rabbitMQchannel.exchangeDeclare(EXCHANGE_NAME, "direct", durable);
-
         boolean exclusive = false;
         boolean autoDelete = false;
         Map<String, Object> args = new HashMap<>();
         args.put("x-max-priority", rabbitMQMaxPriority);
-        logger.debug(
-            "IndexWorker.initIndexQueue - Set RabbitMQ max priority to: " + rabbitMQMaxPriority);
+        logger.debug("Set RabbitMQ max priority to: " + rabbitMQMaxPriority);
         rabbitMQchannel.queueDeclare(INDEX_QUEUE_NAME, durable, exclusive, autoDelete, args);
         rabbitMQchannel.queueBind(INDEX_QUEUE_NAME, EXCHANGE_NAME, INDEX_ROUTING_KEY);
-
-        logger.info("IndexWorker.initIndexQueue - the allowed unacknowledged message(s) number is " + nThreads);
+        logger.info("The allowed unacknowledged message(s) number is " + nThreads);
         rabbitMQchannel.basicQos(nThreads);
-        logger.debug("IndexWorker.initIndexQueue - Connected to the RabbitMQ queue with the name of " + INDEX_QUEUE_NAME);
+        logger.debug("Connected to the RabbitMQ queue with the name of " + INDEX_QUEUE_NAME);
     }
 
     /**
