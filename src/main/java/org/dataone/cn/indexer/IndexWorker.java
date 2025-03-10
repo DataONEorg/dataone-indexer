@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -91,6 +92,7 @@ public class IndexWorker {
     private ExecutorService executor = null;
     private ConnectionFactory factory = null;
 
+    private final ReentrantLock connectionLock = new ReentrantLock();
     /**
      * Commandline main for the IndexWorker to be started.
      *
@@ -399,21 +401,35 @@ public class IndexWorker {
     }
 
     private void recreateConnection(Consumer consumer) throws IOException {
-
-        rabbitMQconnection.close();
+        connectionLock.lock();
         try {
-            if (rabbitMQchannel.isOpen()) {
-                rabbitMQchannel.close();
+            if (rabbitMQconnection.isOpen()) {
+                try {
+                    rabbitMQconnection.close();
+                } catch (IOException e) {
+                    logger.warn("The rabbitmq connection can't be closed since " + e.getMessage());
+                }
             }
-            initIndexQueue();
-
-        } catch (TimeoutException e) {
-            throw new IOException("TimeoutException trying to re-initialize Queue: "
-                + e.getMessage(), e);
+            if (rabbitMQchannel.isOpen()) {
+                try {
+                    rabbitMQchannel.close();
+                } catch (IOException | TimeoutException e) {
+                    logger.warn("The rabbitmq channel can't be closed since " + e.getMessage());
+                }
+            }
+            try {
+                generateConectionAndChannel();
+            } catch (TimeoutException e) {
+                throw new IOException("TimeoutException trying to re-initialize Queue: "
+                                          + e.getMessage(), e);
+            }
+            // Tell RabbitMQ this worker is ready for tasks
+            rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
+            logger.debug("rabbitMQ connection successfully re-created");
+        } finally {
+            connectionLock.unlock();
+            logger.debug("The connection lock was released");
         }
-        // Tell RabbitMQ this worker is ready for tasks
-        rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
-        logger.debug("rabbitMQ connection successfully re-created");
     }
 
     /**
