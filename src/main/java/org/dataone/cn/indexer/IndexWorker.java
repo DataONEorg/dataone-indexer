@@ -520,6 +520,9 @@ public class IndexWorker {
         Path path = Paths.get("./readinessprobe");
         Runnable task = () -> {
             try {
+                if (!Files.exists(path)) {
+                    Files.createFile(path);
+                }
                 if (rabbitMQconnection.isOpen() && rabbitMQchannel.isOpen()) {
                     Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
                 } else {
@@ -532,7 +535,7 @@ public class IndexWorker {
                 logger.error("Failed to update file: " + path, e);
             }
         };
-        scheduler.scheduleAtFixedRate(task, 1, 20, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(task, 1, 30, TimeUnit.SECONDS);
         logger.info("ReadinessProb started");
     }
 

@@ -6,6 +6,9 @@ import org.dataone.service.exceptions.ServiceFailure;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertTrue;
@@ -49,5 +52,30 @@ public class IndexWorkerIT {
         }
         assertTrue(worker.getRabbitMQconnection().isOpen());
         assertTrue(worker.getRabbitMQchannel().isOpen());
+    }
+
+    /**
+     * Test the StartRabbitMQConnectionProb method
+     * @throws Exception
+     */
+    @Test
+    public void testStartRabbitMQConnectionProb() throws Exception {
+        IndexWorker worker = new IndexWorker();
+        worker.start();
+        Path path = Paths.get("readinessprobe");
+        if (Files.exists(path)) {
+            Files.delete(path);
+        }
+        worker.startRabbitMQConnectionProbe();
+        int index = 0;
+        path = Paths.get("readinessprobe");
+        while (!Files.exists(path) && index < LIMIT) {
+            Thread.sleep(200);
+            index++;
+        }
+        assertTrue(Files.exists(path));
+        if (Files.exists(path)) {
+            Files.delete(path);
+        }
     }
 }
