@@ -91,6 +91,7 @@ public class IndexWorker {
     protected SolrIndex solrIndex = null;
     private ExecutorService executor = null;
     private ConnectionFactory factory = null;
+    private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     private final ReentrantLock connectionLock = new ReentrantLock();
     /**
@@ -105,6 +106,7 @@ public class IndexWorker {
         try {
             IndexWorker worker = new IndexWorker();
             worker.start();
+            worker.startRabbitMQConnectionProbe();
         } catch (Exception e) {
             logger.fatal("IndexWorker.main() exiting due to fatal error: " + e.getMessage(), e);
             System.exit(1);
@@ -499,7 +501,6 @@ public class IndexWorker {
     }
 
     private static void startLivenessProbe() {
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         Path path = Paths.get("./livenessprobe");
         Runnable task = () -> {
             try {
@@ -510,6 +511,29 @@ public class IndexWorker {
         };
         scheduler.scheduleAtFixedRate(task, 0, 10, TimeUnit.SECONDS);
         logger.info("IndexWorker.startLivenessProbe - livenessProbe started");
+    }
+
+    /**
+     * Start the timer task to check the rabbitmq connection and channel
+     */
+    public void startRabbitMQConnectionProbe() {
+        Path path = Paths.get("./readinessprobe");
+        Runnable task = () -> {
+            try {
+                if (rabbitMQconnection.isOpen() && rabbitMQchannel.isOpen()) {
+                    Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
+                } else {
+                    logger.error("The RabbitMQ connection or channel were closed. DataONE-indexer"
+                                     + " has a mechanism to restore them. However, if this error"
+                                     + " message shows up repeatedly, it means the network work "
+                                     + "maybe is done and dataone-indexer cannot restore them.");
+                }
+            } catch (IOException e) {
+                logger.error("Failed to update file: " + path, e);
+            }
+        };
+        scheduler.scheduleAtFixedRate(task, 1, 20, TimeUnit.SECONDS);
+        logger.info("ReadinessProb started");
     }
 
     /**
