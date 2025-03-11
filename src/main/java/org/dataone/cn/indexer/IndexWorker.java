@@ -255,10 +255,10 @@ public class IndexWorker {
         factory.setNetworkRecoveryInterval(10000);
         logger.debug("Set RabbitMQ host to: " + rabbitMQhost);
         logger.debug("Set RabbitMQ port to: " + rabbitMQport);
-        generateConectionAndChannel();
+        generateConnectionAndChannel();
     }
 
-    private void generateConectionAndChannel() throws IOException, TimeoutException {
+    private void generateConnectionAndChannel() throws IOException, TimeoutException {
         int rabbitMQMaxPriority = Settings.getConfiguration().getInt("index.rabbitmq.max.priority");
         boolean durable = true;
         rabbitMQconnection = factory.newConnection();
@@ -403,14 +403,14 @@ public class IndexWorker {
     private void recreateConnection(Consumer consumer) throws IOException {
         connectionLock.lock();
         try {
-            if (rabbitMQconnection.isOpen()) {
+            if (rabbitMQconnection != null & rabbitMQconnection.isOpen()) {
                 try {
                     rabbitMQconnection.close();
                 } catch (IOException e) {
                     logger.warn("The rabbitmq connection can't be closed since " + e.getMessage());
                 }
             }
-            if (rabbitMQchannel.isOpen()) {
+            if (rabbitMQchannel != null && rabbitMQchannel.isOpen()) {
                 try {
                     rabbitMQchannel.close();
                 } catch (IOException | TimeoutException e) {
@@ -418,7 +418,7 @@ public class IndexWorker {
                 }
             }
             try {
-                generateConectionAndChannel();
+                generateConnectionAndChannel();
             } catch (TimeoutException e) {
                 throw new IOException("TimeoutException trying to re-initialize Queue: "
                                           + e.getMessage(), e);
@@ -493,5 +493,21 @@ public class IndexWorker {
         };
         scheduler.scheduleAtFixedRate(task, 0, 10, TimeUnit.SECONDS);
         logger.info("IndexWorker.startLivenessProbe - livenessProbe started");
+    }
+
+    /**
+     * Get the Rabbitmq connection
+     * @return the Rabbitmq connection
+     */
+    protected Connection getRabbitMQconnection() {
+        return rabbitMQconnection;
+    }
+
+    /**
+     * Get the Rabbitmq channel
+     * @return the Rabbitmq channel
+     */
+    protected Channel getRabbitMQchannel() {
+        return rabbitMQchannel;
     }
 }
