@@ -42,6 +42,7 @@ public class IndexWorkerIT {
         assertTrue(worker.getRabbitMQchannel().isOpen());
         Channel channel = worker.getRabbitMQchannel();
         channel.close();
+        index = 0;
         while (!worker.getRabbitMQchannel().isOpen() && index < LIMIT) {
             Thread.sleep(100);
             index++;
