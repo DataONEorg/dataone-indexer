@@ -106,7 +106,7 @@ public class IndexWorker {
         try {
             IndexWorker worker = new IndexWorker();
             worker.start();
-            worker.startRabbitMQConnectionProbe();
+            worker.startReadinessProbe();
         } catch (Exception e) {
             logger.fatal("IndexWorker.main() exiting due to fatal error: " + e.getMessage(), e);
             System.exit(1);
@@ -515,9 +515,9 @@ public class IndexWorker {
     }
 
     /**
-     * Start the timer task to check the rabbitmq connection and channel
+     * Start the timer task to check if the index-worker is ready
      */
-    public void startRabbitMQConnectionProbe() {
+    public void startReadinessProbe() {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         Path path = Paths.get("./readinessprobe");
         Runnable task = () -> {
