@@ -407,20 +407,20 @@ public class IndexWorker {
         for (int i = 0; i <= times; i++) {
             connectionLock.lock();
             try {
-                if (rabbitMQconnection != null && rabbitMQconnection.isOpen()) {
-                    try {
-                        rabbitMQconnection.close();
-                        logger.debug("After closing the RabbitMQ connection.");
-                    } catch (IOException e) {
-                        logger.warn("The rabbitmq connection can't be closed since " + e.getMessage());
-                    }
-                }
                 if (rabbitMQchannel != null && rabbitMQchannel.isOpen()) {
                     try {
                         rabbitMQchannel.close();
                         logger.debug("After closing the RabbitMQ channel.");
                     } catch (IOException | TimeoutException e) {
                         logger.warn("The rabbitmq channel can't be closed since " + e.getMessage());
+                    }
+                }
+                if (rabbitMQconnection != null && rabbitMQconnection.isOpen()) {
+                    try {
+                        rabbitMQconnection.close();
+                        logger.debug("After closing the RabbitMQ connection.");
+                    } catch (IOException e) {
+                        logger.warn("The rabbitmq connection can't be closed since " + e.getMessage());
                     }
                 }
                 try {
