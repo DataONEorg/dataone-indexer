@@ -407,7 +407,7 @@ public class IndexWorker {
         for (int i = 0; i <= times; i++) {
             connectionLock.lock();
             try {
-                if (rabbitMQconnection != null & rabbitMQconnection.isOpen()) {
+                if (rabbitMQconnection != null && rabbitMQconnection.isOpen()) {
                     try {
                         rabbitMQconnection.close();
                         logger.debug("After closing the RabbitMQ connection.");
