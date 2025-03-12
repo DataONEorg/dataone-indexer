@@ -438,8 +438,8 @@ public class IndexWorker {
                         }
                         continue;
                     }
-                    throw new IOException("TimeoutException trying to re-initialize Queue: "
-                                              + e.getMessage(), e);
+                    throw new IOException("Exception trying to re-initialize connection and "
+                                              + "channel: " + e.getMessage(), e);
                 }
                 // Tell RabbitMQ this worker is ready for tasks
                 rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
