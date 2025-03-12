@@ -92,7 +92,6 @@ public class IndexWorker {
     protected SolrIndex solrIndex = null;
     private ExecutorService executor = null;
     private ConnectionFactory factory = null;
-    private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     private final ReentrantLock connectionLock = new ReentrantLock();
     /**
@@ -502,6 +501,7 @@ public class IndexWorker {
     }
 
     private static void startLivenessProbe() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         Path path = Paths.get("./livenessprobe");
         Runnable task = () -> {
             try {
@@ -518,6 +518,7 @@ public class IndexWorker {
      * Start the timer task to check the rabbitmq connection and channel
      */
     public void startRabbitMQConnectionProbe() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         Path path = Paths.get("./readinessprobe");
         Runnable task = () -> {
             try {
