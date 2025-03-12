@@ -530,10 +530,11 @@ public class IndexWorker {
                     Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
                     logger.debug("The RabbitMQ connection and channel are healthy.");
                 } else {
-                    logger.error("The RabbitMQ connection or channel were closed. DataONE-indexer"
-                                     + " has a mechanism to restore them. However, if this error"
-                                     + " message shows up repeatedly, it means the network work "
-                                     + "maybe is done and dataone-indexer cannot restore them.");
+                    logger.error("The RabbitMQ connection or channel were closed. DataONE-indexer "
+                                     + "has a mechanism to restore them. However, if this error "
+                                     + "message shows up repeatedly and there is no network outage,"
+                                     + " intervention may be required (e.g. checking "
+                                     + "configuration)");
                 }
             } catch (IOException e) {
                 logger.error("Failed to update file: " + path, e);
