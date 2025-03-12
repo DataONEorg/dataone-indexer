@@ -59,6 +59,14 @@ spec:
                 - test $(($(date +%s) - $(stat -c %Y /var/lib/dataone-indexer/livenessprobe))) -lt 20
             initialDelaySeconds: 20
             periodSeconds: 15
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - test $(($(date +%s) - $(stat -c %Y /var/lib/dataone-indexer/readinessprobe))) -lt 40
+            initialDelaySeconds: 20
+            periodSeconds: 35
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
