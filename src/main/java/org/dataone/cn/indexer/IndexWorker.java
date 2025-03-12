@@ -427,14 +427,15 @@ public class IndexWorker {
                     generateConnectionAndChannel();
                 } catch (TimeoutException | IOException e) {
                     if (i < times - 1) {
+                        logger.debug("The attempt to restore RabbitMQ connection and channel "
+                                         + "caught an exception " + e.getMessage()
+                                         + " After waiting one minute, Indexer will try again. "
+                                         + "Tries so far:" + i);
                         try {
                             Thread.sleep(60000);
                         } catch (InterruptedException ex) {
                             logger.debug("The sleeping of the thread was interrupted.");
                         }
-                        logger.debug("The attempt to restore RabbitMQ connection and channel "
-                                         + "caught an exception " + e.getMessage()
-                                         + "After waiting one minute, Indexer will try again " + i);
                         continue;
                     }
                     throw new IOException("TimeoutException trying to re-initialize Queue: "
