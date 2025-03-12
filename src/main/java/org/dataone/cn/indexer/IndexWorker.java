@@ -443,7 +443,7 @@ public class IndexWorker {
                 }
                 // Tell RabbitMQ this worker is ready for tasks
                 rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
-                logger.debug("rabbitMQ connection successfully re-created");
+                logger.debug("RabbitMQ connection and channel successfully re-created");
                 break;
             } finally {
                 connectionLock.unlock();
