@@ -66,7 +66,7 @@ public class IndexWorkerIT {
         if (Files.exists(path)) {
             Files.delete(path);
         }
-        worker.startRabbitMQConnectionProbe();
+        worker.startReadinessProbe();
         int index = 0;
         path = Paths.get("readinessprobe");
         while (!Files.exists(path) && index < LIMIT) {
