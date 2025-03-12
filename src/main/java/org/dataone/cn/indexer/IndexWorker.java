@@ -21,7 +21,8 @@ import javax.xml.xpath.XPathExpressionException;
 import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.cn.indexer.annotation.OntologyModelService;
 import org.dataone.cn.indexer.object.ObjectManager;
@@ -78,7 +79,7 @@ public class IndexWorker {
     private static final String springConfigFileURL = "/index-parser-context.xml";
     private static final String ENV_NAME_OF_PROPERTIES_FILE = "DATAONE_INDEXER_CONFIG";
 
-    private static Logger logger = Logger.getLogger(IndexWorker.class);
+    private static Log logger = LogFactory.getLog(IndexWorker.class);
     private static String defaultExternalPropertiesFile = "/etc/dataone/dataone-indexer.properties";
 
     protected static String propertyFilePath = null;
@@ -389,7 +390,7 @@ public class IndexWorker {
                         "handleShutdownSignal successfully recreated connection. Consumer tag: "
                             + consumerTag);
                 } catch (IOException e) {
-                    logger.debug(
+                    logger.error(
                         "handleShutdownSignal unable to recreate connection. Consumer tag: "
                             + consumerTag + "; ShutdownSignalException" + sig.getMessage());
                 }
@@ -525,6 +526,7 @@ public class IndexWorker {
                 }
                 if (rabbitMQconnection.isOpen() && rabbitMQchannel.isOpen()) {
                     Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
+                    logger.debug("The RabbitMQ connection and channel are healthy.");
                 } else {
                     logger.error("The RabbitMQ connection or channel were closed. DataONE-indexer"
                                      + " has a mechanism to restore them. However, if this error"
