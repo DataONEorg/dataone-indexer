@@ -58,7 +58,7 @@ public class SolrIndex {
     private static final String VERSION_CONFLICT = "version conflict";
     private static final int VERSION_CONFLICT_MAX_ATTEMPTS = Settings.getConfiguration().getInt(
         "index.solr.versionConflict.max.attempts", 25);
-    private static final int VERSION_CONFICT_WAITING = Settings.getConfiguration().getInt(
+    private static final int VERSION_CONFLICT_WAITING = Settings.getConfiguration().getInt(
         "index.solr.versionConflict.waiting.time", 500); //milliseconds
     private static final List<String> resourceMapFormatIdList = Settings.getConfiguration().getList(
         "index.resourcemap.namespace");
@@ -430,7 +430,7 @@ public class SolrIndex {
                         + ". It will try " + VERSION_CONFLICT_MAX_ATTEMPTS + " to fix the issues");
                 for (int i=0; i<VERSION_CONFLICT_MAX_ATTEMPTS; i++) {
                     try {
-                        Thread.sleep(VERSION_CONFICT_WAITING);
+                        Thread.sleep(VERSION_CONFLICT_WAITING);
                         insert(pid, isSysmetaChangeOnly);
                         break;
                     } catch (SolrServerException ee) {
