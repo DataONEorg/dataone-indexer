@@ -22,7 +22,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.BaseXPathDocumentSubprocessor;
@@ -56,7 +55,6 @@ import org.xml.sax.SAXException;
 public class SolrIndex {
             
     public static final String ID = "id";
-    private static final String IDQUERY = ID+":*";
     private static final String VERSION_CONFLICT = "version conflict";
     private static final int VERSION_CONFLICT_MAX_ATTEMPTS = Settings.getConfiguration().getInt(
         "index.solr.versionConflict.max.attempts", 25);
@@ -66,7 +64,6 @@ public class SolrIndex {
         "index.resourcemap.namespace");
     private static List<IDocumentSubprocessor> subprocessors = null;
     private static List<IDocumentDeleteSubprocessor> deleteSubprocessors = null;
-    private static SolrClient solrServer = null;
     private static List<String> copyFields = null;//list of solr copy fields
     
     private static HTTPService httpService = null;
