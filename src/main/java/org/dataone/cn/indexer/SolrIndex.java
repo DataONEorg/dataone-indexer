@@ -332,8 +332,7 @@ public class SolrIndex {
     /**
      * Insert the indexes for a document.
      * @param pid  the id of this document
-     * @param systemMetadata  the system metadata associated with the data object
-     * @param data  the path to the object file itself
+     * @param isSysmetaChangeOnly  if this change is only for systemmetadata
      * @throws SolrServerException
      * @throws MarshallingException
      * @throws EncoderException
@@ -462,7 +461,7 @@ public class SolrIndex {
     /*
      * Is the pid a resource map
      */
-    private boolean isDataPackage(String pid, String formatId) throws FileNotFoundException, ServiceFailure {
+    private boolean isDataPackage(String formatId) throws FileNotFoundException, ServiceFailure {
         boolean isDataPackage = false;
         if(formatId != null) {
             isDataPackage = resourceMapFormatIdList.contains(formatId);
@@ -535,7 +534,7 @@ public class SolrIndex {
                                             XPathExpressionException, NotImplemented, NotFound, UnsupportedType, 
                                             SolrServerException, IOException, ParserConfigurationException, 
                                             SAXException, EncoderException {
-        if (isDataPackage(pid, formatId)) {
+        if (isDataPackage(formatId)) {
             removeDataPackage(pid);
         } else if (isPartOfDataPackage(pid)) {
             removeFromDataPackage(pid);
