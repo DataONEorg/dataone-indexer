@@ -463,7 +463,7 @@ public class SolrIndex {
                         Thread.sleep(VERSION_CONFICT_WAITING);
                         insert(pid, isSysmetaChangeOnly);
                         break;
-                    } catch (SolrException ee) {
+                    } catch (SolrServerException ee) {
                         if (ee.getMessage().contains(VERSION_CONFLICT)) {
                             log.info("SolrIndex.update - Indexer grabbed an older verion "
                                      + "(version conflict) of the solr doc for object "
