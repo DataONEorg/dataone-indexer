@@ -141,7 +141,7 @@ public class SolrIndex {
     /**
      * Generate the index for the given information
      * @param id  the id which will be indexed
-     * @param isSystemetaChange  if this is a change on the system metadata only
+     * @param isSysmetaChangeOnly  if this is a change on the system metadata only
      * @return a map of solr doc with ids
      * @throws IOException
      * @throws SAXException
@@ -279,7 +279,7 @@ public class SolrIndex {
                     log.debug("SolrIndex.mergeWithIndexedDocument - put the merge-needed existing solr field "
                               + field.getName() + " with value " + field.getValue()
                               + " from the solr server to a vector. We will merge it later.");
-                    //record this name since we can have mutiple name/value for the same name.
+                    //record this name since we can have multiple name/value for the same name.
                     //See https://projects.ecoinformatics.org/ecoinfo/issues/7168
                     mergeNeededFields.add(field);
                 } 
@@ -372,7 +372,7 @@ public class SolrIndex {
                       + " object " + pid.getValue() + " and it took " + (end-start)
                       + " milliseconds.");
         } else {
-            log.debug("SolrIndex.insert - the genered solrDoc is null. So we will not index the "
+            log.debug("SolrIndex.insert - the generated solrDoc is null. So we will not index the "
                       + "object "+pid.getValue());
         }
     }
@@ -389,7 +389,7 @@ public class SolrIndex {
 
     /**
      * Update the solr index. This method handles the three scenarios:
-     * 1. Remove an existing doc - if the the system metadata shows the value of the archive is true,
+     * 1. Remove an existing doc - if the system metadata shows the value of the archive is true,
      *    remove the index for the previous version(s) and generate new index for the doc.
      * 2. Add a new doc - if the system metadata shows the value of the archive is false, generate the
      *    index for the doc.
@@ -425,8 +425,8 @@ public class SolrIndex {
             insert(pid, isSysmetaChangeOnly);
         } catch (SolrServerException e) {
             if (e.getMessage().contains(VERSION_CONFLICT) && VERSION_CONFLICT_MAX_ATTEMPTS > 0) {
-                log.info("SolrIndex.update - Indexer grabbed an older verion (version conflict) of "
-                        + "the solr doc for object " + pid.getValue()
+                log.info("SolrIndex.update - Indexer grabbed an older version (version conflict) "
+                             + "of the solr doc for object " + pid.getValue()
                         + ". It will try " + VERSION_CONFLICT_MAX_ATTEMPTS + " to fix the issues");
                 for (int i=0; i<VERSION_CONFLICT_MAX_ATTEMPTS; i++) {
                     try {
@@ -435,14 +435,14 @@ public class SolrIndex {
                         break;
                     } catch (SolrServerException ee) {
                         if (ee.getMessage().contains(VERSION_CONFLICT)) {
-                            log.info("SolrIndex.update - Indexer grabbed an older verion "
+                            log.info("SolrIndex.update - Indexer grabbed an older version "
                                      + "(version conflict) of the solr doc for object "
                                      + pid.getValue() + ". It will process it again in oder to get "
                                      + "the new solr doc copy. This is the " + (i+1)
                                      + " time to re-try.");
                             if (i == (VERSION_CONFLICT_MAX_ATTEMPTS -1)) {
-                                log.warn("SolrIndex.update - Indexer grabbed an older verion of the "
-                                         + "solr doc for object " + pid.getValue()
+                                log.warn("SolrIndex.update - Indexer grabbed an older version of "
+                                             + "the solr doc for object " + pid.getValue()
                                          + ". However, Metacat already tried the max times and still"
                                          +" can't fix the issue.");
                                 throw ee;
@@ -562,7 +562,7 @@ public class SolrIndex {
                 break;
             } catch (SolrServerException e) {
                 if (e.getMessage().contains(VERSION_CONFLICT) && VERSION_CONFLICT_MAX_ATTEMPTS > 0) {
-                    log.info("SolrIndex.removeDataPackage - Indexer grabbed an older verion "
+                    log.info("SolrIndex.removeDataPackage - Indexer grabbed an older version "
                              + "(version conflict) of the solr doc for object"
                              + ". It will try " + (VERSION_CONFLICT_MAX_ATTEMPTS - i )
                              + " to fix the issues");
@@ -644,7 +644,7 @@ public class SolrIndex {
     }
     
     /*
-     * Process the list of ids of the documentBy/documents in a slor doc.
+     * Process the list of ids of the documentBy/documents in a solr doc.
      */
     private List<SolrDoc> removeAggregatedItems(String targetResourceMapId, SolrDoc doc,
             List<String> resourceMapIdsInDoc, List<String> aggregatedItemsInDoc, String fieldNameRemoved) {
@@ -735,9 +735,9 @@ public class SolrIndex {
      * Merge two list of updated solr docs. removedDocumentBy has the correct information about documentBy element.
      * removedDocuments has the correct information about the documents element.
      * So we go through the two list and found the two docs having the same identifier.
-     * Get the list of the documents value from the one in the removedDoucments (1). 
+     * Get the list of the documents value from the one in the removedDocuments (1).
      * Remove all values of documents from the one in the removedDocumentBy. 
-     * Then copy the list of documents value from (1) to to the one in the removedDocumentBy.
+     * Then copy the list of documents value from (1) to the one in the removedDocumentBy.
      */
     private List<SolrDoc> mergeUpdatedSolrDocs(List<SolrDoc>removedDocumentBy, List<SolrDoc>removedDocuments) {
         List<SolrDoc> mergedDocuments = new ArrayList<SolrDoc>();
@@ -789,7 +789,7 @@ public class SolrIndex {
                                                         SolrElementField.FIELD_RESOURCEMAP, id));
                             }
                         }
-                        //we don't need do anything about the documentBy elements since the
+                        //we don't need to do anything about the documentBy elements since the
                         //docInRemovedDocBy has the correct information.
                         mergedDocuments.add(docInRemovedDocBy);
                         //delete the two documents from the list
@@ -835,7 +835,7 @@ public class SolrIndex {
                     } catch (SolrServerException e) {
                         if (e.getMessage().contains(VERSION_CONFLICT) && VERSION_CONFLICT_MAX_ATTEMPTS > 0) {
                             log.info("SolrIndex.removeFromDataPackage - Indexer grabbed an older "
-                                    + "verion (version conflict) of the solr doc for object "
+                                    + "version (version conflict) of the solr doc for object "
                                     + documentsValue + ". It will try "
                                     + (VERSION_CONFLICT_MAX_ATTEMPTS - i )+ " to fix the issues");
                         } else {
@@ -861,7 +861,7 @@ public class SolrIndex {
                     } catch (SolrServerException e) {
                         if (e.getMessage().contains(VERSION_CONFLICT) && VERSION_CONFLICT_MAX_ATTEMPTS > 0) {
                             log.info("SolrIndex.removeFromDataPackage - Indexer grabbed an older "
-                                      + "verion (version conflict) of the solr doc for object "
+                                      + "version (version conflict) of the solr doc for object "
                                       + documentedByValue + ". It will try "
                                       + (VERSION_CONFLICT_MAX_ATTEMPTS - i )+ " to fix the issues");
                         } else {
