@@ -74,9 +74,9 @@ public class SolrIndex {
 
     /**
      * Constructor
-     * @param xmlNamespaceConfig
-     * @param systemMetadataProcessor
-     * @param httpService
+     * @param xmlNamespaceConfig  a list of pairs of prefix and namespace
+     * @param systemMetadataProcessor  the processor to parse system metadata
+     * @param httpService  the HTTPService object associated with this class
      */
     public SolrIndex(
         XMLNamespaceConfig xmlNamespaceConfig,
@@ -242,7 +242,8 @@ public class SolrIndex {
             EncoderException, XPathExpressionException {
         //Retrieve the existing solr document from the solr server for the id. If it doesn't exist,
         //null or empty solr doc will be returned.
-        SolrDoc indexedDocument = httpService.getSolrDocumentById(solrQueryUri, indexDocument.getIdentifier());
+        SolrDoc indexedDocument =
+            httpService.getSolrDocumentById(solrQueryUri, indexDocument.getIdentifier());
         if (indexedDocument == null || indexedDocument.getFieldList().size() <= 0) {
             return indexDocument;
         } else {
@@ -298,8 +299,7 @@ public class SolrIndex {
         }
         return is;
     }
-    
-  
+
     /**
      * Check the parameters of the insert or update methods.
      * @param pid  the pid which will be indexed
@@ -307,10 +307,11 @@ public class SolrIndex {
      */
     private void checkParams(Identifier pid) throws InvalidRequest {
         if(pid == null || pid.getValue() == null || pid.getValue().isBlank()) {
-            throw new InvalidRequest("0000", "The identifier of the indexed document should not be null or blank.");
+            throw new InvalidRequest(
+                "0000", "The identifier of the indexed document should not be null or blank.");
         }
     }
-    
+
     /**
      * Insert the indexes for a document.
      * @param pid  the id of this document
@@ -344,7 +345,7 @@ public class SolrIndex {
                                + ", which relates to object " + pid.getValue()
                                + ", into the solr server.");
                 }
-                
+
             }
             end = System.currentTimeMillis();
             log.info("SolrIndex.insert - finished to insert the solrDoc to the solr server for "
@@ -370,8 +371,8 @@ public class SolrIndex {
      * Update the solr index. This method handles the three scenarios:
      * 1. Remove an existing doc - if the system metadata shows the value of the archive is true,
      *    remove the index for the previous version(s) and generate new index for the doc.
-     * 2. Add a new doc - if the system metadata shows the value of the archive is false, generate the
-     *    index for the doc.
+     * 2. Add a new doc - if the system metadata shows the value of the archive is false, generate
+     *     the index for the doc.
      * @param pid  the identifier of object which will be indexed
      * @param isSysmetaChangeOnly  the flag indicating if the change is system metadata only
      * @throws NotFound 
@@ -435,7 +436,8 @@ public class SolrIndex {
                 throw e;
             }
         }
-        log.info("SolrIndex.update - successfully inserted the solr index of the object " + pid.getValue());
+        log.info("SolrIndex.update - successfully inserted the solr index of the object "
+                     + pid.getValue());
     }
 
     /*
@@ -475,11 +477,13 @@ public class SolrIndex {
      * @throws NotImplemented 
      * @throws ServiceFailure 
      */
-    public void remove(Identifier pid) throws XPathExpressionException, IOException, EncoderException,
-                                              ServiceFailure, NotImplemented, NotFound, UnsupportedType,
-                                   SolrServerException, ParserConfigurationException, SAXException {
+    public void remove(Identifier pid)
+        throws XPathExpressionException, IOException, EncoderException, ServiceFailure,
+        NotImplemented, NotFound, UnsupportedType, SolrServerException,
+        ParserConfigurationException, SAXException {
         if(pid != null ) {
-            log.debug("SorIndex.remove - start to remove the solr index for the pid "+pid.getValue());
+            log.debug(
+                "SorIndex.remove - start to remove the solr index for the pid " + pid.getValue());
             SolrDoc indexDoc = httpService.getSolrDocumentById(solrQueryUri, pid.getValue());
             if (indexDoc != null) {
                 log.debug("SorIndex.remove - in the branch which the solr doc was found for "
@@ -511,10 +515,10 @@ public class SolrIndex {
             deleteDocFromIndex(pid);
         }
     }
-    
+
     /*
-     * Remove the resource map from the solr index. It doesn't only remove the index for itself and also
-     * remove the relationship for the related metadata and data objects.
+     * Remove the resource map from the solr index. It doesn't only remove the index for itself and
+     *  also remove the relationship for the related metadata and data objects.
      */
     private void removeDataPackage(String pid) throws IOException, XPathExpressionException,
                                     SolrServerException, EncoderException  {
@@ -590,11 +594,16 @@ public class SolrIndex {
                 } else if ((dataIdStrs != null && !dataIdStrs.isEmpty())
                         && (metadataIdStrs != null && !metadataIdStrs.isEmpty())){
                     // both metadata and data for one object
-                    List<SolrDoc> solrDocsRemovedDocuments = removeAggregatedItems(resourceMapId, doc, resourceMapIdStrs,
-                            dataIdStrs, SolrElementField.FIELD_DOCUMENTS);
-                    List<SolrDoc> solrDocsRemovedDocumentBy = removeAggregatedItems(resourceMapId, doc, resourceMapIdStrs,
-                            metadataIdStrs, SolrElementField.FIELD_ISDOCUMENTEDBY);
-                    updatedSolrDocs = mergeUpdatedSolrDocs(solrDocsRemovedDocumentBy, solrDocsRemovedDocuments);
+                    List<SolrDoc> solrDocsRemovedDocuments =
+                        removeAggregatedItems(
+                            resourceMapId, doc, resourceMapIdStrs, dataIdStrs,
+                            SolrElementField.FIELD_DOCUMENTS);
+                    List<SolrDoc> solrDocsRemovedDocumentBy =
+                        removeAggregatedItems(
+                            resourceMapId, doc, resourceMapIdStrs, metadataIdStrs,
+                            SolrElementField.FIELD_ISDOCUMENTEDBY);
+                    updatedSolrDocs =
+                        mergeUpdatedSolrDocs(solrDocsRemovedDocumentBy, solrDocsRemovedDocuments);
                 }
                 //move them to the final result
                 if(updatedSolrDocs != null) {
@@ -608,12 +617,15 @@ public class SolrIndex {
         }
         return totalUpdatedSolrDocs;
     }
-    
+
     /*
      * Process the list of ids of the documentBy/documents in a solr doc.
      */
-    private List<SolrDoc> removeAggregatedItems(String targetResourceMapId, SolrDoc doc,
-            List<String> resourceMapIdsInDoc, List<String> aggregatedItemsInDoc, String fieldNameRemoved) {
+    private List<SolrDoc> removeAggregatedItems(
+        String targetResourceMapId, SolrDoc doc,
+        List<String> resourceMapIdsInDoc,
+        List<String> aggregatedItemsInDoc,
+        String fieldNameRemoved) {
         List<SolrDoc> updatedSolrDocs = new ArrayList<>();
         if (doc != null && resourceMapIdsInDoc != null && aggregatedItemsInDoc != null
                 && fieldNameRemoved != null) {
@@ -624,8 +636,10 @@ public class SolrIndex {
                 updatedSolrDocs.add(doc);
             } else if (resourceMapIdsInDoc.size() > 1) {
                 //we have multiple resource maps. We should match them.                     
-                Map<String, String> ids = matchResourceMapsAndItems(doc.getIdentifier(),
-                        targetResourceMapId, resourceMapIdsInDoc, aggregatedItemsInDoc, fieldNameRemoved);
+                Map<String, String> ids =
+                    matchResourceMapsAndItems(
+                        doc.getIdentifier(), targetResourceMapId, resourceMapIdsInDoc,
+                        aggregatedItemsInDoc, fieldNameRemoved);
                 if (ids != null) {
                     for (String id : ids.keySet()) {
                         doc.removeFieldsWithValue(fieldNameRemoved, id);
@@ -645,8 +659,12 @@ public class SolrIndex {
      * is a metadata object, we will look the data objects which it describes; If 
      * the targetId is a data object, we will look the metadata object which documents it.
      */
-    private Map<String, String> matchResourceMapsAndItems(String targetId,
-            String targetResourceMapId, List<String> originalResourceMaps, List<String> aggregatedItems, String fieldName) {
+    private Map<String, String> matchResourceMapsAndItems(
+        String targetId,
+        String targetResourceMapId,
+        List<String> originalResourceMaps,
+        List<String> aggregatedItems,
+        String fieldName) {
         Map<String, String> map = new HashMap<>();
         if (targetId != null && targetResourceMapId != null && aggregatedItems != null
                 && fieldName != null) {
@@ -667,15 +685,16 @@ public class SolrIndex {
                         if ((fieldValues != null && fieldValues.contains(targetId))
                                 && (resourceMapIds != null && resourceMapIds
                                         .contains(targetResourceMapId))) {
-                            //okay, we found the target aggregation item id and the resource map id
-                            //in this solr doc. However, we need check if another resource map with different
-                            //id but specify the same relationship. If we have the id(s), we should not
-                            // remove the documents( or documentBy) element since we need to preserve the 
-                            // relationship for the remain resource map. 
+                            // okay, we found the target aggregation item id and the resource map id
+                            // in this solr doc. However, we need check if another resource map with
+                            // different id but specify the same relationship. If we have the id(s),
+                            // we should not remove the documents( or documentBy) element since
+                            // we need to preserve the relationship for the remain resource map.
                             boolean hasDuplicateIds = false;
                             if(originalResourceMaps != null) {
                                for(String id :resourceMapIds) {
-                                    if (originalResourceMaps.contains(id) && !id.equals(targetResourceMapId)) {
+                                   if (originalResourceMaps.contains(id) && !id.equals(
+                                       targetResourceMapId)) {
                                         hasDuplicateIds = true;
                                         break;
                                     }
@@ -684,7 +703,7 @@ public class SolrIndex {
                             if(!hasDuplicateIds) {
                                 map.put(item, targetResourceMapId);
                             }
-                            
+
                         }
                     } catch (Exception e) {
                         log.warn("SolrIndex.matchResourceMapsAndItems - can't get the solrdoc for the id "
@@ -696,16 +715,17 @@ public class SolrIndex {
         return map;
     }
 
-    
+
     /*
-     * Merge two list of updated solr docs. removedDocumentBy has the correct information about documentBy element.
-     * removedDocuments has the correct information about the documents element.
+     * Merge two list of updated solr docs. removedDocumentBy has the correct information about
+     * documentBy element. RemovedDocuments has the correct information about the documents element.
      * So we go through the two list and found the two docs having the same identifier.
      * Get the list of the documents value from the one in the removedDocuments (1).
      * Remove all values of documents from the one in the removedDocumentBy. 
      * Then copy the list of documents value from (1) to the one in the removedDocumentBy.
      */
-    private List<SolrDoc> mergeUpdatedSolrDocs(List<SolrDoc>removedDocumentBy, List<SolrDoc>removedDocuments) {
+    private List<SolrDoc> mergeUpdatedSolrDocs(
+        List<SolrDoc> removedDocumentBy, List<SolrDoc> removedDocuments) {
         List<SolrDoc> mergedDocuments = new ArrayList<>();
         if(removedDocumentBy == null || removedDocumentBy.isEmpty()) {
             mergedDocuments = removedDocuments;
@@ -737,7 +757,7 @@ public class SolrIndex {
                                     docInRemovedDocBy.addField(
                                         new SolrElementField(SolrElementField.FIELD_DOCUMENTS, id));
                                 }
-                                
+
                             }
                         }
                         //intersect the resource map ids.
@@ -777,7 +797,6 @@ public class SolrIndex {
         }
         return mergedDocuments;
     }
-    
 
     /*
      * Remove a pid which is part of resource map.
@@ -794,7 +813,6 @@ public class SolrIndex {
                         SolrDoc solrDoc = httpService.getSolrDocumentById(solrQueryUri, documentsValue);
                         if (solrDoc != null) {
                             solrDoc.removeFieldsWithValue(SolrElementField.FIELD_ISDOCUMENTEDBY, pid);
-                            //deleteDocFromIndex(documentsValue);
                             insertToIndex(solrDoc);
                         }
                         break;
@@ -820,7 +838,6 @@ public class SolrIndex {
                         SolrDoc solrDoc = httpService.getSolrDocumentById(solrQueryUri, documentedByValue);
                         if (solrDoc != null) {
                             solrDoc.removeFieldsWithValue(SolrElementField.FIELD_DOCUMENTS, pid);
-                            //deleteDocFromIndex(documentedByValue);
                             insertToIndex(solrDoc);
                         }
                         break;
@@ -847,7 +864,7 @@ public class SolrIndex {
             } catch (IOException e) {
                 throw e;
             }
-            
+
         }
     }
 
