@@ -406,7 +406,7 @@ public class SolrIndex {
         } catch (SolrServerException e) {
             if (e.getMessage().contains(VERSION_CONFLICT) && VERSION_CONFLICT_MAX_ATTEMPTS > 0) {
                 log.info("SolrIndex.update - Indexer grabbed an older version (version conflict) "
-                             + "of the solr doc for object " + pid.getValue()
+                             + "of a solr doc when it processed the object " + pid.getValue()
                         + ". It will try " + VERSION_CONFLICT_MAX_ATTEMPTS + " to fix the issues");
                 for (int i=0; i<VERSION_CONFLICT_MAX_ATTEMPTS; i++) {
                     try {
@@ -416,15 +416,16 @@ public class SolrIndex {
                     } catch (SolrServerException ee) {
                         if (ee.getMessage().contains(VERSION_CONFLICT)) {
                             log.info("SolrIndex.update - Indexer grabbed an older version "
-                                     + "(version conflict) of the solr doc for object "
+                                     + "(version conflict) of a solr doc when it processed object "
                                      + pid.getValue() + ". It will process it again in oder to get "
                                      + "the new solr doc copy. This is the " + (i+1)
                                      + " time to re-try.");
-                            if (i == (VERSION_CONFLICT_MAX_ATTEMPTS -1)) {
-                                log.warn("SolrIndex.update - Indexer grabbed an older version of "
-                                             + "the solr doc for object " + pid.getValue()
-                                         + ". However, Metacat already tried the max times and still"
-                                         +" can't fix the issue.");
+                            if (i >= (VERSION_CONFLICT_MAX_ATTEMPTS - 1)) {
+                                log.error("SolrIndex.update - Indexer grabbed an older version of "
+                                         + "a solr doc when it processed object " + pid.getValue()
+                                         + ". However, Metacat already tried the max times - "
+                                         + VERSION_CONFLICT_MAX_ATTEMPTS
+                                         + " and still can't fix the issue.");
                                 throw ee;
                             }
                         } else {
