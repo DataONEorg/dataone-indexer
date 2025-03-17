@@ -407,7 +407,8 @@ public class SolrIndex {
             if (e.getMessage().contains(VERSION_CONFLICT) && VERSION_CONFLICT_MAX_ATTEMPTS > 0) {
                 log.info("SolrIndex.update - Indexer grabbed an older version (version conflict) "
                              + "of a solr doc when it processed the object " + pid.getValue()
-                        + ". It will try " + VERSION_CONFLICT_MAX_ATTEMPTS + " to fix the issues");
+                             + ". It will make " + VERSION_CONFLICT_MAX_ATTEMPTS + " attempts to "
+                             + "fix the issues");
                 for (int i=0; i<VERSION_CONFLICT_MAX_ATTEMPTS; i++) {
                     try {
                         Thread.sleep(VERSION_CONFLICT_WAITING);
@@ -418,8 +419,7 @@ public class SolrIndex {
                             log.info("SolrIndex.update - Indexer grabbed an older version "
                                      + "(version conflict) of a solr doc when it processed object "
                                      + pid.getValue() + ". It will process it again in oder to get "
-                                     + "the new solr doc copy. This is the " + (i+1)
-                                     + " time to re-try.");
+                                     + "the new solr doc copy. This is attempt number: " + (i+1));
                             if (i >= (VERSION_CONFLICT_MAX_ATTEMPTS - 1)) {
                                 log.error("SolrIndex.update - Indexer grabbed an older version of "
                                          + "a solr doc when it processed object " + pid.getValue()
@@ -623,10 +623,8 @@ public class SolrIndex {
      * Process the list of ids of the documentBy/documents in a solr doc.
      */
     private List<SolrDoc> removeAggregatedItems(
-        String targetResourceMapId, SolrDoc doc,
-        List<String> resourceMapIdsInDoc,
-        List<String> aggregatedItemsInDoc,
-        String fieldNameRemoved) {
+        String targetResourceMapId, SolrDoc doc, List<String> resourceMapIdsInDoc,
+        List<String> aggregatedItemsInDoc, String fieldNameRemoved) {
         List<SolrDoc> updatedSolrDocs = new ArrayList<>();
         if (doc != null && resourceMapIdsInDoc != null && aggregatedItemsInDoc != null
                 && fieldNameRemoved != null) {
@@ -661,11 +659,8 @@ public class SolrIndex {
      * the targetId is a data object, we will look the metadata object which documents it.
      */
     private Map<String, String> matchResourceMapsAndItems(
-        String targetId,
-        String targetResourceMapId,
-        List<String> originalResourceMaps,
-        List<String> aggregatedItems,
-        String fieldName) {
+        String targetId, String targetResourceMapId, List<String> originalResourceMaps,
+        List<String> aggregatedItems, String fieldName) {
         Map<String, String> map = new HashMap<>();
         if (targetId != null && targetResourceMapId != null && aggregatedItems != null
                 && fieldName != null) {
@@ -689,7 +684,7 @@ public class SolrIndex {
                             // okay, we found the target aggregation item id and the resource map id
                             // in this solr doc. However, we need check if another resource map with
                             // different id but specify the same relationship. If we have the id(s),
-                            // we should not remove the documents( or documentBy) element since
+                            // we should not remove the documents (or documentBy) element since
                             // we need to preserve the relationship for the remain resource map.
                             boolean hasDuplicateIds = false;
                             if(originalResourceMaps != null) {
