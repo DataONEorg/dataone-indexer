@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
  * @author Tao
  */
 public class IndexWorkerIT {
-    private static final int LIMIT = 100;
+    private static final int LIMIT = 10;
     @Rule
     public EnvironmentVariablesRule environmentVariablesRule =
         new EnvironmentVariablesRule("METACAT_OSTI_TOKEN", null);
