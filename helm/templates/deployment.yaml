@@ -51,6 +51,7 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.readinessProbe.enabled }}
           livenessProbe:
             exec:
               command:
@@ -59,6 +60,8 @@ spec:
                 - test $(($(date +%s) - $(stat -c %Y /var/lib/dataone-indexer/livenessprobe))) -lt 20
             initialDelaySeconds: 20
             periodSeconds: 15
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
             exec:
               command:
@@ -67,6 +70,7 @@ spec:
                 - test $(($(date +%s) - $(stat -c %Y /var/lib/dataone-indexer/readinessprobe))) -lt 40
             initialDelaySeconds: 20
             periodSeconds: 35
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
@@ -110,32 +114,35 @@ spec:
                   optional: true
             {{ end }}
       initContainers:
-        - name: init-rabbitmq
+        - name: dependencies
           image: busybox:latest
           command:
             - sh
             - -c
-            - >
-              HOST="{{ include "idxworker.rabbitmq.hostname" . }}";
-              PORT={{ include "idxworker.rabbitmq.hostport" . }};
-              until nc -z $HOST $PORT > /dev/null; do
-              echo waiting for RabbitMQ at $HOST - port $PORT; sleep 1; done;
-        - name: init-solr
-          image: busybox:latest
-          command:
-            - sh
-            - -c
-            - >
-              URI="/solr/
+            - |
+              ##
+              ## wait for RabbitMQ to be ready...
+              ##
+              RMQHOST="{{ include "idxworker.rabbitmq.hostname" . }}";
+              RMQPORT={{ include "idxworker.rabbitmq.hostport" . }};
+              echo "* * * Checking if RabbitMQ is ready at $RMQHOST:$RMQPORT * * *";
+              until nc -z $RMQHOST $RMQPORT > /dev/null; do
+              echo waiting for RabbitMQ at $RMQHOST - port $RMQPORT; sleep 1; done;
+              ##
+              ## wait for Solr to be ready...
+              ##
+              SOLRURI="/solr/
               {{- required "solr.customCollection IS REQUIRED" .Values.solr.customCollection -}}
                   /admin/file?file=schema.xml&contentType=text/xml";
               {{- $solrHost := (include "idxworker.solr.hostname" .) }}
   {{- $solrPort := (required "solr.service.ports.http REQUIRED" .Values.solr.service.ports.http) }}
-              until [[ $(echo -e "GET $URI HTTP/1.1\r\nHost: {{ $solrHost -}}
+              echo "* * * Checking if Solr is ready at http://{{ $solrHost }}:
+              {{- $solrPort }}$SOLRURI * * *";
+              until [[ $(echo -e "GET $SOLRURI HTTP/1.1\r\nHost: {{ $solrHost -}}
               \r\n\r\n" | nc {{ $solrHost }} {{ $solrPort -}}
               | grep -c "<schema name=\"dataone") == 1 ]]; do
               echo waiting for Solr Schema to be accessible at http://{{ $solrHost }}:
-              {{- $solrPort }}$URI; sleep 1; done;
+              {{- $solrPort }}$SOLRURI; sleep 1; done;
       volumes:
         - name: {{ .Release.Name }}-config-volume
           configMap:
