@@ -51,7 +51,7 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if .Values.readinessProbe.enabled }}
+          {{- if .Values.idxworker.readinessProbe.enabled }}
           livenessProbe:
             exec:
               command:
@@ -61,7 +61,7 @@ spec:
             initialDelaySeconds: 20
             periodSeconds: 15
           {{- end }}
-          {{- if .Values.readinessProbe.enabled }}
+          {{- if .Values.idxworker.readinessProbe.enabled }}
           readinessProbe:
             exec:
               command:
