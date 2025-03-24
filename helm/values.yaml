@@ -212,6 +212,13 @@ idxworker:
     hashStoreDirWidth: 2
     hashStoreDirDepth: 3
 
+  ## @param idxworker.livenessProbe.enabled Enable or disable default probe (see deployment.yaml)
+  livenessProbe:
+    enabled: true
+  ## @param idxworker.readinessProbe.enabled Enable or disable default probe (see deployment.yaml)
+  readinessProbe:
+    enabled: true
+
 ## @section RabbitMQ Bitnami Sub-Chart Configuration
 ##
 rabbitmq:
