@@ -17,7 +17,7 @@ RUN apt update && apt -y install \
     vim
 
 RUN groupadd -g 59997 d1indexer && useradd -u 59997 -g 59997 d1indexer \
-    && touch ./livenessprobe
+    && touch ./livenessprobe && touch ./readinessprobe
 
 # The most recently built jar file is copied from the maven build directory to this dir by maven, so that
 # it can be copied to the image.
@@ -28,6 +28,7 @@ COPY ./docker/entrypoint.sh .
 RUN chown d1indexer dataone-index-worker-${TAG}-shaded.jar
 RUN chown d1indexer entrypoint.sh
 RUN chown d1indexer livenessprobe
+RUN chown d1indexer readinessprobe
 
 #Run Container as d1indexer
 USER 59997:59997
