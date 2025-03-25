@@ -1,8 +1,7 @@
 # Build from parent dir with a command like:
 #     `nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 .`
 # Use an OpenJDK runtime as a parent image
-# Note: the prior alpine-based openjdk image had network DNS issues, so replacing with Eclipse Temurin
-FROM eclipse-temurin:17.0.12_7-jre-jammy
+FROM eclipse-temurin:17.0.14_7-jre-noble
 
 ARG TAG="NO-TAG"
 ENV TAG=${TAG}
@@ -15,7 +14,7 @@ RUN apt update && apt -y install \
     bash \
     figlet \
     curl \
-    nano
+    vim
 
 #Add a user & group with id=1001 and name=d1indexer
 RUN groupadd -g 1000 d1indexer && useradd -u 1000 -g 1000 d1indexer \
