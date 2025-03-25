@@ -16,8 +16,7 @@ RUN apt update && apt -y install \
     curl \
     vim
 
-#Add a user & group with id=1001 and name=d1indexer
-RUN groupadd -g 1000 d1indexer && useradd -u 1000 -g 1000 d1indexer \
+RUN groupadd -g 59997 d1indexer && useradd -u 59997 -g 59997 d1indexer \
     && touch ./livenessprobe
 
 # The most recently built jar file is copied from the maven build directory to this dir by maven, so that
@@ -31,7 +30,7 @@ RUN chown d1indexer entrypoint.sh
 RUN chown d1indexer livenessprobe
 
 #Run Container as d1indexer
-USER 1000
+USER 59997
 
 # Connect this image to a GitHub repository
 LABEL org.opencontainers.image.source="https://github.com/dataoneorg/dataone-indexer"
