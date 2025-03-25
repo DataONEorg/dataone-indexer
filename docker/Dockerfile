@@ -30,7 +30,7 @@ RUN chown d1indexer entrypoint.sh
 RUN chown d1indexer livenessprobe
 
 #Run Container as d1indexer
-USER 59997
+USER 59997:59997
 
 # Connect this image to a GitHub repository
 LABEL org.opencontainers.image.source="https://github.com/dataoneorg/dataone-indexer"
