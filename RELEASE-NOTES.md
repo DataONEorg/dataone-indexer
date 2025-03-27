@@ -1,5 +1,37 @@
 # dataone-indexer Release Notes
 
+## dataone-indexer version 3.1.2 & helm chart version 1.2.0
+
+* Release date: 2025-03-27
+* **dataone-indexer version 3.1.2**
+  * This is a patch release to update solr and fix some issues:
+    * [Restore disconnected RabbitMQ connections](https://github.com/DataONEorg/dataone-indexer/issues/176)
+      - resolves issue where RabbitMQ connections were not being restored after a disconnect,
+        leading to the indexer failing to dequeue new jobs.
+    * [Update solr library to v9.8.0](https://github.com/DataONEorg/dataone-indexer/issues/169)
+    * [Increase solrVerConflictMaxTries](https://github.com/DataONEorg/dataone-indexer/issues/158)
+      - increases the likelihood of recovery from version conflict issues
+* **helm chart version 1.2.0**
+  * Bump indexer App version to 3.1.2
+  * Update base image to `eclipse-temurin:17.0.14_7-jre-noble` 
+    - uid `1000` already in use on this new image, so Dockerfile now creates and runs as uid/gid
+      `59997` to match permissions on the shared metacat volume.
+  * Update Bitnami Solr subchart to version 9.5.5 (Solr app version 9.8.1)
+  * Update Bitnami RabbitMQ subchart to version 11.16.2 (RabbitMQ app version 3.11.18)
+  * Add readiness probe that monitors RabbitMQ connection status
+  * Add lifecycle postStart hook to enable all RabbitMQ feature flags, since this is now needed for
+    future upgrades
+    - see https://www.rabbitmq.com/blog/2022/07/20/required-feature-flags-in-rabbitmq-3.11
+  * [Address deprecated rabbitmq health checks](https://github.com/DataONEorg/dataone-indexer/issues/163)
+  * [Consolidate the 2 RMQ and Solr initContainers into
+    one](https://github.com/DataONEorg/dataone-indexer/issues/183) for faster startup and less
+    resource usage
+  * [Set k8s container resources requests & limits for index workers, and all
+    subcharts](https://github.com/DataONEorg/dataone-indexer/issues/182)
+  * [Enable indexer-metacat-pv to Mount a Host Path](https://github.com/DataONEorg/dataone-indexer/issues/162)
+  * Add `fsGroupChangePolicy: OnRootMismatch` to `podSecurityContext`
+
+
 ## dataone-indexer helm chart version 1.1.2
 
 * Release date: 2025-02-24
