@@ -16,7 +16,7 @@
         <d1_libclient_java.version>2.3.1</d1_libclient_java.version>
         <solr.version>9.8.0</solr.version>
         <solr.test.home>solr9home</solr.test.home>
-        <log4j.version>2.17.1</log4j.version>
+        <log4j.version>2.24.3</log4j.version>
         <skipIntegrationTests>${skipTests}</skipIntegrationTests>
     </properties>
 
