@@ -435,7 +435,7 @@ public class IndexWorker {
                     generateConnectionAndChannel();
                 } catch (TimeoutException | IOException e) {
                     if (i < times - 1) {
-                        logger.debug("The attempt to restore RabbitMQ connection and channel "
+                        logger.warn("The attempt to restore RabbitMQ connection and channel "
                                          + "caught an exception " + e.getMessage()
                                          + " After waiting one minute, Indexer will try again. "
                                          + "Tries so far:" + i);
