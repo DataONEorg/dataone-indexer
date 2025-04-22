@@ -526,7 +526,8 @@ public class IndexWorker {
                 if (!Files.exists(path)) {
                     Files.createFile(path);
                 }
-                if (rabbitMQconnection.isOpen() && rabbitMQchannel.isOpen()) {
+                if (rabbitMQconnection != null && rabbitMQchannel != null
+                    && rabbitMQconnection.isOpen() && rabbitMQchannel.isOpen()) {
                     Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
                     logger.debug("The RabbitMQ connection and channel are healthy.");
                 } else {
@@ -540,7 +541,7 @@ public class IndexWorker {
                 logger.error("Failed to update file: " + path, e);
             }
         };
-        scheduler.scheduleAtFixedRate(task, 1, 30, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(task, 2, 30, TimeUnit.SECONDS);
         logger.info("ReadinessProb started");
     }
 
