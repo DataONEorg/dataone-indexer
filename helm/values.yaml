@@ -74,21 +74,18 @@ podAnnotations: {}
 
 podSecurityContext:
   fsGroup: 1000 # must match metacat group for shared volume at /var/metacat
+  fsGroupChangePolicy: OnRootMismatch
 
 securityContext:
   runAsNonRoot: true
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources:
+  requests:
+    cpu: 500m
+    memory: 1024Mi
+  limits:
+    cpu: 750m
+    memory: 1536Mi
 
 autoscaling:
   enabled: true
@@ -212,6 +209,13 @@ idxworker:
     hashStoreDirWidth: 2
     hashStoreDirDepth: 3
 
+  ## @param idxworker.livenessProbe.enabled Enable or disable default probe (see deployment.yaml)
+  livenessProbe:
+    enabled: true
+  ## @param idxworker.readinessProbe.enabled Enable or disable default probe (see deployment.yaml)
+  readinessProbe:
+    enabled: true
+
 ## @section RabbitMQ Bitnami Sub-Chart Configuration
 ##
 rabbitmq:
@@ -233,6 +237,33 @@ rabbitmq:
     ##
     existingPasswordSecret: "ssss"
 
+  resources:
+    requests:
+      cpu: 1.0
+      memory: 2048Mi
+    limits:
+      cpu: 1.5
+      memory: 3072Mi
+
+  # Enabling all feature flags - required for subsequent upgrades; see:
+  # https://www.rabbitmq.com/blog/2022/07/20/required-feature-flags-in-rabbitmq-3.11
+  lifecycleHooks:
+    postStart:
+      exec:
+        command:
+          - sh
+          - -c
+          - |-
+            HOOK_LOG=/tmp/lifecycle-postStart-hook.log
+            # (hooks are started in a separate process and do not log to stdout, hence the log file)
+            echo "* * * * * * START lifecycle postStart hook * * * * * *" > $HOOK_LOG
+            echo "waiting for /var/lib/rabbitmq/mnesia/${RABBITMQ_NODE_NAME}.pid..." >> $HOOK_LOG
+            echo
+            rabbitmqctl wait /var/lib/rabbitmq/mnesia/${RABBITMQ_NODE_NAME}.pid  >> $HOOK_LOG
+            echo; echo "rabbitmq is ready; enabling all feature flags..." >> $HOOK_LOG
+            rabbitmqctl enable_feature_flag all >> $HOOK_LOG
+            echo; echo "Done." >> $HOOK_LOG
+            echo "* * * * * *  END lifecycle postStart hook  * * * * * *" >> $HOOK_LOG
 
 ## @section Solr Bitnami Sub-Chart Configuration
 ##
@@ -294,3 +325,8 @@ solr:
     postStart:
       exec:
         command: ["/bin/bash", "-c", "/solrconfig/config-solr.sh"]
+
+  ## @param resourcesPreset Automatically set resources section according to presets. See:
+  ## https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L14
+  ##
+  resourcesPreset: "large"

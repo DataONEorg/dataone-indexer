@@ -94,6 +94,7 @@ public class IndexWorker {
     private ConnectionFactory factory = null;
 
     private final ReentrantLock connectionLock = new ReentrantLock();
+    private boolean isK8s = false;
     /**
      * Commandline main for the IndexWorker to be started.
      *
@@ -222,7 +223,14 @@ public class IndexWorker {
      * @throws TimeoutException
      * @throws ServiceFailure
      */
-    public IndexWorker(Boolean initialize) throws IOException, TimeoutException, ServiceFailure {
+    public IndexWorker(Boolean initialize) throws IOException, TimeoutException {
+        String value = System.getenv("KUBERNETES_SERVICE_HOST");
+        // Java doc says: the string value of the variable, or null if the variable is not defined
+        // in the system environment
+        if (value != null) {
+            isK8s = true;
+            logger.info("The index worker is in the k8s environment.");
+        }
         if (initialize) {
             initExecutorService();//initialize the executor first
             initIndexQueue();
@@ -427,7 +435,7 @@ public class IndexWorker {
                     generateConnectionAndChannel();
                 } catch (TimeoutException | IOException e) {
                     if (i < times - 1) {
-                        logger.debug("The attempt to restore RabbitMQ connection and channel "
+                        logger.warn("The attempt to restore RabbitMQ connection and channel "
                                          + "caught an exception " + e.getMessage()
                                          + " After waiting one minute, Indexer will try again. "
                                          + "Tries so far:" + i);
@@ -523,12 +531,15 @@ public class IndexWorker {
         Path path = Paths.get("./readinessprobe");
         Runnable task = () -> {
             try {
-                if (!Files.exists(path)) {
+                if (isK8s && !Files.exists(path)) {
                     Files.createFile(path);
                 }
                 if (rabbitMQconnection != null && rabbitMQchannel != null
                     && rabbitMQconnection.isOpen() && rabbitMQchannel.isOpen()) {
-                    Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
+                    if (isK8s) {
+                        Files.setLastModifiedTime(
+                            path, FileTime.fromMillis(System.currentTimeMillis()));
+                    }
                     logger.debug("The RabbitMQ connection and channel are healthy.");
                 } else {
                     logger.error("The RabbitMQ connection or channel were closed. DataONE-indexer "
