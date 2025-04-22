@@ -419,6 +419,11 @@ public class IndexWorker {
                                           + "channel: " + e.getMessage(), e);
             }
             // Tell RabbitMQ this worker is ready for tasks
+            if (consumer == null) {
+                throw new RuntimeException(
+                    "The consumer object is null and hasn't been initialized. IndexWorker.start "
+                        + "should be called first.");
+            }
             rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
             logger.debug("RabbitMQ connection and channel successfully re-created");
         } finally {
@@ -516,7 +521,7 @@ public class IndexWorker {
                                      + "configuration)");
                     try {
                         recreateConnection();
-                    } catch (IOException e) {
+                    } catch (IOException | RuntimeException e) {
                         logger.error("DataONE-indexer cannot recreate the RabbitMQ "
                                          + "connections/channels since " + e.getMessage(), e);
                     }
