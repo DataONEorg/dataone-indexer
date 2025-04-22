@@ -384,24 +384,6 @@ public class IndexWorker {
                     rabbitMQchannel.basicReject(envelope.getDeliveryTag(), requeue);
                 }
             }
-
-            @Override
-            public void handleShutdownSignal(String consumerTag, ShutdownSignalException sig) {
-
-                logger.debug(
-                    "handleShutdownSignal called by amqp client code. Consumer tag: " + consumerTag
-                        + "; ShutdownSignalException: " + sig.getMessage());
-                try {
-                    recreateConnection(this);
-                    logger.debug(
-                        "handleShutdownSignal successfully recreated connection. Consumer tag: "
-                            + consumerTag);
-                } catch (IOException e) {
-                    logger.error(
-                        "handleShutdownSignal unable to recreate connection. Consumer tag: "
-                            + consumerTag + "; ShutdownSignalException" + sig.getMessage());
-                }
-            }
         };
 
         // Set autoAck = false
