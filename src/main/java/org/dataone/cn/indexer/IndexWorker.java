@@ -96,6 +96,8 @@ public class IndexWorker {
     private final ReentrantLock connectionLock = new ReentrantLock();
     private boolean isK8s = false;
     private Consumer consumer;
+    protected static int readinessInitialDelaySec = 2;
+    protected static int readinessPeriodSec = 30;
     /**
      * Commandline main for the IndexWorker to be started.
      *
@@ -530,7 +532,8 @@ public class IndexWorker {
                 logger.error("Failed to update file: " + path, e);
             }
         };
-        scheduler.scheduleAtFixedRate(task, 2, 30, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(
+            task, readinessInitialDelaySec, readinessPeriodSec, TimeUnit.SECONDS);
         logger.info("ReadinessProb started");
     }
 
