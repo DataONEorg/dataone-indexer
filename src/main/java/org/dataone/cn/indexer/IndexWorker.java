@@ -411,52 +411,36 @@ public class IndexWorker {
     }
 
     private void recreateConnection(Consumer consumer) throws IOException {
-        int times = 2880;//If the creation fails, it will try again until 48 hours = 2880 * 1 minute
-        for (int i = 0; i <= times; i++) {
-            connectionLock.lock();
-            try {
-                if (rabbitMQchannel != null && rabbitMQchannel.isOpen()) {
-                    try {
-                        rabbitMQchannel.close();
-                        logger.debug("After closing the RabbitMQ channel.");
-                    } catch (IOException | TimeoutException e) {
-                        logger.warn("The rabbitmq channel can't be closed since " + e.getMessage());
-                    }
-                }
-                if (rabbitMQconnection != null && rabbitMQconnection.isOpen()) {
-                    try {
-                        rabbitMQconnection.close();
-                        logger.debug("After closing the RabbitMQ connection.");
-                    } catch (IOException e) {
-                        logger.warn("The rabbitmq connection can't be closed since " + e.getMessage());
-                    }
-                }
+        connectionLock.lock();
+        try {
+            if (rabbitMQchannel != null && rabbitMQchannel.isOpen()) {
                 try {
-                    generateConnectionAndChannel();
-                } catch (TimeoutException | IOException e) {
-                    if (i < times - 1) {
-                        logger.warn("The attempt to restore RabbitMQ connection and channel "
-                                         + "caught an exception " + e.getMessage()
-                                         + " After waiting one minute, Indexer will try again. "
-                                         + "Tries so far:" + i);
-                        try {
-                            Thread.sleep(60000);
-                        } catch (InterruptedException ex) {
-                            logger.debug("The sleeping of the thread was interrupted.");
-                        }
-                        continue;
-                    }
-                    throw new IOException("Exception trying to re-initialize connection and "
-                                              + "channel: " + e.getMessage(), e);
+                    rabbitMQchannel.close();
+                    logger.debug("After closing the RabbitMQ channel.");
+                } catch (Exception e) {
+                    logger.warn("The rabbitmq channel can't be closed since " + e.getMessage());
                 }
-                // Tell RabbitMQ this worker is ready for tasks
-                rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
-                logger.debug("RabbitMQ connection and channel successfully re-created");
-                break;
-            } finally {
-                connectionLock.unlock();
-                logger.debug("The connection lock was released");
             }
+            if (rabbitMQconnection != null && rabbitMQconnection.isOpen()) {
+                try {
+                    rabbitMQconnection.close();
+                    logger.debug("After closing the RabbitMQ connection.");
+                } catch (Exception e) {
+                    logger.warn("The rabbitmq connection can't be closed since " + e.getMessage());
+                }
+            }
+            try {
+                generateConnectionAndChannel();
+            } catch (TimeoutException | IOException e) {
+                throw new IOException("Exception trying to re-initialize connection and "
+                                          + "channel: " + e.getMessage(), e);
+            }
+            // Tell RabbitMQ this worker is ready for tasks
+            rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
+            logger.debug("RabbitMQ connection and channel successfully re-created");
+        } finally {
+            connectionLock.unlock();
+            logger.debug("The connection lock was released");
         }
     }
 
