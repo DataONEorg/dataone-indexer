@@ -525,7 +525,7 @@ public class IndexWorker {
                         recreateConnection();
                     } catch (IOException | RuntimeException e) {
                         logger.error("DataONE-indexer cannot recreate the RabbitMQ "
-                                         + "connections/channels since " + e.getMessage(), e);
+                                         + "connections/channels since " + e.getMessage());
                     }
                 }
             } catch (IOException e) {
