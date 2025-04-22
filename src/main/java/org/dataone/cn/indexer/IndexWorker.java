@@ -95,6 +95,7 @@ public class IndexWorker {
 
     private final ReentrantLock connectionLock = new ReentrantLock();
     private boolean isK8s = false;
+    private Consumer consumer;
     /**
      * Commandline main for the IndexWorker to be started.
      *
@@ -342,7 +343,7 @@ public class IndexWorker {
      * @throws IOException
      */
     public void start() throws IOException {
-        final Consumer consumer = new DefaultConsumer(rabbitMQchannel) {
+        consumer = new DefaultConsumer(rabbitMQchannel) {
             @Override
             public void handleDelivery(
                 String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
@@ -392,7 +393,7 @@ public class IndexWorker {
         logger.info("IndexWorker.start - Calling basicConsume and waiting for the coming messages");
     }
 
-    private void recreateConnection(Consumer consumer) throws IOException {
+    private void recreateConnection() throws IOException {
         connectionLock.lock();
         try {
             if (rabbitMQchannel != null && rabbitMQchannel.isOpen()) {
@@ -513,6 +514,12 @@ public class IndexWorker {
                                      + "message shows up repeatedly and there is no network outage,"
                                      + " intervention may be required (e.g. checking "
                                      + "configuration)");
+                    try {
+                        recreateConnection();
+                    } catch (IOException e) {
+                        logger.error("DataONE-indexer cannot recreate the RabbitMQ "
+                                         + "connections/channels since " + e.getMessage(), e);
+                    }
                 }
             } catch (IOException e) {
                 logger.error("Failed to update file: " + path, e);
