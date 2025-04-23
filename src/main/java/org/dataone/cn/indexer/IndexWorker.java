@@ -97,7 +97,7 @@ public class IndexWorker {
     private boolean isK8s = false;
     private Consumer consumer;
     protected static int readinessInitialDelaySec = 2;
-    protected static int readinessPeriodSec = 30;
+    protected static int readinessPeriodSec = 10;
     /**
      * Commandline main for the IndexWorker to be started.
      *
