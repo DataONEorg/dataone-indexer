@@ -120,10 +120,15 @@ Check if RabbitMQ SubChart is enabled
 {{/*
 set RabbitMQ HostName
 */}}
-{{- define "idxworker.rabbitmq.hostname" -}}
+{{- define "idxworker.rabbitmq.hostname" }}
 {{- $rmqHost := .Values.idxworker.rabbitmqHostname }}
-{{- if and (include "rmq.enabled" .) (not $rmqHost) -}}
-{{- $rmqHost = printf "%s-rabbitmq-headless" .Release.Name -}}
+{{- if and (include "rmq.enabled" .) (not $rmqHost) }}
+{{- if .Values.rabbitmq.fullnameOverride }}
+{{- $rmqHost = printf "%s-headless" (.Values.rabbitmq.fullnameOverride | trunc 63 | trimSuffix "-") }}
+{{- else }}
+{{- $rmqName := (required ".Values.rabbitmq.nameOverride REQUIRED in indexer chart" .Values.rabbitmq.nameOverride) }}
+{{- $rmqHost = printf "%s-%s-headless" .Release.Name ($rmqName | trunc 63 | trimSuffix "-") }}
+{{- end }}
 {{- end }}
 {{- $rmqHost }}
 {{- end }}
