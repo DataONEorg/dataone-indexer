@@ -223,6 +223,26 @@ idxworker:
 ##
 rabbitmq:
   enabled: true
+
+  ## @param rabbitmq.fullnameOverride String to fully override rabbitmq.fullname template (optional)
+  ## Takes precedence over rabbitmq.nameOverride.
+  ##
+  fullnameOverride: ""
+
+  ## @param rabbitmq.nameOverride REQUIRED partial override for resourcename used for pods, PVCs etc
+  ## Maintains the release name, so the resulting resource name for the pods etc. will begin:
+  ## myrelease-nameOverride-...
+  ##
+  ## We change this with every change in rmq subchart version, so that we can use a new PV/PVC for
+  ## each release. This means each new installation is a fresh install, instead of being an
+  ## upgrade - which would be a lot more onerous (see rabbitMQ docs).
+  ##
+  ## Convention is to use 'rabbitmq', followed by the rabbitmq app version (not the chart version),
+  ## with periods replaced by dashes; e.g.:
+  ##  nameOverride: "rabbitmq-3-13-7"  ## for rabbitmq app version 3.13.7 (Bitnami chart v.14.7.0)
+  ##
+  nameOverride: "rabbitmq-3-13-7"
+
   persistence:
     size: 10Gi
   #replicaCount: 3
