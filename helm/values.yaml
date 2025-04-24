@@ -282,7 +282,22 @@ solr:
   coreNames:
     - dataone-core
 
-  #javaMem: "-Xms512m -Xmx2g"
+  ## @param solr.javaMem Java heap memory settings for the solr container (format "-Xms512m -Xmx2g")
+  ## You may need to override for large production installations (e.g. "-Xms2g -Xmx15g" for
+  ## arcticdata.io).
+  ## IMPORTANT: the default bitnami solr chart resource values are set to "medium"
+  ## (memory limit 1536Mi), which is enough for the default java heap size of 512m, but insufficient
+  ## to support the max heap size of 2g, causing containers to be OOMKilled as memory usage grows.
+  ## It is strongly recommended that you override solr.resources.limits.memory to at least 512m more
+  ## than the max heap size. Example:
+  ## solr:
+  ##   resources:
+  ##     requests:
+  ##       memory: 1024Mi
+  ##     limits:
+  ##       memory: 2560Mi  ## 2g max heap size + 512m buffer
+  ##
+  javaMem: "-Xms512m -Xmx2g"
 
   containerSecurityContext:
     runAsUser: 1000
@@ -297,6 +312,7 @@ solr:
       http: *global-solr-port
   containerPorts:
     http: *global-solr-port
+
   auth:
     ## Nov 2023: Agreed with Matt we don't need solr auth for now, since solr isn't exposed
     ## outside the cluster. Can add later if needed by anyone not using the subchart, and
