@@ -42,6 +42,9 @@ public class IndexWorkerIT {
         worker.start();
         Connection connection = worker.getRabbitMQconnection();
         connection.close();
+        IndexWorker.readinessInitialDelaySec = 0;
+        IndexWorker.readinessPeriodSec = 1;
+        worker.startReadinessProbe();
         int index = 0;
         while (!worker.getRabbitMQchannel().isOpen() && index < LIMIT) {
             Thread.sleep(100);
@@ -53,7 +56,7 @@ public class IndexWorkerIT {
         channel.close();
         index = 0;
         while (!worker.getRabbitMQchannel().isOpen() && index < LIMIT) {
-            Thread.sleep(100);
+            Thread.sleep(300);
             index++;
         }
         assertTrue(worker.getRabbitMQconnection().isOpen());
