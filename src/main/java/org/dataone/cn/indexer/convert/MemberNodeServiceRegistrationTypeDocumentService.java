@@ -25,12 +25,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
 import org.dataone.cn.indexer.XmlDocumentUtility;
 import org.dataone.configuration.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +41,8 @@ import org.xml.sax.SAXException;
 
 public class MemberNodeServiceRegistrationTypeDocumentService {
 
-    private static Logger log = Logger
-            .getLogger(MemberNodeServiceRegistrationTypeDocumentService.class.getName());
+    private static Log log = LogFactory
+            .getLog(MemberNodeServiceRegistrationTypeDocumentService.class.getName());
 
     private static final String SERVICE_DOC_LOCATION_URL = Settings.getConfiguration().getString(
             "dataone.mn.registration.serviceType.url");

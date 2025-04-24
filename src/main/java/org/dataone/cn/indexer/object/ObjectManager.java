@@ -9,7 +9,8 @@ import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.client.auth.AuthTokenSession;
 import org.dataone.client.exception.ClientSideException;
 import org.dataone.client.rest.HttpMultipartRestClient;
@@ -40,7 +41,7 @@ public class ObjectManager {
     private static ObjectManager manager = null;
     private static String nodeBaseURL = Settings.getConfiguration().getString("dataone.mn.baseURL");
     private static String DataONEauthToken = null;
-    private static Logger logger = Logger.getLogger(ObjectManager.class);
+    private static Log logger = LogFactory.getLog(ObjectManager.class);
     private static Storage storage = null;
     private static final String TOKEN_VARIABLE_NAME = "DATAONE_AUTH_TOKEN";
     private static final String TOKEN_FILE_PATH_PROP_NAME = "dataone.nodeToken.file";

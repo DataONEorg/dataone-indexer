@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
@@ -26,11 +26,12 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.parser.ISolrDataField;
 import org.dataone.cn.indexer.annotation.SparqlField;
 
 public class OntologyModelService {
-  private static Logger log = Logger.getLogger(OntologyModelService.class);
+  private static Log log = LogFactory.getLog(OntologyModelService.class);
   private static String jarPrefix = "jar:file:";
   private static String jarAppendix = "!/";
   private static String filePrefix = "file:src/main/resources/";

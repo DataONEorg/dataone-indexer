@@ -3,7 +3,8 @@ package org.dataone.cn.indexer.resourcemap;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.exceptions.MarshallingException;
@@ -17,7 +18,7 @@ import org.dataone.service.types.v1.SystemMetadata;
 
 public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
 
-    private static Logger logger = Logger.getLogger(IndexVisibilityDelegateImpl.class
+    private static Log logger = LogFactory.getLog(IndexVisibilityDelegateImpl.class
             .getName());
 
     public IndexVisibilityDelegateImpl() {

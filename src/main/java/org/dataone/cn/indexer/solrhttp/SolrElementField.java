@@ -28,7 +28,8 @@ import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * User: Porter Date: 7/25/11 Time: 4:14 PM Contains constants FILED_XXXX for
@@ -38,7 +39,7 @@ import org.apache.log4j.Logger;
  */
 public class SolrElementField {
 
-    private static Logger log = Logger.getLogger(SolrElementField.class);
+    private static Log log = LogFactory.getLog(SolrElementField.class);
 
     public static final String FIELD_ID = "id";
     public static final String FIELD_SERIES_ID = "seriesId";

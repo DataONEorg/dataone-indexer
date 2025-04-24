@@ -44,6 +44,7 @@ import org.apache.commons.codec.EncoderException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -54,7 +55,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.configuration.Settings;
 import org.dataone.service.exceptions.NotFound;
@@ -94,7 +95,7 @@ public class HTTPService {
     private static final String MAX_ROWS = "5000";
     private List<String> copyDestinationFields = null;
 
-    private static Logger log = Logger.getLogger(HTTPService.class.getName());
+    private static Log log = LogFactory.getLog(HTTPService.class.getName());
     private HttpComponentsClientHttpRequestFactory httpRequestFactory;
 
     private String SOLR_SCHEMA_PATH = Settings.getConfiguration().getString("solr.schema.path");

@@ -18,7 +18,8 @@ import net.minidev.json.JSONValue;
 
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrDataField;
 import org.dataone.cn.indexer.parser.SubprocessorUtility;
@@ -45,7 +46,7 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
     public static final String FIELD_ANNOTATED_BY = "sem_annotated_by";
     public static final String FIELD_COMMENT = "sem_comment";
 
-    private static Logger log = Logger.getLogger(AnnotatorSubprocessor.class.getName());
+    private static Log log = LogFactory.getLog(AnnotatorSubprocessor.class.getName());
 
     private SubprocessorUtility processorUtility;
 
