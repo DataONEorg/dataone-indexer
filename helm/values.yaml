@@ -74,18 +74,21 @@ podAnnotations: {}
 
 podSecurityContext:
   fsGroup: 1000 # must match metacat group for shared volume at /var/metacat
-  fsGroupChangePolicy: OnRootMismatch
 
 securityContext:
   runAsNonRoot: true
 
-resources:
-  requests:
-    cpu: 2
-    memory: 1024Mi
-  limits:
-    cpu: 6
-    memory: 4096Mi
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
 autoscaling:
   enabled: true
@@ -220,26 +223,6 @@ idxworker:
 ##
 rabbitmq:
   enabled: true
-
-  ## @param rabbitmq.fullnameOverride String to fully override rabbitmq.fullname template (optional)
-  ## Takes precedence over rabbitmq.nameOverride.
-  ##
-  fullnameOverride: ""
-
-  ## @param rabbitmq.nameOverride REQUIRED partial override for resourcename used for pods, PVCs etc
-  ## Maintains the release name, so the resulting resource name for the pods etc. will begin:
-  ## myrelease-nameOverride-...
-  ##
-  ## We change this with every change in rmq subchart version, so that we can use a new PV/PVC for
-  ## each release. This means each new installation is a fresh install, instead of being an
-  ## upgrade - which would be a lot more onerous (see rabbitMQ docs).
-  ##
-  ## Convention is to use 'rabbitmq', followed by the rabbitmq app version (not the chart version),
-  ## with periods replaced by dashes; e.g.:
-  ##  nameOverride: "rabbitmq-3-13-7"  ## for rabbitmq app version 3.13.7 (Bitnami chart v.14.7.0)
-  ##
-  nameOverride: "rabbitmq-3-13-7"
-
   persistence:
     size: 10Gi
   #replicaCount: 3
@@ -257,13 +240,6 @@ rabbitmq:
     ##
     existingPasswordSecret: "ssss"
 
-  resources:
-    requests:
-      cpu: 1.0
-      memory: 2048Mi
-    limits:
-      cpu: 1.5
-      memory: 3072Mi
 
 ## @section Solr Bitnami Sub-Chart Configuration
 ##
@@ -325,8 +301,3 @@ solr:
     postStart:
       exec:
         command: ["/bin/bash", "-c", "/solrconfig/config-solr.sh"]
-
-  ## @param resourcesPreset Automatically set resources section according to presets. See:
-  ## https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L14
-  ##
-  resourcesPreset: "large"
