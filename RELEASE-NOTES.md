@@ -2,7 +2,7 @@
 
 ## dataone-indexer version 3.1.3 & helm chart version 1.3.0
 
-### Release date: 2025-04-28
+### Release date: 2025-05-01
 
 ### dataone-indexer version 3.1.3
 * This is a patch release to update logging dependencies and fix a connectivity issue:
