@@ -45,7 +45,8 @@
 
 * Reverted changes that previously [set k8s container resources requests & limits for index
   workers, and all subcharts](https://github.com/DataONEorg/dataone-indexer/issues/182), based on
- feedback and helm chart conventions
+ feedback and helm chart conventions.
+  * Explicitly set `solr.javaMem: "-Xms512m -Xmx2g"` in `values.yaml`
 * Bump indexer App version to 3.1.3
 * [Ensure indexer subcharts use Bitnami Common > 2.9](https://github.com/DataONEorg/dataone-indexer/issues/206)
 
