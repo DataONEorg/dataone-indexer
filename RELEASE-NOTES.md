@@ -1,6 +1,6 @@
 # dataone-indexer Release Notes
 
-# dataone-indexer version 3.1.3 & helm chart version 1.3.0
+## dataone-indexer version 3.1.3 & helm chart version 1.3.0
 
 ### Release date: 2025-04-28
 
@@ -26,16 +26,16 @@
 > [!CAUTION]
 > **ENSURE THAT THE RABBITMQ QUEUE IS EMPTY**, before upgrading or installing a new chart version
 > for the first time, because each new chart version will store the queue on a newly-created PV/PVC!
-> 
+>
 > This applies only the initial installation or upgrade. After this, RabbitMQ will continue to use
 > the same newly-created PV/PVC, and the queue will not be lost. The new PVC will be named:
 > `data-[release-name]-rabbitmq-[rmq-version]-[idx]`, where `[rmq-version]` is the rabbitmq app
 > version (not the chart version), with periods replaced by dashes, and `[idx]` is the statefulset
 > ordinal index; e.g.: `data-metacatarctic-rabbitmq-3-13-7-0`
-> 
+>
 > When upgrade or installation is complete, you can then safely `kubectl delete` both the old PVC
 > and the old PV (provided you're certain the queue was empty).
- 
+
 > [!NOTE]
 > This behavior can be overridden by setting `.Values.rabbitmq.nameOverride` to the same name as the
 > previous version, but this is **NOT recommended**, since the RabbitMQ installation then becomes an
@@ -63,7 +63,7 @@
       - increases the likelihood of recovery from version conflict issues
 * **helm chart version 1.2.0**
   * Bump indexer App version to 3.1.2
-  * Update base image to `eclipse-temurin:17.0.14_7-jre-noble` 
+  * Update base image to `eclipse-temurin:17.0.14_7-jre-noble`
     - uid `1000` already in use on this new image, so Dockerfile now creates and runs as uid/gid
       `59997` to match permissions on the shared metacat volume.
   * Update Bitnami Solr subchart to version 9.5.5 (Solr app version 9.8.1)
