@@ -1,5 +1,55 @@
 # dataone-indexer Release Notes
 
+# dataone-indexer version 3.1.3 & helm chart version 1.3.0
+
+### Release date: 2025-04-28
+
+### dataone-indexer version 3.1.3
+* This is a patch release to update logging dependencies and fix a connectivity issue:
+* [Restore disconnected RabbitMQ connections](https://github.com/DataONEorg/dataone-indexer/issues/176) -
+  The fix in [version 3.1.2](#dataone-indexer-version-312--helm-chart-version-120) failed to fully
+  resolve RabbitMQ disconnects under some circumstances, leading to the indexer failing to dequeue
+  new jobs. We believe version 3.1.3 corrects the problem.
+* Bump the log4j version from 2.17.1 to 2.24.3
+* Bump slf4j-api from 1.6.1 to 2.0.17
+* Bump slf4j-reload4j from 1.7.36 to 2.0.17
+
+### helm chart version 1.3.0
+
+* Update Bitnami RabbitMQ subchart to version 14.7.0 (RabbitMQ app version 3.13.7)
+* [Issue 208: Introduce nameOverride and
+  fullnameOverride for rabbitmq](https://github.com/DataONEorg/dataone-indexer/pull/208). These
+  changes also enabled removal of the lifecycle postStart hook introduced in
+  [chart 1.2.0](#dataone-indexer-version-312--helm-chart-version-120), and resolved the issue:
+  * [Reduce RabbitMQ Startup Time](https://github.com/DataONEorg/dataone-indexer/issues/202)
+
+> [!CAUTION]
+> **ENSURE THAT THE RABBITMQ QUEUE IS EMPTY**, before upgrading or installing a new chart version
+> for the first time, because each new chart version will store the queue on a newly-created PV/PVC!
+> 
+> This applies only the initial installation or upgrade. After this, RabbitMQ will continue to use
+> the same newly-created PV/PVC, and the queue will not be lost. The new PVC will be named:
+> `data-[release-name]-rabbitmq-[rmq-version]-[idx]`, where `[rmq-version]` is the rabbitmq app
+> version (not the chart version), with periods replaced by dashes, and `[idx]` is the statefulset
+> ordinal index; e.g.: `data-metacatarctic-rabbitmq-3-13-7-0`
+> 
+> When upgrade or installation is complete, you can then safely `kubectl delete` both the old PVC
+> and the old PV (provided you're certain the queue was empty).
+ 
+> [!NOTE]
+> This behavior can be overridden by setting `.Values.rabbitmq.nameOverride` to the same name as the
+> previous version, but this is **NOT recommended**, since the RabbitMQ installation then becomes an
+> upgrade instead of a fresh install, and may require significant manual intervention; see:
+> https://www.rabbitmq.com/docs/feature-flags#version-compatibility
+
+
+* Reverted changes that previously [set k8s container resources requests & limits for index
+  workers, and all subcharts](https://github.com/DataONEorg/dataone-indexer/issues/182), based on
+ feedback and helm chart conventions
+* Bump indexer App version to 3.1.3
+* [Ensure indexer subcharts use Bitnami Common > 2.9](https://github.com/DataONEorg/dataone-indexer/issues/206)
+
+
 ## dataone-indexer version 3.1.2 & helm chart version 1.2.0
 
 * Release date: 2025-03-27
