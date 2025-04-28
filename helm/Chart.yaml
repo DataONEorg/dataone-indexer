@@ -21,39 +21,31 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: "1.2.0"
+version: "1.3.0"
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "3.1.2"
+appVersion: "3.1.3"
 
 # Chart dependencies
 dependencies:
   - name: rabbitmq
     condition: rabbitmq.enabled, global.rabbitmq.enabled
     repository: https://charts.bitnami.com/bitnami
-    version: 11.16.2    # rabbitmq version 3.11.18
     ## get full list using:  $  helm search repo bitnami/rabbitmq --versions
+    version: 14.7.0    # rabbitmq version 3.13.7
+    ## REMEMBER TO CHANGE: .Values.rabbitmq.nameOverride FOR EACH NEW RELEASE!
     ##
-    ## NOTE: For upgrades beyond 10.3.9, see "Required feature flags in RabbitMQ 3.11.0":
-    ## https://www.rabbitmq.com/blog/2022/07/20/required-feature-flags-in-rabbitmq-3.11
-    ##
-    ## We now have a postStart hook to run 'rabbitmqctl enable_feature_flag all' - so upgrades
-    ## should be simpler (see .Values.rabbitmq.lifecycleHooks.postStart).
-    ## However, note we must upgrade to the latest patch release of each minor (APP) version,
-    ## before upgrading to the next minor (APP) version; see:
-    ## https://www.rabbitmq.com/docs/feature-flags#version-compatibility
-    ## ...so these should be the next upgrades, in order:
-    ##  CHART VERSION          APP VERSION
-    # version: 11.16.2   # rabbitmq version 3.11.18
-    # version: 13.0.3    # rabbitmq version 3.12.13
-    # version: 14.7.0    # rabbitmq version 3.13.7
-    # ...then to latest app 4.0.x
-    #
+    ## NOTE: each release should be a fresh install (using a new PV/PVC). We ensure this by changing
+    ## the rabbitmq.nameOverride for each new subchart version.
+    ## NOTE: If you decide to upgrade instead of using a new PV/PVC, you must upgrade to the latest
+    ## patch release of each minor (APP) version, before upgrading to the next minor (APP) version;
+    ## see: https://www.rabbitmq.com/docs/feature-flags#version-compatibility
+
   - name: solr
     condition: solr.enabled, global.solr.enabled
     repository: https://charts.bitnami.com/bitnami
-    version: 9.5.5      # solr version 9.8.1 is deployed by chart version 9.5.5
     # get full list using:  $  helm search repo bitnami/solr --versions
+    version: 9.5.5      # solr version 9.8.1 is deployed by chart version 9.5.5

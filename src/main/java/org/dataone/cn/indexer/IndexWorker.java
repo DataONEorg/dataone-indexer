@@ -95,6 +95,9 @@ public class IndexWorker {
 
     private final ReentrantLock connectionLock = new ReentrantLock();
     private boolean isK8s = false;
+    private Consumer consumer;
+    protected static int readinessInitialDelaySec = 2;
+    protected static int readinessPeriodSec = 10;
     /**
      * Commandline main for the IndexWorker to be started.
      *
@@ -342,7 +345,7 @@ public class IndexWorker {
      * @throws IOException
      */
     public void start() throws IOException {
-        final Consumer consumer = new DefaultConsumer(rabbitMQchannel) {
+        consumer = new DefaultConsumer(rabbitMQchannel) {
             @Override
             public void handleDelivery(
                 String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
@@ -384,24 +387,6 @@ public class IndexWorker {
                     rabbitMQchannel.basicReject(envelope.getDeliveryTag(), requeue);
                 }
             }
-
-            @Override
-            public void handleShutdownSignal(String consumerTag, ShutdownSignalException sig) {
-
-                logger.debug(
-                    "handleShutdownSignal called by amqp client code. Consumer tag: " + consumerTag
-                        + "; ShutdownSignalException: " + sig.getMessage());
-                try {
-                    recreateConnection(this);
-                    logger.debug(
-                        "handleShutdownSignal successfully recreated connection. Consumer tag: "
-                            + consumerTag);
-                } catch (IOException e) {
-                    logger.error(
-                        "handleShutdownSignal unable to recreate connection. Consumer tag: "
-                            + consumerTag + "; ShutdownSignalException" + sig.getMessage());
-                }
-            }
         };
 
         // Set autoAck = false
@@ -410,53 +395,42 @@ public class IndexWorker {
         logger.info("IndexWorker.start - Calling basicConsume and waiting for the coming messages");
     }
 
-    private void recreateConnection(Consumer consumer) throws IOException {
-        int times = 2880;//If the creation fails, it will try again until 48 hours = 2880 * 1 minute
-        for (int i = 0; i <= times; i++) {
-            connectionLock.lock();
-            try {
-                if (rabbitMQchannel != null && rabbitMQchannel.isOpen()) {
-                    try {
-                        rabbitMQchannel.close();
-                        logger.debug("After closing the RabbitMQ channel.");
-                    } catch (IOException | TimeoutException e) {
-                        logger.warn("The rabbitmq channel can't be closed since " + e.getMessage());
-                    }
-                }
-                if (rabbitMQconnection != null && rabbitMQconnection.isOpen()) {
-                    try {
-                        rabbitMQconnection.close();
-                        logger.debug("After closing the RabbitMQ connection.");
-                    } catch (IOException e) {
-                        logger.warn("The rabbitmq connection can't be closed since " + e.getMessage());
-                    }
-                }
+    private void recreateConnection() throws IOException {
+        connectionLock.lock();
+        try {
+            if (rabbitMQchannel != null && rabbitMQchannel.isOpen()) {
                 try {
-                    generateConnectionAndChannel();
-                } catch (TimeoutException | IOException e) {
-                    if (i < times - 1) {
-                        logger.debug("The attempt to restore RabbitMQ connection and channel "
-                                         + "caught an exception " + e.getMessage()
-                                         + " After waiting one minute, Indexer will try again. "
-                                         + "Tries so far:" + i);
-                        try {
-                            Thread.sleep(60000);
-                        } catch (InterruptedException ex) {
-                            logger.debug("The sleeping of the thread was interrupted.");
-                        }
-                        continue;
-                    }
-                    throw new IOException("Exception trying to re-initialize connection and "
-                                              + "channel: " + e.getMessage(), e);
+                    rabbitMQchannel.close();
+                    logger.debug("After closing the RabbitMQ channel.");
+                } catch (Exception e) {
+                    logger.warn("The rabbitmq channel can't be closed since " + e.getMessage());
                 }
-                // Tell RabbitMQ this worker is ready for tasks
-                rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
-                logger.debug("RabbitMQ connection and channel successfully re-created");
-                break;
-            } finally {
-                connectionLock.unlock();
-                logger.debug("The connection lock was released");
             }
+            if (rabbitMQconnection != null && rabbitMQconnection.isOpen()) {
+                try {
+                    rabbitMQconnection.close();
+                    logger.debug("After closing the RabbitMQ connection.");
+                } catch (Exception e) {
+                    logger.warn("The rabbitmq connection can't be closed since " + e.getMessage());
+                }
+            }
+            try {
+                generateConnectionAndChannel();
+            } catch (TimeoutException | IOException e) {
+                throw new IOException("Exception trying to re-initialize connection and "
+                                          + "channel: " + e.getMessage(), e);
+            }
+            // Tell RabbitMQ this worker is ready for tasks
+            if (consumer == null) {
+                throw new RuntimeException(
+                    "The consumer object is null and hasn't been initialized. IndexWorker.start "
+                        + "should be called first.");
+            }
+            rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
+            logger.debug("RabbitMQ connection and channel successfully re-created");
+        } finally {
+            connectionLock.unlock();
+            logger.debug("The connection lock was released");
         }
     }
 
@@ -534,7 +508,8 @@ public class IndexWorker {
                 if (isK8s && !Files.exists(path)) {
                     Files.createFile(path);
                 }
-                if (rabbitMQconnection.isOpen() && rabbitMQchannel.isOpen()) {
+                if (rabbitMQconnection != null && rabbitMQchannel != null
+                    && rabbitMQconnection.isOpen() && rabbitMQchannel.isOpen()) {
                     if (isK8s) {
                         Files.setLastModifiedTime(
                             path, FileTime.fromMillis(System.currentTimeMillis()));
@@ -546,12 +521,19 @@ public class IndexWorker {
                                      + "message shows up repeatedly and there is no network outage,"
                                      + " intervention may be required (e.g. checking "
                                      + "configuration)");
+                    try {
+                        recreateConnection();
+                    } catch (IOException | RuntimeException e) {
+                        logger.error("DataONE-indexer cannot recreate the RabbitMQ "
+                                         + "connections/channels since " + e.getMessage());
+                    }
                 }
             } catch (IOException e) {
                 logger.error("Failed to update file: " + path, e);
             }
         };
-        scheduler.scheduleAtFixedRate(task, 1, 30, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(
+            task, readinessInitialDelaySec, readinessPeriodSec, TimeUnit.SECONDS);
         logger.info("ReadinessProb started");
     }
 

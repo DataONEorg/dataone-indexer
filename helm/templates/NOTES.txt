@@ -25,7 +25,7 @@ The RabbitMQ Manager API or Web UI can be accessed within the cluster on port {{
 
 Access the web console or API by port-forwarding:
 
-kubectl -n {{ .Release.Namespace }} port-forward svc/{{ .Release.Name }}--rabbitmq-headless {{ $rmqMgrPort }}:{{ $rmqMgrPort }} &
+kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "idxworker.rabbitmq.hostname" . }} {{ $rmqMgrPort }}:{{ $rmqMgrPort }} &
 
 ...then login to the Rabbitmq web console: http://localhost:{{ $rmqMgrPort }} using the credentials
 above, and/or use the API - for example, to see the number of messages on the 'index' queue:

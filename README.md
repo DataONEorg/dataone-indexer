@@ -116,11 +116,17 @@ namespace named `d1index`, and then view the deployed pods and services, use a s
 
 ```shell
 kubectl create namespace d1index
+
+# to use the local files
 helm install -n d1index d1index ./helm
+
+# or to pull the packaged chart with a specific release version (e.g. 1.2.0)...
+helm install -n d1index d1index oci://ghcr.io/dataoneorg/charts/dataone-indexer --version 1.2.0
+
 kubectl -n d1index get all
 ```
 
-and to uninstall the helm, use:
+and to uninstall the helm release, use:
 
 ```shell
 helm -n d1index uninstall d1index
@@ -128,6 +134,13 @@ helm -n d1index uninstall d1index
 
 Note that this helm chart also installs rabbitmq and solr, which can be partially configured
 through the values.yaml file in the parent chart through exported child properties.
+
+> [!IMPORTANT]
+> Make sure the RabbitMQ queue is empty, before upgrading or installing a new chart version for the
+> first time, because each new chart version will create a new PV/PVC where the queue is stored.
+> This can be overridden by setting .Values.rabbitmq.nameOverride to the same name as the previous
+> version, but this is NOT recommended, since the RabbitMQ installation then becomes an upgrade
+> instead of a fresh install, and may require some manual intervention.
 
 ### Authentication Notes
 
