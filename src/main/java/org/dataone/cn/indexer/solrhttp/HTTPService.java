@@ -1,25 +1,3 @@
-/**
- * This work was created by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For 
- * more information on DataONE, see our web site at http://dataone.org.
- *
- *   Copyright ${year}
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- * 
- * $Id$
- */
-
 package org.dataone.cn.indexer.solrhttp;
 
 import java.io.File;
@@ -119,7 +97,8 @@ public class HTTPService {
      * @throws IOException
      */
 
-    public void sendUpdate(String uri, SolrElementAdd data, String encoding) throws IOException, SolrServerException {
+    public void sendUpdate(String uri, SolrElementAdd data, String encoding)
+        throws IOException, SolrServerException {
         this.sendUpdate(uri, data, encoding, XML_CONTENT_TYPE);
     }
 
@@ -203,24 +182,6 @@ public class HTTPService {
         }
     }
 
-    public void sendSolrDeletes(List<String> pids, String solrUpdateUri) {
-        // generate request to solr server to remove index record for task.pid
-        OutputStream outputStream = new ByteArrayOutputStream();
-        try {
-            IOUtils.write("<?xml version=\"1.1\" encoding=\"utf-8\"?>\n", outputStream,
-                    CHAR_ENCODING);
-            IOUtils.write("<update>", outputStream, CHAR_ENCODING);
-            for (String pid : pids) {
-                String escapedId = StringEscapeUtils.escapeXml(pid);
-                IOUtils.write("<delete><id>" + escapedId + "</id></delete>", outputStream, CHAR_ENCODING);  
-            }
-            IOUtils.write("</update>", outputStream, CHAR_ENCODING);
-            sendPost(solrUpdateUri, outputStream.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
     /**
      * Borrowed from
      * http://www.docjar.com/html/api/org/apache/solr/client/solrj/
@@ -245,11 +206,6 @@ public class HTTPService {
         return sb.toString();
     }
 
-  
-
-
-    // ?q=id%3Ac6a8c20f-3503-4ded-b395-98fcb0fdd78c+OR+f5aaac58-dee1-4254-8cc4-95c5626ab037+OR+f3229cfb-2c53-4aa0-8437-057c2a52f502&version=2.2
-
     /**
      * Return the SOLR records for the specified PIDs
      * 
@@ -263,7 +219,6 @@ public class HTTPService {
     public List<SolrDoc> getDocumentsById(String uir, List<String> ids) throws IOException,
             XPathExpressionException, EncoderException {
         List<SolrDoc> docs = getDocumentsByField(uir, ids, SolrElementField.FIELD_ID, false);
-        //docs.addAll(getDocumentsByField(uir, ids, SolrElementField.FIELD_SERIES_ID, false));
         return docs;
     }
     
@@ -280,12 +235,13 @@ public class HTTPService {
      * @throws SAXException
      * @throws XPathExpressionException 
      */
-    public SolrDoc getDocumentBySeriesId(String seriesId, String uir) throws MalformedURLException, 
-                UnsupportedType, NotFound, SolrServerException, ParserConfigurationException, IOException, SAXException, XPathExpressionException {
+    public SolrDoc getDocumentBySeriesId(String seriesId, String uir) throws MalformedURLException,
+        UnsupportedType, NotFound, SolrServerException, ParserConfigurationException, IOException,
+        SAXException, XPathExpressionException {
         //Contruct a query to search for the most recent SolrDoc with the given seriesId
         StringBuilder query = new StringBuilder();
-        //query.append("q=" + SolrElementField.FIELD_SERIES_ID + ":\"" + escapeQueryChars(seriesId) + "\" AND -obsoletedBy:*"); 
-        query.append(SolrElementField.FIELD_SERIES_ID + ":" + escapeQueryChars(seriesId) + (" AND -obsoletedBy:*")); 
+        query.append(SolrElementField.FIELD_SERIES_ID + ":" + escapeQueryChars(seriesId)
+                         + (" AND -obsoletedBy:*"));
         log.debug("HTTPService.getDocumentBeySeriesId - the uir is " + uir);
         log.debug("HTTPService.getDocumentBeySeriesId - the query is " + query.toString());
         //Get the SolrDoc by querying for it
@@ -341,8 +297,6 @@ public class HTTPService {
             return null;
         }
 
-        //loadSolrSchemaFields();
-
         List<SolrDoc> docs = new ArrayList<SolrDoc>();
 
         int rows = 0;
@@ -376,33 +330,6 @@ public class HTTPService {
         return docs;
     }
 
-    public List<SolrDoc> getDocumentsByResourceMapFieldAndDocumentsField(String uir,
-            String resourceMapId, String documentsId) throws IOException, XPathExpressionException,
-            EncoderException {
-        return getDocumentsByTwoFields(uir, SolrElementField.FIELD_RESOURCEMAP, resourceMapId,
-                SolrElementField.FIELD_DOCUMENTS, documentsId);
-    }
-
-    public List<SolrDoc> getDocumentsByResourceMapFieldAndIsDocumentedByField(String uir,
-            String resourceMapId, String isDocumentedById) throws IOException,
-            XPathExpressionException, EncoderException {
-        return getDocumentsByTwoFields(uir, SolrElementField.FIELD_RESOURCEMAP, resourceMapId,
-                SolrElementField.FIELD_ISDOCUMENTEDBY, isDocumentedById);
-    }
-
-    private List<SolrDoc> getDocumentsByTwoFields(String uir, String field1, String field1Value,
-            String field2, String field2Value) throws IOException, XPathExpressionException,
-            EncoderException {
-        //loadSolrSchemaFields();
-        List<SolrDoc> docs = new ArrayList<SolrDoc>();
-        StringBuilder sb = new StringBuilder();
-        sb.append(field1 + ":").append(escapeQueryChars(field1Value));
-        sb.append(" AND ");
-        sb.append(field2 + ":").append(escapeQueryChars(field2Value));
-        docs.addAll(doRequest(uir, sb, MAX_ROWS));
-        return docs;
-    }
-
     private List<SolrDoc> doRequest(String uir, StringBuilder sb, String rows) throws IOException,
             ClientProtocolException, XPathExpressionException {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -412,7 +339,8 @@ public class HTTPService {
         params.add(new BasicNameValuePair(PARAM_INDENT, VALUE_INDENT_ON));
         params.add(new BasicNameValuePair(PARAM_RETURN, VALUE_WILDCARD));
         params.add(new BasicNameValuePair(WT, "xml"));
-        params.add(new BasicNameValuePair(ARCHIVED_FIELD, ARCHIVED_SHOWING_VALUE));//make sure archived objects being included
+        //make sure archived objects being included
+        params.add(new BasicNameValuePair(ARCHIVED_FIELD, ARCHIVED_SHOWING_VALUE));
         String paramString = URLEncodedUtils.format(params, "UTF-8");
 
         String requestURI = uir + "?" + paramString;
@@ -495,11 +423,13 @@ public class HTTPService {
         }
     }
 
-    private Document loadSolrSchemaDocument() throws IOException, ParserConfigurationException, SAXException {
+    private Document loadSolrSchemaDocument()
+        throws IOException, ParserConfigurationException, SAXException {
         Document doc = null;
         InputStream fis = null;
         if (SOLR_SCHEMA_PATH.startsWith("http://") || SOLR_SCHEMA_PATH.startsWith("https://")) {
-            log.info("HTTPService.loadSolrSchemaDocument - will load the schema file from " + SOLR_SCHEMA_PATH + " by http client");
+            log.info("HTTPService.loadSolrSchemaDocument - will load the schema file from "
+                         + SOLR_SCHEMA_PATH + " by http client");
             HttpGet commandGet = new HttpGet(SOLR_SCHEMA_PATH);
             HttpResponse response;
             try {
@@ -507,17 +437,20 @@ public class HTTPService {
                 HttpEntity entity = response.getEntity();
                 fis = entity.getContent();
             } catch (IOException e) {
-                log.error("HTTPService.loadSolrSchemaDocument - can't get the schema doc from " + SOLR_SCHEMA_PATH + " since " + e.getMessage());
+                log.error("HTTPService.loadSolrSchemaDocument - can't get the schema doc from "
+                              + SOLR_SCHEMA_PATH + " since " + e.getMessage());
                 throw e;
             }
         } else {
-            log.info("HTTPService.loadSolrSchemaDocument - will load the schema file from " + SOLR_SCHEMA_PATH + " by http client");
+            log.info("HTTPService.loadSolrSchemaDocument - will load the schema file from "
+                         + SOLR_SCHEMA_PATH + " by http client");
             File schemaFile = new File(SOLR_SCHEMA_PATH);
             if (schemaFile != null) {
                 try {
                     fis = new FileInputStream(schemaFile);
                 } catch (FileNotFoundException e) {
-                    log.error("HTTPService.loadSolrSchemaDocument - can't get the schema doc from " + SOLR_SCHEMA_PATH + " since " + e.getMessage());
+                    log.error("HTTPService.loadSolrSchemaDocument - can't get the schema doc from "
+                                  + SOLR_SCHEMA_PATH + " since " + e.getMessage());
                     throw e;
                 }
             }
@@ -529,13 +462,16 @@ public class HTTPService {
                 dBuilder = dbFactory.newDocumentBuilder();
                 doc = dBuilder.parse(fis);
             } catch (ParserConfigurationException e) {
-                log.error("HTTPService.loadSolrSchemaDocument - can't parse the schema doc from " + SOLR_SCHEMA_PATH + " since " + e.getMessage());
+                log.error("HTTPService.loadSolrSchemaDocument - can't parse the schema doc from "
+                              + SOLR_SCHEMA_PATH + " since " + e.getMessage());
                 throw e;
             } catch (SAXException e) {
-                log.error("HTTPService.loadSolrSchemaDocument - can't parse the schema doc from " + SOLR_SCHEMA_PATH + " since " + e.getMessage());
+                log.error("HTTPService.loadSolrSchemaDocument - can't parse the schema doc from "
+                              + SOLR_SCHEMA_PATH + " since " + e.getMessage());
                 throw e;
             } catch (IOException e) {
-                log.error("HTTPService.loadSolrSchemaDocument - can't parse the schema doc from " + SOLR_SCHEMA_PATH + " since " + e.getMessage());
+                log.error("HTTPService.loadSolrSchemaDocument - can't parse the schema doc from "
+                              + SOLR_SCHEMA_PATH + " since " + e.getMessage());
                 throw e;
             } finally {
                 try {
@@ -543,7 +479,9 @@ public class HTTPService {
                         fis.close();
                     }
                 } catch (IOException e) {
-                    log.warn("HTTPService.loadSolrSchemaDocument - can't close the input stream from " + SOLR_SCHEMA_PATH + " since " + e.getMessage());
+                    log.warn(
+                        "HTTPService.loadSolrSchemaDocument - can't close the input stream from "
+                            + SOLR_SCHEMA_PATH + " since " + e.getMessage());
                 }
             }
         }
