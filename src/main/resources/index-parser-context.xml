@@ -228,17 +228,10 @@
         <constructor-arg ref="httpConnectionManager"/>
     </bean>
 
-    <bean id="httpClientFactory" class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory"
-        p:connectTimeout="5000" >
-        <constructor-arg ref="httpClient" />
-    </bean>
-
     <bean id="httpService" class="org.dataone.cn.indexer.solrhttp.HTTPService">
-        <constructor-arg ref="httpClientFactory" />
     </bean>
 
     <bean id="mnServiceRegistrationTypeDocumentService" class="org.dataone.cn.indexer.convert.MemberNodeServiceRegistrationTypeDocumentService">
-        <property name="httpRequestFactory" ref="httpClientFactory"/>
     </bean>
 
     <bean id="mnServiceRegistrationTypeCacheService" class="org.dataone.cn.indexer.parser.utility.MemberNodeServiceRegistrationTypeCache">

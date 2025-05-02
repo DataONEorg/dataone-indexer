@@ -27,17 +27,18 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.configuration.Settings;
 import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.UnsupportedType;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -63,7 +64,6 @@ public class HTTPService {
     final static String PARAM_ROWS = "rows";
     final static String PARAM_INDENT = "indent";
     final static String VALUE_INDENT_ON = "on";
-    final static String VALUE_INDENT_OFF = "off";
     final static String PARAM_QUERY = "q";
     final static String PARAM_RETURN = "fl";
     final static String VALUE_WILDCARD = "*";
@@ -73,15 +73,19 @@ public class HTTPService {
     private List<String> copyDestinationFields = null;
 
     private static Logger log = Logger.getLogger(HTTPService.class.getName());
-    private HttpComponentsClientHttpRequestFactory httpRequestFactory;
+    private static HttpClient httpClient = null;
 
     private String SOLR_SCHEMA_PATH = Settings.getConfiguration().getString("solr.schema.path");
     private List<String> validSolrFieldNames = new ArrayList<String>();
 
-    public HTTPService(HttpComponentsClientHttpRequestFactory requestFactory) 
-                                 throws IOException, ParserConfigurationException, SAXException {
-        httpRequestFactory = requestFactory;
+    public HTTPService() throws IOException, ParserConfigurationException, SAXException {
+        initHttpClient();
         loadSolrSchemaFields();
+    }
+
+    private static void initHttpClient() {
+        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5 * 1000).build();
+        httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
     }
 
     /**
@@ -102,9 +106,6 @@ public class HTTPService {
         this.sendUpdate(uri, data, encoding, XML_CONTENT_TYPE);
     }
 
-    public void sendUpdate(String uri, SolrElementAdd data) throws IOException, SolrServerException {
-        sendUpdate(uri, data, CHAR_ENCODING, XML_CONTENT_TYPE);
-    }
 
     public void sendUpdate(String uri, SolrElementAdd data, String encoding, String contentType)
             throws IOException, SolrServerException {
@@ -488,8 +489,11 @@ public class HTTPService {
         return doc;
     }
 
-    public HttpClient getHttpClient() {
-        return httpRequestFactory.getHttpClient();
+    public static HttpClient getHttpClient() {
+        if (httpClient == null) {
+            initHttpClient();
+        }
+        return httpClient;
     }
     
     /**
