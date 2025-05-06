@@ -73,19 +73,18 @@ public class HTTPService {
     private List<String> copyDestinationFields = null;
 
     private static Logger log = Logger.getLogger(HTTPService.class.getName());
-    private static HttpClient httpClient = null;
+    private static HttpClient httpClient;
 
     private String SOLR_SCHEMA_PATH = Settings.getConfiguration().getString("solr.schema.path");
     private List<String> validSolrFieldNames = new ArrayList<String>();
 
-    public HTTPService() throws IOException, ParserConfigurationException, SAXException {
-        initHttpClient();
-        loadSolrSchemaFields();
-    }
-
-    private static void initHttpClient() {
+    static {
         RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5 * 1000).build();
         httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+    }
+
+    public HTTPService() throws IOException, ParserConfigurationException, SAXException {
+        loadSolrSchemaFields();
     }
 
     /**
@@ -490,12 +489,9 @@ public class HTTPService {
     }
 
     public static HttpClient getHttpClient() {
-        if (httpClient == null) {
-            initHttpClient();
-        }
         return httpClient;
     }
-    
+
     /**
      * Get the copy fields after parsing the solr schema
      * @return
