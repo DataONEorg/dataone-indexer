@@ -74,12 +74,9 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - mountPath: /etc/dataone/dataone-indexer.properties
-              subPath: dataone-indexer.properties
+            - mountPath: /etc/dataone
               name: {{ .Release.Name }}-config-volume
-            - mountPath: /etc/dataone/log4j2.properties
-              subPath: log4j2.properties
-              name: {{ .Release.Name }}-config-volume
+              readOnly: true
             - mountPath: {{ .Values.persistence.mountPath }}
               name: indexer-metacat-pv
               {{- if .Values.persistence.subPath }}
