@@ -35,7 +35,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.codec.EncoderException;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.cn.indexer.resourcemap.ResourceMap;
 import org.dataone.cn.indexer.resourcemap.ResourceMapFactory;
@@ -71,7 +72,7 @@ import org.xml.sax.SAXException;
  */
 public class ResourceMapSubprocessor implements IDocumentSubprocessor {
 
-    private static Logger logger = Logger.getLogger(ResourceMapSubprocessor.class.getName());
+    private static Log logger = LogFactory.getLog(ResourceMapSubprocessor.class.getName());
     
     private static int waitingTime = Settings.getConfiguration().getInt("index.resourcemap.waitingComponent.time", 600);
     private static int maxAttempts = Settings.getConfiguration().getInt("index.resourcemap.waitingComponent.max.attempts", 15);

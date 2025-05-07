@@ -6,15 +6,16 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.parser.utility.SpatialBoxParsingUtility;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.w3c.dom.Document;
 
 public class DataCiteSpatialBoxBoundingCoordinatesSolrField extends SolrField implements ISolrField {
 
-    private static Logger logger = Logger
-            .getLogger(DataCiteSpatialBoxBoundingCoordinatesSolrField.class.getName());
+    private static Log logger = LogFactory
+            .getLog(DataCiteSpatialBoxBoundingCoordinatesSolrField.class.getName());
 
     protected static SpatialBoxParsingUtility boxParsingUtility = new SpatialBoxParsingUtility();
 

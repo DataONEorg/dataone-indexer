@@ -26,14 +26,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.parser.utility.SpatialBoxParsingUtility;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.w3c.dom.Document;
 
 public class DublinCoreSpatialBoxGeohashSolrField extends SolrField implements ISolrField {
 
-    private static Logger logger = Logger.getLogger(DublinCoreSpatialBoxGeohashSolrField.class
+    private static Log logger = LogFactory.getLog(DublinCoreSpatialBoxGeohashSolrField.class
             .getName());
 
     private static SpatialBoxParsingUtility boxParsingUtility = new SpatialBoxParsingUtility();

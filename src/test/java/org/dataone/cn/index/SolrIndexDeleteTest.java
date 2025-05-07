@@ -28,7 +28,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.solr.common.SolrDocument;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
@@ -53,7 +54,7 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class SolrIndexDeleteTest extends DataONESolrJettyTestBase {
 
-    private static Logger logger = Logger.getLogger(SolrIndexDeleteTest.class.getName());
+    private static Log logger = LogFactory.getLog(SolrIndexDeleteTest.class.getName());
 
     //private IndexTaskProcessor processor;
     //private IndexTaskGenerator generator;
