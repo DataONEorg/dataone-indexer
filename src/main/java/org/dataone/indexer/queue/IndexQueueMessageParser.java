@@ -21,11 +21,13 @@ public class IndexQueueMessageParser {
     private final static String HEADER_ID = "id";
     //The header name in the message to store the index type
     private final static String HEADER_INDEX_TYPE = "index_type";
-
+    //The header name in the message to store the path of the object
+    private final static String HEADER_PATH = "path";
     private Identifier identifier = null;
     private String indexType = null;
     private int priority = 1;
-    
+    private String objectPath;
+
     private static Log logger = LogFactory.getLog(IndexQueueMessageParser.class);
     
     /**
@@ -46,11 +48,13 @@ public class IndexQueueMessageParser {
         }
         Object pidObj = headers.get(HEADER_ID);
         if (pidObj == null) {
-            throw new InvalidRequest("0000", "The identifier cannot be null in the index queue message.");
+            throw new InvalidRequest(
+                "0000", "The identifier cannot be null in the index queue message.");
         }
         String pid = ((LongString)pidObj).toString();
-        if (pid == null || pid.trim().equals("")) {
-            throw new InvalidRequest("0000", "The identifier cannot be null or blank in the index queue message.");
+        if (pid == null || pid.isBlank()) {
+            throw new InvalidRequest(
+                "0000", "The identifier cannot be null or blank in the index queue message.");
         }
         logger.debug("IndexQueueMessageParser.parse - the identifier in the message is " + pid);
         identifier = new Identifier();
@@ -58,21 +62,35 @@ public class IndexQueueMessageParser {
 
         Object typeObj = headers.get(HEADER_INDEX_TYPE);
         if (typeObj == null) {
-            throw new InvalidRequest("0000", "The index type cannot be null in the index queue message.");
+            throw new InvalidRequest(
+                "0000", "The index type cannot be null in the index queue message for " + pid);
         }
         indexType = ((LongString)typeObj).toString();
-        if (indexType == null || indexType.trim().equals("")) {
-            throw new InvalidRequest("0000", "The index type cannot be null or blank in the index queue message.");
+        if (indexType == null || indexType.isBlank()) {
+            throw new InvalidRequest(
+                "0000",
+                "The index type cannot be null or blank in the index queue message for " + pid);
         }
-        logger.debug("IndexQueueMessageParser.parse - the index type in the message is " + indexType);
+        logger.debug("The index type in the message is " + indexType + " for " + pid);
+        Object pathObject = headers.get(HEADER_PATH);
+        if (pathObject != null) {
+            objectPath = ((LongString)pathObject).toString();
+        }
+        logger.debug(
+            "The file path of the object which will be indexed in the message is " + objectPath +
+                " for " + pid);
 
         try {
             priority = properties.getPriority();
         } catch (NullPointerException e) {
-            logger.info("IndexQueueMessageParser.parse - the priority is not set in the message and we will set it one.");
+            logger.info(
+                "IndexQueueMessageParser.parse - the priority is not set in the message and we "
+                    + "will set it one.");
             priority =1;
         }
-        logger.debug("IndexQueueMessageParser.parse - the priority in the message is " + priority);
+        logger.debug(
+            "IndexQueueMessageParser.parse - the priority in the message is " + priority + " for "
+                + pid);
     }
 
     /**
@@ -97,6 +115,16 @@ public class IndexQueueMessageParser {
      */
     public int getPriority() {
         return priority;
+    }
+
+    /**
+     * Get the file path of the object, which will be indexed,
+     * after calling the parse method to parse the index queue message.
+     * @return  the file path of the object. It can be null or blank, which
+     * means we don't have the object in the system.
+     */
+    public String getObjectPath() {
+        return objectPath;
     }
 
 }
