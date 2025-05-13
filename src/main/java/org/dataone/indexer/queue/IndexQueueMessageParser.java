@@ -21,12 +21,12 @@ public class IndexQueueMessageParser {
     private final static String HEADER_ID = "id";
     //The header name in the message to store the index type
     private final static String HEADER_INDEX_TYPE = "index_type";
-    //The header name in the message to store the path of the object
-    private final static String HEADER_PATH = "path";
+    //The header name in the message to store the docid of the object
+    private final static String HEADER_DOCID = "doc_id";
     private Identifier identifier = null;
     private String indexType = null;
     private int priority = 1;
-    private String objectPath;
+    private String docId = null;
 
     private static Log logger = LogFactory.getLog(IndexQueueMessageParser.class);
     
@@ -72,12 +72,12 @@ public class IndexQueueMessageParser {
                 "The index type cannot be null or blank in the index queue message for " + pid);
         }
         logger.debug("The index type in the message is " + indexType + " for " + pid);
-        Object pathObject = headers.get(HEADER_PATH);
-        if (pathObject != null) {
-            objectPath = ((LongString)pathObject).toString();
+        Object docIdObject = headers.get(HEADER_DOCID);
+        if (docIdObject != null) {
+            docId = ((LongString)docIdObject).toString();
         }
         logger.debug(
-            "The file path of the object which will be indexed in the message is " + objectPath +
+            "The docId of the object which will be indexed in the message is " + docId +
                 " for " + pid);
 
         try {
@@ -118,13 +118,13 @@ public class IndexQueueMessageParser {
     }
 
     /**
-     * Get the file path of the object, which will be indexed,
+     * Get the docId of the object, which will be indexed,
      * after calling the parse method to parse the index queue message.
-     * @return  the file path of the object. It can be null or blank, which
-     * means we don't have the object in the system.
+     * @return  the docId of the object. DocId is an iternal id of Metacat, which is a file name in
+     * the system. It can be null or blank, which means we don't have the object in the system.
      */
-    public String getObjectPath() {
-        return objectPath;
+    public String getDocId() {
+        return docId;
     }
 
 }
