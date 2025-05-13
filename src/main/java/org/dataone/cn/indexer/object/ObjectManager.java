@@ -193,37 +193,43 @@ public class ObjectManager {
        //get the token
         DataONEauthToken = System.getenv(TOKEN_VARIABLE_NAME);
         if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
-            //can't get the token from the env variable. So try to get it from a file specified in the property
+            //can't get the token from the env variable. So try to get it from a file specified
+            // in the property
             String tokenFilePath = Settings.getConfiguration().getString(TOKEN_FILE_PATH_PROP_NAME);
             if (tokenFilePath != null && !tokenFilePath.trim().equals("")) {
-                logger.info("ObjectManager.refreshD1Node - We can't get the token from the env variable so try to get the auth token from the file " + tokenFilePath);
+                logger.info(
+                    "Can NOT get the token from the env variable so try to get the auth token "
+                        + "from the file " + tokenFilePath);
                 try {
                     DataONEauthToken = FileUtils.readFileToString(new File(tokenFilePath), "UTF-8");
                 } catch (IOException e) {
                     DataONEauthToken = null;
-                    logger.warn("ObjectManager.refreshD1Node - can NOT get the authen token from the file " + tokenFilePath + " since " + e.getMessage());
+                    logger.warn("Can NOT get the authen token from the file " + tokenFilePath +
+                                    " since " + e.getMessage());
                 }
                 if (DataONEauthToken != null && !DataONEauthToken.trim().equals("")) {
-                    logger.info("ObjectManager.refreshD1Node - Got the auth token from the file "+ tokenFilePath);
+                    logger.info("Got the auth token from the file "+ tokenFilePath);
                 }
             }
         } else {
-            logger.info("ObjectManager.refreshD1Node - Got the auth token from an env. variable");
+            logger.info("Got the auth token from an env. variable");
         }
-        
         if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
-            logger.warn("ObjectManager.refreshD1Node ------ Could NOT get an auth token from either an env. variable or the properties file. So it will act as the public user.");
+            logger.warn(
+                "Could NOT get an auth token from either an env. variable or the properties file."
+                    + " So it will act as the public user.");
         }
         session = createSession(DataONEauthToken);
-        logger.info("ObjectManager.refreshD1Node ------ going to create the d1node with url " + nodeBaseURL);
+        logger.info("Going to create the d1node with url " + nodeBaseURL);
         try {
             d1Node = getMultipartD1Node(session, nodeBaseURL);
         } catch (IOException | ClientSideException e) {
-            logger.error("ObjectManager.refreshD1Node - couldn't create the d1node for the url " + nodeBaseURL + " since " + e.getMessage());
+            logger.error("Couldn't create the d1node for the url " + nodeBaseURL + " since "
+                             + e.getMessage());
             throw new ServiceFailure("0000", e.getMessage());
         }
     }
-    
+
     /**
      * Get a DataONE authenticated session
      * <p>
@@ -238,7 +244,8 @@ public class ObjectManager {
             logger.info("ObjectManager.createSession - Creating the public session");
             session = new Session();
         } else {
-            logger.info("ObjectManger.createSession - Creating authentication session from token: " + authToken.substring(0, 5) + "...");
+            logger.info("Creating authentication session from token: " + authToken.substring(0, 5)
+                            + "...");
             session = new AuthTokenSession(authToken);
         }
         return session;
@@ -253,7 +260,8 @@ public class ObjectManager {
      * @throws ClientSideException 
      * @throws IOException
      */
-    private static MultipartD1Node getMultipartD1Node(Session session, String serviceUrl) throws IOException, ClientSideException {
+    private static MultipartD1Node getMultipartD1Node(Session session, String serviceUrl)
+        throws IOException, ClientSideException {
         MultipartRestClient mrc = null;
         MultipartD1Node d1Node = null;
         // First create a default HTTP client
@@ -262,10 +270,10 @@ public class ObjectManager {
         Boolean isCN = isCN(serviceUrl);
         // Now create a DataONE object that uses the rest client
         if (isCN) {
-            logger.info("ObjectManager.getMultipartD1Node - creating cn MultipartMNode from the url " + serviceUrl);
+            logger.info("Creating cn MultipartMNode from the url " + serviceUrl);
             d1Node = new MultipartCNode(mrc, serviceUrl, session);
         } else {
-            logger.info("ObjectManager.getMultipartD1Node - creating mn MultipartMNode from the url " + serviceUrl);
+            logger.info("Creating mn MultipartMNode from the url " + serviceUrl);
             d1Node = new MultipartMNode(mrc, serviceUrl, session);
         }
         return d1Node;
