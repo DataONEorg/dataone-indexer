@@ -62,7 +62,7 @@ public class ObjectManagerTest {
      */
     @Test
     public void testGetObjectAndSystemMetadata() throws Exception {
-        try (InputStream input = ObjectManager.getInstance().getObject(identifier)) {
+        try (InputStream input = ObjectManagerFactory.getInstance().getObject(identifier)) {
             assertNotNull(input);
             try (OutputStream os = new ByteArrayOutputStream()) {
                 MessageDigest md5 = MessageDigest.getInstance("MD5");
@@ -77,7 +77,7 @@ public class ObjectManagerTest {
                 assertEquals("1755a557c13be7af44d676bb09274b0e", md5Digest);
             }
         }
-        org.dataone.service.types.v1.SystemMetadata sysmeta = ObjectManager.getInstance()
+        org.dataone.service.types.v1.SystemMetadata sysmeta = ObjectManagerFactory.getInstance()
                 .getSystemMetadata(identifier);
         assertEquals(identifier, sysmeta.getIdentifier().getValue());
         assertEquals("1755a557c13be7af44d676bb09274b0e", sysmeta.getChecksum().getValue());

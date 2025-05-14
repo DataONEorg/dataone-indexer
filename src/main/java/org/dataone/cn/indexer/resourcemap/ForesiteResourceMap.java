@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.Set;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dataone.cn.indexer.object.ObjectManager;
+import org.dataone.cn.indexer.object.ObjectManagerFactory;
 import org.dataone.cn.indexer.parser.utility.SeriesIdResolver;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
@@ -232,14 +233,14 @@ public class ForesiteResourceMap implements ResourceMap {
     }
 
     private SolrDoc _mergeMappedReference(ResourceEntry resourceEntry, SolrDoc mergeDocument)
-                                                throws InvalidToken, NotAuthorized, NotImplemented,
-                         NoSuchAlgorithmException, ServiceFailure, NotFound, InstantiationException,
-                                        IllegalAccessException, IOException, MarshallingException {
+        throws InvalidToken, NotAuthorized, NotImplemented, NoSuchAlgorithmException, ServiceFailure,
+        NotFound, InstantiationException, IllegalAccessException, IOException, MarshallingException,
+        ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
 
         Identifier identifier = new Identifier();
         identifier.setValue(mergeDocument.getIdentifier());
         try {
-            SystemMetadata sysMeta = (SystemMetadata) ObjectManager.getInstance()
+            SystemMetadata sysMeta = (SystemMetadata) ObjectManagerFactory.getInstance()
                                                         .getSystemMetadata(identifier.getValue());
             if (sysMeta.getSeriesId() != null && sysMeta.getSeriesId().getValue() != null
                                        && !sysMeta.getSeriesId().getValue().trim().equals("")) {

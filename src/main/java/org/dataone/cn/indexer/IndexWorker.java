@@ -2,6 +2,7 @@ package org.dataone.cn.indexer;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,14 +19,13 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.cn.indexer.annotation.OntologyModelService;
-import org.dataone.cn.indexer.object.ObjectManager;
+import org.dataone.cn.indexer.object.ObjectManagerFactory;
 import org.dataone.configuration.Settings;
 import org.dataone.exceptions.MarshallingException;
 import org.dataone.indexer.queue.IndexQueueMessageParser;
@@ -214,7 +214,10 @@ public class IndexWorker {
      * @throws TimeoutException
      * @throws ServiceFailure
      */
-    public IndexWorker() throws IOException, TimeoutException, ServiceFailure {
+    public IndexWorker()
+        throws IOException, TimeoutException, ServiceFailure, ClassNotFoundException,
+        InvocationTargetException, NoSuchMethodException, InstantiationException,
+        IllegalAccessException {
         this(true);
     }
 
@@ -226,7 +229,9 @@ public class IndexWorker {
      * @throws TimeoutException
      * @throws ServiceFailure
      */
-    public IndexWorker(Boolean initialize) throws IOException, TimeoutException {
+    public IndexWorker(Boolean initialize)
+        throws IOException, TimeoutException, ClassNotFoundException, InvocationTargetException,
+        NoSuchMethodException, InstantiationException, IllegalAccessException {
         String value = System.getenv("KUBERNETES_SERVICE_HOST");
         // Java doc says: the string value of the variable, or null if the variable is not defined
         // in the system environment
@@ -238,7 +243,7 @@ public class IndexWorker {
             initExecutorService();//initialize the executor first
             initIndexQueue();
             initIndexParsers();
-            ObjectManager.getInstance();
+            ObjectManagerFactory.getInstance();
             OntologyModelService.getInstance();
         }
     }

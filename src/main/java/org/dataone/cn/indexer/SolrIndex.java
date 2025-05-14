@@ -21,7 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.dataone.cn.indexer.object.ObjectManager;
+import org.dataone.cn.indexer.object.ObjectManagerFactory;
 import org.dataone.cn.indexer.parser.BaseXPathDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.IDocumentDeleteSubprocessor;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
@@ -151,7 +151,8 @@ public class SolrIndex {
         long start = System.currentTimeMillis();
         Map<String, SolrDoc> docs = new HashMap<>();
         // Load the System Metadata document
-        try (InputStream systemMetadataStream = ObjectManager.getInstance().getSystemMetadataStream(id)){
+        try (InputStream systemMetadataStream =
+                 ObjectManagerFactory.getInstance().getSystemMetadataStream(id)){
             docs = systemMetadataProcessor.processDocument(id, docs, systemMetadataStream);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -188,7 +189,8 @@ public class SolrIndex {
                     if (subprocessor.canProcess(formatId)) {
                         // if so, then extract the additional information from the
                         // document.
-                        try (InputStream dataStream = ObjectManager.getInstance().getObject(id)) {
+                        try (InputStream dataStream =
+                                 ObjectManagerFactory.getInstance().getObject(id)) {
                             // docObject = the resource map document or science
                             // metadata document.
                             // note that resource map processing touches all objects
