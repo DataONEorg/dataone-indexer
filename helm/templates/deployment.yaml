@@ -74,6 +74,9 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
+            {{- if .Values.extraVolumeMounts }}
+            {{- tpl (toYaml .Values.extraVolumeMounts) . | nindent 12 }}
+            {{- end }}
             - mountPath: /etc/dataone
               name: {{ .Release.Name }}-config-volume
               readOnly: true
@@ -141,6 +144,9 @@ spec:
               echo waiting for Solr Schema to be accessible at http://{{ $solrHost }}:
               {{- $solrPort }}$SOLRURI; sleep 1; done;
       volumes:
+        {{- if .Values.extraVolumes }}
+        {{- tpl (toYaml .Values.extraVolumes) . | nindent 8 }}
+        {{- end }}
         - name: {{ .Release.Name }}-config-volume
           configMap:
             name: {{ .Release.Name }}-indexer-configfiles
