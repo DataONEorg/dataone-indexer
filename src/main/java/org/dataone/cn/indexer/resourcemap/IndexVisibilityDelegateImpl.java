@@ -28,7 +28,7 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
     public boolean isDocumentVisible(Identifier pid) {
         boolean visible = false;
         try {
-            SystemMetadata systemMetadata = ObjectManagerFactory.getInstance()
+            SystemMetadata systemMetadata = ObjectManagerFactory.getObjectManager()
                                                             .getSystemMetadata(pid.getValue());
             // TODO: Is pid Identifier a SID?
             if (systemMetadata == null) {
@@ -76,7 +76,7 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
         boolean exists = false;
         try {
             SystemMetadata systemMetadata =
-                ObjectManagerFactory.getInstance().getSystemMetadata(pid.getValue());
+                ObjectManagerFactory.getObjectManager().getSystemMetadata(pid.getValue());
             if (systemMetadata != null) {
                 exists = true;
             } else {

@@ -240,7 +240,7 @@ public class ForesiteResourceMap implements ResourceMap {
         Identifier identifier = new Identifier();
         identifier.setValue(mergeDocument.getIdentifier());
         try {
-            SystemMetadata sysMeta = (SystemMetadata) ObjectManagerFactory.getInstance()
+            SystemMetadata sysMeta = (SystemMetadata) ObjectManagerFactory.getObjectManager()
                                                         .getSystemMetadata(identifier.getValue());
             if (sysMeta.getSeriesId() != null && sysMeta.getSeriesId().getValue() != null
                                        && !sysMeta.getSeriesId().getValue().trim().equals("")) {

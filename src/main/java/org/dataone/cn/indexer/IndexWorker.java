@@ -243,7 +243,7 @@ public class IndexWorker {
             initExecutorService();//initialize the executor first
             initIndexQueue();
             initIndexParsers();
-            ObjectManagerFactory.getInstance();
+            ObjectManagerFactory.getObjectManager();
             OntologyModelService.getInstance();
         }
     }

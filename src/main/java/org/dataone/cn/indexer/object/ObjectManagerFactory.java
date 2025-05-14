@@ -28,7 +28,7 @@ public class ObjectManagerFactory {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public static ObjectManager getInstance()
+    public static ObjectManager getObjectManager()
         throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
         InstantiationException, IllegalAccessException {
         String classNameFromEnv = System.getenv(OBJECT_MANAGER_CLASSNAME_ENV);

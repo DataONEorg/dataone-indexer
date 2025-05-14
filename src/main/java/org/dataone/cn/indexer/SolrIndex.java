@@ -152,7 +152,7 @@ public class SolrIndex {
         Map<String, SolrDoc> docs = new HashMap<>();
         // Load the System Metadata document
         try (InputStream systemMetadataStream =
-                 ObjectManagerFactory.getInstance().getSystemMetadataStream(id)){
+                 ObjectManagerFactory.getObjectManager().getSystemMetadataStream(id)){
             docs = systemMetadataProcessor.processDocument(id, docs, systemMetadataStream);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -190,7 +190,7 @@ public class SolrIndex {
                         // if so, then extract the additional information from the
                         // document.
                         try (InputStream dataStream =
-                                 ObjectManagerFactory.getInstance().getObject(id)) {
+                                 ObjectManagerFactory.getObjectManager().getObject(id)) {
                             // docObject = the resource map document or science
                             // metadata document.
                             // note that resource map processing touches all objects
