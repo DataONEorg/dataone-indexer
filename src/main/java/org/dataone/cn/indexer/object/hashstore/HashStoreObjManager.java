@@ -60,12 +60,9 @@ public class HashStoreObjManager extends ObjectManager {
             if (d1Node != null) {
                 // Metacat can't find the system metadata from the storage system.
                 // So try to get it from the dataone api
-                SystemMetadata sysmeta = null;
-                Identifier identifier = new Identifier();
-                identifier.setValue(id);
-                sysmeta = d1Node.getSystemMetadata(session, identifier);
-                logger.debug("Finish getting the system metadata via the DataONE API call for the pid "
-                                 + id);
+                SystemMetadata sysmeta = getSystemMetadataByAPI(id);
+                logger.debug("Finish getting the system metadata via the DataONE API call for the"
+                                 + " pid " + id);
                 if (sysmeta != null) {
                     ByteArrayOutputStream systemMetadataOutputStream = new ByteArrayOutputStream();
                     TypeMarshaller.marshalTypeToOutputStream(sysmeta, systemMetadataOutputStream);
@@ -78,6 +75,32 @@ public class HashStoreObjManager extends ObjectManager {
             }
         }
         return sysmetaInputStream;
+    }
+
+    @Override
+    public org.dataone.service.types.v1.SystemMetadata getSystemMetadata(String id)
+        throws InvalidToken, NotAuthorized, NoSuchAlgorithmException,
+        NotImplemented, ServiceFailure, NotFound,
+        InstantiationException, IllegalAccessException,
+        IOException, MarshallingException {
+        org.dataone.service.types.v1.SystemMetadata sysmeta = null;
+        try (InputStream input = getSystemMetadataStream(id)) {
+            if (input != null) {
+                try {
+                    SystemMetadata sysmeta2 = TypeMarshaller
+                        .unmarshalTypeFromStream(SystemMetadata.class, input);
+                    sysmeta = sysmeta2;
+                } catch (Exception e) {
+                    try (InputStream input2 = getSystemMetadataStream(id)) {
+                        if (input2 != null) {
+                            sysmeta = TypeMarshaller.unmarshalTypeFromStream(
+                                org.dataone.service.types.v1.SystemMetadata.class, input2);
+                        }
+                    }
+                }
+            }
+        }
+        return sysmeta;
     }
 
     @Override

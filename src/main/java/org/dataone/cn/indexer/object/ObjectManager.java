@@ -1,5 +1,6 @@
 package org.dataone.cn.indexer.object;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dataone.client.auth.AuthTokenSession;
@@ -23,6 +25,7 @@ import org.dataone.service.exceptions.NotAuthorized;
 import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
+import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v1.Session;
 import org.dataone.service.types.v2.SystemMetadata;
 import org.dataone.service.util.TypeMarshaller;
@@ -75,30 +78,11 @@ public abstract class ObjectManager {
      * @throws MarshallingException
      * @throws NoSuchAlgorithmException
      */
-    public org.dataone.service.types.v1.SystemMetadata getSystemMetadata(String id)
+    public abstract org.dataone.service.types.v1.SystemMetadata getSystemMetadata(String id)
                                        throws InvalidToken, NotAuthorized, NoSuchAlgorithmException,
                                                 NotImplemented, ServiceFailure, NotFound,
                                                 InstantiationException, IllegalAccessException,
-                                                IOException, MarshallingException {
-        org.dataone.service.types.v1.SystemMetadata sysmeta = null;
-        try (InputStream input = getSystemMetadataStream(id)) {
-            if (input != null) {
-                try {
-                    SystemMetadata sysmeta2 = TypeMarshaller
-                                            .unmarshalTypeFromStream(SystemMetadata.class, input);
-                    sysmeta = sysmeta2;
-                } catch (Exception e) {
-                    try (InputStream input2 = getSystemMetadataStream(id)) {
-                        if (input2 != null) {
-                            sysmeta = TypeMarshaller.unmarshalTypeFromStream(
-                                         org.dataone.service.types.v1.SystemMetadata.class, input2);
-                        }
-                    }
-                }
-            }
-        }
-        return sysmeta;
-    }
+                                                IOException, MarshallingException;
 
     /**
      * Get the input stream of the content of the given pid
@@ -108,10 +92,11 @@ public abstract class ObjectManager {
      * @throws FileNotFoundException
      * @throws NoSuchAlgorithmException
      * @throws IOException
+     * @throws NotFound
      */
     public abstract InputStream getObject(String pid)
         throws IllegalArgumentException, FileNotFoundException, NoSuchAlgorithmException,
-        IOException;
+        IOException, NotFound;
 
     /**
      * Set the d1 node for this object manager.
@@ -129,7 +114,7 @@ public abstract class ObjectManager {
     protected static void refreshD1Node() throws ServiceFailure {
        //get the token
         DataONEauthToken = System.getenv(TOKEN_VARIABLE_NAME);
-        if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
+        if (DataONEauthToken == null || DataONEauthToken.isBlank()) {
             //can't get the token from the env variable. So try to get it from a file specified
             // in the property
             String tokenFilePath = Settings.getConfiguration().getString(TOKEN_FILE_PATH_PROP_NAME);
@@ -144,14 +129,14 @@ public abstract class ObjectManager {
                     logger.warn("Can NOT get the authen token from the file " + tokenFilePath +
                                     " since " + e.getMessage());
                 }
-                if (DataONEauthToken != null && !DataONEauthToken.trim().equals("")) {
+                if (DataONEauthToken != null && !DataONEauthToken.isBlank()) {
                     logger.info("Got the auth token from the file "+ tokenFilePath);
                 }
             }
         } else {
             logger.info("Got the auth token from an env. variable");
         }
-        if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
+        if (DataONEauthToken == null || DataONEauthToken.isBlank()) {
             logger.warn(
                 "Could NOT get an auth token from either an env. variable or the properties file."
                     + " So it will act as the public user.");
@@ -243,6 +228,20 @@ public abstract class ObjectManager {
             }
         }
         return isCN;
+    }
+
+    protected SystemMetadata getSystemMetadataByAPI(String id)
+        throws ServiceFailure, InvalidToken, NotImplemented, NotAuthorized, NotFound {
+        if (d1Node != null) {
+            // Metacat can't find the system metadata from the storage system.
+            // So try to get it from the dataone api
+            Identifier identifier = new Identifier();
+            identifier.setValue(id);
+            return d1Node.getSystemMetadata(session, identifier);
+        } else {
+            throw new ServiceFailure("0000", "The d1Node is null and Indexer cannot get the "
+                + "systemmetadata by a API call.");
+        }
     }
 
 }
