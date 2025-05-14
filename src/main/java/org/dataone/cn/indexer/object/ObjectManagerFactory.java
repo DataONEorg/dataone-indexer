@@ -11,7 +11,8 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class ObjectManagerFactory {
     private static volatile ObjectManager manager = null;
-    private static String className = "org.dataone.cn.indexer.object.hashstore.HashStoreObjManager";
+    private static final String DEFAULT_ClASS_NAME = "org.dataone.cn.indexer.object.hashstore"
+        + ".HashStoreObjManager";
     private static Log logger = LogFactory.getLog(ObjectManagerFactory.class);
     private static final String OBJECT_MANAGER_CLASSNAME_ENV =
         "DATAONE_INDEXER_OBJECT_MANAGER_CLASSNAME";
@@ -32,6 +33,7 @@ public class ObjectManagerFactory {
         throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
         InstantiationException, IllegalAccessException {
         String classNameFromEnv = System.getenv(OBJECT_MANAGER_CLASSNAME_ENV);
+        String className = DEFAULT_ClASS_NAME;
         if (classNameFromEnv != null && !classNameFromEnv.isBlank()) {
             logger.debug("The ObjectManager class name form env variable "
                             + OBJECT_MANAGER_CLASSNAME_ENV + " is " + classNameFromEnv);
@@ -48,5 +50,12 @@ public class ObjectManagerFactory {
             }
         }
         return manager;
+    }
+
+    /**
+     * This method is for testing only
+     */
+    protected static void resetManagerNull() {
+        manager = null;
     }
 }
