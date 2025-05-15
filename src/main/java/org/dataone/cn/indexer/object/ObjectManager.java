@@ -37,7 +37,7 @@ import org.dataone.service.types.v2.SystemMetadata;
 public abstract class ObjectManager {
 
     private static final String NODE_BASE_URL_ENV_NAME = "DATAONE_INDEXER_NODE_BASE_URL";
-    private static final String TOKEN_ENV_NAME = "DATAONE_AUTH_TOKEN";
+    private static final String TOKEN_ENV_NAME = "DATAONE_INDEXER_AUTH_TOKEN";
 
     protected static String nodeBaseURL;
     private static String dataONEauthToken = null;
@@ -113,7 +113,6 @@ public abstract class ObjectManager {
      * @throws ServiceFailure 
      */
     protected static void refreshD1Node() throws ServiceFailure {
-        nodeBaseURL = null;
         nodeBaseURL = System.getenv(NODE_BASE_URL_ENV_NAME);
         logger.debug("The node base url from env variable is " + nodeBaseURL);
         if (nodeBaseURL == null || nodeBaseURL.isBlank()) {
@@ -121,7 +120,6 @@ public abstract class ObjectManager {
             logger.debug("The node base url from the properties file is " + nodeBaseURL);
         }
         //get the token
-        dataONEauthToken = null;
         dataONEauthToken = System.getenv(TOKEN_ENV_NAME);
         if (dataONEauthToken == null || dataONEauthToken.isBlank()) {
             //can't get the token from the env variable. So try to get it from a file specified
