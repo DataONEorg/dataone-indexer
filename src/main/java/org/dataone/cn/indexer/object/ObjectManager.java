@@ -1,6 +1,5 @@
 package org.dataone.cn.indexer.object;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,9 +7,9 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dataone.client.D1Node;
 import org.dataone.client.auth.AuthTokenSession;
 import org.dataone.client.exception.ClientSideException;
 import org.dataone.client.rest.HttpMultipartRestClient;
@@ -28,7 +27,6 @@ import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v1.Session;
 import org.dataone.service.types.v2.SystemMetadata;
-import org.dataone.service.util.TypeMarshaller;
 
 
 /**
@@ -37,10 +35,13 @@ import org.dataone.service.util.TypeMarshaller;
  *
  */
 public abstract class ObjectManager {
-    protected static String nodeBaseURL = Settings.getConfiguration().getString("dataone.mn.baseURL");
-    private static String DataONEauthToken = null;
+
+    private static final String NODE_BASE_URL_ENV_NAME = "DATAONE_INDEXER_NODE_BASE_URL";
+    private static final String TOKEN_ENV_NAME = "DATAONE_AUTH_TOKEN";
+
+    protected static String nodeBaseURL;
+    private static String dataONEauthToken = null;
     private static Log logger = LogFactory.getLog(ObjectManager.class);
-    private static final String TOKEN_VARIABLE_NAME = "DATAONE_AUTH_TOKEN";
     private static final String TOKEN_FILE_PATH_PROP_NAME = "dataone.nodeToken.file";
 
     protected static MultipartD1Node d1Node = null;
@@ -112,9 +113,17 @@ public abstract class ObjectManager {
      * @throws ServiceFailure 
      */
     protected static void refreshD1Node() throws ServiceFailure {
-       //get the token
-        DataONEauthToken = System.getenv(TOKEN_VARIABLE_NAME);
-        if (DataONEauthToken == null || DataONEauthToken.isBlank()) {
+        nodeBaseURL = null;
+        nodeBaseURL = System.getenv(NODE_BASE_URL_ENV_NAME);
+        logger.debug("The node base url from env variable is " + nodeBaseURL);
+        if (nodeBaseURL == null || nodeBaseURL.isBlank()) {
+            nodeBaseURL = Settings.getConfiguration().getString("dataone.mn.baseURL");
+            logger.debug("The node base url from the properties file is " + nodeBaseURL);
+        }
+        //get the token
+        dataONEauthToken = null;
+        dataONEauthToken = System.getenv(TOKEN_ENV_NAME);
+        if (dataONEauthToken == null || dataONEauthToken.isBlank()) {
             //can't get the token from the env variable. So try to get it from a file specified
             // in the property
             String tokenFilePath = Settings.getConfiguration().getString(TOKEN_FILE_PATH_PROP_NAME);
@@ -123,25 +132,25 @@ public abstract class ObjectManager {
                     "Can NOT get the token from the env variable so try to get the auth token "
                         + "from the file " + tokenFilePath);
                 try {
-                    DataONEauthToken = FileUtils.readFileToString(new File(tokenFilePath), "UTF-8");
+                    dataONEauthToken = FileUtils.readFileToString(new File(tokenFilePath), "UTF-8");
                 } catch (IOException e) {
-                    DataONEauthToken = null;
+                    dataONEauthToken = null;
                     logger.warn("Can NOT get the authen token from the file " + tokenFilePath +
                                     " since " + e.getMessage());
                 }
-                if (DataONEauthToken != null && !DataONEauthToken.isBlank()) {
+                if (dataONEauthToken != null && !dataONEauthToken.isBlank()) {
                     logger.info("Got the auth token from the file "+ tokenFilePath);
                 }
             }
         } else {
             logger.info("Got the auth token from an env. variable");
         }
-        if (DataONEauthToken == null || DataONEauthToken.isBlank()) {
+        if (dataONEauthToken == null || dataONEauthToken.isBlank()) {
             logger.warn(
                 "Could NOT get an auth token from either an env. variable or the properties file."
                     + " So it will act as the public user.");
         }
-        session = createSession(DataONEauthToken);
+        session = createSession(dataONEauthToken);
         logger.info("Going to create the d1node with url " + nodeBaseURL);
         try {
             d1Node = getMultipartD1Node(session, nodeBaseURL);
@@ -172,7 +181,23 @@ public abstract class ObjectManager {
         }
         return session;
     }
-    
+
+    /**
+     * Only for testing
+     * @return
+     */
+    protected static String getDataONEauthToken() {
+        return dataONEauthToken;
+    }
+
+    /**
+     * Only for testing
+     * @return
+     */
+    protected static D1Node getD1Node() {
+        return d1Node;
+    }
+
     /**
      * Get a DataONE MultipartCNode object, which will be used to communication with a CN
      *
@@ -206,7 +231,7 @@ public abstract class ObjectManager {
      * @param nodeStr either a DataONE node serviceURL (e.g. https://knb.ecoinformatics.org/knb/d1/mn)
      *      or a DataONE node identifier (e.g. urn:node:CN)
      */
-    private static Boolean isCN(String nodeStr) {
+    protected static Boolean isCN(String nodeStr) {
         Boolean isCN = false;
         // match node urn, e.g. "https://cn.dataone.org/cn"
         if (nodeStr.matches("^\\s*urn:node:.*")) {
@@ -230,7 +255,7 @@ public abstract class ObjectManager {
         return isCN;
     }
 
-    protected SystemMetadata getSystemMetadataByAPI(String id)
+    protected static SystemMetadata getSystemMetadataByAPI(String id)
         throws ServiceFailure, InvalidToken, NotImplemented, NotAuthorized, NotFound {
         if (d1Node != null) {
             // Metacat can't find the system metadata from the storage system.

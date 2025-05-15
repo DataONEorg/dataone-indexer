@@ -103,6 +103,7 @@ public class LegacyStoreObjManager extends ObjectManager {
      * Get the absolute file path for a given relative path. If the relativePath is null or blank,
      * null will be returned
      * @param relativePath
+     * @param objectFormat
      * @return  the absolute file path
      * @throws NotFound
      */

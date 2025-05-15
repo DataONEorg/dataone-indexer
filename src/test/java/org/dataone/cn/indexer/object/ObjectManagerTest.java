@@ -1,24 +1,13 @@
 package org.dataone.cn.indexer.object;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.MessageDigest;
-
-import javax.xml.bind.DatatypeConverter;
+import static org.junit.Assert.assertTrue;
 
 
-import org.dataone.indexer.storage.Storage;
-import org.dataone.service.types.v1.Identifier;
-import org.dataone.service.types.v2.SystemMetadata;
-import org.dataone.service.util.TypeMarshaller;
+import org.dataone.cn.indexer.IndexWorker;
+import org.dataone.configuration.Settings;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,5 +18,32 @@ import org.junit.Test;
  */
 public class ObjectManagerTest {
 
+    @Before
+    public void setUp() throws Exception {
+        String propertyFilePath =
+            "./src/main/resources/org/dataone/configuration/index-processor.properties";
+        Settings.augmentConfiguration(propertyFilePath);
+    }
+    /**
+     * Test the isCN method
+     * @throws Exception
+     */
+    @Test
+    public void testIsCN() throws Exception {
+        String url = "https://knb.ecoinformatics.org/knb/d1/mn";
+        assertFalse(ObjectManager.isCN(url));
+        url = "https://cn-orc-1.dataone.org/cn";
+        assertTrue(ObjectManager.isCN(url));
+    }
+
+    /**
+     * Test the getSystemMetadataByAPI based the settings from properties
+     */
+    @Test
+    public void testRefreshD1NodeFromProperties() throws Exception {
+        ObjectManager.refreshD1Node();
+        assertEquals("https://valley.duckdns.org/metacat/d1/mn/v2",
+                     ObjectManager.getD1Node().getNodeBaseServiceUrl());
+    }
 
 }

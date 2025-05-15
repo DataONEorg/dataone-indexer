@@ -10,12 +10,15 @@ import java.lang.reflect.InvocationTargetException;
  * @author Tao
  */
 public class ObjectManagerFactory {
+
+    private static final String OBJECT_MANAGER_CLASSNAME_ENV_NAME =
+        "DATAONE_INDEXER_OBJECT_MANAGER_CLASS_NAME";
+
     private static volatile ObjectManager manager = null;
     private static final String DEFAULT_ClASS_NAME = "org.dataone.cn.indexer.object.hashstore"
         + ".HashStoreObjManager";
     private static Log logger = LogFactory.getLog(ObjectManagerFactory.class);
-    private static final String OBJECT_MANAGER_CLASSNAME_ENV =
-        "DATAONE_INDEXER_OBJECT_MANAGER_CLASSNAME";
+
 
     /**
      * Create a Concrete ObjectManager object by the single pattern.
@@ -32,11 +35,11 @@ public class ObjectManagerFactory {
     public static ObjectManager getObjectManager()
         throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
         InstantiationException, IllegalAccessException {
-        String classNameFromEnv = System.getenv(OBJECT_MANAGER_CLASSNAME_ENV);
+        String classNameFromEnv = System.getenv(OBJECT_MANAGER_CLASSNAME_ENV_NAME);
         String className = DEFAULT_ClASS_NAME;
         if (classNameFromEnv != null && !classNameFromEnv.isBlank()) {
             logger.debug("The ObjectManager class name form env variable "
-                            + OBJECT_MANAGER_CLASSNAME_ENV + " is " + classNameFromEnv);
+                            + OBJECT_MANAGER_CLASSNAME_ENV_NAME + " is " + classNameFromEnv);
             className = classNameFromEnv;
         }
         if (manager == null) {
