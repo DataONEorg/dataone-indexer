@@ -95,9 +95,9 @@ public class LegacyStoreObjManager extends ObjectManager {
         if (documentRootDir.equals(dataRootDir)) {
             ifDataAndDocRootSame = true;
         }
-        logger.info("ObjectManager.constructor - the root document directory is " +
-                        documentRootDir + " and the root data directory is " + dataRootDir +
-                        " Are they same?" + ifDataAndDocRootSame);
+        logger.info(
+            "The root document directory is " + documentRootDir + " and the root data directory is "
+                + dataRootDir + " Are they same?" + ifDataAndDocRootSame);
 
     }
 
@@ -169,22 +169,19 @@ public class LegacyStoreObjManager extends ObjectManager {
                     }
                 }
             }
-            logger.debug(
-                "ObjectManager.getSystemMetadata - finish getting the system metadata via the "
-                    + "DataONE API call for the pid " + id);
+            logger.debug("Finish getting the system metadata via the DataONE API call for the pid "
+                             + id);
         } catch (NotAuthorized e) {
             logger.info(
-                "ObjectManager.getSystemMetadata - failed to get the system metadata via the "
-                    + "DataONE API call for the pid "
+                "Failed to get the system metadata via the DataONE API call for the pid "
                     + id + " since it is not authorized. We will refresh the token and try again");
             refreshD1Node();
             sysmeta = getSystemMetadataByAPI(id);
         }
         long end = System.currentTimeMillis();
         logger.info(
-            "ObjectManager.getSystemMetadata - finish getting the system metadata via DataONE API"
-                + " for the pid "
-                + id + " and it took " + (end - start) + "milliseconds");
+            "Finish getting the system metadata via DataONE API for the pid " + id + " and it took "
+                + (end - start) + "milliseconds");
 
         return sysmeta;
     }
