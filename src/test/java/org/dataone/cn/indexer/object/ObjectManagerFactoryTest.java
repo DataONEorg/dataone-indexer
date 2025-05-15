@@ -14,7 +14,7 @@ import static org.junit.Assert.fail;
  */
 public class ObjectManagerFactoryTest {
 
-    private static final String envName = "DATAONE_INDEXER_OBJECT_MANAGER_CLASSNAME";
+    private static final String envName = "DATAONE_INDEXER_OBJECT_MANAGER_CLASS_NAME";
     @Rule
     public EnvironmentVariablesRule environmentVariablesClassName =
         new EnvironmentVariablesRule(envName, null);
