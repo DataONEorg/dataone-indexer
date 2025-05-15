@@ -35,7 +35,7 @@ import org.dataone.service.types.v2.SystemMetadata;
  *
  */
 public abstract class ObjectManager {
-
+    // environmental variables' names
     private static final String NODE_BASE_URL_ENV_NAME = "DATAONE_INDEXER_NODE_BASE_URL";
     private static final String TOKEN_ENV_NAME = "DATAONE_INDEXER_AUTH_TOKEN";
 

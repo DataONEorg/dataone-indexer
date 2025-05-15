@@ -10,8 +10,8 @@ import java.lang.reflect.InvocationTargetException;
  * @author Tao
  */
 public class ObjectManagerFactory {
-
-    private static final String OBJECT_MANAGER_CLASSNAME_ENV_NAME =
+    // environmental variables' names
+    private static final String OBJECT_MANAGER_CLASS_NAME_ENV_NAME =
         "DATAONE_INDEXER_OBJECT_MANAGER_CLASS_NAME";
 
     private static volatile ObjectManager manager = null;
@@ -35,11 +35,11 @@ public class ObjectManagerFactory {
     public static ObjectManager getObjectManager()
         throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
         InstantiationException, IllegalAccessException {
-        String classNameFromEnv = System.getenv(OBJECT_MANAGER_CLASSNAME_ENV_NAME);
+        String classNameFromEnv = System.getenv(OBJECT_MANAGER_CLASS_NAME_ENV_NAME);
         String className = DEFAULT_ClASS_NAME;
         if (classNameFromEnv != null && !classNameFromEnv.isBlank()) {
             logger.debug("The ObjectManager class name form env variable "
-                            + OBJECT_MANAGER_CLASSNAME_ENV_NAME + " is " + classNameFromEnv);
+                            + OBJECT_MANAGER_CLASS_NAME_ENV_NAME + " is " + classNameFromEnv);
             className = classNameFromEnv;
         }
         if (manager == null) {

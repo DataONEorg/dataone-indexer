@@ -29,39 +29,61 @@ import org.dataone.service.util.TypeMarshaller;
  * @author Tao
  */
 public class LegacyStoreObjManager extends ObjectManager {
+    // environmental variables' names
+    private static final String DATA_ROOT_DIR_ENV_NAME = "DATAONE_INDEXER_METACAT_DATA_ROOT_DIR";
+    private static final String DOCUMENT_ROOT_DIR_ENV_NAME =
+        "DATAONE_INDEXER_METACAT_DOCUMENT_ROOT_DIR";
 
-    private static String dataRootDir =
-        Settings.getConfiguration().getString("index.data.root.directory");
-    private static String documentRootDir =
-        Settings.getConfiguration().getString("index.document.root.directory");
+    private static final String DATA_ROOT_DIR_PROPERTY_NAME = "index.data.root.directory";
+    private static final String DOCUMENT_ROOT_DIR_PROPERTY_NAME = "index.document.root.directory";
+    private static String dataRootDir;
+    private static String documentRootDir;
     private static Logger logger = Logger.getLogger(LegacyStoreObjManager.class);
 
     private static boolean ifDataAndDocRootSame = false;
 
     /**
      * Constructor
+     * Read the Metacat legacy data and document directories from the environmental variables and
+     * the properties file. The values in the environmental variables overwrite the properties ones.
      * @throws ServiceFailure
      */
     public LegacyStoreObjManager() throws ServiceFailure {
-        if (dataRootDir == null || dataRootDir.trim().equals("")) {
-            throw new ServiceFailure(
-                "0000",
-                "The data root directory specified by the property index.data.root.directory is "
-                    + "blank in the properties file");
+        dataRootDir = System.getenv(DATA_ROOT_DIR_ENV_NAME);
+        logger.debug("The data root dir from env " + DATA_ROOT_DIR_ENV_NAME + " is " + dataRootDir);
+        if (dataRootDir == null || dataRootDir.isBlank()) {
+            dataRootDir = Settings.getConfiguration().getString(DATA_ROOT_DIR_PROPERTY_NAME);
+            logger.debug("The data root dir from the properties is " + dataRootDir);
         }
-        if (documentRootDir == null || documentRootDir.trim().equals("")) {
-            throw new ServiceFailure(
-                "0000",
-                "The metadata root directory specified by the property index.document.root"
-                    + ".directory is blank in the properties file");
+        if (dataRootDir == null || dataRootDir.isBlank()) {
+            throw new ServiceFailure("0000",
+                                     "The data root directory specified by the env " + "variable "
+                                         + DATA_ROOT_DIR_ENV_NAME + " or the property "
+                                         + DATA_ROOT_DIR_PROPERTY_NAME
+                                         + " in the properties file is null/blank");
+        }
+        documentRootDir = System.getenv(DOCUMENT_ROOT_DIR_ENV_NAME);
+        logger.debug("The document root dir from env " + DOCUMENT_ROOT_DIR_ENV_NAME + " is "
+                         + documentRootDir);
+        if (documentRootDir == null || documentRootDir.isBlank()) {
+            documentRootDir =
+                Settings.getConfiguration().getString(DOCUMENT_ROOT_DIR_PROPERTY_NAME);
+            logger.debug("The document root dir from the properties is " + documentRootDir);
+        }
+        if (documentRootDir == null || documentRootDir.isBlank()) {
+            throw new ServiceFailure("0000",
+                                     "The document root directory specified by the env variable "
+                                         + DOCUMENT_ROOT_DIR_ENV_NAME + " or the property "
+                                         + DOCUMENT_ROOT_DIR_PROPERTY_NAME
+                                         + " in the properties file is blank.");
         }
         if (!Files.exists(FileSystems.getDefault().getPath(dataRootDir))) {
             throw new ServiceFailure("0000", "The data root directory " + dataRootDir +
-                " specified in the properties file doesn't exist");
+                " specified in the env variable or the properties file doesn't exist");
         }
         if (!Files.exists(FileSystems.getDefault().getPath(documentRootDir))) {
             throw new ServiceFailure("0000", "The document root directory " + documentRootDir +
-                " specified in the properties file doesn't exist");
+                " specified in the env variable or the properties file doesn't exist");
         }
         if (!dataRootDir.endsWith("/")) {
             dataRootDir = dataRootDir + "/";
@@ -173,7 +195,7 @@ public class LegacyStoreObjManager extends ObjectManager {
         long start = System.currentTimeMillis();
         //try to get the system metadata from the storage system first
         InputStream sysmetaInputStream = null;
-        SystemMetadata sysmeta = getSystemMetadataByAPI(id);
+        SystemMetadata sysmeta = (SystemMetadata) getSystemMetadata(id);
         logger.debug("Finish getting the system metadata via the DataONE API call for the"
                          + " pid " + id);
         if (sysmeta != null) {
