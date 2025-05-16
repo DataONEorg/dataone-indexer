@@ -191,6 +191,9 @@ spec:
             readOnly: true
           {{- end }}
         - name: {{ .Release.Name }}-temp-tripledb-volume
+          {{- if .Values.idxworker.tripleDbStorageDefinition }}
+          {{- tpl (toYaml .Values.idxworker.tripleDbStorageDefinition) . | nindent 10 }}
+          {{- else }}
           ephemeral:
             volumeClaimTemplate:
               spec:
@@ -201,3 +204,4 @@ spec:
                 resources:
                   requests:
                     storage: 1Gi
+         {{- end }}
