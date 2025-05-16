@@ -3,6 +3,7 @@ package org.dataone.cn.indexer.object.hashstore;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.object.ObjectManagerFactory;
 import org.dataone.indexer.storage.Storage;
+import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v2.SystemMetadata;
 import org.dataone.service.util.TypeMarshaller;
@@ -14,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
@@ -21,6 +23,7 @@ import java.security.MessageDigest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * The test class for HashStoreObjManager
@@ -82,5 +85,33 @@ public class HashStoreObjManagerTest {
         assertEquals(identifier, sysmeta.getIdentifier().getValue());
         assertEquals("1755a557c13be7af44d676bb09274b0e", sysmeta.getChecksum().getValue());
         assertEquals(14828, sysmeta.getSize().intValue());
+    }
+
+    /**
+     * Test the failed scenarios for the methods of getSystemMetadata and getObject.
+     * @throws Exception
+     */
+    @Test
+    public void testFailuresInGetSystemMetadataAndGetObject() throws Exception {
+        String id = "foo-fake-id-123";
+        ObjectManager manager = ObjectManagerFactory.getObjectManager();
+        try {
+            InputStream stream = manager.getSystemMetadataStream(id);
+            fail("Test can't get here since the id doesn't exist");
+        } catch (Exception e) {
+            assertTrue(e instanceof NotFound);
+        }
+        try {
+            manager.getSystemMetadata(id);
+            fail("Test can't get here since the id doesn't exist");
+        } catch (Exception e) {
+            assertTrue(e instanceof NotFound);
+        }
+        try {
+            manager.getObject(id);
+            fail("Test can't get here since the id doesn't exist");
+        } catch (Exception e) {
+            assertTrue(e instanceof FileNotFoundException);
+        }
     }
 }
