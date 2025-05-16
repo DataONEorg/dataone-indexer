@@ -207,5 +207,20 @@ public class LegacyStoreObjManager extends ObjectManager {
         return sysmetaInputStream;
     }
 
+    /**
+     * For testing only
+     * @return the data root dir
+     */
+    protected String getDataRootDir() {
+        return dataRootDir;
+    }
+
+    /**
+     * For testing only
+     * @return the document root dir
+     */
+    protected String getDocumentRootDir() {
+        return documentRootDir;
+    }
 
 }

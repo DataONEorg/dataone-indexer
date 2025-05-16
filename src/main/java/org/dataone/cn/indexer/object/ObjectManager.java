@@ -112,7 +112,7 @@ public abstract class ObjectManager {
      * In case the token expired, the method will retrieve the token and create a new d1 node
      * @throws ServiceFailure 
      */
-    protected static void refreshD1Node() throws ServiceFailure {
+    public static void refreshD1Node() throws ServiceFailure {
         nodeBaseURL = System.getenv(NODE_BASE_URL_ENV_NAME);
         logger.debug("The node base url from env variable is " + nodeBaseURL);
         if (nodeBaseURL == null || nodeBaseURL.isBlank()) {

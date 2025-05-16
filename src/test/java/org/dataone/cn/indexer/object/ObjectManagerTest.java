@@ -18,7 +18,7 @@ import uk.org.webcompere.systemstubs.rules.EnvironmentVariablesRule;
  *
  */
 public class ObjectManagerTest {
-    private static final String NODE_BASE_URL_ENV_NAME = "DATAONE_INDEXER_NODE_BASE_URL";
+    public static final String NODE_BASE_URL_ENV_NAME = "DATAONE_INDEXER_NODE_BASE_URL";
     private static final String TOKEN_ENV_NAME = "DATAONE_INDEXER_AUTH_TOKEN";
 
     @Rule

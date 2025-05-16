@@ -1,6 +1,7 @@
 package org.dataone.cn.indexer.object;
 
 import org.dataone.cn.indexer.object.hashstore.HashStoreObjManager;
+import org.dataone.cn.indexer.object.legacystore.LegacyStoreObjManager;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.org.webcompere.systemstubs.rules.EnvironmentVariablesRule;
@@ -19,7 +20,7 @@ public class ObjectManagerFactoryTest {
     public EnvironmentVariablesRule environmentVariablesClassName =
         new EnvironmentVariablesRule(envName, null);
     /**
-     * Test to create a HashStoreObjManager
+     * Test to create a HashStoreObjManager instance
      * @throws Exception
      */
     @Test
@@ -28,6 +29,20 @@ public class ObjectManagerFactoryTest {
         ObjectManagerFactory.resetManagerNull();
         ObjectManager manager = ObjectManagerFactory.getObjectManager();
         assertTrue(manager instanceof HashStoreObjManager);
+    }
+
+    /**
+     * Test to create a LegacyStroeObjectManager instance
+     * @throws Exception
+     */
+    @Test
+    public void testLegacyStoreObjManager() throws Exception {
+        environmentVariablesClassName.set(
+            envName, "org.dataone.cn.indexer.object.legacystore.LegacyStoreObjManager");
+        ObjectManagerFactory.resetManagerNull();
+        ObjectManager manager = ObjectManagerFactory.getObjectManager();
+        assertTrue(manager instanceof LegacyStoreObjManager);
+        environmentVariablesClassName.set(envName, null);
     }
 
     /**
@@ -44,5 +59,6 @@ public class ObjectManagerFactoryTest {
         } catch (Exception e) {
             assertTrue( e instanceof ClassNotFoundException);
         }
+        environmentVariablesClassName.set(envName, null);
     }
 }
