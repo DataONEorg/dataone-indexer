@@ -209,6 +209,11 @@ idxworker:
   ##
   tripleDbDirectory: /etc/dataone/tdb-cache
 
+  ## @param idxworker.enableMountWarmupHook Enable or disable the mount warmup hook.  This is a workaround for
+  ## specifically Lustre filesystems. This workaround addresses known behavior with Lustre and other HPC
+  ## file systems that require access within the container runtime to finalize mount visibility.
+  enableMountWarmupHook: false
+
   storage:
     hashStoreClassName: "org.dataone.hashstore.filehashstore.FileHashStore"
     hashStoreRootDir: "/var/metacat/hashstore"
