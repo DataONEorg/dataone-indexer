@@ -105,6 +105,13 @@ public class IndexWorker {
      */
     public static void main(String[] args) {
         logger.info("IndexWorker.main - Starting index worker...");
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            if (throwable instanceof OutOfMemoryError) {
+                logger.fatal("Uncaught OutOfMemoryError in thread " + thread.getName() + ": "
+                                 + throwable.getMessage(), throwable);
+                System.exit(1);
+            }
+        });
         String propertyFile = null;
         if (args != null && args.length == 1) {
             // The args should be a property file which the dataone-indexer will use
