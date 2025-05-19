@@ -449,21 +449,22 @@ public class IndexWorker {
         Identifier pid = parser.getIdentifier();
         String indexType = parser.getIndexType();
         int priority = parser.getPriority();
+        String docId = parser.getDocId();// It can be null.
         try {
             long threadId = Thread.currentThread().getId();
             logger.info("IndexWorker.consumer.indexObject by multiple thread? " + multipleThread
                             + ", with the thread id " + threadId
                     + " - Received the index task from the index queue with the identifier: "
                             + pid.getValue() + " , the index type: " + indexType
-                            + ", the priority: " + priority);
+                            + ", the priority: " + priority + ", the docId(can be null): " + docId);
             switch (indexType) {
                 case CREATE_INDEXT_TYPE -> {
                     boolean sysmetaOnly = false;
-                    solrIndex.update(pid, sysmetaOnly);
+                    solrIndex.update(pid, sysmetaOnly, docId);
                 }
                 case SYSMETA_CHANGE_TYPE -> {
                     boolean sysmetaOnly = true;
-                    solrIndex.update(pid, sysmetaOnly);
+                    solrIndex.update(pid, sysmetaOnly, docId);
                 }
                 case DELETE_INDEX_TYPE -> solrIndex.remove(pid);
                 default -> throw new InvalidRequest(
@@ -482,7 +483,8 @@ public class IndexWorker {
                  ServiceFailure | XPathExpressionException | UnsupportedType | SAXException |
                  ParserConfigurationException | SolrServerException | MarshallingException |
                  EncoderException | InterruptedException | IOException | InstantiationException |
-                 IllegalAccessException e) {
+                 IllegalAccessException | ClassNotFoundException | InvocationTargetException |
+                 NoSuchMethodException e) {
             logger.error("Cannot index the task for identifier " + pid.getValue()
                              + " since " + e.getMessage(), e);
         }

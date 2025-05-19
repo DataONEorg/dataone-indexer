@@ -2,6 +2,7 @@ package org.dataone.cn.indexer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.cn.indexer.object.ObjectManagerFactory;
+import org.dataone.cn.indexer.object.legacystore.LegacyStoreObjManager;
 import org.dataone.cn.indexer.parser.BaseXPathDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.IDocumentDeleteSubprocessor;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
@@ -138,15 +140,22 @@ public class SolrIndex {
      * Generate the index for the given information
      * @param id  the id which will be indexed
      * @param isSysmetaChangeOnly  if this is a change on the system metadata only
+     * @param docId  the docId (file name) of the object. This is only for LegacyObjManager
      * @return a map of solr doc with ids
      * @throws IOException
      * @throws XPathExpressionException
-     * @throws SolrServerException 
      * @throws EncoderException
+     * @throws SolrServerException
+     * @throws ClassNotFoundException
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
      */
-    private Map<String, SolrDoc> process(String id, boolean isSysmetaChangeOnly)
-                                     throws IOException, XPathExpressionException, EncoderException,
-                                    SolrServerException {
+    private Map<String, SolrDoc> process(String id, boolean isSysmetaChangeOnly, String docId)
+        throws IOException, XPathExpressionException, EncoderException, SolrServerException,
+        ClassNotFoundException, InvocationTargetException, NoSuchMethodException,
+        InstantiationException, IllegalAccessException {
         log.debug("SolrIndex.process - trying to generate the solr doc object for the pid "+id);
         long start = System.currentTimeMillis();
         Map<String, SolrDoc> docs = new HashMap<>();
@@ -180,7 +189,15 @@ public class SolrIndex {
                    + " for the id " + id);
         //if the objectPath is null, we should skip the other processes
         if (!skipOtherProcessor) {
-            log.debug("SolrIndex.process - Start to use subprocessor list to process " + id);
+            // The default object id is the identifier of the object (the hashstore case)
+            String objectID = id;
+            if (ObjectManagerFactory.getObjectManager() instanceof LegacyStoreObjManager) {
+                // In the LegacyStoreObjManager class, dataone-indexer uses the docid (which
+                // always is the file name) to get the object
+                objectID = docId;
+            }
+            log.debug("Start to use subprocessor list to process " + id);
+            log.debug("The object id for " + id + " is " + objectID);
             // Determine if subprocessors are available for this ID
             if (subprocessors != null) {
                 // for each subprocessor loaded from the spring config
@@ -190,7 +207,7 @@ public class SolrIndex {
                         // if so, then extract the additional information from the
                         // document.
                         try (InputStream dataStream =
-                                 ObjectManagerFactory.getObjectManager().getObject(id)) {
+                                 ObjectManagerFactory.getObjectManager().getObject(objectID)) {
                             // docObject = the resource map document or science
                             // metadata document.
                             // note that resource map processing touches all objects
@@ -318,20 +335,26 @@ public class SolrIndex {
      * Insert the indexes for a document.
      * @param pid  the id of this document
      * @param isSysmetaChangeOnly  if this change is only for systemmetadata
+     * @param docId  the docId (file name) of the object. This is only for LegacyObjManager
      * @throws IOException
      * @throws InvalidRequest
      * @throws XPathExpressionException
      * @throws SolrServerException
      * @throws EncoderException
+     * @throws ClassNotFoundException
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
      */
-    private void insert(Identifier pid, boolean isSysmetaChangeOnly)
-                    throws IOException, InvalidRequest,
-                             XPathExpressionException, SolrServerException,
-                                     EncoderException {
+    private void insert(Identifier pid, boolean isSysmetaChangeOnly, String docId)
+        throws IOException, InvalidRequest, XPathExpressionException, SolrServerException,
+        EncoderException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException,
+        InstantiationException, IllegalAccessException {
         checkParams(pid);
         log.debug("SolrIndex.insert - trying to insert the solrDoc for object "+pid.getValue());
         long start = System.currentTimeMillis();
-        Map<String, SolrDoc> docs = process(pid.getValue(), isSysmetaChangeOnly);
+        Map<String, SolrDoc> docs = process(pid.getValue(), isSysmetaChangeOnly, docId);
         long end = System.currentTimeMillis();
         log.info("SolrIndex.insert - the subprocessor processing time of " + pid.getValue() + " is "
                  + (end-start) + " milliseconds.");
@@ -377,34 +400,38 @@ public class SolrIndex {
      *     the index for the doc.
      * @param pid  the identifier of object which will be indexed
      * @param isSysmetaChangeOnly  the flag indicating if the change is system metadata only
-     * @throws NotFound 
-     * @throws ServiceFailure 
-     * @throws NotImplemented 
-     * @throws NotAuthorized 
-     * @throws InvalidToken 
-     * @throws EncoderException 
-     * @throws MarshallingException 
-     * @throws SolrServerException 
-     * @throws ParserConfigurationException 
-     * @throws SAXException 
-     * @throws UnsupportedType 
-     * @throws XPathExpressionException 
-     * @throws InterruptedException 
-     * @throws IOException 
+     * @param docId  the docId (file name) of the object. This is only for LegacyObjManager
+     * @throws InvalidToken
+     * @throws NotAuthorized
+     * @throws NotImplemented
+     * @throws ServiceFailure
+     * @throws NotFound
+     * @throws XPathExpressionException
+     * @throws UnsupportedType
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     * @throws SolrServerException
+     * @throws MarshallingException
+     * @throws EncoderException
+     * @throws InterruptedException
+     * @throws IOException
      * @throws InvalidRequest
-     * @throws IllegalAccessException 
-     * @throws InstantiationException 
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws ClassNotFoundException
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
      */
-    public void update(Identifier pid, boolean isSysmetaChangeOnly)
-                       throws InvalidToken, NotAuthorized, NotImplemented, ServiceFailure, NotFound,
-                              XPathExpressionException, UnsupportedType, SAXException,
-                              ParserConfigurationException, SolrServerException, MarshallingException,
-                              EncoderException, InterruptedException, IOException, InvalidRequest,
-                              InstantiationException, IllegalAccessException {
+    public void update(Identifier pid, boolean isSysmetaChangeOnly, String docId)
+        throws InvalidToken, NotAuthorized, NotImplemented, ServiceFailure, NotFound,
+        XPathExpressionException, UnsupportedType, SAXException, ParserConfigurationException,
+        SolrServerException, MarshallingException, EncoderException, InterruptedException,
+        IOException, InvalidRequest, InstantiationException, IllegalAccessException,
+        ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
         log.debug("SolrIndex.update - trying to update(insert or remove) solr index of object "
                     + pid.getValue());
         try {
-            insert(pid, isSysmetaChangeOnly);
+            insert(pid, isSysmetaChangeOnly, docId);
         } catch (SolrServerException e) {
             if (e.getMessage().contains(VERSION_CONFLICT) && VERSION_CONFLICT_MAX_ATTEMPTS > 0) {
                 log.info("SolrIndex.update - Indexer grabbed an older version (version conflict) "
@@ -414,7 +441,7 @@ public class SolrIndex {
                 for (int i=0; i<VERSION_CONFLICT_MAX_ATTEMPTS; i++) {
                     try {
                         Thread.sleep(VERSION_CONFLICT_WAITING);
-                        insert(pid, isSysmetaChangeOnly);
+                        insert(pid, isSysmetaChangeOnly, docId);
                         break;
                     } catch (SolrServerException ee) {
                         if (ee.getMessage().contains(VERSION_CONFLICT)) {
