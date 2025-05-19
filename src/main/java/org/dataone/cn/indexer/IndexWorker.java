@@ -10,9 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -104,13 +106,6 @@ public class IndexWorker {
      */
     public static void main(String[] args) {
         logger.info("IndexWorker.main - Starting index worker...");
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            if (throwable instanceof OutOfMemoryError) {
-                logger.fatal("Uncaught OutOfMemoryError in thread " + thread.getName() + ": "
-                                 + throwable.getMessage(), throwable);
-                System.exit(1);
-            }
-        });
         String propertyFile = null;
         if (args != null && args.length == 1) {
             // The args should be a property file which the dataone-indexer will use
@@ -339,7 +334,27 @@ public class IndexWorker {
             logger.info("IndexWorker.initExecutorService - the size of index thread pool specified in the property file is " + specifiedThreadNumber +
                     ". The size computed from the available processors is " + availableProcessors +
                      ". Final computed thread pool size for index executor: " + nThreads);
-            executor = Executors.newFixedThreadPool(nThreads);
+
+            // Custom thread factory to set an uncaught exception handler
+            ThreadFactory customThreadFactory = new ThreadFactory() {
+                private final AtomicInteger threadNumber = new AtomicInteger(1);
+
+                @Override
+                public Thread newThread(Runnable r) {
+                    Thread t =
+                        new Thread(r, "index-worker-thread-" + threadNumber.getAndIncrement());
+                    t.setUncaughtExceptionHandler((thread, throwable) -> {
+                        if (throwable instanceof OutOfMemoryError) {
+                            logger.fatal(
+                                "Uncaught OutOfMemoryError in thread " + thread.getName() + ": "
+                                    + throwable.getMessage(), throwable);
+                            System.exit(1);
+                        }
+                    });
+                    return t;
+                }
+            };
+            executor = Executors.newFixedThreadPool(nThreads, customThreadFactory);
             multipleThread = true;
         } else {
             logger.info("IndexWorker.initExecutorService - the size of index thread pool specified in the property file is " + specifiedThreadNumber +
