@@ -106,16 +106,21 @@ public class IndexWorker {
     public static void main(String[] args) {
         logger.info("IndexWorker.main - Starting index worker...");
         String propertyFile = null;
+        if (args != null && args.length == 1) {
+            // The args should be a property file which the dataone-indexer will use
+            propertyFile = args[0];
+            logger.debug("The external property file specified in the argument is " + propertyFile);
+        }
         loadExternalPropertiesFile(propertyFile);
         try {
             IndexWorker worker = new IndexWorker();
             worker.start();
             worker.startReadinessProbe();
+            worker.startLivenessProbe();
         } catch (Exception e) {
             logger.fatal("IndexWorker.main() exiting due to fatal error: " + e.getMessage(), e);
             System.exit(1);
         }
-        startLivenessProbe();
     }
 
     /**
@@ -483,7 +488,11 @@ public class IndexWorker {
         }
     }
 
-    private static void startLivenessProbe() {
+    private void startLivenessProbe() {
+        if (!isK8s) {
+            logger.debug("This is a non-k8s deployment and LivenessProbe do nothing.");
+            return;
+        }
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         Path path = Paths.get("./livenessprobe");
         Runnable task = () -> {
