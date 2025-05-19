@@ -8,7 +8,7 @@ then
 else
     java  -Dlog4j2.formatMsgNoLookups=true \
           -XX:+UnlockExperimentalVMOptions \
-          -XX:+UseContainerSupport \
+          -XX:+UseContainerSupport  "$IDX_JAVA_MEM" \
           -XX:+UseSerialGC \
           -cp /etc/dataone/:./dataone-index-worker-${TAG}-shaded.jar \
           org.dataone.cn.indexer.IndexWorker

@@ -113,6 +113,9 @@ spec:
           env:
             - name: DEBUG
               value: "{{ .Values.idxworker.debug }}"
+            {{- if .Values.javaMem }}
+            - name: IDX_JAVA_MEM
+              value: {{ .Values.javaMem | quote }}
             - name: DATAONE_AUTH_TOKEN
               valueFrom:
                 secretKeyRef:

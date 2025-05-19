@@ -247,6 +247,12 @@ idxworker:
   readinessProbe:
     enabled: true
 
+  ## @param idxworker.javaMem Java memory options to pass to the index worker container
+  ## (format: "-Xms512m -Xmx2g"). If you do not set a value, the JVM will default to using 1/4 of
+  ## the available memory as the maximum
+  ##
+  javaMem: ""
+
 ## @section RabbitMQ Bitnami Sub-Chart Configuration
 ##
 rabbitmq:
