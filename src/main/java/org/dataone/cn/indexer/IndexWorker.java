@@ -18,7 +18,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
@@ -226,7 +225,7 @@ public class IndexWorker {
      * @throws TimeoutException
      * @throws ServiceFailure
      */
-    public IndexWorker() throws IOException, TimeoutException, ServiceFailure {
+    public IndexWorker() throws IOException, TimeoutException {
         this(true);
     }
 
@@ -337,13 +336,13 @@ public class IndexWorker {
             nThreads = specifiedThreadNumber; //use the specified number in the property file
         }
         if (nThreads != 1) {
-            logger.info("IndexWorker.initExecutorService - the size of index thread pool specified in the propery file is " + specifiedThreadNumber +
+            logger.info("IndexWorker.initExecutorService - the size of index thread pool specified in the property file is " + specifiedThreadNumber +
                     ". The size computed from the available processors is " + availableProcessors +
                      ". Final computed thread pool size for index executor: " + nThreads);
             executor = Executors.newFixedThreadPool(nThreads);
             multipleThread = true;
         } else {
-            logger.info("IndexWorker.initExecutorService - the size of index thread pool specified in the propery file is " + specifiedThreadNumber +
+            logger.info("IndexWorker.initExecutorService - the size of index thread pool specified in the property file is " + specifiedThreadNumber +
                     ". The size computed from the available processors is " + availableProcessors +
                      ". Final computed thread pool size for index executor: " + nThreads + ". Since its value is 1, we do NOT need the executor service and use a single thread way.");
             multipleThread = false;
@@ -479,7 +478,7 @@ public class IndexWorker {
             }
 
             long end = System.currentTimeMillis();
-            logger.info("IndexWorker.indexOjbect with the thread id " + threadId
+            logger.info("IndexWorker.indexObject with the thread id " + threadId
                     + " - Completed the index task from the index queue with the identifier: "
                             + pid.getValue() + " , the index type: " + indexType
                             + ", the priority: " + priority + " and the time taking is "
