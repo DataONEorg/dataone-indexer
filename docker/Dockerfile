@@ -7,7 +7,7 @@ ARG TAG="NO-TAG"
 ENV TAG=${TAG}
 ENV DATAONE_INDEXER_CONFIG=/etc/dataone/dataone-indexer.properties
 
-# Set the working directory 
+# Set the working directory
 WORKDIR /var/lib/dataone-indexer
 
 RUN apt update && apt -y install \
