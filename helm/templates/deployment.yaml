@@ -116,6 +116,7 @@ spec:
             {{- if .Values.javaMem }}
             - name: IDX_JAVA_MEM
               value: {{ .Values.javaMem | quote }}
+            {{- end }}
             - name: DATAONE_AUTH_TOKEN
               valueFrom:
                 secretKeyRef:
