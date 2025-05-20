@@ -36,6 +36,7 @@ This is a patch release with the following minor fixes and upgrades:
 * Introduced `idxworker.tripleDbStorageDefinition` in values.yaml to allow custom storage
   configurations for the tripleDB volume. Supports alternative storage types such as hostPath and
   emptyDir ([Issue #228](https://github.com/DataONEorg/dataone-indexer/issues/228)).
+* Bump indexer App version to 3.1.4
 
 > [!CAUTION]
 > **If upgrading from 1.2.0, note the section entitled:
