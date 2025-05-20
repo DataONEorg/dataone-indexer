@@ -73,6 +73,7 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext:
+  runAsUser: 59997
   fsGroup: 1000 # must match metacat group for shared volume at /var/metacat
 
 ## @param securityContext Security context for the container (This will be applied to all containers)

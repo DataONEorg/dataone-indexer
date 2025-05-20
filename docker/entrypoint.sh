@@ -6,6 +6,9 @@ then
     echo "Starting infinite loop, ctrl-c to interrupt..."
     sh -c 'trap "exit" TERM; while true; do sleep 1; done'
 else
+    echo "Starting DataONE Indexer from jar file: ./dataone-index-worker-${TAG}-shaded.jar,"
+    echo "using memory options: [$IDX_JAVA_MEM]"
+
     java  -Dlog4j2.formatMsgNoLookups=true \
           -XX:+UnlockExperimentalVMOptions \
           -XX:+UseContainerSupport  "$IDX_JAVA_MEM" \
