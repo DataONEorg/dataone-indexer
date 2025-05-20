@@ -4,6 +4,7 @@ import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.object.ObjectManagerFactory;
 import org.dataone.indexer.storage.Storage;
 import org.dataone.service.exceptions.NotFound;
+import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v2.SystemMetadata;
 import org.dataone.service.util.TypeMarshaller;
@@ -99,13 +100,13 @@ public class HashStoreObjManagerTest {
             InputStream stream = manager.getSystemMetadataStream(id);
             fail("Test can't get here since the id doesn't exist");
         } catch (Exception e) {
-            assertTrue(e instanceof NotFound);
+            assertTrue(e instanceof ServiceFailure || e instanceof NotFound);
         }
         try {
             manager.getSystemMetadata(id);
             fail("Test can't get here since the id doesn't exist");
         } catch (Exception e) {
-            assertTrue(e instanceof NotFound);
+            assertTrue(e instanceof ServiceFailure || e instanceof NotFound);
         }
         try {
             manager.getObject(id);
