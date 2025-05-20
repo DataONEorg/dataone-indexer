@@ -390,9 +390,11 @@ public class IndexWorker {
                         indexObject(parser, multipleThread);
                     }
                 } catch (InvalidRequest e) {
-                    logger.error(
-                        "cannot index the task for identifier " + parser.getIdentifier().getValue()
-                            + " since " + e.getMessage());
+                    String error = "Cannot index the task for the object since " + e.getMessage();
+                    if (parser.getIdentifier() != null) {
+                        error = error + " with the identifier " + parser.getIdentifier().getValue();
+                    }
+                    logger.error(error);
                     boolean requeue = false;
                     rabbitMQchannel.basicReject(envelope.getDeliveryTag(), requeue);
                 }
