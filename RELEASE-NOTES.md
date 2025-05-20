@@ -1,5 +1,47 @@
 # dataone-indexer Release Notes
 
+## dataone-indexer version 3.1.4 & helm chart version 1.3.1
+
+### Release date: 2025-05-20
+
+### dataone-indexer version 3.1.4
+
+This is a patch release with the following minor fixes and upgrades:
+
+* Use `org.apache.commons.logging` throughout; removed direct references to
+ `org.apache.log4j.Logger` ([Issue #178](https://github.com/DataONEorg/dataone-indexer/issues/178))
+* Remove the spring-web component from the dependency library. ([Issue #216](https://github.com/DataONEorg/dataone-indexer/issues/216))
+* Disable `livenessProbe` check for non-k8s deployments. ([Issue
+  #225](https://github.com/DataONEorg/dataone-indexer/issues/225))
+* Bump `log4j-layout-template-json` version to 2.24.3
+
+### helm chart version 1.3.1
+
+* Add a "warm up" postStart hook for Lustre/HPC Filesystems (disabled by default - see
+  `idxworker.enableMountWarmupHook` in values.yaml. Addresses visibility issues with Lustre and
+  similar HPC filesystems. ([Issue #227](https://github.com/DataONEorg/dataone-indexer/issues/227))
+* Remove `subPath` for log4j properties configmap to allow dynamic reloading ([Issue
+  #210](https://github.com/DataONEorg/dataone-indexer/issues/210#issuecomment-2859717382))
+* Allow configuration of Java Heap Memory for index workers, via values.yaml (`idxworker.javaMem`)
+  ([Issue #231](https://github.com/DataONEorg/dataone-indexer/issues/231))
+* Added `extraVolumes` and `extraVolumeMounts` to values.yaml, allowing users to specify additional
+  volumes and mounts in their deployments ([Issue
+  #223](https://github.com/DataONEorg/dataone-indexer/issues/223))
+* Full Support for granular configuration of security context in Containers and InitContainers
+  ([Issue #224](https://github.com/DataONEorg/dataone-indexer/issues/224))
+  * Add `podSecurityContext.runAsUser: 59997` (applies to dependencies initContainer and indexer
+      container)
+  * Add `runAsNonRoot: true` to dependencies initContainer (was previously applied only to indexer
+    container)
+* Introduced `idxworker.tripleDbStorageDefinition` in values.yaml to allow custom storage
+  configurations for the tripleDB volume. Supports alternative storage types such as hostPath and
+  emptyDir ([Issue #228](https://github.com/DataONEorg/dataone-indexer/issues/228)).
+
+> [!CAUTION]
+> **If upgrading from 1.2.0, note the section entitled:
+> `Caution - ENSURE THAT THE RABBITMQ QUEUE IS EMPTY,` [in the release notes for helm chart v1.3.0
+> below!](#helm-chart-version-130)**,
+
 ## dataone-indexer version 3.1.3 & helm chart version 1.3.0
 
 ### Release date: 2025-05-01
