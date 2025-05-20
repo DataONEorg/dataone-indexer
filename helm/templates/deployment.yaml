@@ -59,11 +59,11 @@ spec:
                     {
                       ## This is a workaround for the Lustre file system
                       echo "$(date '+%Y-%m-%d %H:%M:%S.%3N') - Warming up mounted directories..." >> /tmp/postStart.log
-                      ls -1 /var/metacat/hashstore/metadata/tmp > /dev/null 2>&1 || true
-                      ls -1 /var/metacat/hashstore/refs/tmp > /dev/null 2>&1 || true
-                      ls -1 /var/metacat/hashstore/objects > /dev/null 2>&1 || true
-                      ls -1 /var/metacat/hashstore/refs/pids > /dev/null 2>&1 || true
-                      ls -1 /var/metacat/hashstore/refs/cids > /dev/null 2>&1 || true
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/metadata/tmp > /dev/null 2>&1 || true
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/refs/tmp > /dev/null 2>&1 || true
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/objects > /dev/null 2>&1 || true
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/refs/pids > /dev/null 2>&1 || true
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/refs/cids > /dev/null 2>&1 || true
                       echo "$(date '+%Y-%m-%d %H:%M:%S.%3N') - Warm-up complete." >> /tmp/postStart.log
                     }
         {{- end }}
