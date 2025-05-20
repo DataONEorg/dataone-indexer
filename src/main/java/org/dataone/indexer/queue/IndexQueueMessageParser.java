@@ -2,7 +2,8 @@ package org.dataone.indexer.queue;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.service.exceptions.InvalidRequest;
 import org.dataone.service.types.v1.Identifier;
 
@@ -25,7 +26,7 @@ public class IndexQueueMessageParser {
     private String indexType = null;
     private int priority = 1;
     
-    private static Logger logger = Logger.getLogger(IndexQueueMessageParser.class);
+    private static Log logger = LogFactory.getLog(IndexQueueMessageParser.class);
     
     /**
      * Parse the message from the index queue and store the information

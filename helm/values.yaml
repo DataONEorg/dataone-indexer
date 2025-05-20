@@ -73,8 +73,10 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext:
+  runAsUser: 59997
   fsGroup: 1000 # must match metacat group for shared volume at /var/metacat
 
+## @param securityContext Security context for the container (This will be applied to all containers)
 securityContext:
   runAsNonRoot: true
 
@@ -105,6 +107,11 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+## @param extraVolumes Additional volumes to be added to the pod
+extraVolumes: []
+## @param extraVolumeMounts Additional volume mounts to be added to the pod
+extraVolumeMounts: []
 
 persistence:
   ## @param persistence.claimName Name of existing PVC to use (typically shared with metacat)
@@ -203,6 +210,28 @@ idxworker:
   ##
   tripleDbDirectory: /etc/dataone/tdb-cache
 
+  ## @param idxworker.tripleDbStorageDefinition type of storage for the triple store (default is "ephemeral"). Other
+  ## options  are "hostPath" and "emptyDir".  Must give full definition for hostPath or emptyDir.
+  ## For example:
+  ##  tripleDbStorageDefinition:
+  ##    emptyDir: {}
+  ##
+  ##  For the emptyDir option you will need to think about specifying the ephemeral-storage limit in the
+  ##  resources section.
+  ##
+  ## For example:
+  ##    resources:
+  ##      requests:
+  ##        ephemeral-storage: 1Gi
+  ##      limits:
+  ##        ephemeral-storage: 2Gi
+  tripleDbStorageDefinition: {}
+
+  ## @param idxworker.enableMountWarmupHook Enable or disable the mount warmup hook.  This is a workaround for
+  ## specifically Lustre filesystems. This workaround addresses known behavior with Lustre and other HPC
+  ## file systems that require access within the container runtime to finalize mount visibility.
+  enableMountWarmupHook: false
+
   storage:
     hashStoreClassName: "org.dataone.hashstore.filehashstore.FileHashStore"
     hashStoreRootDir: "/var/metacat/hashstore"
@@ -218,6 +247,12 @@ idxworker:
   ## @param idxworker.readinessProbe.enabled Enable or disable default probe (see deployment.yaml)
   readinessProbe:
     enabled: true
+
+  ## @param idxworker.javaMem Java memory options to pass to the index worker container
+  ## (format: "-Xms512m -Xmx2g"). If you do not set a value, the JVM will default to using 1/4 of
+  ## the available memory as the maximum
+  ##
+  javaMem: ""
 
 ## @section RabbitMQ Bitnami Sub-Chart Configuration
 ##

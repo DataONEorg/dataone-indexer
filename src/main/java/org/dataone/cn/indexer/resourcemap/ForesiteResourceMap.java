@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.input.ReaderInputStream;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.utility.SeriesIdResolver;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
@@ -42,7 +43,7 @@ import org.w3c.dom.ls.LSSerializer;
 public class ForesiteResourceMap implements ResourceMap {
     /* Class contants */
     private static final String RESOURCE_MAP_FORMAT = "http://www.openarchives.org/ore/terms";
-    private static Logger logger = Logger.getLogger(ForesiteResourceMap.class.getName());
+    private static Log logger = LogFactory.getLog(ForesiteResourceMap.class.getName());
 
     /* Instance variables */
     private String identifier = null;

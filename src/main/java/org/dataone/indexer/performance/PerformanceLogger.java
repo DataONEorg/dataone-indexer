@@ -21,17 +21,16 @@
  */
 package org.dataone.indexer.performance;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 import org.dataone.configuration.Settings;
 
 public class PerformanceLogger {
 
-    static final Logger defaultLogger = Logger.getLogger(PerformanceLogger.class);
+    static final Log defaultLogger = LogFactory.getLog(PerformanceLogger.class);
     
     private static PerformanceLogger self = new PerformanceLogger(); // non-lazy singleton 
-    private static final Level LOGGING_LEVEL = Level.INFO;
-    private static Logger perfLogger;
+    private static Log perfLogger;
     private static boolean enabled;
 
     
@@ -39,10 +38,10 @@ public class PerformanceLogger {
         enabled = Settings.getConfiguration().getBoolean("dataone.indexing.performance.logging.enabled", Boolean.FALSE);
         defaultLogger.warn("Setting up PerformanceLogger: set to enabled? " + enabled);
         
-        perfLogger = Logger.getLogger("performanceStats");
+        perfLogger = LogFactory.getLog("performanceStats");
         
         if (perfLogger == null) {
-            defaultLogger.error("Unable to create Logger for performanceStats appender!");
+            defaultLogger.error("Unable to create Log for performanceStats appender!");
             enabled = false;
         }
     }
@@ -58,7 +57,7 @@ public class PerformanceLogger {
     
     public void log(String message) {
         if (enabled)
-            perfLogger.log(LOGGING_LEVEL, message);
+            perfLogger.info(message);
     }
     
     public boolean isLogEnabled() {

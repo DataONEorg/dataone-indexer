@@ -30,7 +30,8 @@ import java.io.IOException;
 import junit.framework.Assert;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.service.types.v2.SystemMetadata;
 import org.dataone.service.util.TypeMarshaller;
 import org.junit.AfterClass;
@@ -64,7 +65,7 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 @ContextConfiguration(locations = { "test-context.xml" })
 public class IndexTaskProcessingIntegrationTest {
 
-    private static Logger logger = Logger.getLogger(IndexTaskProcessingIntegrationTest.class
+    private static Log logger = LogFactory.getLog(IndexTaskProcessingIntegrationTest.class
             .getName());
 
     @Autowired

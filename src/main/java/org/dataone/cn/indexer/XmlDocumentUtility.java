@@ -31,14 +31,15 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class XmlDocumentUtility {
 
-    private static Logger log = Logger.getLogger(XmlDocumentUtility.class);
+    private static Log log = LogFactory.getLog(XmlDocumentUtility.class);
 
     private static final String INPUT_ENCODING = "UTF-8";
 

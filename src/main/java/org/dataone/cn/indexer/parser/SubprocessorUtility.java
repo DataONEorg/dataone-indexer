@@ -6,7 +6,8 @@ import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.codec.EncoderException;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
@@ -15,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class SubprocessorUtility {
 
-    private static Logger logger = Logger.getLogger(SubprocessorUtility.class.getName());
+    private static Log logger = LogFactory.getLog(SubprocessorUtility.class.getName());
 
     private HTTPService httpService = null;
 

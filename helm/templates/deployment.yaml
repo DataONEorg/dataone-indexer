@@ -19,6 +19,7 @@ spec:
       {{- end }}
       labels:
         {{- include "idxworker.selectorLabels" . | nindent 8 }}
+      namespace: {{ .Release.Namespace }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -47,8 +48,29 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+        {{- if .Values.idxworker.enableMountWarmupHook }}
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - |
+                    {
+                      ## This is a workaround for the Lustre file system
+                      echo "$(date '+%Y-%m-%d %H:%M:%S.%3N') - Warming up mounted directories..." >> /tmp/postStart.log
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/metadata/tmp > /dev/null 2>&1 || true
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/refs/tmp > /dev/null 2>&1 || true
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/objects > /dev/null 2>&1 || true
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/refs/pids > /dev/null 2>&1 || true
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/refs/cids > /dev/null 2>&1 || true
+                      echo "$(date '+%Y-%m-%d %H:%M:%S.%3N') - Warm-up complete." >> /tmp/postStart.log
+                    }
+        {{- end }}
+          {{- if .Values.securityContext }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if .Values.idxworker.readinessProbe.enabled }}
@@ -74,12 +96,12 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - mountPath: /etc/dataone/dataone-indexer.properties
-              subPath: dataone-indexer.properties
+            {{- if .Values.extraVolumeMounts }}
+            {{- tpl (toYaml .Values.extraVolumeMounts) . | nindent 12 }}
+            {{- end }}
+            - mountPath: /etc/dataone
               name: {{ .Release.Name }}-config-volume
-            - mountPath: /etc/dataone/log4j2.properties
-              subPath: log4j2.properties
-              name: {{ .Release.Name }}-config-volume
+              readOnly: true
             - mountPath: {{ .Values.persistence.mountPath }}
               name: indexer-metacat-pv
               {{- if .Values.persistence.subPath }}
@@ -91,6 +113,10 @@ spec:
           env:
             - name: DEBUG
               value: "{{ .Values.idxworker.debug }}"
+            {{- if .Values.idxworker.javaMem }}
+            - name: IDX_JAVA_MEM
+              value: {{ .Values.idxworker.javaMem | quote }}
+            {{- end }}
             - name: DATAONE_AUTH_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -116,6 +142,10 @@ spec:
       initContainers:
         - name: dependencies
           image: busybox:latest
+          {{- if .Values.securityContext }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
           command:
             - sh
             - -c
@@ -144,6 +174,9 @@ spec:
               echo waiting for Solr Schema to be accessible at http://{{ $solrHost }}:
               {{- $solrPort }}$SOLRURI; sleep 1; done;
       volumes:
+        {{- if .Values.extraVolumes }}
+        {{- tpl (toYaml .Values.extraVolumes) . | nindent 8 }}
+        {{- end }}
         - name: {{ .Release.Name }}-config-volume
           configMap:
             name: {{ .Release.Name }}-indexer-configfiles
@@ -159,6 +192,9 @@ spec:
             readOnly: true
           {{- end }}
         - name: {{ .Release.Name }}-temp-tripledb-volume
+          {{- if .Values.idxworker.tripleDbStorageDefinition }}
+          {{- tpl (toYaml .Values.idxworker.tripleDbStorageDefinition) . | nindent 10 }}
+          {{- else }}
           ephemeral:
             volumeClaimTemplate:
               spec:
@@ -169,3 +205,4 @@ spec:
                 resources:
                   requests:
                     storage: 1Gi
+         {{- end }}

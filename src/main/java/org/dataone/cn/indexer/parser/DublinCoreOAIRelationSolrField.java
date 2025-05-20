@@ -23,7 +23,8 @@ package org.dataone.cn.indexer.parser;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.w3c.dom.Document;
 
@@ -34,7 +35,7 @@ import org.w3c.dom.Document;
  *
  */
 public class DublinCoreOAIRelationSolrField extends SolrField implements ISolrField {
-    private static Logger logger = Logger.getLogger(DublinCoreOAIRelationSolrField.class);
+    private static Log logger = LogFactory.getLog(DublinCoreOAIRelationSolrField.class);
     private static final String SERVICE_ENDPOINT = "serviceEndpoint";
     private static final String SERVICE_COUPLING = "serviceCoupling";
     private static final String COUPLING_VALUE = "mixed";

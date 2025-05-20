@@ -2,15 +2,16 @@ package org.dataone.cn.indexer.parser;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.w3c.dom.Document;
 
 public class DataCiteSpatialBoxGeohashSolrField extends
         DataCiteSpatialBoxBoundingCoordinatesSolrField implements ISolrField {
 
-    private static Logger logger = Logger
-            .getLogger(DataCiteSpatialBoxBoundingCoordinatesSolrField.class.getName());
+    private static Log logger = LogFactory
+            .getLog(DataCiteSpatialBoxBoundingCoordinatesSolrField.class.getName());
 
     public DataCiteSpatialBoxGeohashSolrField() {
     }
