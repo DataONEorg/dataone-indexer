@@ -73,6 +73,7 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext:
+  runAsUser: 59997
   fsGroup: 1000 # must match metacat group for shared volume at /var/metacat
 
 ## @param securityContext Security context for the container (This will be applied to all containers)
@@ -246,6 +247,12 @@ idxworker:
   ## @param idxworker.readinessProbe.enabled Enable or disable default probe (see deployment.yaml)
   readinessProbe:
     enabled: true
+
+  ## @param idxworker.javaMem Java memory options to pass to the index worker container
+  ## (format: "-Xms512m -Xmx2g"). If you do not set a value, the JVM will default to using 1/4 of
+  ## the available memory as the maximum
+  ##
+  javaMem: ""
 
 ## @section RabbitMQ Bitnami Sub-Chart Configuration
 ##
