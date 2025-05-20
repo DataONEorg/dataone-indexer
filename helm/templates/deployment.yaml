@@ -113,9 +113,9 @@ spec:
           env:
             - name: DEBUG
               value: "{{ .Values.idxworker.debug }}"
-            {{- if .Values.javaMem }}
+            {{- if .Values.idxworker.javaMem }}
             - name: IDX_JAVA_MEM
-              value: {{ .Values.javaMem | quote }}
+              value: {{ .Values.idxworker.javaMem | quote }}
             {{- end }}
             - name: DATAONE_AUTH_TOKEN
               valueFrom:
