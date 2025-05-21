@@ -49,6 +49,7 @@ public class LegacyStoreObjManager extends ObjectManager {
      * @throws ServiceFailure
      */
     public LegacyStoreObjManager() throws ServiceFailure {
+        refreshD1Node();
         dataRootDir = System.getenv(DATA_ROOT_DIR_ENV_NAME);
         logger.debug("The data root dir from env " + DATA_ROOT_DIR_ENV_NAME + " is " + dataRootDir);
         if (dataRootDir == null || dataRootDir.isBlank()) {
