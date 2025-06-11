@@ -125,7 +125,6 @@ public class HTTPService {
                 ByteArrayOutputStream baosResponse = new ByteArrayOutputStream();
                 org.apache.commons.io.IOUtils.copy(inputStreamResponse, baosResponse);
                 String error = new String(baosResponse.toByteArray());
-                log.error(error);
                 post.abort();
                 throw new SolrServerException("unable to update solr, non 200 response code." + error);
             }
