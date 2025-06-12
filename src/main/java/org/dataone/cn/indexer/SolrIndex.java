@@ -419,7 +419,7 @@ public class SolrIndex {
                             log.info("SolrIndex.update - Indexer grabbed an older version "
                                      + "(version conflict) of a solr doc when it processed object "
                                      + pid.getValue() + ". It will wait " + VERSION_CONFLICT_WAITING
-                                     + " mini-seconds and process it again in oder to get "
+                                     + " milliseconds and process it again in oder to get "
                                      + "the new solr doc copy. This is attempt number: " + (i+1)
                                      + " and the max attempt number is "
                                      + VERSION_CONFLICT_MAX_ATTEMPTS);
