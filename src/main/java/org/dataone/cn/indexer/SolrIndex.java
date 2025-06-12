@@ -54,9 +54,9 @@ public class SolrIndex {
     public static final String ID = "id";
     private static final String VERSION_CONFLICT = "version conflict";
     private static final int VERSION_CONFLICT_MAX_ATTEMPTS = Settings.getConfiguration().getInt(
-        "index.solr.versionConflict.max.attempts", 25);
+        "index.solr.versionConflict.max.attempts", 25000);
     private static final int VERSION_CONFLICT_WAITING = Settings.getConfiguration().getInt(
-        "index.solr.versionConflict.waiting.time", 500); //milliseconds
+        "index.solr.versionConflict.waiting.time", 10); //milliseconds
     private static final List<String> resourceMapFormatIdList = Settings.getConfiguration().getList(
         "index.resourcemap.namespace");
     private static List<IDocumentSubprocessor> subprocessors = null;
@@ -418,8 +418,11 @@ public class SolrIndex {
                         if (ee.getMessage().contains(VERSION_CONFLICT)) {
                             log.info("SolrIndex.update - Indexer grabbed an older version "
                                      + "(version conflict) of a solr doc when it processed object "
-                                     + pid.getValue() + ". It will process it again in oder to get "
-                                     + "the new solr doc copy. This is attempt number: " + (i+1));
+                                     + pid.getValue() + ". It will wait " + VERSION_CONFLICT_WAITING
+                                     + " milliseconds and process it again in oder to get "
+                                     + "the new solr doc copy. This is attempt number: " + (i+1)
+                                     + " and the max attempt number is "
+                                     + VERSION_CONFLICT_MAX_ATTEMPTS);
                             if (i >= (VERSION_CONFLICT_MAX_ATTEMPTS - 1)) {
                                 log.error("SolrIndex.update - Indexer grabbed an older version of "
                                          + "a solr doc when it processed object " + pid.getValue()

@@ -167,7 +167,7 @@ idxworker:
   ## @param idxworker.solrVerConflictWaitMs wait time (mS) before indexer grabs a newer version
   ## of solr doc after a version conflict
   ##
-  solrVerConflictWaitMs: 1000
+  solrVerConflictWaitMs: 10
 
   ## @param idxworker.solrVerConflictMaxTries Number of tries to get a newer version of solr doc
   ## after a version conflict
