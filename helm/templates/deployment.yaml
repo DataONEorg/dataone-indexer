@@ -117,7 +117,7 @@ spec:
             - name: IDX_JAVA_MEM
               value: {{ .Values.idxworker.javaMem | quote }}
             {{- end }}
-            - name: DATAONE_AUTH_TOKEN
+            - name: DATAONE_INDEXER_AUTH_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-indexer-token
