@@ -133,7 +133,7 @@ public abstract class ObjectManager {
                     dataONEauthToken = FileUtils.readFileToString(new File(tokenFilePath), "UTF-8");
                 } catch (IOException e) {
                     dataONEauthToken = null;
-                    logger.warn("Can NOT get the authen token from the file " + tokenFilePath +
+                    logger.warn("Can NOT get the auth token from the file " + tokenFilePath +
                                     " since " + e.getMessage());
                 }
                 if (dataONEauthToken != null && !dataONEauthToken.isBlank()) {
