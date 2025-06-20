@@ -59,7 +59,7 @@ public class IndexWorker {
     //The create is the index task type for the action when a new object was created. So the solr index will be generated.
     //delete is the index task type for the action when an object was deleted. So the solr index will be deleted
     //sysmeta is the index task type for the action when the system metadata of an existing object was updated.
-    public final static String CREATE_INDEXT_TYPE = "create";
+    public final static String CREATE_INDEX_TYPE = "create";
     public final static String DELETE_INDEX_TYPE = "delete";
     public final static String SYSMETA_CHANGE_TYPE = "sysmeta"; //this handle for resource map only
 
@@ -465,7 +465,7 @@ public class IndexWorker {
                             + pid.getValue() + " , the index type: " + indexType
                             + ", the priority: " + priority + ", the docId(can be null): " + docId);
             switch (indexType) {
-                case CREATE_INDEXT_TYPE -> {
+                case CREATE_INDEX_TYPE -> {
                     boolean sysmetaOnly = false;
                     solrIndex.update(pid, sysmetaOnly, docId);
                 }
