@@ -85,8 +85,8 @@ public class IndexQueueMessageParser {
         } catch (NullPointerException e) {
             logger.info(
                 "IndexQueueMessageParser.parse - the priority is not set in the message and we "
-                    + "will set it one.");
-            priority =1;
+                    + "will set it to 1.");
+            priority = 1;
         }
         logger.debug(
             "IndexQueueMessageParser.parse - the priority in the message is " + priority + " for "
