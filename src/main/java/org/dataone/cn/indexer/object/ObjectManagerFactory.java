@@ -45,7 +45,7 @@ public class ObjectManagerFactory {
         if (manager == null) {
             synchronized (ObjectManagerFactory.class) {
                 if (manager == null) {
-                    logger.info("The final ObjectManager class name form env variable is "
+                    logger.info("The final ObjectManager class name from env variable is "
                                      + classNameFromEnv);
                     Class managerClass = Class.forName(className);
                     manager = (ObjectManager) managerClass.getDeclaredConstructor().newInstance();
