@@ -35,7 +35,7 @@ public class ObjectManagerFactory {
     public static ObjectManager getObjectManager()
         throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
         InstantiationException, IllegalAccessException {
-        String classNameFromEnv = System.getenv(OBJECT_MANAGER_CLASS_NAME_ENV_NAME);
+        String classNameFromEnv = getObjManagerClassNameFromEnv();
         String className = DEFAULT_ClASS_NAME;
         if (classNameFromEnv != null && !classNameFromEnv.isBlank()) {
             logger.debug("The ObjectManager class name form env variable "
@@ -53,6 +53,14 @@ public class ObjectManagerFactory {
             }
         }
         return manager;
+    }
+
+    /**
+     * Get the object manager class name from the env variable.
+     * @return the class name. It can be null if the env variable isn't set.
+     */
+    protected static String getObjManagerClassNameFromEnv() {
+        return System.getenv(OBJECT_MANAGER_CLASS_NAME_ENV_NAME);
     }
 
     /**

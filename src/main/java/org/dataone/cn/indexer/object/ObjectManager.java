@@ -144,9 +144,16 @@ public abstract class ObjectManager {
             logger.info("Got the auth token from an env. variable");
         }
         if (dataONEauthToken == null || dataONEauthToken.isBlank()) {
-            logger.warn(
-                "Could NOT get an auth token from either an env. variable or the properties file."
-                    + " So it will act as the public user.");
+            String message =
+                "Could NOT get an auth token from either an env. variable or the properties file"
+                    + ".So it will act as the public user.";
+            String className = ObjectManagerFactory.getObjManagerClassNameFromEnv();
+            if (className != null && className.equals("org.dataone.cn.indexer.object.legacystore"
+                                                          + ".LegacyStoreObjManager")) {
+                logger.error(message);
+            } else {
+                logger.warn(message);
+            }
         }
         session = createSession(dataONEauthToken);
         logger.info("Going to create the d1node with url " + nodeBaseURL);
