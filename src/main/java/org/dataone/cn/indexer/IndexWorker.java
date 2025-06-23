@@ -2,6 +2,7 @@ package org.dataone.cn.indexer;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,14 +19,13 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.cn.indexer.annotation.OntologyModelService;
-import org.dataone.cn.indexer.object.ObjectManager;
+import org.dataone.cn.indexer.object.ObjectManagerFactory;
 import org.dataone.configuration.Settings;
 import org.dataone.exceptions.MarshallingException;
 import org.dataone.indexer.queue.IndexQueueMessageParser;
@@ -59,7 +59,7 @@ public class IndexWorker {
     //The create is the index task type for the action when a new object was created. So the solr index will be generated.
     //delete is the index task type for the action when an object was deleted. So the solr index will be deleted
     //sysmeta is the index task type for the action when the system metadata of an existing object was updated.
-    public final static String CREATE_INDEXT_TYPE = "create";
+    public final static String CREATE_INDEX_TYPE = "create";
     public final static String DELETE_INDEX_TYPE = "delete";
     public final static String SYSMETA_CHANGE_TYPE = "sysmeta"; //this handle for resource map only
 
@@ -219,7 +219,10 @@ public class IndexWorker {
      * @throws TimeoutException
      * @throws ServiceFailure
      */
-    public IndexWorker() throws IOException, TimeoutException, ServiceFailure {
+    public IndexWorker()
+        throws IOException, TimeoutException, ServiceFailure, ClassNotFoundException,
+        InvocationTargetException, NoSuchMethodException, InstantiationException,
+        IllegalAccessException {
         this(true);
     }
 
@@ -231,7 +234,9 @@ public class IndexWorker {
      * @throws TimeoutException
      * @throws ServiceFailure
      */
-    public IndexWorker(Boolean initialize) throws IOException, TimeoutException {
+    public IndexWorker(Boolean initialize)
+        throws IOException, TimeoutException, ClassNotFoundException, InvocationTargetException,
+        NoSuchMethodException, InstantiationException, IllegalAccessException {
         String value = System.getenv("KUBERNETES_SERVICE_HOST");
         // Java doc says: the string value of the variable, or null if the variable is not defined
         // in the system environment
@@ -243,7 +248,7 @@ public class IndexWorker {
             initExecutorService();//initialize the executor first
             initIndexQueue();
             initIndexParsers();
-            ObjectManager.getInstance();
+            ObjectManagerFactory.getObjectManager();
             OntologyModelService.getInstance();
         }
     }
@@ -385,9 +390,11 @@ public class IndexWorker {
                         indexObject(parser, multipleThread);
                     }
                 } catch (InvalidRequest e) {
-                    logger.error(
-                        "cannot index the task for identifier " + parser.getIdentifier().getValue()
-                            + " since " + e.getMessage());
+                    String error = "Cannot index the task for the object since " + e.getMessage();
+                    if (parser.getIdentifier() != null) {
+                        error = error + " with the identifier " + parser.getIdentifier().getValue();
+                    }
+                    logger.error(error);
                     boolean requeue = false;
                     rabbitMQchannel.basicReject(envelope.getDeliveryTag(), requeue);
                 }
@@ -449,21 +456,22 @@ public class IndexWorker {
         Identifier pid = parser.getIdentifier();
         String indexType = parser.getIndexType();
         int priority = parser.getPriority();
+        String docId = parser.getDocId();// It can be null.
         try {
             long threadId = Thread.currentThread().getId();
             logger.info("IndexWorker.consumer.indexObject by multiple thread? " + multipleThread
                             + ", with the thread id " + threadId
                     + " - Received the index task from the index queue with the identifier: "
                             + pid.getValue() + " , the index type: " + indexType
-                            + ", the priority: " + priority);
+                            + ", the priority: " + priority + ", the docId(can be null): " + docId);
             switch (indexType) {
-                case CREATE_INDEXT_TYPE -> {
+                case CREATE_INDEX_TYPE -> {
                     boolean sysmetaOnly = false;
-                    solrIndex.update(pid, sysmetaOnly);
+                    solrIndex.update(pid, sysmetaOnly, docId);
                 }
                 case SYSMETA_CHANGE_TYPE -> {
                     boolean sysmetaOnly = true;
-                    solrIndex.update(pid, sysmetaOnly);
+                    solrIndex.update(pid, sysmetaOnly, docId);
                 }
                 case DELETE_INDEX_TYPE -> solrIndex.remove(pid);
                 default -> throw new InvalidRequest(
@@ -482,7 +490,8 @@ public class IndexWorker {
                  ServiceFailure | XPathExpressionException | UnsupportedType | SAXException |
                  ParserConfigurationException | SolrServerException | MarshallingException |
                  EncoderException | InterruptedException | IOException | InstantiationException |
-                 IllegalAccessException e) {
+                 IllegalAccessException | ClassNotFoundException | InvocationTargetException |
+                 NoSuchMethodException e) {
             logger.error("Cannot index the task for identifier " + pid.getValue()
                              + " since " + e.getMessage(), e);
         }

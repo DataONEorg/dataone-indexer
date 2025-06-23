@@ -1,6 +1,5 @@
 package org.dataone.cn.indexer.object;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,9 +7,9 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dataone.client.D1Node;
 import org.dataone.client.auth.AuthTokenSession;
 import org.dataone.client.exception.ClientSideException;
 import org.dataone.client.rest.HttpMultipartRestClient;
@@ -20,7 +19,6 @@ import org.dataone.client.v2.impl.MultipartD1Node;
 import org.dataone.client.v2.impl.MultipartMNode;
 import org.dataone.configuration.Settings;
 import org.dataone.exceptions.MarshallingException;
-import org.dataone.indexer.storage.Storage;
 import org.dataone.service.exceptions.InvalidToken;
 import org.dataone.service.exceptions.NotAuthorized;
 import org.dataone.service.exceptions.NotFound;
@@ -29,7 +27,6 @@ import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v1.Session;
 import org.dataone.service.types.v2.SystemMetadata;
-import org.dataone.service.util.TypeMarshaller;
 
 
 /**
@@ -37,42 +34,18 @@ import org.dataone.service.util.TypeMarshaller;
  * @author tao
  *
  */
-public class ObjectManager {
-    private static ObjectManager manager = null;
-    private static String nodeBaseURL = Settings.getConfiguration().getString("dataone.mn.baseURL");
-    private static String DataONEauthToken = null;
+public abstract class ObjectManager {
+    // environmental variables' names
+    private static final String NODE_BASE_URL_ENV_NAME = "DATAONE_INDEXER_NODE_BASE_URL";
+    private static final String TOKEN_ENV_NAME = "DATAONE_INDEXER_AUTH_TOKEN";
+
+    protected static String nodeBaseURL;
+    private static String dataONEauthToken = null;
     private static Log logger = LogFactory.getLog(ObjectManager.class);
-    private static Storage storage = null;
-    private static final String TOKEN_VARIABLE_NAME = "DATAONE_AUTH_TOKEN";
     private static final String TOKEN_FILE_PATH_PROP_NAME = "dataone.nodeToken.file";
 
-    private static MultipartD1Node d1Node = null;
-    private static Session session = null;
-
-    static {
-        try {
-            refreshD1Node();
-        } catch (ServiceFailure e) {
-            logger.warn("Metacat cannot initialize the d1Node since " + e.getMessage());
-        }
-        storage = Storage.getInstance();
-        manager = new ObjectManager();
-    }
-
-
-    /**
-     * Private constructor
-     */
-    private ObjectManager() {
-    }
-
-    /**
-     * Get an ObjectManager instance through the singleton pattern.
-     * @return  the instance of ObjectManager
-     */
-    public static ObjectManager getInstance() {
-        return manager;
-    }
+    protected static MultipartD1Node d1Node = null;
+    protected static Session session = null;
 
     /**
      * Get the system metadata for the given id
@@ -87,40 +60,9 @@ public class ObjectManager {
      * @throws IOException
      * @throws NoSuchAlgorithmException
      */
-    public InputStream getSystemMetadataStream(String id) throws InvalidToken, NotAuthorized,
-                                NotImplemented, ServiceFailure, NotFound,
-                                NoSuchAlgorithmException, IOException, MarshallingException {
-        long start = System.currentTimeMillis();
-        //try to get the system metadata from the storage system first
-        InputStream sysmetaInputStream = null;
-        try {
-            sysmetaInputStream = storage.retrieveSystemMetadata(id);
-            long end = System.currentTimeMillis();
-            logger.info("Finish getting the system metadata via the file system for the pid " + id
-                        + " and it took " + (end - start) + "milliseconds");
-        } catch (FileNotFoundException exception ) {
-            if (d1Node != null) {
-                // Metacat can't find the system metadata from the storage system.
-                // So try to get it from the dataone api
-                SystemMetadata sysmeta = null;
-                Identifier identifier = new Identifier();
-                identifier.setValue(id);
-                sysmeta = d1Node.getSystemMetadata(session, identifier);
-                logger.debug("Finish getting the system metadata via the DataONE API call for the pid "
-                                 + id);
-                if (sysmeta != null) {
-                    ByteArrayOutputStream systemMetadataOutputStream = new ByteArrayOutputStream();
-                    TypeMarshaller.marshalTypeToOutputStream(sysmeta, systemMetadataOutputStream);
-                    sysmetaInputStream =
-                        new ByteArrayInputStream(systemMetadataOutputStream.toByteArray());
-                }
-                long end = System.currentTimeMillis();
-                logger.info("Finish getting the system metadata via DataONE API for the pid " + id
-                                + " and it took " + (end - start) + "milliseconds");
-            }
-        }
-        return sysmetaInputStream;
-    }
+    public abstract InputStream getSystemMetadataStream(String id)
+        throws InvalidToken, NotAuthorized, NotImplemented, ServiceFailure, NotFound,
+        NoSuchAlgorithmException, IOException, MarshallingException;
 
     /**
      * Get the system metadata object for the given identifier
@@ -137,30 +79,11 @@ public class ObjectManager {
      * @throws MarshallingException
      * @throws NoSuchAlgorithmException
      */
-    public org.dataone.service.types.v1.SystemMetadata getSystemMetadata(String id)
+    public abstract org.dataone.service.types.v1.SystemMetadata getSystemMetadata(String id)
                                        throws InvalidToken, NotAuthorized, NoSuchAlgorithmException,
                                                 NotImplemented, ServiceFailure, NotFound,
                                                 InstantiationException, IllegalAccessException,
-                                                IOException, MarshallingException {
-        org.dataone.service.types.v1.SystemMetadata sysmeta = null;
-        try (InputStream input = getSystemMetadataStream(id)) {
-            if (input != null) {
-                try {
-                    SystemMetadata sysmeta2 = TypeMarshaller
-                                            .unmarshalTypeFromStream(SystemMetadata.class, input);
-                    sysmeta = sysmeta2;
-                } catch (Exception e) {
-                    try (InputStream input2 = getSystemMetadataStream(id)) {
-                        if (input2 != null) {
-                            sysmeta = TypeMarshaller.unmarshalTypeFromStream(
-                                         org.dataone.service.types.v1.SystemMetadata.class, input2);
-                        }
-                    }
-                }
-            }
-        }
-        return sysmeta;
-    }
+                                                IOException, MarshallingException;
 
     /**
      * Get the input stream of the content of the given pid
@@ -170,11 +93,11 @@ public class ObjectManager {
      * @throws FileNotFoundException
      * @throws NoSuchAlgorithmException
      * @throws IOException
+     * @throws NotFound
      */
-    public InputStream getObject(String pid) throws IllegalArgumentException, FileNotFoundException,
-                                                            NoSuchAlgorithmException, IOException {
-        return storage.retrieveObject(pid);
-    }
+    public abstract InputStream getObject(String pid)
+        throws IllegalArgumentException, FileNotFoundException, NoSuchAlgorithmException,
+        IOException, NotFound;
 
     /**
      * Set the d1 node for this object manager.
@@ -189,41 +112,60 @@ public class ObjectManager {
      * In case the token expired, the method will retrieve the token and create a new d1 node
      * @throws ServiceFailure 
      */
-    private static void refreshD1Node() throws ServiceFailure {
-       //get the token
-        DataONEauthToken = System.getenv(TOKEN_VARIABLE_NAME);
-        if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
-            //can't get the token from the env variable. So try to get it from a file specified in the property
+    public static void refreshD1Node() throws ServiceFailure {
+        nodeBaseURL = System.getenv(NODE_BASE_URL_ENV_NAME);
+        logger.debug("The node base url from env variable is " + nodeBaseURL);
+        if (nodeBaseURL == null || nodeBaseURL.isBlank()) {
+            nodeBaseURL = Settings.getConfiguration().getString("dataone.mn.baseURL");
+            logger.debug("The node base url from the properties file is " + nodeBaseURL);
+        }
+        //get the token
+        dataONEauthToken = System.getenv(TOKEN_ENV_NAME);
+        if (dataONEauthToken == null || dataONEauthToken.isBlank()) {
+            //can't get the token from the env variable. So try to get it from a file specified
+            // in the property
             String tokenFilePath = Settings.getConfiguration().getString(TOKEN_FILE_PATH_PROP_NAME);
             if (tokenFilePath != null && !tokenFilePath.trim().equals("")) {
-                logger.info("ObjectManager.refreshD1Node - We can't get the token from the env variable so try to get the auth token from the file " + tokenFilePath);
+                logger.info(
+                    "Can NOT get the token from the env variable so try to get the auth token "
+                        + "from the file " + tokenFilePath);
                 try {
-                    DataONEauthToken = FileUtils.readFileToString(new File(tokenFilePath), "UTF-8");
+                    dataONEauthToken = FileUtils.readFileToString(new File(tokenFilePath), "UTF-8");
                 } catch (IOException e) {
-                    DataONEauthToken = null;
-                    logger.warn("ObjectManager.refreshD1Node - can NOT get the authen token from the file " + tokenFilePath + " since " + e.getMessage());
+                    dataONEauthToken = null;
+                    logger.warn("Can NOT get the auth token from the file " + tokenFilePath +
+                                    " since " + e.getMessage());
                 }
-                if (DataONEauthToken != null && !DataONEauthToken.trim().equals("")) {
-                    logger.info("ObjectManager.refreshD1Node - Got the auth token from the file "+ tokenFilePath);
+                if (dataONEauthToken != null && !dataONEauthToken.isBlank()) {
+                    logger.info("Got the auth token from the file "+ tokenFilePath);
                 }
             }
         } else {
-            logger.info("ObjectManager.refreshD1Node - Got the auth token from an env. variable");
+            logger.info("Got the auth token from an env. variable");
         }
-        
-        if (DataONEauthToken == null || DataONEauthToken.trim().equals("")) {
-            logger.warn("ObjectManager.refreshD1Node ------ Could NOT get an auth token from either an env. variable or the properties file. So it will act as the public user.");
+        if (dataONEauthToken == null || dataONEauthToken.isBlank()) {
+            String message =
+                "Could NOT get an auth token from either an env. variable or the properties file"
+                    + ".So it will act as the public user.";
+            String className = ObjectManagerFactory.getObjManagerClassNameFromEnv();
+            if (className != null && className.equals("org.dataone.cn.indexer.object.legacystore"
+                                                          + ".LegacyStoreObjManager")) {
+                logger.error(message);
+            } else {
+                logger.warn(message);
+            }
         }
-        session = createSession(DataONEauthToken);
-        logger.info("ObjectManager.refreshD1Node ------ going to create the d1node with url " + nodeBaseURL);
+        session = createSession(dataONEauthToken);
+        logger.info("Going to create the d1node with url " + nodeBaseURL);
         try {
             d1Node = getMultipartD1Node(session, nodeBaseURL);
         } catch (IOException | ClientSideException e) {
-            logger.error("ObjectManager.refreshD1Node - couldn't create the d1node for the url " + nodeBaseURL + " since " + e.getMessage());
+            logger.error("Couldn't create the d1node for the url " + nodeBaseURL + " since "
+                             + e.getMessage());
             throw new ServiceFailure("0000", e.getMessage());
         }
     }
-    
+
     /**
      * Get a DataONE authenticated session
      * <p>
@@ -238,12 +180,29 @@ public class ObjectManager {
             logger.info("ObjectManager.createSession - Creating the public session");
             session = new Session();
         } else {
-            logger.info("ObjectManger.createSession - Creating authentication session from token: " + authToken.substring(0, 5) + "...");
+            logger.info("Creating authentication session from token: " + authToken.substring(0, 5)
+                            + "...");
             session = new AuthTokenSession(authToken);
         }
         return session;
     }
-    
+
+    /**
+     * Only for testing
+     * @return
+     */
+    protected static String getDataONEauthToken() {
+        return dataONEauthToken;
+    }
+
+    /**
+     * Only for testing
+     * @return
+     */
+    protected static D1Node getD1Node() {
+        return d1Node;
+    }
+
     /**
      * Get a DataONE MultipartCNode object, which will be used to communication with a CN
      *
@@ -253,7 +212,8 @@ public class ObjectManager {
      * @throws ClientSideException 
      * @throws IOException
      */
-    private static MultipartD1Node getMultipartD1Node(Session session, String serviceUrl) throws IOException, ClientSideException {
+    private static MultipartD1Node getMultipartD1Node(Session session, String serviceUrl)
+        throws IOException, ClientSideException {
         MultipartRestClient mrc = null;
         MultipartD1Node d1Node = null;
         // First create a default HTTP client
@@ -262,10 +222,10 @@ public class ObjectManager {
         Boolean isCN = isCN(serviceUrl);
         // Now create a DataONE object that uses the rest client
         if (isCN) {
-            logger.info("ObjectManager.getMultipartD1Node - creating cn MultipartMNode from the url " + serviceUrl);
+            logger.info("Creating cn MultipartMNode from the url " + serviceUrl);
             d1Node = new MultipartCNode(mrc, serviceUrl, session);
         } else {
-            logger.info("ObjectManager.getMultipartD1Node - creating mn MultipartMNode from the url " + serviceUrl);
+            logger.info("Creating mn MultipartMNode from the url " + serviceUrl);
             d1Node = new MultipartMNode(mrc, serviceUrl, session);
         }
         return d1Node;
@@ -276,7 +236,7 @@ public class ObjectManager {
      * @param nodeStr either a DataONE node serviceURL (e.g. https://knb.ecoinformatics.org/knb/d1/mn)
      *      or a DataONE node identifier (e.g. urn:node:CN)
      */
-    private static Boolean isCN(String nodeStr) {
+    protected static Boolean isCN(String nodeStr) {
         Boolean isCN = false;
         // match node urn, e.g. "https://cn.dataone.org/cn"
         if (nodeStr.matches("^\\s*urn:node:.*")) {
@@ -298,6 +258,20 @@ public class ObjectManager {
             }
         }
         return isCN;
+    }
+
+    protected static SystemMetadata getSystemMetadataByAPI(String id)
+        throws ServiceFailure, InvalidToken, NotImplemented, NotAuthorized, NotFound {
+        if (d1Node != null) {
+            // Metacat can't find the system metadata from the storage system.
+            // So try to get it from the dataone api
+            Identifier identifier = new Identifier();
+            identifier.setValue(id);
+            return d1Node.getSystemMetadata(session, identifier);
+        } else {
+            throw new ServiceFailure("0000", "The d1Node is null and Indexer cannot get the "
+                + "systemmetadata by a API call.");
+        }
     }
 
 }
