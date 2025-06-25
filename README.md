@@ -284,6 +284,14 @@ vhost = /         # Used as default for declare / delete / list
 for n in $(seq 1 30); do echo $n; rabbitmqadmin -c rmq.conf -N default -U rmq -p $RMQPW publish exchange=testexchange routing_key=testqueue payload="Message: ${n}" --vhost=/; done
 ```
 
+## Switching the Storage System
+The Dataone Indexer can be configured to use different storage systems by setting the environmental
+variable `DATAONE_INDEXER_OBJECT_MANAGER_CLASS_NAME`.
+By default, this variable is not set, and the indexer uses
+`org.dataone.cn.indexer.object.hashstore.HashStoreObjManager`, which enables support for Hashstore.
+To use the legacy storage system instead, set the variable to
+`org.dataone.cn.indexer.object.legacystore.LegacyStoreObjManager`.
+
 ## History
 
 This is a refactored version of the original DataONE [d1_cn_index_processor](https://github.com/DataONEorg/d1_cn_index_processor) that runs

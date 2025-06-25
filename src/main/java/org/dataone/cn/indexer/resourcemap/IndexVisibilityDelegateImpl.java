@@ -1,11 +1,12 @@
 package org.dataone.cn.indexer.resourcemap;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dataone.cn.indexer.object.ObjectManager;
+import org.dataone.cn.indexer.object.ObjectManagerFactory;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.exceptions.MarshallingException;
 import org.dataone.service.exceptions.InvalidToken;
@@ -27,7 +28,7 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
     public boolean isDocumentVisible(Identifier pid) {
         boolean visible = false;
         try {
-            SystemMetadata systemMetadata = ObjectManager.getInstance()
+            SystemMetadata systemMetadata = ObjectManagerFactory.getObjectManager()
                                                             .getSystemMetadata(pid.getValue());
             // TODO: Is pid Identifier a SID?
             if (systemMetadata == null) {
@@ -36,28 +37,12 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
             if (SolrDoc.visibleInIndex(systemMetadata)) {
                 visible = true;
             }
-        } catch (NullPointerException npe) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " + npe.getMessage());
-        } catch (InvalidToken e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (NotAuthorized e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " + e.getMessage());
-        } catch (NotImplemented e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (ServiceFailure e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (NotFound e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (InstantiationException e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (IllegalAccessException e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (IOException e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (MarshallingException e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (NoSuchAlgorithmException e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
+        } catch (NullPointerException | InvalidToken | NotAuthorized | NotImplemented |
+                 ServiceFailure | NotFound | InstantiationException | IllegalAccessException |
+                 IOException | MarshallingException | NoSuchAlgorithmException |
+                 ClassNotFoundException | InvocationTargetException | NoSuchMethodException e) {
+            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since "
+                            + e.getMessage());
         }
         return visible;
     }
@@ -65,35 +50,20 @@ public class IndexVisibilityDelegateImpl implements IndexVisibilityDelegate {
     public boolean documentExists(Identifier pid) {
         boolean exists = false;
         try {
-            SystemMetadata systemMetadata = ObjectManager.getInstance().getSystemMetadata(pid.getValue());
+            SystemMetadata systemMetadata =
+                ObjectManagerFactory.getObjectManager().getSystemMetadata(pid.getValue());
             if (systemMetadata != null) {
                 exists = true;
             } else {
                 // TODO: Is pid Identifier a SID?
                 return true;
             }
-        } catch (NullPointerException npe) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue());
-        } catch (InvalidToken e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (NotAuthorized e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (NotImplemented e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (ServiceFailure e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (NotFound e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (InstantiationException e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (IllegalAccessException e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (IOException e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (MarshallingException e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
-        } catch (NoSuchAlgorithmException e) {
-            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since " +e.getMessage());
+        } catch (NullPointerException | InvalidToken | NotAuthorized | NotImplemented |
+                 ServiceFailure | NotFound | InstantiationException | IllegalAccessException |
+                 IOException | MarshallingException | NoSuchAlgorithmException |
+                 ClassNotFoundException | InvocationTargetException | NoSuchMethodException e) {
+            logger.warn("Could not get visible value for pid: " + pid.getValue() + " since "
+                            + e.getMessage());
         }
         return exists;
     }

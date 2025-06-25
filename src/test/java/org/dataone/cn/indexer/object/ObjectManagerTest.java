@@ -1,88 +1,77 @@
 package org.dataone.cn.indexer.object;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.MessageDigest;
-
-import javax.xml.bind.DatatypeConverter;
-
-
-import org.dataone.indexer.storage.Storage;
-import org.dataone.service.types.v1.Identifier;
+import org.dataone.configuration.Settings;
 import org.dataone.service.types.v2.SystemMetadata;
-import org.dataone.service.util.TypeMarshaller;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import uk.org.webcompere.systemstubs.rules.EnvironmentVariablesRule;
 
 /**
- * A junit test class for the ObjecManager class.
+ * A junit test class for the ObjectManager class.
  * @author tao
  *
  */
 public class ObjectManagerTest {
+    public static final String NODE_BASE_URL_ENV_NAME = "DATAONE_INDEXER_NODE_BASE_URL";
+    private static final String TOKEN_ENV_NAME = "DATAONE_INDEXER_AUTH_TOKEN";
 
-    private String identifier;
+    @Rule
+    public EnvironmentVariablesRule environmentVariables =
+        new EnvironmentVariablesRule(TOKEN_ENV_NAME, null);
 
     @Before
     public void setUp() throws Exception {
-        identifier = "ObjectManagerTest-" + System.currentTimeMillis();
-        File objectFile = new File("src/test/resources/org/dataone/cn/index/resources/d1_testdocs/"
-                                    + "fgdc/nasa_d_FEDGPS1293.xml");
-        try (InputStream object = new FileInputStream(objectFile)) {
-            Storage.getInstance().storeObject(object, identifier);
-        }
-        File sysmetaFile = new File("src/test/resources/org/dataone/cn/index/resources/"
-                                    + "d1_testdocs/fgdc/nasa_d_FEDGPS1293Sysmeta.xml");
-        try (InputStream sysmetaStream = new FileInputStream(sysmetaFile)) {
-            SystemMetadata sysmeta = TypeMarshaller
-                                      .unmarshalTypeFromStream(SystemMetadata.class, sysmetaStream);
-            Identifier pid = new Identifier();
-            pid.setValue(identifier);
-            sysmeta.setIdentifier(pid);
-            try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-                TypeMarshaller.marshalTypeToOutputStream(sysmeta, output);
-                try (ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray())) {
-                    Storage.getInstance().storeMetadata(input, identifier);
-                }
-            }
-        }
+        String propertyFilePath =
+            "./src/main/resources/org/dataone/configuration/index-processor.properties";
+        Settings.augmentConfiguration(propertyFilePath);
     }
-
     /**
-     * Test the getObject and getSystemMetadata method
+     * Test the isCN method
      * @throws Exception
      */
     @Test
-    public void testGetObjectAndSystemMetadata() throws Exception {
-        try (InputStream input = ObjectManager.getInstance().getObject(identifier)) {
-            assertNotNull(input);
-            try (OutputStream os = new ByteArrayOutputStream()) {
-                MessageDigest md5 = MessageDigest.getInstance("MD5");
-                // Calculate hex digests
-                byte[] buffer = new byte[8192];
-                int bytesRead;
-                while ((bytesRead = input.read(buffer)) != -1) {
-                    os.write(buffer, 0, bytesRead);
-                    md5.update(buffer, 0, bytesRead);
-                }
-                String md5Digest = DatatypeConverter.printHexBinary(md5.digest()).toLowerCase();
-                assertEquals("1755a557c13be7af44d676bb09274b0e", md5Digest);
-            }
-        }
-        org.dataone.service.types.v1.SystemMetadata sysmeta = ObjectManager.getInstance()
-                .getSystemMetadata(identifier);
-        assertEquals(identifier, sysmeta.getIdentifier().getValue());
-        assertEquals("1755a557c13be7af44d676bb09274b0e", sysmeta.getChecksum().getValue());
-        assertEquals(14828, sysmeta.getSize().intValue());
+    public void testIsCN() throws Exception {
+        String url = "https://knb.ecoinformatics.org/knb/d1/mn";
+        assertFalse(ObjectManager.isCN(url));
+        url = "https://cn-orc-1.dataone.org/cn";
+        assertTrue(ObjectManager.isCN(url));
     }
 
+    /**
+     * Test the refreshD1Node method based the settings from properties
+     */
+    @Test
+    public void testRefreshD1NodeFromProperties() throws Exception {
+        ObjectManager.refreshD1Node();
+        assertEquals("https://valley.duckdns.org/metacat/d1/mn/v2",
+                     ObjectManager.getD1Node().getNodeBaseServiceUrl());
+    }
+
+    /**
+     * Test the getSystemMetadataByAPI method base the env values.
+     * @throws Exception
+     */
+    @Test
+    public void testGetSystemMetadataByAPI() throws Exception {
+        String url = "https://knb.ecoinformatics.org/knb/d1/mn";
+        String token = "fake_token";
+        environmentVariables.set(NODE_BASE_URL_ENV_NAME, url);
+        environmentVariables.set(TOKEN_ENV_NAME, token);
+        ObjectManager.refreshD1Node();
+        assertEquals(url + "/v2", ObjectManager.getD1Node().getNodeBaseServiceUrl());
+        assertEquals(token, ObjectManager.getDataONEauthToken());
+        String id = "doi:10.5063/F1N0150S";
+        SystemMetadata sys = ObjectManager.getSystemMetadataByAPI(id);
+        assertNotNull(sys);
+        assertEquals(id, sys.getIdentifier().getValue());
+        environmentVariables.set(NODE_BASE_URL_ENV_NAME, null);
+        environmentVariables.set(TOKEN_ENV_NAME, null);
+    }
 
 }

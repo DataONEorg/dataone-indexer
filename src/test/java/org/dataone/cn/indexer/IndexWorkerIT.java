@@ -36,8 +36,7 @@ public class IndexWorkerIT {
      * @throws InterruptedException
      */
     @Test
-    public void testRestoreRabbitMQConnectionAndChannel()
-        throws ServiceFailure, IOException, TimeoutException, InterruptedException {
+    public void testRestoreRabbitMQConnectionAndChannel() throws Exception {
         IndexWorker worker = new IndexWorker();
         worker.start();
         Connection connection = worker.getRabbitMQconnection();
