@@ -1,5 +1,27 @@
 # dataone-indexer Release Notes
 
+> [!CAUTION]
+> **If upgrading from Helm chart v1.2.0 or earlier, note the section entitled:
+> `Caution - ENSURE THAT THE RABBITMQ QUEUE IS EMPTY,` [in the release notes for helm chart v1.3.0
+> below!](#helm-chart-version-130)**,
+
+## dataone-indexer version 3.1.5 & helm chart version 1.3.2
+
+### Release date: 2025-06-26
+
+### dataone-indexer version 3.1.5
+
+This is a patch release with the following minor fixes and upgrades
+
+- Dataone-indexer can handle legacy Metacat object repository ([Issue #222](https://github.com/DataONEorg/dataone-indexer/issues/222))
+- Remove some extra log statements (for version conflict retries) that are confusing to users ([Issue #243](https://github.com/DataONEorg/dataone-indexer/issues/243))
+- Indexer performance improvement: Decrease the re-try waiting time for a version conflict error ([Issue #245](https://github.com/DataONEorg/dataone-indexer/issues/245))
+- Remove unnecessary dependency on PostrgeSQL jar ([Issue #247](https://github.com/DataONEorg/dataone-indexer/issues/247))
+
+### helm chart version 1.3.2
+- Bump indexer App version to 3.1.5
+
+
 ## dataone-indexer version 3.1.4 & helm chart version 1.3.1
 
 ### Release date: 2025-05-20
