@@ -48,6 +48,11 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          {{- if .Values.idxworker.jmxEnabled }}
+          ports:
+            - containerPort: {{ .Values.idxworker.jmxPort }}
+              name: jmx
+          {{- end }}
         {{- if .Values.idxworker.enableMountWarmupHook }}
           lifecycle:
             postStart:
@@ -139,6 +144,18 @@ spec:
                   key: SOLR_ADMIN_PASSWORD
                   optional: true
             {{ end }}
+            {{- if or .Values.idxworker.extraJavaOpts .Values.idxworker.jmxEnabled }}
+            - name: IDX_JAVA_OPTS
+              value: {{ join " " .Values.idxworker.extraJavaOpts }}
+              {{- if .Values.idxworker.jmxEnabled }}
+                        {{- if .Values.idxworker.extraJavaOpts }}
+                          {{- printf " " }}
+                        {{- end }}
+                        {{- join " " .Values.idxworker.jmxJavaOpts }}
+            - name: IDX_JMX_ENABLED
+              value: "true"
+              {{- end }}
+            {{- end }}
       initContainers:
         - name: dependencies
           image: busybox:latest
