@@ -36,11 +36,9 @@ jobs:
         run: |
           echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
         id: get_version
-      #- name: Show extracted Maven project version
-        #run: echo "Version from pom: " ${{ steps.get_version.outputs.version }}
       - name: Start Solr
         run: |
-          wget https://downloads.apache.org/solr/solr/${{ env.SOLR_VERSION }}/solr-${{ env.SOLR_VERSION }}.tgz
+          wget -q https://downloads.apache.org/solr/solr/${{ env.SOLR_VERSION }}/solr-${{ env.SOLR_VERSION }}.tgz
           tar xzf solr-${{ env.SOLR_VERSION }}.tgz
           solr-${{ env.SOLR_VERSION }}/bin/solr start -p 8983
       - name: Setup data directory
