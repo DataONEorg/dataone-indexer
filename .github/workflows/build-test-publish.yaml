@@ -40,9 +40,9 @@ jobs:
         #run: echo "Version from pom: " ${{ steps.get_version.outputs.version }}
       - name: Start Solr
         run: |
-          wget https://downloads.apache.org/solr/solr${SOLR_VERSION}/solr-${SOLR_VERSION}.tgz
-          tar xzf solr-${SOLR_VERSION}.tgz
-          solr-${SOLR_VERSION}/bin/solr start -p 8983
+          wget https://downloads.apache.org/solr/solr${{ env.SOLR_VERSION }}/solr-${{ env.SOLR_VERSION }}.tgz
+          tar xzf solr-${{ env.SOLR_VERSION }}.tgz
+          solr-${{ env.SOLR_VERSION }}/bin/solr start -p 8983
       - name: Setup data directory
         run: sudo mkdir -p /var/metacat/data && sudo chmod -R 777 /var/metacat
       - name: Build and Test
