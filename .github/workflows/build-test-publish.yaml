@@ -16,6 +16,7 @@ env:
   # github.repository as <account>/<repo>
   #IMAGE_NAME: ${{ github.repository }}
   IMAGE_NAME: ${{ github.repository_owner }}/dataone-index-worker
+  SOLR_VERSION: 9.8.1
 
 jobs:
   maven-build:
@@ -39,9 +40,9 @@ jobs:
         #run: echo "Version from pom: " ${{ steps.get_version.outputs.version }}
       - name: Start Solr
         run: |
-          wget https://downloads.apache.org/lucene/solr/9.8.0/solr-9.8.0.tgz
-          tar xzf solr-9.8.0.tgz
-          solr-9.8.0/bin/solr start -p 8983
+          wget https://downloads.apache.org/solr/solr${SOLR_VERSION}/solr-${SOLR_VERSION}.tgz
+          tar xzf solr-${SOLR_VERSION}.tgz
+          solr-${SOLR_VERSION}/bin/solr start -p 8983
       - name: Setup data directory
         run: sudo mkdir -p /var/metacat/data && sudo chmod -R 777 /var/metacat
       - name: Build and Test
