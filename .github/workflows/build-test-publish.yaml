@@ -6,6 +6,7 @@ on:
     branches:
 #      - feature*
       - develop
+      - bugfix-*
       - '*-auto-img'
     tags: [ 'v*.*.*' ]
 
