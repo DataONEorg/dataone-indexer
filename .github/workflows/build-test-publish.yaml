@@ -1,11 +1,12 @@
 name: Java Maven Build, Test, and Publish
 
-on: 
+on:
+  workflow_dispatch:
   push:
     branches:
-      - feature*
+#      - feature*
       - develop
-      - '*-image-auto-publish'
+      - '*-auto-img'
     tags: [ 'v*.*.*' ]
 
 env:
