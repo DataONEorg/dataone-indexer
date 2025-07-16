@@ -32,6 +32,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
       - name: Extract Maven project version
         run: |
           echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
@@ -44,9 +51,10 @@ jobs:
       - name: Setup data directory
         run: sudo mkdir -p /var/metacat/data && sudo chmod -R 777 /var/metacat
       - name: Build and Test
-        run: mvn --batch-mode --update-snapshots test
+        run: mvn -s .github/maven/settings.xml --batch-mode --update-snapshots test
       - name: Package
-        run: mvn --batch-mode --update-snapshots -DskipTests=true package
+        run: |
+          mvn -s .github/maven/settings.xml --batch-mode --update-snapshots -DskipTests=true package
       - uses: actions/cache@v3
         with:
           path: .
