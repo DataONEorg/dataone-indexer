@@ -1,10 +1,12 @@
 package org.dataone.cn.index;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -78,12 +80,19 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     protected void indexObjectToSolr(String identifier, Resource objectFile) throws Exception {
         boolean isSysmetaChangeOnly = false;
         String relativePath = objectFile.getFile().getPath();
-        try {
-            Storage.getInstance().retrieveObject(identifier);
+        try (InputStream in = Storage.getInstance().retrieveObject(identifier)) {
+            byte[] bytes = in.readAllBytes();
+            System.out.println("pid: " + identifier + " exists in hashstore. Object contents are: "
+                                   + new String(bytes, StandardCharsets.UTF_8));
         } catch (FileNotFoundException e) {
             // The pid is not in the hash store and we need to save the object into hashstore
+            System.out.println("pid: " + identifier + " not found in hashstore. Saving object ["
+                    + objectFile + "] into hashstore");
             try (InputStream object = objectFile.getInputStream()) {
-                Storage.getInstance().storeObject(object, identifier);
+                byte[] bytes = object.readAllBytes();
+                Storage.getInstance().storeObject(new ByteArrayInputStream(bytes), identifier);
+                System.out.println(
+                    "object contents are: " + new String(bytes, StandardCharsets.UTF_8));
             }
             File sysmetaFile = getSysmetaFile(relativePath);
             if (sysmetaFile != null) {
