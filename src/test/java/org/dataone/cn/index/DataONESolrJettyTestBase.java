@@ -80,19 +80,14 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     protected void indexObjectToSolr(String identifier, Resource objectFile) throws Exception {
         boolean isSysmetaChangeOnly = false;
         String relativePath = objectFile.getFile().getPath();
-        try (InputStream in = Storage.getInstance().retrieveObject(identifier)) {
-            byte[] bytes = in.readAllBytes();
-            System.out.println("pid: " + identifier + " exists in hashstore. Object contents are: "
-                                   + new String(bytes, StandardCharsets.UTF_8));
+        try (InputStream ignored = Storage.getInstance().retrieveObject(identifier)) {
+            System.out.println("pid: " + identifier + " exists in hashstore.");
         } catch (FileNotFoundException e) {
-            // The pid is not in the hash store and we need to save the object into hashstore
+            // The pid is not in the hash store, so we need to save the object into hashstore
             System.out.println("pid: " + identifier + " not found in hashstore. Saving object ["
                     + objectFile + "] into hashstore");
             try (InputStream object = objectFile.getInputStream()) {
-                byte[] bytes = object.readAllBytes();
-                Storage.getInstance().storeObject(new ByteArrayInputStream(bytes), identifier);
-                System.out.println(
-                    "object contents are: " + new String(bytes, StandardCharsets.UTF_8));
+                Storage.getInstance().storeObject(object, identifier);
             }
             File sysmetaFile = getSysmetaFile(relativePath);
             if (sysmetaFile != null) {
