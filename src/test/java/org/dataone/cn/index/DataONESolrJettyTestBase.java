@@ -363,8 +363,8 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         int delayMillis = 500;
         while (nextTry-- > 0) {
             try {
-                HttpURLConnection conn = (HttpURLConnection) new URL(
-                    "http://localhost:" + solrPort + "/solr/admin/ping").openConnection();
+                HttpURLConnection conn = (HttpURLConnection) new URL("http://localhost:"
+                    + solrPort + "/solr/admin/collections?action=list").openConnection();
                 conn.setConnectTimeout(1000);
                 conn.setReadTimeout(1000);
                 if (conn.getResponseCode() == 200) {
