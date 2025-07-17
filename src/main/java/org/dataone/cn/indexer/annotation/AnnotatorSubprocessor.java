@@ -131,7 +131,9 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
         // check for annotations, and add them if found
         long parseAnnotationStart = System.currentTimeMillis();
         SolrDoc annotations = parseAnnotation(is);
-        perfLog.log("AnnotatorSubprocessor.processDocument() parseAnnotation() ", System.currentTimeMillis() - parseAnnotationStart);
+        perfLog.log(
+            "AnnotatorSubprocessor.processDocument() parseAnnotation() ",
+            System.currentTimeMillis() - parseAnnotationStart);
         
         if (annotations != null) {
             String referencedPid = annotations.getIdentifier();
@@ -144,14 +146,15 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
                             solrQueryUri);
                 } catch (Exception e) {
                     log.warn("Unable to retrieve solr document: " + referencedPid
-                                 + ". Exception attempting to communicate with solr server."
+                                 + ". Exception attempting to communicate with solr server: "
                                  + e.getMessage());
                 }
 
                 if (referencedDoc == null) {
-                     log.warn("DID NOT LOCATE REFERENCED DOC: " + referencedPid);
+                    log.warn("DID NOT LOCATE REFERENCED DOC: " + referencedPid);
                     referencedDoc = new SolrDoc();
-                    referencedDoc.addField(new SolrElementField(SolrElementField.FIELD_ID, referencedPid));
+                    referencedDoc.addField(new SolrElementField(SolrElementField.FIELD_ID,
+                                                                referencedPid));
                 }
                 docs.put(referencedPid, referencedDoc);
             }
@@ -184,7 +187,7 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
     /**
      * Parse the annotation for fields
      * @see "http://docs.annotatorjs.org/en/latest/storage.html"
-     * @param the stream of the [JSON] annotation
+     * @param is the inputstream of the [JSON] annotation
      * @return
      */
     protected SolrDoc parseAnnotation(InputStream is) {
@@ -268,7 +271,8 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
                 for (String tag : annotations.getAllFieldValues(tagKey)) {
                     try {
                         // get the expanded tags
-                        Map<String, Set<String>> expandedConcepts = OntologyModelService.getInstance().expandConcepts(tag);
+                        Map<String, Set<String>> expandedConcepts =
+                            OntologyModelService.getInstance().expandConcepts(tag);
 
                         for (Map.Entry<String, Set<String>> entry : expandedConcepts.entrySet()) {
                             for (String value : entry.getValue()) {
