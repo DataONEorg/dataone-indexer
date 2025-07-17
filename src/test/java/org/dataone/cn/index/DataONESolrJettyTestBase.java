@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.ServerSocket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -313,22 +314,54 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
                 "============================The final test solr home  is " + solrTestHome);
             JettyConfig jconfig = JettyConfig.builder().setPort(solrPort).build();
             File f = new File(".");
-            String pathSt =
+            String pathStr =
                 f.getAbsolutePath() + "/src/test/resources/org/dataone/cn/index/resources/"
                     + solrTestHome;
             System.out.println(
-                "============================The final full path to test-solr-home is " + pathSt);
-            Path path = Paths.get(pathSt);
-            assertTrue("Solr home directory not found! - " + pathSt, Files.isDirectory(path));
-            createJettyWithPort(pathSt, jconfig);
+                "============================The final full path to test-solr-home is " + pathStr);
+            Path path = Paths.get(pathStr);
+            assertTrue("Solr home directory not found! - " + pathStr, Files.isDirectory(path));
+            waitForFreeSolrPort();
+            createJettyWithPort(pathStr, jconfig);
         }
         waitForSolr();
     }
 
+    public void waitForFreeSolrPort() {
+        int maxTries = 20;
+        int nextTry = maxTries;
+        int delayMillis = 500;
+        while (nextTry-- > 0) {
+            if (isPortAvailable(solrPort)) {
+                System.out.println("Solr Port " + solrPort + " is now available.");
+                return;
+            }
+            System.out.println("Waiting for port " + solrPort + " to become free...");
+            try {
+                Thread.sleep(delayMillis);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Interrupted while waiting for port to free up", e);
+            }
+        }
+        fail("Solr Port " + solrPort + " is still in use from previous test, after "
+                 + ((maxTries * delayMillis) / 1000) + " seconds; aborting");
+    }
+
+    private boolean isPortAvailable(int port) {
+        try (ServerSocket ss = new ServerSocket(port)) {
+            ss.setReuseAddress(true);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     private void waitForSolr() throws InterruptedException {
         int maxTries = 20;
+        int nextTry = maxTries;
         int delayMillis = 500;
-        while (maxTries-- > 0) {
+        while (nextTry-- > 0) {
             try {
                 HttpURLConnection conn = (HttpURLConnection) new URL(
                     "http://localhost:" + solrPort + "/solr/admin/ping").openConnection();
