@@ -147,13 +147,13 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
                     referencedDoc = httpService.retrieveDocumentFromSolrServer(referencedPid,
                             solrQueryUri);
                 } catch (Exception e) {
-                	//} catch (XPathExpressionException | IOException | EncoderException e) {
+                     //} catch (XPathExpressionException | IOException | EncoderException e) {
                     log.error("Unable to retrieve solr document: " + referencedPid
                             + ".  Exception attempting to communicate with solr server.", e);
                 }
 
                 if (referencedDoc == null) {
-                	log.warn("DID NOT LOCATE REFERENCED DOC: " + referencedPid);
+                     log.warn("DID NOT LOCATE REFERENCED DOC: " + referencedPid);
                     referencedDoc = new SolrDoc();
                     referencedDoc.addField(new SolrElementField(SolrElementField.FIELD_ID, referencedPid));
                 }
@@ -310,8 +310,8 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
      */
     public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument) throws IOException,
             EncoderException, XPathExpressionException {
-    	
+
         return processorUtility.mergeWithIndexedDocument(indexDocument, fieldsToMerge);
-        
+
     }
 }
