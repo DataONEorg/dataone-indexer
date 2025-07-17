@@ -364,7 +364,7 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         while (nextTry-- > 0) {
             try {
                 HttpURLConnection conn = (HttpURLConnection) new URL("http://localhost:"
-                    + solrPort + "/solr/admin/collections?action=list").openConnection();
+                    + solrPort + "/solr/collection1/admin/ping").openConnection();
                 conn.setConnectTimeout(1000);
                 conn.setReadTimeout(1000);
                 if (conn.getResponseCode() == 200) {
