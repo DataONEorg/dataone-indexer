@@ -39,6 +39,24 @@ jobs:
         id: get_version
 #      - name: Start Solr
 #        run: |
+#          docker run -d \
+#          --name solr \
+#          -p 8983:8983 \
+#          -v ${{ github.workspace }}/src/test/resources/org/dataone/cn/index/resources/solr9home:/var/solr/data \
+#          -e SOLR_HOME=/var/solr/data \
+#          solr:8 \
+#          solr-precreate collection1 /var/solr/data
+#          for i in {1..10}; do
+#            if curl -sSf http://localhost:8983/solr/admin/ping; then
+#              echo "Solr is up!"
+#              exit 0
+#            fi
+#            echo "Waiting for Solr..."
+#            sleep 3
+#          done
+#          echo "Solr failed to start"
+#          exit 1
+#        run: |
 #          wget -q https://downloads.apache.org/solr/solr/${{ env.SOLR_VERSION }}/solr-${{ env.SOLR_VERSION }}.tgz
 #          tar xzf solr-${{ env.SOLR_VERSION }}.tgz
 #          solr-${{ env.SOLR_VERSION }}/bin/solr start -p 8983
@@ -49,7 +67,13 @@ jobs:
           sudo chmod -R 777 /var/metacat
       - name: Build and Test
         id: build-and-test
-        run: mvn -s .github/maven/settings.xml --batch-mode --update-snapshots -Dtest=org.dataone.cn.indexer.annotation.AnnotatorSubprocessorTest test
+        run: |
+          mvn -s .github/maven/settings.xml --batch-mode --update-snapshots \
+          -Dtest=org.dataone.cn.indexer.annotation.AnnotatorSubprocessorTest,\
+          org.dataone.cn.indexer.annotation.SolrFieldAnnotatorTest,\
+          org.dataone.cn.indexer.annotation.SolrFieldEmlAnnotationTest, \
+          org.dataone.cn.indexer.annotation.SolrIndexAnnotatorTest \
+          test
         continue-on-error: true
       - name: Upload test logs if tests failed
         if: steps.build-and-test.outcome != 'success'
