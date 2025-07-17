@@ -37,25 +37,25 @@ jobs:
         run: |
           echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
         id: get_version
-#      - name: Start Solr
-#        run: |
-#          docker run -d \
-#          --name solr \
-#          -p 8983:8983 \
-#          -v ${{ github.workspace }}/src/test/resources/org/dataone/cn/index/resources/solr9home:/var/solr/data \
-#          -e SOLR_HOME=/var/solr/data \
-#          solr:8 \
-#          solr-precreate collection1 /var/solr/data
-#          for i in {1..10}; do
-#            if curl -sSf http://localhost:8983/solr/admin/ping; then
-#              echo "Solr is up!"
-#              exit 0
-#            fi
-#            echo "Waiting for Solr..."
-#            sleep 3
-#          done
-#          echo "Solr failed to start"
-#          exit 1
+      - name: Start Solr
+        run: |
+          docker run -d \
+          --name solr \
+          -p 8983:8983 \
+          -v ${{ github.workspace }}/src/test/resources/org/dataone/cn/index/resources/solr9home:/var/solr/data \
+          -e SOLR_HOME=/var/solr/data \
+          solr:8 \
+          solr-precreate collection1 /var/solr/data
+          for i in {1..10}; do
+            if curl -sSf http://localhost:8983/solr/admin/ping; then
+              echo "Solr is up!"
+              exit 0
+            fi
+            echo "Waiting for Solr..."
+            sleep 3
+          done
+          echo "Solr failed to start"
+          exit 1
 #        run: |
 #          wget -q https://downloads.apache.org/solr/solr/${{ env.SOLR_VERSION }}/solr-${{ env.SOLR_VERSION }}.tgz
 #          tar xzf solr-${{ env.SOLR_VERSION }}.tgz
