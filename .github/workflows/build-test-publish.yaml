@@ -69,11 +69,11 @@ jobs:
         id: build-and-test
         run: |
           mvn -s .github/maven/settings.xml --batch-mode --update-snapshots \
-          -Dtest=org.dataone.cn.indexer.annotation.AnnotatorSubprocessorTest,\
-          org.dataone.cn.indexer.annotation.SolrFieldAnnotatorTest,\
-          org.dataone.cn.indexer.annotation.SolrFieldEmlAnnotationTest, \
-          org.dataone.cn.indexer.annotation.SolrIndexAnnotatorTest \
-          test
+        -Dtest=org.dataone.cn.indexer.annotation.AnnotatorSubprocessorTest,\
+        org.dataone.cn.indexer.annotation.SolrFieldAnnotatorTest,\
+        org.dataone.cn.indexer.annotation.SolrFieldEmlAnnotationTest, \
+        org.dataone.cn.indexer.annotation.SolrIndexAnnotatorTest \
+        test
         continue-on-error: true
       - name: Upload test logs if tests failed
         if: steps.build-and-test.outcome != 'success'
