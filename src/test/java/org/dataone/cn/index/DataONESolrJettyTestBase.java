@@ -6,13 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.ServerSocket;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,7 +19,6 @@ import java.util.TimeZone;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import jakarta.validation.constraints.AssertTrue;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.solr.SolrJettyTestBase;
@@ -307,77 +300,17 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
                 "===========================The test solr home from the system property is "
                     + solrTestHome);
             if (solrTestHome == null || solrTestHome.trim().equals("")) {
-                System.out.println("System property not set; using default instead...");
                 solrTestHome = DEFAULT_SOL_RHOME;
             }
             System.out.println(
                 "============================The final test solr home  is " + solrTestHome);
             JettyConfig jconfig = JettyConfig.builder().setPort(solrPort).build();
             File f = new File(".");
-            String pathStr =
-                f.getAbsolutePath() + "/src/test/resources/org/dataone/cn/index/resources/"
-                    + solrTestHome;
-            System.out.println(
-                "============================The final full path to test-solr-home is " + pathStr);
-            Path path = Paths.get(pathStr);
-            assertTrue("Solr home directory not found! - " + pathStr, Files.isDirectory(path));
-            waitForFreeSolrPort();
-            createJettyWithPort(pathStr, jconfig);
+            String localPath = f.getAbsolutePath();
+            createJettyWithPort(
+                localPath + "/src/test/resources/org/dataone/cn/index/resources/" + solrTestHome,
+                jconfig);
         }
-        waitForSolr();
-    }
-
-    public void waitForFreeSolrPort() {
-        int maxTries = 20;
-        int nextTry = maxTries;
-        int delayMillis = 500;
-        while (nextTry-- > 0) {
-            if (isPortAvailable(solrPort)) {
-                System.out.println("Solr Port " + solrPort + " is now available.");
-                return;
-            }
-            System.out.println("Waiting for port " + solrPort + " to become free...");
-            try {
-                Thread.sleep(delayMillis);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Interrupted while waiting for port to free up", e);
-            }
-        }
-        fail("Solr Port " + solrPort + " is still in use from previous test, after "
-                 + ((maxTries * delayMillis) / 1000) + " seconds; aborting");
-    }
-
-    private boolean isPortAvailable(int port) {
-        try (ServerSocket ss = new ServerSocket(port)) {
-            ss.setReuseAddress(true);
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
-    private void waitForSolr() throws InterruptedException {
-        int maxTries = 20;
-        int nextTry = maxTries;
-        int delayMillis = 500;
-        while (nextTry-- > 0) {
-            try {
-                HttpURLConnection conn = (HttpURLConnection) new URL("http://localhost:"
-                    + solrPort + "/solr/collection1/admin/ping").openConnection();
-                conn.setConnectTimeout(1000);
-                conn.setReadTimeout(1000);
-                if (conn.getResponseCode() == 200) {
-                    System.out.println("Solr is ready!");
-                    return;
-                }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-            System.out.println("Waiting for Solr...");
-            Thread.sleep(delayMillis);
-        }
-        fail("Solr did not start within " + ((maxTries * delayMillis)/1000) + " seconds; aborting");
     }
 
     // method is copied in from SolrJettyTestBase in order to set the port
