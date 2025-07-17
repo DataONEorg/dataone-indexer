@@ -16,7 +16,7 @@ env:
   # github.repository as <account>/<repo>
   #IMAGE_NAME: ${{ github.repository }}
   IMAGE_NAME: ${{ github.repository_owner }}/dataone-index-worker
-#  SOLR_VERSION: 9.8.1
+  SOLR_VERSION: 9.8.1
   D1_OBJECT_MANAGER_CLASS_NAME: org.dataone.cn.indexer.object.legacystore.LegacyStoreObjManager
 
 jobs:
@@ -39,15 +39,15 @@ jobs:
         id: get_version
       - name: Start Solr
         run: |
-          docker run -d \
-          --name solr \
-          -p 8983:8983 \
-          -v ${{ github.workspace }}/src/test/resources/org/dataone/cn/index/resources/solr9home:/var/solr/data \
-          -e SOLR_HOME=/var/solr/data \
-          solr:9 \
-          solr-precreate collection1 /var/solr/data
+          cd ${{ github.workspace }}
+          wget -q https://downloads.apache.org/solr/solr/${{ env.SOLR_VERSION }}/solr-${{ env.SOLR_VERSION }}.tgz
+          tar xzf solr-${{ env.SOLR_VERSION }}.tgz
+          SOLR_DIR=${{ github.workspace }}/solr-${{ env.SOLR_VERSION }}
+          SOLR_HOME=${{ github.workspace }}/src/test/resources/org/dataone/cn/index/resources/solr9home
+          echo "Starting Solr with SOLR_HOME=$SOLR_HOME"
+          $SOLR_DIR/bin/solr start -p 8983 -s "$SOLR_HOME"
           for i in {1..30}; do
-            if curl -sSf http://localhost:8983//solr/collection1/admin/ping; then
+            if curl -sSf http://localhost:8983/solr/collection1/admin/ping; then
               echo "Solr is up!"
               exit 0
             fi
@@ -56,10 +56,6 @@ jobs:
           done
           echo "Solr failed to start"
           exit 1
-#        run: |
-#          wget -q https://downloads.apache.org/solr/solr/${{ env.SOLR_VERSION }}/solr-${{ env.SOLR_VERSION }}.tgz
-#          tar xzf solr-${{ env.SOLR_VERSION }}.tgz
-#          solr-${{ env.SOLR_VERSION }}/bin/solr start -p 8983
       - name: Setup var-metacat directories
         run: |
           sudo mkdir -p /var/metacat/data
@@ -68,6 +64,7 @@ jobs:
       - name: Build and Test
         id: build-and-test
         run: |
+          echo "D1_OBJECT_MANAGER_CLASS_NAME is set to $D1_OBJECT_MANAGER_CLASS_NAME"
           mvn -s .github/maven/settings.xml --batch-mode --update-snapshots \
           -Dtest=org.dataone.cn.indexer.annotation.AnnotatorSubprocessorTest,org.dataone.cn.indexer.annotation.SolrFieldAnnotatorTest,org.dataone.cn.indexer.annotation.SolrFieldEmlAnnotationTest,org.dataone.cn.indexer.annotation.SolrIndexAnnotatorTest \
           test
