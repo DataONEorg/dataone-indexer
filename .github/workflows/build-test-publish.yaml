@@ -44,10 +44,10 @@ jobs:
           -p 8983:8983 \
           -v ${{ github.workspace }}/src/test/resources/org/dataone/cn/index/resources/solr9home:/var/solr/data \
           -e SOLR_HOME=/var/solr/data \
-          solr:8 \
+          solr:9 \
           solr-precreate collection1 /var/solr/data
-          for i in {1..10}; do
-            if curl -sSf http://localhost:8983/solr/admin/ping; then
+          for i in {1..30}; do
+            if curl -sSf http://localhost:8983//solr/collection1/admin/ping; then
               echo "Solr is up!"
               exit 0
             fi
