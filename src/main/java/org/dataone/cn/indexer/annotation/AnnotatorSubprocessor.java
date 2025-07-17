@@ -3,12 +3,10 @@ package org.dataone.cn.indexer.annotation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.xml.xpath.XPathExpressionException;
 
@@ -28,8 +26,6 @@ import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
 import org.dataone.indexer.performance.PerformanceLogger;
-import org.dataone.cn.indexer.annotation.OntologyModelService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The intent of this subprocessor is to fetch annotations about the given 
@@ -135,7 +131,9 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
         // check for annotations, and add them if found
         long parseAnnotationStart = System.currentTimeMillis();
         SolrDoc annotations = parseAnnotation(is);
-        perfLog.log("AnnotatorSubprocessor.processDocument() parseAnnotation() ", System.currentTimeMillis() - parseAnnotationStart);
+        perfLog.log(
+            "AnnotatorSubprocessor.processDocument() parseAnnotation() ",
+            System.currentTimeMillis() - parseAnnotationStart);
         
         if (annotations != null) {
             String referencedPid = annotations.getIdentifier();
@@ -147,15 +145,16 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
                     referencedDoc = httpService.retrieveDocumentFromSolrServer(referencedPid,
                             solrQueryUri);
                 } catch (Exception e) {
-                	//} catch (XPathExpressionException | IOException | EncoderException e) {
-                    log.error("Unable to retrieve solr document: " + referencedPid
-                            + ".  Exception attempting to communicate with solr server.", e);
+                    log.warn("Unable to retrieve solr document: " + referencedPid
+                                 + ". Exception attempting to communicate with solr server: "
+                                 + e.getMessage());
                 }
 
                 if (referencedDoc == null) {
-                	log.warn("DID NOT LOCATE REFERENCED DOC: " + referencedPid);
+                    log.warn("DID NOT LOCATE REFERENCED DOC: " + referencedPid);
                     referencedDoc = new SolrDoc();
-                    referencedDoc.addField(new SolrElementField(SolrElementField.FIELD_ID, referencedPid));
+                    referencedDoc.addField(new SolrElementField(SolrElementField.FIELD_ID,
+                                                                referencedPid));
                 }
                 docs.put(referencedPid, referencedDoc);
             }
@@ -188,7 +187,7 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
     /**
      * Parse the annotation for fields
      * @see "http://docs.annotatorjs.org/en/latest/storage.html"
-     * @param the stream of the [JSON] annotation
+     * @param is the inputstream of the [JSON] annotation
      * @return
      */
     protected SolrDoc parseAnnotation(InputStream is) {
@@ -272,7 +271,8 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
                 for (String tag : annotations.getAllFieldValues(tagKey)) {
                     try {
                         // get the expanded tags
-                        Map<String, Set<String>> expandedConcepts = OntologyModelService.getInstance().expandConcepts(tag);
+                        Map<String, Set<String>> expandedConcepts =
+                            OntologyModelService.getInstance().expandConcepts(tag);
 
                         for (Map.Entry<String, Set<String>> entry : expandedConcepts.entrySet()) {
                             for (String value : entry.getValue()) {
@@ -310,8 +310,8 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
      */
     public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument) throws IOException,
             EncoderException, XPathExpressionException {
-    	
+
         return processorUtility.mergeWithIndexedDocument(indexDocument, fieldsToMerge);
-        
+
     }
 }
