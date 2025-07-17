@@ -143,9 +143,9 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
                     referencedDoc = httpService.retrieveDocumentFromSolrServer(referencedPid,
                             solrQueryUri);
                 } catch (Exception e) {
-                     //} catch (XPathExpressionException | IOException | EncoderException e) {
-                    log.error("Unable to retrieve solr document: " + referencedPid
-                            + ".  Exception attempting to communicate with solr server.", e);
+                    log.warn("Unable to retrieve solr document: " + referencedPid
+                                 + ". Exception attempting to communicate with solr server."
+                                 + e.getMessage());
                 }
 
                 if (referencedDoc == null) {
