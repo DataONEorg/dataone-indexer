@@ -155,9 +155,9 @@ public class IndexWorkerTest {
         assertTrue(Settings.getConfiguration().getString("dataone.mn.baseURL").
                 equals("https://valley.duckdns.org/metacat/d1/mn"));
         assertTrue(Settings.getConfiguration().
-                getString("index.data.root.directory").equals("/objects"));
+                getString("index.data.root.directory").equals("./target"));
         assertTrue(Settings.getConfiguration().
-                getString("index.document.root.directory").equals("/objects"));
+                getString("index.document.root.directory").equals("./target"));
         assertTrue(Settings.getConfiguration().getString("cn.router.hostname2").equals("cn.dataone.org"));
     }
 
