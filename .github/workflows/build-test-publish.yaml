@@ -4,11 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches:
-#      - feature*
       - develop
       - bugfix-*
       - '*-auto-img'
-    tags: [ 'v*.*.*' ]
+    tags: [ '*.*.*' ]
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -65,7 +64,7 @@ jobs:
 
   docker-publish:
     name: Docker Build and Publish
-    if: github.ref_name == 'develop' || github.ref_name == 'v*.*.*'
+    if: github.ref_name == 'develop' || github.ref_name == '*.*.*'
     needs: maven-build
     runs-on: ubuntu-latest
     permissions:
