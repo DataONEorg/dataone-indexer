@@ -22,7 +22,7 @@ public class IndexWorkerTest {
     @Test
     public void testInitIndexParsers() throws Exception {
         String propertyFilePath =
-            "./src/test/resources/org/dataone/configuration/index-processor-2.properties";
+            "./src/test/resources/org/dataone/configuration/index-processor-port-8985.properties";
         Settings.augmentConfiguration(propertyFilePath);
         boolean initialize = false;
         IndexWorker worker = new IndexWorker(initialize);
@@ -149,7 +149,8 @@ public class IndexWorkerTest {
                 getString("index.document.root.directory").equals("/var/metacat/documents"));
         assertTrue(Settings.getConfiguration().getString("cn.router.hostname2") == null);
         //load another file, it will overwrite the properties which have different values
-        String propertyFilePath2 = "./src/test/resources/org/dataone/configuration/index-processor-2.properties";
+        String propertyFilePath2 =
+            "./src/test/resources/org/dataone/configuration/index-processor-port-8985.properties";
         IndexWorker.loadAdditionalPropertyFile(propertyFilePath2);
         assertTrue(IndexWorker.propertyFilePath.equals(propertyFilePath));
         assertTrue(Settings.getConfiguration().getString("dataone.mn.baseURL").
