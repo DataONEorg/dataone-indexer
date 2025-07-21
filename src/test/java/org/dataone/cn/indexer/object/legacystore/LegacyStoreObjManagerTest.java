@@ -7,11 +7,13 @@ import org.dataone.configuration.Settings;
 import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.types.v1.SystemMetadata;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.org.webcompere.systemstubs.rules.EnvironmentVariablesRule;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -32,6 +34,9 @@ public class LegacyStoreObjManagerTest {
     private static final String DATA_ROOT_DIR_PROPERTY_NAME = "index.data.root.directory";
     private static final String DOCUMENT_ROOT_DIR_PROPERTY_NAME = "index.document.root.directory";
 
+    private static final String DATA_DIR = "src/test/resources/org/dataone/configuration/";
+    private static final String DOCUMENTS_DIR = "src/test/resources/";
+
     @Rule
     public EnvironmentVariablesRule environmentVariables =
         new EnvironmentVariablesRule(DATA_ROOT_DIR_ENV_NAME, null);
@@ -41,6 +46,14 @@ public class LegacyStoreObjManagerTest {
         String propertyFilePath =
             "./src/main/resources/org/dataone/configuration/index-processor.properties";
         Settings.augmentConfiguration(propertyFilePath);
+        environmentVariables.set(DATA_ROOT_DIR_ENV_NAME, DATA_DIR);
+        environmentVariables.set(DOCUMENT_ROOT_DIR_ENV_NAME, DOCUMENTS_DIR);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        environmentVariables.set(DATA_ROOT_DIR_ENV_NAME, null);
+        environmentVariables.set(DOCUMENT_ROOT_DIR_ENV_NAME, null);
     }
 
     /**
@@ -48,11 +61,30 @@ public class LegacyStoreObjManagerTest {
      */
     @Test
     public void testConstructorFromProperties() throws Exception {
+        environmentVariables.set(DATA_ROOT_DIR_ENV_NAME, null);
+        environmentVariables.set(DOCUMENT_ROOT_DIR_ENV_NAME, null);
         String dataDir = "/var/metacat/data/";
         String documentDir = "/var/metacat/documents/";
-        LegacyStoreObjManager manager = new LegacyStoreObjManager();
-        assertEquals(documentDir, manager.getDocumentRootDir());
-        assertEquals(dataDir, manager.getDataRootDir());
+        LegacyStoreObjManager manager;
+        if ((new File(dataDir)).exists() && (new File(documentDir)).exists()) {
+            manager = new LegacyStoreObjManager();
+            assertEquals(documentDir, manager.getDocumentRootDir());
+            assertEquals(dataDir, manager.getDataRootDir());
+        } else {
+            try {
+                manager = new LegacyStoreObjManager();
+                fail(
+                    "Test shouldn't get here since the previous statement should throw an "
+                        + "exception");
+            } catch (Exception e) {
+                assertTrue( e instanceof ServiceFailure);
+            }
+        }
+        Settings.getConfiguration().setProperty(DATA_ROOT_DIR_PROPERTY_NAME, DATA_DIR);
+        Settings.getConfiguration().setProperty(DOCUMENT_ROOT_DIR_PROPERTY_NAME, DOCUMENTS_DIR);
+        manager = new LegacyStoreObjManager();
+        assertEquals(DOCUMENTS_DIR, manager.getDocumentRootDir());
+        assertEquals(DATA_DIR, manager.getDataRootDir());
         Settings.getConfiguration().setProperty(DATA_ROOT_DIR_PROPERTY_NAME, null);
         try {
             manager = new LegacyStoreObjManager();
@@ -60,11 +92,41 @@ public class LegacyStoreObjManagerTest {
         } catch (Exception e) {
             assertTrue( e instanceof ServiceFailure);
         }
-        Settings.getConfiguration().setProperty(DATA_ROOT_DIR_PROPERTY_NAME, dataDir);
+        Settings.getConfiguration().setProperty(DATA_ROOT_DIR_PROPERTY_NAME, DATA_DIR);
         manager = new LegacyStoreObjManager();
-        assertEquals(documentDir, manager.getDocumentRootDir());
-        assertEquals(dataDir, manager.getDataRootDir());
+        assertEquals(DOCUMENTS_DIR, manager.getDocumentRootDir());
+        assertEquals(DATA_DIR, manager.getDataRootDir());
         Settings.getConfiguration().setProperty(DOCUMENT_ROOT_DIR_PROPERTY_NAME, null);
+        try {
+            manager = new LegacyStoreObjManager();
+            fail("Test shouldn't get here since the previous statement should throw an exception");
+        } catch (Exception e) {
+            assertTrue( e instanceof ServiceFailure);
+        }
+    }
+
+    /**
+     * Test the constructor based on environment variables
+     */
+    @Test
+    public void testConstructor() throws Exception {
+        Settings.getConfiguration().setProperty(DOCUMENT_ROOT_DIR_PROPERTY_NAME, null);
+        Settings.getConfiguration().setProperty(DATA_ROOT_DIR_PROPERTY_NAME, null);
+        LegacyStoreObjManager manager = new LegacyStoreObjManager();
+        assertEquals(DOCUMENTS_DIR, manager.getDocumentRootDir());
+        assertEquals(DATA_DIR, manager.getDataRootDir());
+        environmentVariables.set(DATA_ROOT_DIR_ENV_NAME, null);
+        try {
+            manager = new LegacyStoreObjManager();
+            fail("Test shouldn't get here since the previous statement should throw an exception");
+        } catch (Exception e) {
+            assertTrue( e instanceof ServiceFailure);
+        }
+        environmentVariables.set(DATA_ROOT_DIR_ENV_NAME, DATA_DIR);
+        manager = new LegacyStoreObjManager();
+        assertEquals(DOCUMENTS_DIR, manager.getDocumentRootDir());
+        assertEquals(DATA_DIR, manager.getDataRootDir());
+        environmentVariables.set(DOCUMENT_ROOT_DIR_ENV_NAME, null);
         try {
             manager = new LegacyStoreObjManager();
             fail("Test shouldn't get here since the previous statement should throw an exception");
@@ -79,13 +141,9 @@ public class LegacyStoreObjManagerTest {
      */
     @Test
     public void testGetObject() throws Exception {
-        String dataDir = "src/test/resources/org/dataone/configuration/";
-        String documentDir = "src/test/resources/";
-        environmentVariables.set(DATA_ROOT_DIR_ENV_NAME, dataDir);
-        environmentVariables.set(DOCUMENT_ROOT_DIR_ENV_NAME, documentDir);
         LegacyStoreObjManager manager = new LegacyStoreObjManager();
-        assertEquals(documentDir, manager.getDocumentRootDir());
-        assertEquals(dataDir, manager.getDataRootDir());
+        assertEquals(DOCUMENTS_DIR, manager.getDocumentRootDir());
+        assertEquals(DATA_DIR, manager.getDataRootDir());
         InputStream inputData = manager.getObject("config.xml");
         assertNotNull(inputData);
         InputStream inputDocument = manager.getObject("commons-logging.properties");
