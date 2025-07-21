@@ -88,7 +88,7 @@ public class SolrIndexAnnotatorTest extends DataONESolrJettyTestBase {
         //test the annotator fields
         Resource annotationSysMeta = (Resource) context.getBean("annotation1304Sys");
         Resource annotationResource = (Resource) context.getBean("annotation1304");
-        //byte[] annotationBytes = IOUtils.toByteArray(annotationResource.getInputStream());
+        assertNotNull("Annotation resource not found", annotationResource);
 
         //add the annotation
         indexObjectToSolr("annotation.130.4", annotationResource);
@@ -105,12 +105,10 @@ public class SolrIndexAnnotatorTest extends DataONESolrJettyTestBase {
             for (Object annotationValue : annotationValues) {
                 System.out.println("annotationValue: " + annotationValue);
             }
+            assertFalse("sem_annotation should have multiple values", annotationValues.isEmpty());
         } else {
-            System.out.println("NO VALUES FOUND FOR sem_annotation!");
-
+            fail("NO VALUES FOUND FOR sem_annotation!");
         }
-
-        assertTrue("sem_annotation should have multiple values", !annotationValues.isEmpty());
 
         // check the fields in the science metadata again to make sure we did not overwrite them
         for (ISolrField field : eml210.getFieldList()) {
