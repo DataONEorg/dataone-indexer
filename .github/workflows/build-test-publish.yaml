@@ -5,8 +5,8 @@ on:
   push:
     branches:
       - develop
+      - feature-*
       - bugfix-*
-      - '*-auto-img'
     tags: [ '*.*.*' ]
 
 env:
@@ -14,7 +14,6 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository_owner }}/dataone-index-worker
-  D1_OBJECT_MANAGER_CLASS_NAME: org.dataone.cn.indexer.object.hashstore.HashStoreObjManager
 
 jobs:
   maven-build:
@@ -34,16 +33,9 @@ jobs:
         run: |
           echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
         id: get_version
-      - name: Setup var-metacat directories
-        run: |
-          sudo mkdir -p /var/metacat/data
-          sudo mkdir -p /var/metacat/documents
-          sudo chmod -R 777 /var/metacat
       - name: Build and Test
         id: build-and-test
-        run: |
-          echo "D1_OBJECT_MANAGER_CLASS_NAME is set to $D1_OBJECT_MANAGER_CLASS_NAME"
-          mvn -s .github/maven/settings.xml --batch-mode --update-snapshots test
+        run: mvn -s .github/maven/settings.xml --batch-mode --update-snapshots test
         continue-on-error: true
       - name: Upload test logs if tests failed
         if: steps.build-and-test.outcome != 'success'
@@ -105,6 +97,7 @@ jobs:
         with:
           context: .
           file: docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
           build-args: TAG=${{needs.maven-build.outputs.version}}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
