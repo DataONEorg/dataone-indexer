@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.dataone.cn.index.BaseSolrFieldXPathTest;
 import org.dataone.cn.indexer.IndexWorkerTest;
@@ -29,6 +30,13 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "../../index/test-context.xml", "test-context-annotator.xml" })
 public class SolrFieldAnnotatorTest extends BaseSolrFieldXPathTest {
+    static {
+        try {
+            Settings.augmentConfiguration(IndexWorkerTest.PORT_8985_PROPERTY_FILE_PATH);
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Autowired
     private Resource annotation1304;
@@ -43,7 +51,6 @@ public class SolrFieldAnnotatorTest extends BaseSolrFieldXPathTest {
 
     @Before
     public void setUp() throws Exception {
-        Settings.augmentConfiguration(IndexWorkerTest.PORT_8985_PROPERTY_FILE_PATH);
         // annotations should include the superclass[es]
         annotationExpected
             .put(AnnotatorSubprocessor.FIELD_ANNOTATION,

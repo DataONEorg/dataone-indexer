@@ -2,6 +2,7 @@ package org.dataone.cn.indexer.annotation;
 
 import static org.junit.Assert.*;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.dataone.cn.indexer.IndexWorkerTest;
 import org.dataone.configuration.Settings;
 import org.junit.Test;
@@ -22,7 +23,13 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
  * good to test the remaining, untested methods.
  */
 public class AnnotatorSubprocessorTest {
-
+    static {
+        try {
+            Settings.augmentConfiguration(IndexWorkerTest.PORT_8985_PROPERTY_FILE_PATH);
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
     @Autowired
     private AnnotatorSubprocessor annotatorSubprocessor;
 
@@ -32,7 +39,6 @@ public class AnnotatorSubprocessorTest {
      */
     @Test
     public void testCanProcess() throws Exception {
-        Settings.augmentConfiguration(IndexWorkerTest.PORT_8985_PROPERTY_FILE_PATH);
         assertTrue(annotatorSubprocessor.canProcess("http://docs.annotatorjs.org/en/v1.2"
                    + ".x/annotation-format.html"));
     }
