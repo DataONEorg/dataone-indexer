@@ -1,0 +1,16 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <!-- sonatype.org is referenced by d1_libclient_java, but is no longer available, resulting -->
+    <!-- in long timeouts that slow down the build. Block that call by referencing this file    -->
+    <!-- with the maven "-s" flag, e.g: mvn -s ./.github/maven/settings.xml package (etc.), or  -->
+    <!-- do so permanently by copying the following <mirrors> section to your local settings    -->
+    <!-- file at: ~/.m2/settings.xml. It's Included in the repo because it's used by GH Actions -->
+    <mirrors>
+        <mirror>
+            <id>block-unavailable-sonatype</id>
+            <mirrorOf>external:http:*,sonatype.org</mirrorOf>
+            <url>http://0.0.0.0/</url>
+        </mirror>
+    </mirrors>
+</settings>

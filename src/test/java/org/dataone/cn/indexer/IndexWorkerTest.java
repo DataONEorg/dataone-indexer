@@ -1,23 +1,3 @@
-/**
- * This work was created by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For 
- * more information on DataONE, see our web site at http://dataone.org.
- *
- *   Copyright 2022
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- * 
- */
 package org.dataone.cn.indexer;
 
 import static org.junit.Assert.assertTrue;
@@ -27,23 +7,31 @@ import java.io.File;
 import org.dataone.configuration.Settings;
 import org.junit.Test;
 
+
 /**
  * A junit test class for methods without third party software running
  * @author tao
  *
  */
 public class IndexWorkerTest {
-    
+    public static final String PORT_8985_PROPERTY_FILE_PATH =
+        "./src/test/resources/org/dataone/configuration/index-processor-port-8985.properties";
+
     /**
      * Test the initIndexParsers methdo
      * @throws Exception
      */
     @Test
     public void testInitIndexParsers() throws Exception {
+        Settings.augmentConfiguration(PORT_8985_PROPERTY_FILE_PATH);
         boolean initialize = false;
         IndexWorker worker = new IndexWorker(initialize);
         worker.initIndexParsers();
         assertTrue(worker.solrIndex != null);
+        // Reset the path null
+        IndexWorker.propertyFilePath = null;
+        //Reset the property of cn.rounter.hostname2 null
+        Settings.getConfiguration().setProperty("cn.router.hostname2", null);
     }
     
     /**
@@ -161,15 +149,15 @@ public class IndexWorkerTest {
                 getString("index.document.root.directory").equals("/var/metacat/documents"));
         assertTrue(Settings.getConfiguration().getString("cn.router.hostname2") == null);
         //load another file, it will overwrite the properties which have different values
-        String propertyFilePath2 = "./src/test/resources/org/dataone/configuration/index-processor-2.properties";
+        String propertyFilePath2 = PORT_8985_PROPERTY_FILE_PATH;
         IndexWorker.loadAdditionalPropertyFile(propertyFilePath2);
         assertTrue(IndexWorker.propertyFilePath.equals(propertyFilePath));
         assertTrue(Settings.getConfiguration().getString("dataone.mn.baseURL").
                 equals("https://valley.duckdns.org/metacat/d1/mn"));
         assertTrue(Settings.getConfiguration().
-                getString("index.data.root.directory").equals("/objects"));
+                getString("index.data.root.directory").equals("./target"));
         assertTrue(Settings.getConfiguration().
-                getString("index.document.root.directory").equals("/objects"));
+                getString("index.document.root.directory").equals("./target"));
         assertTrue(Settings.getConfiguration().getString("cn.router.hostname2").equals("cn.dataone.org"));
     }
 
