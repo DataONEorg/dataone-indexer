@@ -34,8 +34,8 @@ public class LegacyStoreObjManagerTest {
     private static final String DATA_ROOT_DIR_PROPERTY_NAME = "index.data.root.directory";
     private static final String DOCUMENT_ROOT_DIR_PROPERTY_NAME = "index.document.root.directory";
 
-    private static final String DATA_DIR = "src/test/resources/org/dataone/configuration/";
-    private static final String DOCUMENTS_DIR = "src/test/resources/";
+    public static final String DATA_DIR = "src/test/resources/org/dataone/configuration/";
+    public static final String DOCUMENTS_DIR = "src/test/resources/";
 
     @Rule
     public EnvironmentVariablesRule environmentVariables =
