@@ -259,6 +259,22 @@ idxworker:
 rabbitmq:
   enabled: true
 
+  ## As of 8/25/25, Bitnami charges for secure container images, unless we use the "latest" tag.
+  ## As a stopgap, we reference the legacy images, which are still available for free (but note
+  ## that newer versions will not become available in the future, so we need to find an alternative
+  ## source for images...)
+  ## @param postgresql.global.security.allowInsecureImages Allow non-bitnami-hardened images
+  ## @param rabbitmq.image.repository source repo for main image
+  ## @param postgresql.volumePermissions.image.repository  source repo for volumePermissions image
+  global:
+    security:
+      allowInsecureImages: true
+  image:
+    repository: bitnamilegacy/rabbitmq
+  volumePermissions:
+    image:
+      repository: bitnamilegacy/os-shell
+
   ## @param rabbitmq.fullnameOverride String to fully override rabbitmq.fullname template (optional)
   ## Takes precedence over rabbitmq.nameOverride.
   ##
@@ -300,6 +316,23 @@ rabbitmq:
 ##
 solr:
   enabled: true
+
+  ## As of 8/25/25, Bitnami charges for secure container images, unless we use the "latest" tag.
+  ## As a stopgap, we reference the legacy images, which are still available for free (but note
+  ## that newer versions will not become available in the future, so we need to find an alternative
+  ## source for images...)
+  ## @param postgresql.global.security.allowInsecureImages Allow non-bitnami-hardened images
+  ## @param rabbitmq.image.repository source repo for main image
+  ## @param postgresql.volumePermissions.image.repository  source repo for volumePermissions image
+  global:
+    security:
+      allowInsecureImages: true
+  image:
+    repository: bitnamilegacy/solr
+  volumePermissions:
+    image:
+      repository: bitnamilegacy/os-shell
+
   collection: temp_collection
 
   ## @param solr.customCollection (required) name of the solr collection to use
@@ -372,3 +405,20 @@ solr:
     postStart:
       exec:
         command: ["/bin/bash", "-c", "/solrconfig/config-solr.sh"]
+
+  zookeeper:
+    ## As of 8/25/25, Bitnami charges for secure container images, unless we use the "latest" tag.
+    ## As a stopgap, we reference the legacy images, which are still available for free (but note
+    ## that newer versions will not become available in the future, so we need to find an alternative
+    ## source for images...)
+    ## @param postgresql.global.security.allowInsecureImages Allow non-bitnami-hardened images
+    ## @param rabbitmq.image.repository source repo for main image
+    ## @param postgresql.volumePermissions.image.repository  source repo for volumePermissions image
+    global:
+      security:
+        allowInsecureImages: true
+    image:
+      repository: bitnamilegacy/zookeeper
+    volumePermissions:
+      image:
+        repository: bitnamilegacy/os-shell
