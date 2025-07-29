@@ -5,6 +5,25 @@
 > `Caution - ENSURE THAT THE RABBITMQ QUEUE IS EMPTY,` [in the release notes for helm chart v1.3.0
 > below!](#helm-chart-version-130)**,
 
+## helm chart version 1.3.3
+
+### Release date: 2025-07-29
+
+> [!CAUTION]
+> We strongly recommend that you upgrade to this version of the helm chart before August 28th, 2025,
+> since previous versions will stop working after Bitnami introduces restrictions to container image
+> availability!
+
+This is a patch release to account for upcoming changes to Bitnami container image availability; see
+Bitnami's announcements:
+
+- [Upcoming changes to the Bitnami catalog (effective August 28th, 2025)](https://github.com/bitnami/containers/issues/83267)
+- [Clarification on bitnami/charts after August 28th](https://github.com/bitnami/charts/issues/35256)
+
+This latest chart pulls the Bitnami RabbitMQ, Solr, and Zookeeper image versions used by
+dataone-indexer from the `bitnamilegacy` repository, which will remain functional after the August
+cutoff
+
 ## dataone-indexer version 3.1.5 & helm chart version 1.3.2
 
 ### Release date: 2025-06-26
@@ -41,7 +60,7 @@ This is a patch release with the following minor fixes and upgrades:
 
 * Add a "warm up" postStart hook for Lustre/HPC Filesystems (disabled by default - see
   `idxworker.enableMountWarmupHook` in values.yaml. Addresses visibility issues with Lustre and
-  similar HPC filesystems. ([Issue #227](https://github.com/DataONEorg/dataone-indexer/issues/227))
+  similar HPC filesystems.) ([Issue #227](https://github.com/DataONEorg/dataone-indexer/issues/227))
 * Remove `subPath` for log4j properties configmap to allow dynamic reloading ([Issue
   #210](https://github.com/DataONEorg/dataone-indexer/issues/210#issuecomment-2859717382))
 * Allow configuration of Java Heap Memory for index workers, via values.yaml (`idxworker.javaMem`)
