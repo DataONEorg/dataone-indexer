@@ -254,6 +254,69 @@ idxworker:
   ##
   javaMem: ""
 
+  ## @param idxworker.jmxEnabled Enable JMX for idxworker, to inspect JVM usage of CPU, memory, etc.
+  ## When JMX is enabled by setting this to 'true', you can view the JMX metrics using a JMX client
+  ## such as VisualVM or JConsole, connected via port-forwarding to port set in idxworker.jmxPort
+  ##
+  jmxEnabled: false
+
+  ## @param idxworker.jmxPort The port to use for JMX connections. IMPORTANT: If you change this...
+  ## 1. you must also change the port in the idxworker.jmxCatalinaOpts section, in the following two
+  ##    entries:
+  ##     -Dcom.sun.management.jmxremote.port=9010
+  ##     -Dcom.sun.management.jmxremote.rmi.port=9010
+  ##
+  ## 2. If you plan on using a different port # on localhost, it's easiest to use that same port on
+  ##    the pod, so you're using a single port for both JMX and RMI.(e.g. instead of port
+  ##    forwarding from pod:9010 to localhost:9011, expose jmx on pod:9011 and forward from pod:9011
+  ##    to localhost:9011)
+  ##
+  ## Note that the JMX port is not (and should not be) exposed outside the cluster. It is therefore
+  ## necessary to use port-forwarding in order to connect.
+  ##
+  jmxPort: 9010
+
+  ## @param idxworker.jmxJavaOpts [default: see values.yaml] idxworker JVM options for enabling JMX
+  ## Use these to change the port, for example, or to enable authentication.
+  ##
+  ## IMPORTANT NOTES:
+  ## 1. If you change the port numbers here, you must also change the value of idxworker.jmxPort to
+  ##    match!
+  ## 2. If you plan on using a different port # on localhost, it's easiest to use that same port on
+  ##    the pod, so you're using a single port for both JMX and RMI.(e.g. instead of port
+  ##    forwarding from pod:9010 to localhost:9011, expose jmx on pod:9011 and forward from pod:9011
+  ##    to localhost:9011)
+  ##
+  ## (jmxJavaOpts is a yaml list, so each entry must be preceded by a dash (-) and a space. It
+  ## looks strange when the options also contain dashes, but is correct YAML syntax.)
+  ##
+  jmxJavaOpts:
+    - -Dcom.sun.management.jmxremote
+    - -Dcom.sun.management.jmxremote.port=9010
+    - -Dcom.sun.management.jmxremote.rmi.port=9010
+    - -Dcom.sun.management.jmxremote.local.only=false
+    - -Dcom.sun.management.jmxremote.authenticate=false
+    - -Dcom.sun.management.jmxremote.ssl=false
+    - -Djava.rmi.server.hostname=127.0.0.1
+
+  ## @param idxworker.extraJavaOpts Extra JVM options for idxworker. SEE IMPORTANT NOTES BELOW:
+  ## 1. Do not pass -Xms or -Xmx here. Those values should be passed separately, using the value:
+  ##    idxworker.javaMem
+  ## 2. Do not set JMX-related values here, without first checking they're not already defined in
+  ##    idxworker.jmxJavaOpts (assuming idxworker.jmxEnabled is true)
+  ## 3. -XX:MaxRAMPercentage may be set here, but note that it will be ignored by the JVM if you
+  ##    also set a value for -Xmx (i.e. -Xmx takes precedence over MaxRAMPercentage)
+  ##
+  ## (extraJavaOpts is a yaml list, so each entry must be preceded by a dash (-) and a space. It
+  ## looks strange when the options also contain dashes, but is correct YAML syntax.) example:
+  ##
+  ##  idxworker:
+  ##    extraJavaOpts:
+  ##      - -XX:MaxRAMPercentage=75
+  ##
+  extraJavaOpts:
+    - -XX:MaxRAMPercentage=75
+
 ## @section RabbitMQ Bitnami Sub-Chart Configuration
 ##
 rabbitmq:

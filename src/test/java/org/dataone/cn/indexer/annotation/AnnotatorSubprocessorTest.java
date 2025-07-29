@@ -2,11 +2,9 @@ package org.dataone.cn.indexer.annotation;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.Ignore;
+import org.apache.commons.configuration.ConfigurationException;
+import org.dataone.cn.indexer.IndexWorkerTest;
+import org.dataone.configuration.Settings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +23,23 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
  * good to test the remaining, untested methods.
  */
 public class AnnotatorSubprocessorTest {
+    static {
+        try {
+            Settings.augmentConfiguration(IndexWorkerTest.PORT_8985_PROPERTY_FILE_PATH);
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Autowired
+    private AnnotatorSubprocessor annotatorSubprocessor;
 
-	@Autowired
-	private AnnotatorSubprocessor annotatorSubprocessor;
-
-	@Test
-	public void testCanProcess() {
-		assertTrue(annotatorSubprocessor.canProcess("http://docs.annotatorjs.org/en/v1.2.x/annotation-format.html"));
-	}
+    /**
+     * Test the canProcess method
+     * @throws Exception
+     */
+    @Test
+    public void testCanProcess() throws Exception {
+        assertTrue(annotatorSubprocessor.canProcess("http://docs.annotatorjs.org/en/v1.2"
+                   + ".x/annotation-format.html"));
+    }
 }

@@ -1,7 +1,7 @@
 # Build from parent dir with a command like:
 #     `nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 .`
 # Use an OpenJDK runtime as a parent image
-FROM eclipse-temurin:17.0.14_7-jre-noble
+FROM eclipse-temurin:17.0.15_6-jre-noble
 
 ARG TAG="NO-TAG"
 ENV TAG=${TAG}
@@ -32,6 +32,8 @@ RUN chown d1indexer readinessprobe
 
 #Run Container as d1indexer
 USER 59997:59997
+
+EXPOSE 9010
 
 # Connect this image to a GitHub repository
 LABEL org.opencontainers.image.source="https://github.com/dataoneorg/dataone-indexer"
