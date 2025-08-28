@@ -144,6 +144,9 @@ spec:
                   key: SOLR_ADMIN_PASSWORD
                   optional: true
             {{ end }}
+            {{- if .Values.idxworker.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.idxworker.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
             {{- if or .Values.idxworker.extraJavaOpts .Values.idxworker.jmxEnabled }}
             - name: IDX_JAVA_OPTS
               value: {{ join " " .Values.idxworker.extraJavaOpts }}
