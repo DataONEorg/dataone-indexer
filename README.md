@@ -7,7 +7,7 @@ Indexer comprises three main subsystems, each defined by its own helm subsystem 
 
 - **index-worker**: a subsystem implementing a Worker class to process index jobs in parallel
 - **rabbitmq**: a deployment of the RabbitMQ queue management system
-- **solr**: a deployment of the SOLR full text search system
+- **solr**: a deployment of the SOLR full-text search system
 
 ```mermaid
 flowchart TB
@@ -32,14 +32,14 @@ See [LICENSE.md](./LICENSE.md) for the details of distributing this software.
 ## Building Docker image
 
 The image can be built with either `docker` or `nerdctl` depending on which container environment
-you have installed. For example using Rancher Desktop configured to use `nerdctl`:
+you have installed. For example, using Rancher Desktop configured to use `nerdctl`:
 
 ```shell
 mvn clean package -DskipTests
 nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 .
 ```
 
-If you are building locally for Kubernetes on rancher-desktop, you'll need to set the  namespace
+If you are building locally for Kubernetes on rancher-desktop, you'll need to set the namespace
 to `k8s.io` using a build command such as:
 
 ```shell
@@ -57,7 +57,7 @@ Kubernetes. For this to work, the image must be tagged with the ghcr.io URL, so 
 Then the image can be pushed to the registry after logging in with a suitable GitHub PAT.
 
 Note that, for the image to be associated with a particular GitHub repository, a metadata LABEL can
-be added to the image that associates it when it is built - see this entry in the Dockerfile:
+be added to the image that associates it when it is built; see this entry in the Dockerfile:
 
 ```dockerfile
 LABEL org.opencontainers.image.source="https://github.com/dataoneorg/dataone-indexer"
@@ -82,7 +82,7 @@ the `dataone-indexer` repository if the LABEL wasn't set as described above.
 The helm chart may also be published to a helm repository for use by others as a top-level
 application deployment or as a dependency sub-chart. For example, we can publish the chart
 via the GitHub Container Registry (ghcr.io). For this to work, the chart must contain an annotation
-to associate it with the correct repository - see this entry in [`Chart.yaml`](./helm/Chart.yaml):
+to associate it with the correct repository; see this entry in [`Chart.yaml`](./helm/Chart.yaml):
 
 ```yaml
 # OCI Annotations - see https://github.com/helm/helm/pull/11204
@@ -106,7 +106,7 @@ GITHUB_PAT="your-own-secret-GitHub-Personal-Access-Token-goes-here"
 TAG=2.4.0
 helm push  dataone-indexer-0.5.0.tgz  oci://ghcr.io/dataoneorg/charts
 ```
-NOTE the use of **charts** in the oci url, in order to distinguish helm charts from docker images.
+NOTE the use of **charts** in the oci url, to distinguish helm charts from docker images.
 
 ## Deploying the application via Helm
 
@@ -144,16 +144,6 @@ through the values.yaml file in the parent chart through exported child properti
 
 ### Authentication Notes
 
-#### DataONE Authentication Token
-
-In order to access and index private datasets on a Metacat instance, the dataone-indexer needs an
-authentication token, which may be obtained from DataONE administrators (see the [Metacat Helm 
-README](https://github.com/NCEAS/metacat/blob/develop/helm/README.md#setting-up-a-token-and-optional-ca-certificate-for-indexer-access)).
-Upon startup, the indexer expects to find a Kubernetes Secret named:
-`{{ .Release.Name }}-indexer-token`, which contains the auth token associated with the key 
-`DataONEauthToken`. The indexer can operate without this Secret, but will only be able to index 
-public-readable datasets.
-
 #### RabbitMQ
 
 The rabbitmq service runs under the username and password that are set via values.yaml
@@ -166,7 +156,7 @@ rabbitmq:
 ```
 
 ...where `existingPasswordSecret` is the name of a Kubernetes secret that contains the password,
-identified by a key named `rabbitmq-password`. 
+identified by a key named `rabbitmq-password`.
 
 > **NOTE:** it appears that this information is cached
 on a PersistentVolumeClaim that is created automatically by rabbitmq. If the credentials are changed
@@ -176,24 +166,9 @@ the PVC. In production, the PVC would also be used for maintaining durable queue
 be reasonable to delete the PVC. You can get the name and identifiers of the PVCs with
 `kubectl -n d1index get pvc`.
 
-## Running the IndexWorker in the docker container
+#### Solr
 
-The docker image assumes that the deployment configuration file exists to configure endpoint
-addresses and credentials. To run the indexer, ensure that the`DATAONE_INDEXER_CONFIG` is set in the
-environment and contains the absolute path to the configuration file for the indexer. This path must
-be accessible in the container, so you will likely want to mount a volume to provide the edited
-properties file. You can then run it using a command like:
-
-```shell
-nerdctl run -it \
-    -e DATAONE_INDEXER_CONFIG=/var/lib/dataone-indexer/dataone-indexer.properties \
-    -v `pwd`/helm/config/dataone-indexer.properties:/var/lib/dataone-indexer/dataone-indexer.properties \
-    dataone-index-worker:2.4.0
-```
-
-## A Note on SOLR Authentication
-
-The helm installation does not currently configure solr with authentication enabled, since the
+The helm installation does not currently configure Solr with authentication enabled, since the
 service is not exposed outside the Kubernetes cluster. Mentions of logins in the following sections
 can therefore be ignored. However, this should be changed to use authentication if connecting to a
 solr instance outside the cluster.
@@ -285,12 +260,20 @@ for n in $(seq 1 30); do echo $n; rabbitmqadmin -c rmq.conf -N default -U rmq -p
 ```
 
 ## Switching the Storage System
-The Dataone Indexer can be configured to use different storage systems by setting the environmental
+The Dataone Indexer can be configured to use different storage systems by setting the environment
 variable `DATAONE_INDEXER_OBJECT_MANAGER_CLASS_NAME`.
 By default, this variable is not set, and the indexer uses
 `org.dataone.cn.indexer.object.hashstore.HashStoreObjManager`, which enables support for Hashstore.
 To use the legacy storage system instead, set the variable to
 `org.dataone.cn.indexer.object.legacystore.LegacyStoreObjManager`.
+In the helm chart, this can be achieved by defining `DATAONE_INDEXER_OBJECT_MANAGER_CLASS_NAME` in `idxworker.extraEnvVars`:
+
+```yaml
+idxworker:
+  extraEnvVars:
+    - name: DATAONE_INDEXER_OBJECT_MANAGER_CLASS_NAME
+      value: "org.dataone.cn.indexer.object.legacystore.LegacyStoreObjManager"
+```
 
 ### Additional Configuration for the Legacy Storage System
 If you choose the legacy object manager, additional properties may be required:
@@ -298,11 +281,24 @@ If you choose the legacy object manager, additional properties may be required:
     - Set the base URL using the property `dataone.mn.baseURL` in a property file, or use the environment
       variable `DATAONE_INDEXER_NODE_BASE_URL`.
     - The environment variable overrides the property file.
-    - Example value: https://dev.nceas.ucsb.edu/knb/d1/mn
+    - Example value: `https://dev.nceas.ucsb.edu/knb/d1/mn`
 2. Authentication Token Configuration
-    - Set the access token using the environment variable `DATAONE_INDEXER_AUTH_TOKEN`, or
+
+   To access and index private datasets on a Metacat instance, the dataone-indexer needs an
+   authentication token, which may be obtained from DataONE administrators (see the [Metacat Helm
+   README](https://github.com/NCEAS/metacat/blob/develop/helm/README.md#setting-up-a-token-and-optional-ca-certificate-for-indexer-access)).
+   - The indexer expects to find a Kubernetes Secret named: `<release-name>-indexer-token`, which contains the auth token associated with the key `DataONEauthToken`; e.g:
+
+     ```shell
+     kubectl create secret generic <release-name>-indexer-token \
+                 --from-file=DataONEauthToken=my-token.jwt
+     ```
+
+     The secret name must be `<release-name>-indexer-token`, to work with the indexer chart. The indexer can operate without this Secret, but will only be able to index public-readable datasets.
+    - For non-k8s deployments, set the access token using the environment variable `DATAONE_INDEXER_AUTH_TOKEN`, or
       Specify a token file path via the property `dataone.nodeToken.file` in a property file.
     - The environment variable takes precedence.
+
 3. Scientific Metadata Root Directory
     - Use `DATAONE_INDEXER_METACAT_DOCUMENT_ROOT_DIR` (env var) or `index.document.root.directory` (property).
     - Again, the environment variable overrides the property file.
