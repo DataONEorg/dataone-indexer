@@ -292,6 +292,24 @@ By default, this variable is not set, and the indexer uses
 To use the legacy storage system instead, set the variable to
 `org.dataone.cn.indexer.object.legacystore.LegacyStoreObjManager`.
 
+### Additional Configuration for the Legacy Storage System
+If you choose the legacy object manager, additional properties may be required:
+1. Base URL Configuration
+    - Set the base URL using the property `dataone.mn.baseURL` in a property file, or use the environment
+      variable `DATAONE_INDEXER_NODE_BASE_URL`.
+    - The environment variable overrides the property file.
+    - Example value: https://dev.nceas.ucsb.edu/knb/d1/mn
+2. Authentication Token Configuration
+    - Set the access token using the environment variable `DATAONE_INDEXER_AUTH_TOKEN`, or
+      Specify a token file path via the property `dataone.nodeToken.file` in a property file.
+    - The environment variable takes precedence.
+3. Scientific Metadata Root Directory
+    - Use `DATAONE_INDEXER_METACAT_DOCUMENT_ROOT_DIR` (env var) or `index.document.root.directory` (property).
+    - Again, the environment variable overrides the property file.
+4. Data Object Root Directory
+    - Use `DATAONE_INDEXER_METACAT_DATA_ROOT_DIR` (env var) or `index.data.root.directory` (property).
+    - The environment variable takes precedence.
+
 ## History
 
 This is a refactored version of the original DataONE [d1_cn_index_processor](https://github.com/DataONEorg/d1_cn_index_processor) that runs
