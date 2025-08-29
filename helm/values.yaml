@@ -317,6 +317,14 @@ idxworker:
   extraJavaOpts:
     - -XX:MaxRAMPercentage=75
 
+  ## @param idxworker.extraEnvVars Additional environment variables to set
+  ## Example (used for putting indexer in legacy mode):
+  ##   extraEnvVars:
+  ##     - name: DATAONE_INDEXER_OBJECT_MANAGER_CLASS_NAME
+  ##       value: "org.dataone.cn.indexer.object.legacystore.LegacyStoreObjManager"
+  ##
+  extraEnvVars: []
+
 ## @section RabbitMQ Bitnami Sub-Chart Configuration
 ##
 rabbitmq:
