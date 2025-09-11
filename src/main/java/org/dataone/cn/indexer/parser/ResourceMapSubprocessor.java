@@ -1,25 +1,3 @@
-/**
- * This work was created by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For 
- * more information on DataONE, see our web site at http://dataone.org.
- *
- *   Copyright ${year}
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- * 
- * $Id$
- */
-
 package org.dataone.cn.indexer.parser;
 
 import java.io.IOException;
@@ -50,7 +28,6 @@ import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.exceptions.UnsupportedType;
 import org.dataone.service.types.v1.Identifier;
 import org.dspace.foresite.OREParserException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -76,16 +53,7 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
     
     private static int waitingTime = Settings.getConfiguration().getInt("index.resourcemap.waitingComponent.time", 600);
     private static int maxAttempts = Settings.getConfiguration().getInt("index.resourcemap.waitingComponent.max.attempts", 15);
-    
-    //private static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    //private static DocumentBuilder builder = null;
-    /*static  {
-        try {
-            builder = factory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            logger.error("ResourceMapSubprocess.static - can't initialize the DocumentBuilder since " + e.getMessage());
-        }
-    }*/
+
 
     private HTTPService httpService = null;
 
