@@ -21,7 +21,6 @@ import org.dataone.cn.indexer.resourcemap.ResourceMapFactory;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.configuration.Settings;
-import org.dataone.indexer.performance.PerformanceLogger;
 import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
@@ -61,12 +60,11 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
 
     private SubprocessorUtility processorUtility;
 
-    private PerformanceLogger perfLog = PerformanceLogger.getInstance();
-    
+
+
     private List<String> matchDocuments = null;
     private List<String> fieldsToMerge = new ArrayList<String>();
-    
-   
+
     /**
      * Merge updates with existing solr documents
      * 
@@ -88,14 +86,13 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
     public Map<String, SolrDoc> processDocument(String identifier, Map<String, SolrDoc> docs,
     InputStream is) throws IOException, EncoderException, SAXException,
         XPathExpressionException, ParserConfigurationException, SolrServerException, 
-        NotImplemented, NotFound, UnsupportedType, OREParserException, ServiceFailure, InterruptedException{
+        NotImplemented, NotFound, UnsupportedType, OREParserException, ServiceFailure,
+        InterruptedException{
         SolrDoc resourceMapDoc = docs.get(identifier);
-        //Document doc = XmlDocumentUtility.generateXmlDocument(is);
         Identifier id = new Identifier();
         id.setValue(identifier);
         
         //Get the path to the resource map file
-        //String resourcMapPath = DistributedMapsFactory.getObjectPathMap().get(id);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document resourceMap = builder.parse(is);
@@ -108,12 +105,12 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
     }
 
     private List<SolrDoc> processResourceMap(SolrDoc indexDocument, Document resourcMap)
-                    throws XPathExpressionException, IOException, SAXException, ParserConfigurationException, EncoderException, SolrServerException, NotImplemented, NotFound, UnsupportedType, OREParserException, InterruptedException {
-        //ResourceMap resourceMap = new ResourceMap(resourceMapDocument);
-        //IndexVisibilityHazelcastImplWithArchivedObj indexVisitility = new IndexVisibilityHazelcastImplWithArchivedObj();
+                    throws XPathExpressionException, IOException, SAXException,
+        ParserConfigurationException, EncoderException, SolrServerException,
+        NotImplemented, NotFound, UnsupportedType, OREParserException, InterruptedException {
         ResourceMap resourceMap = ResourceMapFactory.buildResourceMap(resourcMap);
-        List<String> documentIds = resourceMap.getAllDocumentIDs();//this list includes the resourceMap id itself.
-        //List<SolrDoc> updateDocuments = httpService.getDocumentsById(getSolrQueryUri(), documentIds);
+        //this list includes the resourceMap id itself.
+        List<String> documentIds = resourceMap.getAllDocumentIDs();
         List<SolrDoc> updateDocuments = getSolrDocs(resourceMap.getIdentifier(), documentIds);
         List<SolrDoc> mergedDocuments = resourceMap.mergeIndexedDocuments(updateDocuments);
         /*if(mergedDocuments != null) {
@@ -128,8 +125,11 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
         mergedDocuments.add(indexDocument);
         return mergedDocuments;
     }
-    
-    private List<SolrDoc> getSolrDocs(String resourceMapId, List<String> ids) throws SolrServerException, IOException, ParserConfigurationException, SAXException, XPathExpressionException, NotImplemented, NotFound, UnsupportedType, InterruptedException, EncoderException {
+
+    private List<SolrDoc> getSolrDocs(String resourceMapId, List<String> ids)
+        throws SolrServerException, IOException, ParserConfigurationException, SAXException,
+        XPathExpressionException, NotImplemented, NotFound, UnsupportedType, InterruptedException,
+        EncoderException {
         List<SolrDoc> list = new ArrayList<SolrDoc>();
         if(ids != null) {
             for(String id : ids) {
@@ -139,9 +139,10 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
                 } else if ( !id.equals(resourceMapId)) {
                     for (int i=0; i<maxAttempts; i++) {
                         Thread.sleep(waitingTime);
-                        doc = httpService.getSolrDocumentById(solrQueryUri, id);;
-                        logger.info("ResourceMapSubprocessor.getSolrDocs - the " + (i+1) + " time to wait " + 
-                                   waitingTime + " to get the solr doc for " + id);
+                        doc = httpService.getSolrDocumentById(solrQueryUri, id);
+                        logger.info("ResourceMapSubprocessor.getSolrDocs - the " + (i + 1)
+                                        + " time to wait " + waitingTime
+                                        + " to get the solr doc for " + id);
                         if (doc != null) {
                             break;
                         }
@@ -149,15 +150,17 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
                     if (doc != null) {
                         list.add(doc);
                     } else {
-                        throw new SolrServerException("Solr index doesn't have the information about the id "+id+
-                                " which is a component in the resource map "+resourceMapId+
-                                ". Metacat-Index can't process the resource map prior to its components.");
+                        throw new SolrServerException(
+                            "Solr index doesn't have the information " + "about the id " + id
+                                + " which is a " + "component in the resource map " + resourceMapId
+                                + ". Metacat-Index can't process the resource map prior to its "
+                                + "components.");
                     }
                 }
             }
         }
         return list;
-    } 
+    }
 
     public List<String> getMatchDocuments() {
         return matchDocuments;
