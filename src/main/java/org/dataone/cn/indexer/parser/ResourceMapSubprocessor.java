@@ -20,6 +20,7 @@ import org.dataone.cn.indexer.resourcemap.ResourceMap;
 import org.dataone.cn.indexer.resourcemap.ResourceMapFactory;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
+import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
 import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.NotImplemented;
@@ -133,16 +134,11 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
                 if(doc != null) {
                     list.add(doc);
                 } else if ( !id.equals(resourceMapId)) {
-                    // generate a dummy solr doc and put it into the list.
-                    if (doc != null) {
-                        list.add(doc);
-                    } else {
-                        throw new SolrServerException(
-                            "Solr index doesn't have the information " + "about the id " + id
-                                + " which is a " + "component in the resource map " + resourceMapId
-                                + ". Metacat-Index can't process the resource map prior to its "
-                                + "components.");
-                    }
+                    // generate a dummy solr doc which only has the id and put it into the list.
+                    doc = new SolrDoc();
+                    SolrElementField idField = new SolrElementField(SolrElementField.FIELD_ID, id);
+                    doc.addField(idField);
+                    list.add(doc);
                 }
             }
         }
