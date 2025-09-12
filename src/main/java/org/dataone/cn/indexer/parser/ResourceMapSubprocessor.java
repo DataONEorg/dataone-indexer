@@ -49,10 +49,6 @@ import org.xml.sax.SAXException;
 public class ResourceMapSubprocessor implements IDocumentSubprocessor {
 
     private static Log logger = LogFactory.getLog(ResourceMapSubprocessor.class.getName());
-    
-    private static int waitingTime = Settings.getConfiguration().getInt("index.resourcemap.waitingComponent.time", 600);
-    private static int maxAttempts = Settings.getConfiguration().getInt("index.resourcemap.waitingComponent.max.attempts", 15);
-
 
     private HTTPService httpService = null;
 
@@ -137,16 +133,7 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
                 if(doc != null) {
                     list.add(doc);
                 } else if ( !id.equals(resourceMapId)) {
-                    for (int i=0; i<maxAttempts; i++) {
-                        Thread.sleep(waitingTime);
-                        doc = httpService.getSolrDocumentById(solrQueryUri, id);
-                        logger.info("ResourceMapSubprocessor.getSolrDocs - the " + (i + 1)
-                                        + " time to wait " + waitingTime
-                                        + " to get the solr doc for " + id);
-                        if (doc != null) {
-                            break;
-                        }
-                    }
+                    // generate a dummy solr doc and put it into the list.
                     if (doc != null) {
                         list.add(doc);
                     } else {
