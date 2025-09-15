@@ -545,6 +545,16 @@ xmlns:context="http://www.springframework.org/schema/context"
         <constructor-arg type="java.lang.String" 
         value="org/dataone/cn/indexer/resourcemap/resources/incomplete_transitive_resourcemap.rdf"/>
     </bean>
-    
+
     <bean id="oreResourceMapTest" class="org.dataone.cn.indexer.resourcemap.OREResourceMapTest"/>
+
+    <bean id="missingComponentResourcemap" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/missing.component.resourcemap/missing.component.resourcemap"/>
+    </bean>
+
+    <bean id="peggym1321Sci" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.132.1/peggym.132.1"/>
+    </bean>
 </beans>
