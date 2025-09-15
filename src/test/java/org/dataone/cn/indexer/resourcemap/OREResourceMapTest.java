@@ -14,7 +14,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
+import org.apache.solr.common.SolrDocument;
 import org.dataone.cn.index.DataONESolrJettyTestBase;
+import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.service.types.v1.Identifier;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.OREParserException;
@@ -46,6 +48,97 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
 
     //@Autowired
     private Resource incompleteTransitiveRelationshipsDoc;
+
+    //@Autowired
+    private Resource missingComponentsResourcemap;
+
+    //@Autowired
+    private Resource peggym1321Sci;
+
+    public static final int WAIT_TIME_MILLI = 500;
+    public static final int MAX_ATTEMPTS = 100;
+
+    /**
+     * Test to index a resourcemap object which has a component that will never be indexed by
+     * another task.
+     */
+    @Test
+    public void testResourcemapWithMissingComponents() throws Exception {
+        String metadataId = "peggym.132.1";
+        String resourcemapId = "missing.component.resourcemap";
+        String missingDataId = "foo.127.1";
+        // Index the science metadata object
+        indexObjectToSolr(metadataId, peggym1321Sci);
+        SolrDocument data = null;
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            try {
+                data = assertPresentInSolrIndex(metadataId);
+                success = true;
+            } catch (AssertionError e) {
+                if (count < MAX_ATTEMPTS) {
+                    Thread.sleep(WAIT_TIME_MILLI);
+                } else {
+                    throw e;
+                }
+            }
+            count++;
+        }
+        Assert.assertEquals(1, ((List) data.getFieldValues(
+            SolrElementField.FIELD_SIZE)).size());
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_OBSOLETES));
+
+        //Index the resource map object
+        indexObjectToSolr(resourcemapId, missingComponentsResourcemap);
+        success = false;
+        count = 0;
+        while (!success) {
+            try {
+                data = assertPresentInSolrIndex(resourcemapId);
+                success = true;
+            } catch (AssertionError e) {
+                if (count < MAX_ATTEMPTS) {
+                    Thread.sleep(WAIT_TIME_MILLI);
+                } else {
+                    throw e;
+                }
+            }
+            count++;
+        }
+        Assert.assertEquals(1, ((List) data.getFieldValues(
+            SolrElementField.FIELD_SIZE)).size());
+
+        // The missing data object should have a bare solr doc as well
+        success = false;
+        count = 0;
+        while (!success) {
+            try {
+                data = assertPresentInSolrIndex(missingDataId);
+                success = true;
+            } catch (AssertionError e) {
+                if (count < MAX_ATTEMPTS) {
+                    Thread.sleep(WAIT_TIME_MILLI);
+                } else {
+                    throw e;
+                }
+            }
+            count++;
+        }
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SIZE));
+        Assert.assertEquals(1, ((List) data.getFieldValues(
+            SolrElementField.FIELD_RESOURCEMAP)).size());
+        Assert.assertEquals(1, ((List) data.getFieldValues(
+            SolrElementField.FIELD_OBSOLETED_BY)).size());
+
+        // Check the metadata again and it should have the resourcemap and obsoletes fields
+        data = assertPresentInSolrIndex(metadataId);
+        Assert.assertEquals(1, ((List) data.getFieldValues(
+            SolrElementField.FIELD_RESOURCEMAP)).size());
+        Assert.assertEquals(1, ((List) data.getFieldValues(
+            SolrElementField.FIELD_OBSOLETES)).size());
+    }
 
     /**
      * Tests the foresite based resource map with transitive resource maps.
@@ -731,8 +824,12 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
 
         transitiveRelationshipsDoc = (Resource) context.getBean("transitiveRelationshipsDoc");
 
-        incompleteTransitiveRelationshipsDoc = (Resource) context.getBean("incompleteTransitiveRelationshipsDoc");
+        incompleteTransitiveRelationshipsDoc =
+            (Resource) context.getBean("incompleteTransitiveRelationshipsDoc");
 
+        missingComponentsResourcemap = (Resource) context.getBean("missingComponentResourcemap");
+
+        peggym1321Sci = (Resource) context.getBean("peggym1321Sci");
     }
 
 
