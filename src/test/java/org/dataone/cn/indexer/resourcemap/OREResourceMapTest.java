@@ -97,7 +97,8 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertEquals(1, ((List) data.getFieldValues(
             SolrElementField.FIELD_SIZE)).size());
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP));
-        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_OBSOLETES));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DOCUMENTS));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
 
         //Index the resource map object
         indexObjectToSolr(resourcemapId, missingComponentsResourcemap);
@@ -139,14 +140,14 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertEquals(1, ((List) data.getFieldValues(
             SolrElementField.FIELD_RESOURCEMAP)).size());
         Assert.assertEquals(1, ((List) data.getFieldValues(
-            SolrElementField.FIELD_OBSOLETED_BY)).size());
+            SolrElementField.FIELD_ISDOCUMENTEDBY)).size());
 
         // Check the metadata again and it should have the resourcemap and obsoletes fields
         data = assertPresentInSolrIndex(metadataId);
         Assert.assertEquals(1, ((List) data.getFieldValues(
             SolrElementField.FIELD_RESOURCEMAP)).size());
         Assert.assertEquals(1, ((List) data.getFieldValues(
-            SolrElementField.FIELD_OBSOLETES)).size());
+            SolrElementField.FIELD_DOCUMENTS)).size());
     }
 
     /**
