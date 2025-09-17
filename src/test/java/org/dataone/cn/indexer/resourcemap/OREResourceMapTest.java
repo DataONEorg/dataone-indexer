@@ -150,6 +150,97 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
     }
 
     /**
+     * Test to index a resourcemap object, which has everything ready
+     */
+    @Test
+    public void testResourcemap() throws Exception {
+        String metadataId = "peggym.133.1";
+        String resourcemapId = "peggym.133.1.resourcemap";
+        String dataId = "data.1.1";
+        // Index the science metadata object
+        indexObjectToSolr(metadataId, peggym1331Sci);
+        SolrDocument data = null;
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            try {
+                data = assertPresentInSolrIndex(metadataId);
+                success = true;
+            } catch (AssertionError e) {
+                if (count < MAX_ATTEMPTS) {
+                    Thread.sleep(WAIT_TIME_MILLI);
+                } else {
+                    throw e;
+                }
+            }
+            count++;
+        }
+        Assert.assertEquals(1, ((List) data.getFieldValues(SolrElementField.FIELD_SIZE)).size());
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DOCUMENTS));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
+
+        // Index the data object
+        indexObjectToSolr(dataId, data11);
+        success = false;
+        count = 0;
+        while (!success) {
+            try {
+                data = assertPresentInSolrIndex(dataId);
+                success = true;
+            } catch (AssertionError e) {
+                if (count < MAX_ATTEMPTS) {
+                    Thread.sleep(WAIT_TIME_MILLI);
+                } else {
+                    throw e;
+                }
+            }
+            count++;
+        }
+        Assert.assertEquals(1, ((List) data.getFieldValues(SolrElementField.FIELD_SIZE)).size());
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DOCUMENTS));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
+
+        //Index the resource map object
+        indexObjectToSolr(resourcemapId, peggy1331Resourcemap);
+        success = false;
+        count = 0;
+        while (!success) {
+            try {
+                data = assertPresentInSolrIndex(resourcemapId);
+                success = true;
+            } catch (AssertionError e) {
+                if (count < MAX_ATTEMPTS) {
+                    Thread.sleep(WAIT_TIME_MILLI);
+                } else {
+                    throw e;
+                }
+            }
+            count++;
+        }
+        Assert.assertEquals(1, ((List) data.getFieldValues(SolrElementField.FIELD_SIZE)).size());
+
+        // Check the data again and it should have the resourcemap and isDocumentedBy fields
+        data = assertPresentInSolrIndex(dataId);
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DOCUMENTS));
+        Assert.assertEquals(resourcemapId, ((List) data.getFieldValues(
+            SolrElementField.FIELD_RESOURCEMAP)).get(0));
+        Assert.assertEquals(metadataId, ((List) data.getFieldValues(
+            SolrElementField.FIELD_ISDOCUMENTEDBY)).get(0));
+        Assert.assertEquals(1, ((List) data.getFieldValues(SolrElementField.FIELD_SIZE)).size());
+
+        // Check the metadata again and it should have the resourcemap and documents fields
+        data = assertPresentInSolrIndex(metadataId);
+        Assert.assertEquals(resourcemapId, ((List) data.getFieldValues(
+            SolrElementField.FIELD_RESOURCEMAP)).get(0));
+        Assert.assertEquals(dataId, ((List) data.getFieldValues(
+            SolrElementField.FIELD_DOCUMENTS)).get(0));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
+        Assert.assertEquals(1, ((List) data.getFieldValues(SolrElementField.FIELD_SIZE)).size());
+    }
+
+    /**
      * Tests the foresite based resource map with transitive resource maps.
      * 
      * @throws OREException
