@@ -55,6 +55,15 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
     //@Autowired
     private Resource peggym1321Sci;
 
+    //@Autowired
+    private Resource peggy1331Resourcemap;
+
+    //@Autowired
+    private Resource peggym1331Sci;
+
+    //@Autowired
+    private Resource data11;
+
     public static final int WAIT_TIME_MILLI = 500;
     public static final int MAX_ATTEMPTS = 100;
 
@@ -830,6 +839,12 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         missingComponentsResourcemap = (Resource) context.getBean("missingComponentResourcemap");
 
         peggym1321Sci = (Resource) context.getBean("peggym1321Sci");
+
+        peggy1331Resourcemap = (Resource) context.getBean("peggym1331Resourcemap");
+
+        peggym1331Sci = (Resource) context.getBean("peggym1331Sci");
+
+        data11 = (Resource) context.getBean("data11");
     }
 
 
