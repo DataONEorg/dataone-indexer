@@ -557,4 +557,19 @@ xmlns:context="http://www.springframework.org/schema/context"
         <constructor-arg type="java.lang.String"
                          value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.132.1/peggym.132.1"/>
     </bean>
+
+    <bean id="peggym1331Resourcemap" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.133.1.resourcemap/peggym.133.1.resourcemap"/>
+    </bean>
+
+    <bean id="peggym1331Sci" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.133.1/peggym.133.1"/>
+    </bean>
+
+    <bean id="data11" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/data.1.1/data.1.1"/>
+    </bean>
 </beans>
