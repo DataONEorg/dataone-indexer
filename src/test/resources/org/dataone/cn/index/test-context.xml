@@ -572,4 +572,9 @@ xmlns:context="http://www.springframework.org/schema/context"
         <constructor-arg type="java.lang.String"
                          value="org/dataone/cn/index/resources/d1_testdocs/eml210/data.1.1/data.1.1"/>
     </bean>
+
+    <bean id="foo1271" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/foo.127.1/foo.127.1"/>
+    </bean>
 </beans>
