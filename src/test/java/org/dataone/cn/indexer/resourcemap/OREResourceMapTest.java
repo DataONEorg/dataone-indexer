@@ -103,6 +103,12 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DOCUMENTS));
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
 
+        try {
+            data = assertPresentInSolrIndex(missingDataId);
+            fail("Test can't reach here since the data object shouldn't be indexed now.");
+        } catch (AssertionError e) {
+        }
+
         //Index the resource map object
         indexObjectToSolr(resourcemapId, missingComponentsResourcemap);
         success = false;
@@ -140,17 +146,22 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
             count++;
         }
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SIZE));
-        Assert.assertEquals(1, ((List) data.getFieldValues(
-            SolrElementField.FIELD_RESOURCEMAP)).size());
-        Assert.assertEquals(1, ((List) data.getFieldValues(
-            SolrElementField.FIELD_ISDOCUMENTEDBY)).size());
+        Assert.assertEquals(resourcemapId,
+                            ((List) data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP)).get(
+                                0));
+        Assert.assertEquals(metadataId, ((List) data.getFieldValues(
+            SolrElementField.FIELD_ISDOCUMENTEDBY)).get(0));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DOCUMENTS));
 
         // Check the metadata again and it should have the resourcemap and obsoletes fields
         data = assertPresentInSolrIndex(metadataId);
+        Assert.assertEquals(resourcemapId, ((List) data.getFieldValues(
+            SolrElementField.FIELD_RESOURCEMAP)).get(0));
+        Assert.assertEquals(missingDataId, ((List) data.getFieldValues(
+            SolrElementField.FIELD_DOCUMENTS)).get(0));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
         Assert.assertEquals(1, ((List) data.getFieldValues(
-            SolrElementField.FIELD_RESOURCEMAP)).size());
-        Assert.assertEquals(1, ((List) data.getFieldValues(
-            SolrElementField.FIELD_DOCUMENTS)).size());
+            SolrElementField.FIELD_SIZE)).size());
     }
 
     /**
