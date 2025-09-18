@@ -64,6 +64,10 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
     //@Autowired
     private Resource data11;
 
+    //@Autowired
+    private Resource foo1271;
+
+    private String missingDataId = "foo.127.1";
     public static final int WAIT_TIME_MILLI = 500;
     public static final int MAX_ATTEMPTS = 100;
 
@@ -75,7 +79,6 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
     public void testResourcemapWithMissingComponents() throws Exception {
         String metadataId = "peggym.132.1";
         String resourcemapId = "missing.component.resourcemap";
-        String missingDataId = "foo.127.1";
         // Index the science metadata object
         indexObjectToSolr(metadataId, peggym1321Sci);
         SolrDocument data = null;
@@ -909,7 +912,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
     
     
     /* Load the indexer and provenance context beans */
-    protected void configureSpringResources() throws IOException {
+    protected void configureSpringResources() throws Exception {
 
         // Instantiate the generator and processor from the test-context beans
         //processor = (IndexTaskProcessor) context.getBean("indexTaskProcessor");
@@ -937,6 +940,9 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         peggym1331Sci = (Resource) context.getBean("peggym1331Sci");
 
         data11 = (Resource) context.getBean("data11");
+
+        foo1271 = (Resource) context.getBean("foo1271");
+        loadToHashStore(missingDataId, foo1271);
     }
 
 
