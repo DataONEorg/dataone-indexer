@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ns1:systemMetadata xmlns:ns1="http://ns.dataone.org/service/types/v2.0">
+  <serialVersion>1</serialVersion>
+  <identifier>peggym.134.1</identifier>
+  <formatId>eml://ecoinformatics.org/eml-2.1.0</formatId>
+  <size>37658</size>
+  <checksum algorithm="SHA-1">bedd752d8b4419fdf9f02445ee2ff247e6d3c4e6</checksum>
+  <submitter>dataone_integration_test_user</submitter>
+  <rightsHolder>dataone_integration_test_user</rightsHolder>
+  <accessPolicy>
+  	<allow>
+		<subject>public</subject>
+		<permission>read</permission>
+	</allow>
+  	<allow>
+		<subject>public</subject>
+		<permission>read</permission>
+	</allow>
+    <allow>
+      <subject>dataone_public_user</subject>
+      <permission>read</permission>
+    </allow>
+    <allow>
+      <subject>dataone_integration_test_user</subject>
+      <permission>write</permission>
+    </allow>
+    <allow>
+      <subject>dataone_test_user</subject>
+      <permission>read</permission>
+    </allow>
+  </accessPolicy>
+  <replicationPolicy replicationAllowed="true"/>
+  <dateUploaded>2011-08-31T15:59:50.071163</dateUploaded>
+  <dateSysMetadataModified>2011-08-31T15:59:50.072921</dateSysMetadataModified>
+  <originMemberNode>test_documents</originMemberNode>
+  <authoritativeMemberNode>test_documents</authoritativeMemberNode>
+  <seriesId>peggym.133</seriesId>
+</ns1:systemMetadata>
+
