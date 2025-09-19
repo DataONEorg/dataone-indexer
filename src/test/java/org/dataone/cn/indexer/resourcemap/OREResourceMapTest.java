@@ -67,18 +67,20 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
     //@Autowired
     private Resource foo1271;
 
-    private String missingDataId = "foo.127.1";
     public static final int WAIT_TIME_MILLI = 500;
     public static final int MAX_ATTEMPTS = 100;
 
     /**
      * Test to index a resourcemap object which has a component that will never be indexed by
-     * another task.
+     * another task. But the component object is in hashstore.
      */
     @Test
-    public void testResourcemapWithMissingComponents() throws Exception {
+    public void testResourcemapWithUnindexedComponents() throws Exception {
+        String missingDataId = "foo.127.1";
         String metadataId = "peggym.132.1";
         String resourcemapId = "missing.component.resourcemap";
+        // Load the resource of foo1271 into the hash store with the given id
+        loadToHashStore(missingDataId, foo1271);
         // Index the science metadata object
         indexObjectToSolr(metadataId, peggym1321Sci);
         SolrDocument data = null;
@@ -953,7 +955,6 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         data11 = (Resource) context.getBean("data11");
 
         foo1271 = (Resource) context.getBean("foo1271");
-        loadToHashStore(missingDataId, foo1271);
     }
 
 
