@@ -67,6 +67,12 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
     //@Autowired
     private Resource foo1271;
 
+    //@Autowired
+    private Resource missingComponentsResourcemap2;
+
+    //@Autowired
+    private Resource peggym1341Sci;
+
     public static final int WAIT_TIME_MILLI = 500;
     public static final int MAX_ATTEMPTS = 100;
 
@@ -113,6 +119,99 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
 
         //Index the resource map object
         indexObjectToSolr(resourcemapId, missingComponentsResourcemap);
+        success = false;
+        count = 0;
+        while (!success) {
+            try {
+                data = assertPresentInSolrIndex(resourcemapId);
+                success = true;
+            } catch (AssertionError e) {
+                if (count < MAX_ATTEMPTS) {
+                    Thread.sleep(WAIT_TIME_MILLI);
+                } else {
+                    throw e;
+                }
+            }
+            count++;
+        }
+        Assert.assertEquals(1, ((List) data.getFieldValues(
+            SolrElementField.FIELD_SIZE)).size());
+
+        // The missing data object should have a bare solr doc as well
+        success = false;
+        count = 0;
+        while (!success) {
+            try {
+                data = assertPresentInSolrIndex(missingDataId);
+                success = true;
+            } catch (AssertionError e) {
+                if (count < MAX_ATTEMPTS) {
+                    Thread.sleep(WAIT_TIME_MILLI);
+                } else {
+                    throw e;
+                }
+            }
+            count++;
+        }
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SIZE));
+        Assert.assertEquals(resourcemapId,
+                            ((List) data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP)).get(
+                                0));
+        Assert.assertEquals(metadataId, ((List) data.getFieldValues(
+            SolrElementField.FIELD_ISDOCUMENTEDBY)).get(0));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DOCUMENTS));
+
+        // Check the metadata again and it should have the resourcemap and obsoletes fields
+        data = assertPresentInSolrIndex(metadataId);
+        Assert.assertEquals(resourcemapId, ((List) data.getFieldValues(
+            SolrElementField.FIELD_RESOURCEMAP)).get(0));
+        Assert.assertEquals(missingDataId, ((List) data.getFieldValues(
+            SolrElementField.FIELD_DOCUMENTS)).get(0));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
+        Assert.assertEquals(1, ((List) data.getFieldValues(
+            SolrElementField.FIELD_SIZE)).size());
+    }
+
+    /**
+     * Test to index a resourcemap object which has a component which doesn't exist in the hashstore
+     */
+    @Test
+    public void testResourcemapWithNonExistingComponents() throws Exception {
+        String missingDataId = "foo.128.1";
+        String metadataId = "peggym.134.1";
+        String resourcemapId = "missing.component.resourcemap2";
+        // Index the science metadata object
+        indexObjectToSolr(metadataId, peggym1341Sci);
+        SolrDocument data = null;
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            try {
+                data = assertPresentInSolrIndex(metadataId);
+                success = true;
+            } catch (AssertionError e) {
+                if (count < MAX_ATTEMPTS) {
+                    Thread.sleep(WAIT_TIME_MILLI);
+                } else {
+                    throw e;
+                }
+            }
+            count++;
+        }
+        Assert.assertEquals(1, ((List) data.getFieldValues(
+            SolrElementField.FIELD_SIZE)).size());
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DOCUMENTS));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
+
+        try {
+            data = assertPresentInSolrIndex(missingDataId);
+            fail("Test can't reach here since the data object shouldn't be indexed now.");
+        } catch (AssertionError e) {
+        }
+
+        //Index the resource map object
+        indexObjectToSolr(resourcemapId, missingComponentsResourcemap2);
         success = false;
         count = 0;
         while (!success) {
@@ -955,6 +1054,10 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         data11 = (Resource) context.getBean("data11");
 
         foo1271 = (Resource) context.getBean("foo1271");
+
+        missingComponentsResourcemap2 = (Resource) context.getBean("missingComponentResourcemap2");
+
+        peggym1341Sci = (Resource) context.getBean("peggym1341Sci");
     }
 
 

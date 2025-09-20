@@ -577,4 +577,14 @@ xmlns:context="http://www.springframework.org/schema/context"
         <constructor-arg type="java.lang.String"
                          value="org/dataone/cn/index/resources/d1_testdocs/eml210/foo.127.1/foo.127.1"/>
     </bean>
+
+    <bean id="peggym1341Sci" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.134.1/peggym.134.1"/>
+    </bean>
+
+    <bean id="missingComponentResourcemap2" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/missing.component.resourcemap2/missing.component.resourcemap2"/>
+    </bean>
 </beans>
