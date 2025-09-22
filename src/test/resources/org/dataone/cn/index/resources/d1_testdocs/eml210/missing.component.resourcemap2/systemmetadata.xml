@@ -16,6 +16,10 @@
       <subject>dataone_integration_test_user</subject>
       <permission>write</permission>
     </allow>
+    <allow>
+      <subject>dataone_integration_test_user2</subject>
+      <permission>write</permission>
+    </allow>
   </accessPolicy>
   <replicationPolicy replicationAllowed="true"/>
   <dateUploaded>2011-08-31T15:59:51.04191</dateUploaded>
