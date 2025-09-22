@@ -111,15 +111,6 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
         List<SolrDoc> updateDocuments =
             getSolrDocs(resourceMap.getIdentifier(), documentIds, indexDocument);
         List<SolrDoc> mergedDocuments = resourceMap.mergeIndexedDocuments(updateDocuments);
-        /*if(mergedDocuments != null) {
-            for(SolrDoc doc : mergedDocuments) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                doc.serialize(out, "UTF-8");
-                String result = new String(out.toByteArray(), "UTF-8");
-                System.out.println("after updated document===========================");
-                System.out.println(result);
-            }
-        }*/
         mergedDocuments.add(indexDocument);
         return mergedDocuments;
     }
