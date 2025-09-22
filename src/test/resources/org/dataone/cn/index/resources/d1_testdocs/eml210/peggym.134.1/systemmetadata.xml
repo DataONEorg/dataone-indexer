@@ -3,8 +3,8 @@
   <serialVersion>1</serialVersion>
   <identifier>peggym.134.1</identifier>
   <formatId>eml://ecoinformatics.org/eml-2.1.0</formatId>
-  <size>37658</size>
-  <checksum algorithm="SHA-1">bedd752d8b4419fdf9f02445ee2ff247e6d3c4e6</checksum>
+  <size>37463</size>
+  <checksum algorithm="SHA-1">32ef4733d62f67c7773735cc1eb3d674792c0d41</checksum>
   <submitter>dataone_integration_test_user</submitter>
   <rightsHolder>dataone_integration_test_user</rightsHolder>
   <accessPolicy>
