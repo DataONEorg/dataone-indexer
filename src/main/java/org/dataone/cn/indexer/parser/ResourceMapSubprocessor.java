@@ -108,7 +108,8 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
         ResourceMap resourceMap = ResourceMapFactory.buildResourceMap(resourcMap);
         //this list includes the resourceMap id itself.
         List<String> documentIds = resourceMap.getAllDocumentIDs();
-        List<SolrDoc> updateDocuments = getSolrDocs(resourceMap.getIdentifier(), documentIds);
+        List<SolrDoc> updateDocuments =
+            getSolrDocs(resourceMap.getIdentifier(), documentIds, indexDocument);
         List<SolrDoc> mergedDocuments = resourceMap.mergeIndexedDocuments(updateDocuments);
         /*if(mergedDocuments != null) {
             for(SolrDoc doc : mergedDocuments) {
@@ -123,7 +124,8 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
         return mergedDocuments;
     }
 
-    private List<SolrDoc> getSolrDocs(String resourceMapId, List<String> ids)
+    private List<SolrDoc> getSolrDocs(String resourceMapId, List<String> ids,
+                                      SolrDoc resourceMapSolrDoc)
         throws SolrServerException, IOException, ParserConfigurationException, SAXException,
         XPathExpressionException, NotImplemented, NotFound, UnsupportedType, InterruptedException,
         EncoderException {
@@ -138,6 +140,29 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
                     doc = new SolrDoc();
                     SolrElementField idField = new SolrElementField(SolrElementField.FIELD_ID, id);
                     doc.addField(idField);
+                    if (resourceMapSolrDoc != null) {
+                        // Copy the access rules from the resource map solr doc to the new solr doc
+                        SolrElementField read =
+                            resourceMapSolrDoc.getField(SolrElementField.FIELD_READPERMISSION);
+                        if (read != null) {
+                            doc.addField(read);
+                        }
+                        SolrElementField write =
+                            resourceMapSolrDoc.getField(SolrElementField.FIELD_WRITEPERMISSION);
+                        if (write != null) {
+                            doc.addField(write);
+                        }
+                        SolrElementField change =
+                            resourceMapSolrDoc.getField(SolrElementField.FIELD_CHANGEPERMISSION);
+                        if (change != null) {
+                            doc.addField(change);
+                        }
+                        SolrElementField rightHolder =
+                            resourceMapSolrDoc.getField(SolrElementField.FIELD_RIGHTSHOLDER);
+                        if (rightHolder != null) {
+                            doc.addField(rightHolder);
+                        }
+                    }
                     list.add(doc);
                 }
             }
