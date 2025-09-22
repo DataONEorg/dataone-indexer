@@ -253,6 +253,16 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertEquals(metadataId, ((List) data.getFieldValues(
             SolrElementField.FIELD_ISDOCUMENTEDBY)).get(0));
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DOCUMENTS));
+        Assert.assertEquals("dataone_integration_test_user",
+                            ((List) data.getFieldValues(SolrElementField.FIELD_RIGHTSHOLDER)).get(
+                                0));
+        Assert.assertEquals("dataone_public_user",
+                            ((List) data.getFieldValues(SolrElementField.FIELD_READPERMISSION)).get(
+                                0));
+        Assert.assertEquals("dataone_integration_test_user", ((List) data.getFieldValues(
+            SolrElementField.FIELD_WRITEPERMISSION)).get(0));
+        Assert.assertEquals("dataone_integration_test_user2", ((List) data.getFieldValues(
+            SolrElementField.FIELD_WRITEPERMISSION)).get(1));
 
         // Check the metadata again and it should have the resourcemap and obsoletes fields
         data = assertPresentInSolrIndex(metadataId);
