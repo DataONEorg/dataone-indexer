@@ -72,10 +72,12 @@ public class SolrElementField {
     public static final String FIELD_DECADE = "decade";
     public static final String FIELD_BEGIN_DATE = "beginDate";
     public static final String FIELD_END_DATE = "endDate";
+    public static final String FIELD_VERSION = "_version_";
 
     public static final char[] ELEMENT_FIELD_OPEN = "<field ".toCharArray();
     public static final char[] ELEMENT_FIELD_CLOSE = "</field>".toCharArray();
     public static final String ATTRIBUTE_NAME = "name";
+    public static final int NEGATIVE_ONE = -1;
 
     private String name = null;
     private String value = null;
