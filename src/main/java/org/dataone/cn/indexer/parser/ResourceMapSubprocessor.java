@@ -131,6 +131,11 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
                     doc = new SolrDoc();
                     SolrElementField idField = new SolrElementField(SolrElementField.FIELD_ID, id);
                     doc.addField(idField);
+                    // Set the version to -1. This makes sure that the solr doc only can be created
+                    // if the solr server doesn't have the id. Otherwise, it throws a version
+                    // conflict exception.
+                    doc.addField(new SolrElementField(SolrElementField.FIELD_VERSION,
+                                                      SolrElementField.NEGATIVE_ONE));
                     if (resourceMapSolrDoc != null) {
                         // Copy the access rules from the resource map solr doc to the new solr doc
                         copyFieldAllValue(SolrElementField.FIELD_READPERMISSION,
