@@ -133,32 +133,39 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
                     doc.addField(idField);
                     if (resourceMapSolrDoc != null) {
                         // Copy the access rules from the resource map solr doc to the new solr doc
-                        SolrElementField read =
-                            resourceMapSolrDoc.getField(SolrElementField.FIELD_READPERMISSION);
-                        if (read != null) {
-                            doc.addField(read);
-                        }
-                        SolrElementField write =
-                            resourceMapSolrDoc.getField(SolrElementField.FIELD_WRITEPERMISSION);
-                        if (write != null) {
-                            doc.addField(write);
-                        }
-                        SolrElementField change =
-                            resourceMapSolrDoc.getField(SolrElementField.FIELD_CHANGEPERMISSION);
-                        if (change != null) {
-                            doc.addField(change);
-                        }
-                        SolrElementField rightHolder =
-                            resourceMapSolrDoc.getField(SolrElementField.FIELD_RIGHTSHOLDER);
-                        if (rightHolder != null) {
-                            doc.addField(rightHolder);
-                        }
+                        copyFieldAllValue(SolrElementField.FIELD_READPERMISSION,
+                                          resourceMapSolrDoc, doc);
+                        copyFieldAllValue(SolrElementField.FIELD_WRITEPERMISSION,
+                                          resourceMapSolrDoc, doc);
+                        copyFieldAllValue(SolrElementField.FIELD_CHANGEPERMISSION,
+                                          resourceMapSolrDoc, doc);
+                        copyFieldAllValue(SolrElementField.FIELD_RIGHTSHOLDER,
+                                          resourceMapSolrDoc, doc);
                     }
                     list.add(doc);
                 }
             }
         }
         return list;
+    }
+
+    /**
+     * Copy all values of the given field name in the source solr doc to the destination solr doc
+     * @param fieldName  the given field name
+     * @param source  the source solr doc
+     * @param dest  the destination solr doc
+     */
+    protected static void copyFieldAllValue(String fieldName, SolrDoc source, SolrDoc dest) {
+        if (fieldName != null && !fieldName.isBlank()) {
+            List<String> values = source.getAllFieldValues(fieldName);
+            logger.debug("The all values of the field of " + fieldName + " in the source solr doc"
+                             + " is " + values);
+            if (values != null && !values.isEmpty()) {
+                for (String value : values) {
+                    dest.addField(new SolrElementField(fieldName, value));
+                }
+            }
+        }
     }
 
     public List<String> getMatchDocuments() {
