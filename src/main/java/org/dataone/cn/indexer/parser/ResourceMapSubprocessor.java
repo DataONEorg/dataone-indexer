@@ -102,9 +102,7 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
     }
 
     private List<SolrDoc> processResourceMap(SolrDoc indexDocument, Document resourcMap)
-                    throws XPathExpressionException, IOException, SAXException,
-        ParserConfigurationException, EncoderException, SolrServerException,
-        NotImplemented, NotFound, UnsupportedType, OREParserException, InterruptedException {
+        throws XPathExpressionException, IOException, EncoderException, OREParserException {
         ResourceMap resourceMap = ResourceMapFactory.buildResourceMap(resourcMap);
         //this list includes the resourceMap id itself.
         List<String> documentIds = resourceMap.getAllDocumentIDs();
@@ -117,9 +115,7 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
 
     private List<SolrDoc> getSolrDocs(String resourceMapId, List<String> ids,
                                       SolrDoc resourceMapSolrDoc)
-        throws SolrServerException, IOException, ParserConfigurationException, SAXException,
-        XPathExpressionException, NotImplemented, NotFound, UnsupportedType, InterruptedException,
-        EncoderException {
+        throws  IOException, XPathExpressionException, EncoderException {
         List<SolrDoc> list = new ArrayList<SolrDoc>();
         if(ids != null) {
             for(String id : ids) {
