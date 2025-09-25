@@ -1,18 +1,3 @@
-/**
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 package org.dataone.cn.indexer.annotation;
 
 
@@ -34,8 +19,6 @@ import org.apache.commons.codec.EncoderException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dataone.cn.indexer.annotation.SparqlField;
-import org.dataone.cn.indexer.annotation.TripleStoreService;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrDataField;
 import org.dataone.cn.indexer.parser.SubprocessorUtility;
@@ -44,7 +27,6 @@ import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
 import org.dataone.indexer.performance.PerformanceLogger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Dataset;
@@ -55,7 +37,6 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.tdb.TDBFactory;
 
 /**
  * A solr index parser for an RDF/XML file.
@@ -176,7 +157,8 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
         Map<String, SolrDoc> mergedDocuments;
         Dataset dataset = TripleStoreService.getInstance().getDataset();
         try {
-            perfLog.log("RdfXmlSubprocess.process gets a dataset from tripe store service ", System.currentTimeMillis() - start);
+            perfLog.log("RdfXmlSubprocess.process gets a dataset from tripe store service ",
+                        System.currentTimeMillis() - start);
             
             // read the annotation
             String indexDocId = indexDocument.getIdentifier();
@@ -208,8 +190,9 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
                 ontModel.read(is, name);
                 dataset.addNamedModel(name, ontModel);
             }
-            perfLog.log("RdfXmlSubprocess.process adds ont-model ", System.currentTimeMillis() - startOntModel);
-            //dataset.getDefaultModel().add(ontModel);
+            perfLog.log("RdfXmlSubprocess.process adds ont-model ",
+                        System.currentTimeMillis() - startOntModel);
+
     
             //Start a list of Solr documents to index, mapping by pid and seriesId
             Map<String, SolrDoc> documentsToIndexByPid = new HashMap<String, SolrDoc>();
@@ -225,8 +208,8 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
                 
                 //Process Sparql fields
                 if (field instanceof SparqlField) {
-                	
-                	//Get the Sparql query for this field
+
+                    //Get the Sparql query for this field
                     q = ((SparqlField) field).getQuery();
                     
                     //Replace the graph name with the URI of this resource map
@@ -244,8 +227,8 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
                     
                     //Iterate over each query result and process it
                     while (results.hasNext()) {
-                    	
-                    	//Create a SolrDoc for this query result
+
+                        //Create a SolrDoc for this query result
                         SolrDoc solrDoc = null;
                         QuerySolution solution = results.next();
                         log.trace(solution.toString());
@@ -253,31 +236,31 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
                         //Sparql queries can identify a SolrDoc by pid or seriesId. 
                         //If the Sparql query uses a pid, get the SolrDoc by pid
                         if (solution.contains("pid")) {
-                        	//Get the pid from the query result
+                            //Get the pid from the query result
                             String id = solution.getLiteral("pid").getString();
 
                             //Get the SolrDoc from the hash map, if it exists
                             solrDoc = documentsToIndexByPid.get(id);
                             
                             if (solrDoc == null) {
-                            	
-                            	//If the id matches the document we are currently indexing, use that SolrDoc
-                            	if(id.equals(indexDocId)) {
-                            		solrDoc = indexDocument;
-                            	}
+
+                                //If the id matches the document we are currently indexing, use that SolrDoc
+                                if(id.equals(indexDocId)) {
+                                    solrDoc = indexDocument;
+                                }
                                 //If the SolrDoc doesn't exist yet, create one
-                            	else {
+                                else {
                                     solrDoc = new SolrDoc();
                                     //Add the id as the ID field
                                     solrDoc.addField(new SolrElementField(SolrElementField.FIELD_ID, id));
                                     //Add the SolrDoc to the hash map
-                                    documentsToIndexByPid.put(id, solrDoc);	
-                            	}
+                                    documentsToIndexByPid.put(id, solrDoc);
+                                }
                             }
                         }
                         //If the Sparql query uses a pid, get the SolrDoc by seriesId
                         else if (solution.contains("seriesId")) {
-                        	//Get the seriesId
+                            //Get the seriesId
                             String id = solution.getLiteral("seriesId").getString();
                                 
                             //Get the SolrDoc from the hash map, if it exists
@@ -295,7 +278,7 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
     
                         //Get the index field name and value returned from the Sparql query
                         if (solution.contains(field.getName())) {
-                        	//Get the value for this field
+                            //Get the value for this field
                             String value = solution.get(field.getName()).toString();
                             
                             //Create an index field for this field name and value
@@ -308,27 +291,31 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
                         }
                     }
                 }
-                perfLog.log("RdfXmlSubprocess.process process the field "+field.getName(), System.currentTimeMillis() - filed);
+                perfLog.log("RdfXmlSubprocess.process process the field " + field.getName(),
+                            System.currentTimeMillis() - filed);
             }
-            perfLog.log("RdfXmlSubprocess.process process the fields total ", System.currentTimeMillis() - startField);
+            perfLog.log("RdfXmlSubprocess.process process the fields total ",
+                        System.currentTimeMillis() - startField);
             // clean up the triple store
-            //TDBFactory.release(dataset);
     
             long getStart = System.currentTimeMillis();
 
             //Get the SolrDocs that already exist in the Solr index for the given seriesIds
-            Map<String, SolrDoc> existingDocsBySeriesId = getSolrDocsBySeriesId(documentsToIndexBySeriesId.keySet());
-            
+            Map<String, SolrDoc> existingDocsBySeriesId =
+                getSolrDocsBySeriesId(documentsToIndexBySeriesId.keySet());
+
             //Get the SolrDocs that already exist in the Solr index for the given pids
             Map<String, SolrDoc> existingDocsByPid = getSolrDocs(documentsToIndexByPid.keySet());
-            
-            perfLog.log("RdfXmlSubprocess.process get existing solr docs ", System.currentTimeMillis() - getStart);
-            
+
+            perfLog.log(
+                "RdfXmlSubprocess.process get existing solr docs ",
+                System.currentTimeMillis() - getStart);
+
             //Combine the hash maps of existing SolrDocs into a single map
             Map<String, SolrDoc> allExistingDocs = new HashMap<String, SolrDoc>(); 
             allExistingDocs.putAll(existingDocsByPid);
             allExistingDocs.putAll(existingDocsBySeriesId);
-            
+
             //Combine the hash maps of to-be-indexed SolrDocs into a single map
             Map<String, SolrDoc> allDocsToBeIndexed = new HashMap<String, SolrDoc>();
             allDocsToBeIndexed.putAll(documentsToIndexByPid);
@@ -390,8 +377,8 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
 
         Iterator<String> pendingIter = pending.keySet().iterator();
         while (pendingIter.hasNext()) {
-        	
-        	//Get the next id in the hash map
+
+            //Get the next id in the hash map
             String id = pendingIter.next();
             
             //Get the doc with this id from the pending docs
@@ -406,14 +393,14 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
             //If no existing doc was found with the given id, and the pending doc has no id field,
             // see if there is a match with the seriesId field
             if(existingDoc == null && !pendingDoc.hasField(SolrElementField.FIELD_ID)) {
-            	for (Map.Entry<String, SolrDoc> entry : existing.entrySet()) {
+                for (Map.Entry<String, SolrDoc> entry : existing.entrySet()) {
                     SolrDoc doc = entry.getValue();
                     if( doc.hasFieldWithValue(SolrElementField.FIELD_SERIES_ID, id) ) {
-                    	existingDoc = doc;
-                    	break;
+                        existingDoc = doc;
+                        break;
                     }
                     
-            	}
+                }
             }
             
             //If there is an existing doc,
