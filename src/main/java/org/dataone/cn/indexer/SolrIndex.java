@@ -440,7 +440,6 @@ public class SolrIndex {
                              + "fix the issues");
                 for (int i=0; i<VERSION_CONFLICT_MAX_ATTEMPTS; i++) {
                     try {
-                        Thread.sleep(VERSION_CONFLICT_WAITING);
                         insert(pid, isSysmetaChangeOnly, docId);
                         break;
                     } catch (SolrServerException ee) {
@@ -464,6 +463,7 @@ public class SolrIndex {
                             throw ee;
                         }
                     }
+                    Thread.sleep(VERSION_CONFLICT_WAITING);
                 }
             } else {
                 throw e;
