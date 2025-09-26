@@ -201,7 +201,10 @@ public class SolrIndex {
             // Determine if subprocessors are available for this ID
             if (subprocessors != null) {
                 // for each subprocessor loaded from the spring config
+                int index = 0;
                 for (IDocumentSubprocessor subprocessor : subprocessors) {
+                    log.debug(index + ". The subprocessor is " + subprocessor.getClass().getName());
+                    index++;
                     // Does this subprocessor apply?
                     if (subprocessor.canProcess(formatId)) {
                         // if so, then extract the additional information from the
@@ -229,19 +232,18 @@ public class SolrIndex {
                 }
            }
         }
-       // TODO: in the XPathDocumentParser class in d1_cn_index_process module,
-       // merge is only for resource map. We need more work here.
+       // Merge the new-generated documents with the existing solr documents in the solr server
        for (SolrDoc mergeDoc : docs.values()) {
            if (!mergeDoc.isMerged()) {
-                 mergeWithIndexedDocument(mergeDoc);
+               mergeRelationAttributesFromExistDocument(mergeDoc);
            }
        }
        return docs;
     }
 
     /**
-     * Merge updates with existing solr documents
-     * 
+     * Merge the given solr doc with the relationship attributes in existing solr documents.
+     * This function replaces the resourcemap merge function
      * This method appears to re-set the data package field data into the
      * document about to be updated in the solr index. Since packaging
      * information is derived from the package document (resource map), this
@@ -255,10 +257,9 @@ public class SolrIndex {
      * @throws EncoderException
      * @throws XPathExpressionException
      */
-    // TODO:combine merge function with resourcemap merge function
 
-    private SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument) throws IOException,
-            EncoderException, XPathExpressionException {
+    private SolrDoc mergeRelationAttributesFromExistDocument(SolrDoc indexDocument)
+        throws IOException, EncoderException, XPathExpressionException {
         //Retrieve the existing solr document from the solr server for the id. If it doesn't exist,
         //null or empty solr doc will be returned.
         SolrDoc indexedDocument =
