@@ -115,7 +115,7 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
 
     private List<SolrDoc> getSolrDocs(String resourceMapId, List<String> ids,
                                       SolrDoc resourceMapSolrDoc)
-        throws  IOException, XPathExpressionException, EncoderException {
+        throws IOException, XPathExpressionException, EncoderException {
         List<SolrDoc> list = new ArrayList<SolrDoc>();
         if(ids != null) {
             for(String id : ids) {
@@ -124,30 +124,48 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
                     list.add(doc);
                 } else if ( !id.equals(resourceMapId)) {
                     // generate a dummy solr doc which only has the id and put it into the list.
-                    doc = new SolrDoc();
-                    SolrElementField idField = new SolrElementField(SolrElementField.FIELD_ID, id);
-                    doc.addField(idField);
-                    // Set the version to -1. This makes sure that the solr doc only can be created
-                    // if the solr server doesn't have the id. Otherwise, it throws a version
-                    // conflict exception.
-                    doc.addField(new SolrElementField(SolrElementField.FIELD_VERSION,
-                                                      SolrElementField.NEGATIVE_ONE));
-                    if (resourceMapSolrDoc != null) {
-                        // Copy the access rules from the resource map solr doc to the new solr doc
-                        copyFieldAllValue(SolrElementField.FIELD_READPERMISSION,
-                                          resourceMapSolrDoc, doc);
-                        copyFieldAllValue(SolrElementField.FIELD_WRITEPERMISSION,
-                                          resourceMapSolrDoc, doc);
-                        copyFieldAllValue(SolrElementField.FIELD_CHANGEPERMISSION,
-                                          resourceMapSolrDoc, doc);
-                        copyFieldAllValue(SolrElementField.FIELD_RIGHTSHOLDER,
-                                          resourceMapSolrDoc, doc);
-                    }
+                    doc = generateDummySolrDoc(id, resourceMapSolrDoc);
                     list.add(doc);
                 }
             }
         }
         return list;
+    }
+
+    /**
+     * Generate a dummy solr doc for the given id. The _version_ of the dummy doc is -1.
+     * It has the same access rules as the docHoldsPermission solr doc. It also has an "abstract"
+     * field with the value of "A placeholding document".
+     * @param id  the identifier of the dummy solr doc
+     * @param docHoldsPermission  it holds the access rules the dummy solr doc will have
+     * @return the dommy solr doc
+     */
+    public static SolrDoc generateDummySolrDoc(String id, SolrDoc docHoldsPermission) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("The id used to generate a dummy solr doc can't be"
+                                                   + " null or blank");
+        }
+        SolrDoc doc = new SolrDoc();
+        SolrElementField idField = new SolrElementField(SolrElementField.FIELD_ID, id);
+        doc.addField(idField);
+        // Set the version to -1. This makes sure that the solr doc only can be created
+        // if the solr server doesn't have the id. Otherwise, it throws a version
+        // conflict exception.
+        doc.addField(new SolrElementField(SolrElementField.FIELD_VERSION,
+                                          SolrElementField.NEGATIVE_ONE));
+        doc.addField(new SolrElementField("abstract", "A placeholding document"));
+        if (docHoldsPermission != null) {
+            // Copy the access rules from the resource map solr doc to the new solr doc
+            copyFieldAllValue(SolrElementField.FIELD_READPERMISSION,
+                              docHoldsPermission, doc);
+            copyFieldAllValue(SolrElementField.FIELD_WRITEPERMISSION,
+                              docHoldsPermission, doc);
+            copyFieldAllValue(SolrElementField.FIELD_CHANGEPERMISSION,
+                              docHoldsPermission, doc);
+            copyFieldAllValue(SolrElementField.FIELD_RIGHTSHOLDER,
+                              docHoldsPermission, doc);
+        }
+        return doc;
     }
 
     /**

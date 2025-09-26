@@ -247,6 +247,8 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
             count++;
         }
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SIZE));
+        Assert.assertEquals("A placeholding document",
+                            ((List)data.getFieldValues("abstract")).get(0));
         Assert.assertEquals(resourcemapId,
                             ((List) data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP)).get(
                                 0));
