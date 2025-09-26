@@ -147,8 +147,8 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
             throw new IllegalArgumentException("The id used to generate a dummy solr doc can't be"
                                                    + " null or blank");
         }
-        if (idFieldName == null || !idFieldName.equals(SolrElementField.FIELD_ID)
-            || !idFieldName.equals(SolrElementField.FIELD_SERIES_ID)) {
+        if (idFieldName == null || (!idFieldName.equals(SolrElementField.FIELD_ID)
+            && !idFieldName.equals(SolrElementField.FIELD_SERIES_ID))) {
             throw new IllegalArgumentException(
                 "The idFieldName should not be " + idFieldName + ". It must be either "
                     + SolrElementField.FIELD_ID + " or " + SolrElementField.FIELD_SERIES_ID);

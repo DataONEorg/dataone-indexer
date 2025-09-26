@@ -16,6 +16,8 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.solr.common.SolrDocument;
 import org.dataone.cn.index.DataONESolrJettyTestBase;
+import org.dataone.cn.indexer.parser.ResourceMapSubprocessor;
+import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.service.types.v1.Identifier;
 import org.dspace.foresite.OREException;
@@ -76,6 +78,84 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
     public static final int WAIT_TIME_MILLI = 500;
     public static final int MAX_ATTEMPTS = 100;
 
+    /**
+     * Test the generateDummySolrDoc method
+     * @throws Exception
+     */
+    @Test
+    public void testGenerateDummySolrDoc() throws Exception {
+        String pid = "pid";
+        String sid = "sid";
+        String wrongIdName = "foo";
+        String publicUser = "public";
+        String user1 = "user1";
+        String user2 = "user2";
+        SolrDoc doc;
+        SolrDoc accessDoc = new SolrDoc();
+        accessDoc.addField(new SolrElementField(SolrElementField.FIELD_READPERMISSION, publicUser));
+        accessDoc.addField(new SolrElementField(SolrElementField.FIELD_WRITEPERMISSION, user1));
+        accessDoc.addField(new SolrElementField(SolrElementField.FIELD_WRITEPERMISSION, user2));
+        try {
+            doc = ResourceMapSubprocessor.generateDummySolrDoc(pid, accessDoc, wrongIdName);
+            fail("Test cannot reach here since the id name is wrong");
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().contains(wrongIdName));
+        }
+        try {
+            doc = ResourceMapSubprocessor.generateDummySolrDoc(pid, accessDoc, null);
+            fail("Test cannot reach here since the id name is null");
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().contains(SolrElementField.FIELD_ID));
+        }
+
+        try {
+            doc = ResourceMapSubprocessor.generateDummySolrDoc(pid, accessDoc, "");
+            fail("Test cannot reach here since the id name is blank");
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().contains(SolrElementField.FIELD_ID));
+        }
+
+        try {
+            doc = ResourceMapSubprocessor.generateDummySolrDoc(null, accessDoc,
+                                                               SolrElementField.FIELD_SERIES_ID);
+            fail("Test cannot reach here since the id is null");
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().contains(SolrElementField.FIELD_ID));
+        }
+
+        try {
+            doc = ResourceMapSubprocessor.generateDummySolrDoc(
+                "", accessDoc,
+                SolrElementField.FIELD_ID);
+            fail("Test cannot reach here since the id is blank");
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().contains(SolrElementField.FIELD_ID));
+        }
+
+        doc = ResourceMapSubprocessor.generateDummySolrDoc(pid, accessDoc,
+                                                           SolrElementField.FIELD_ID);
+        assertEquals("-1", doc.getField(SolrElementField.FIELD_VERSION).getValue());
+        assertEquals(pid, doc.getField(SolrElementField.FIELD_ID).getValue());
+        assertNull(doc.getField(SolrElementField.FIELD_SERIES_ID));
+        assertNull(doc.getField(SolrElementField.FIELD_SIZE));
+        assertEquals(publicUser,
+                     doc.getAllFieldValues(SolrElementField.FIELD_READPERMISSION).get(0));
+        assertEquals(user1, doc.getAllFieldValues(SolrElementField.FIELD_WRITEPERMISSION).get(0));
+        assertEquals(user2, doc.getAllFieldValues(SolrElementField.FIELD_WRITEPERMISSION).get(1));
+        assertNull(doc.getField(SolrElementField.FIELD_CHANGEPERMISSION));
+
+        doc = ResourceMapSubprocessor.generateDummySolrDoc(sid, accessDoc,
+                                                           SolrElementField.FIELD_SERIES_ID);
+        assertEquals("-1", doc.getField(SolrElementField.FIELD_VERSION).getValue());
+        assertEquals(sid, doc.getField(SolrElementField.FIELD_SERIES_ID).getValue());
+        assertNull(doc.getField(SolrElementField.FIELD_ID));
+        assertNull(doc.getField(SolrElementField.FIELD_SIZE));
+        assertEquals(publicUser,
+                     doc.getAllFieldValues(SolrElementField.FIELD_READPERMISSION).get(0));
+        assertEquals(user1, doc.getAllFieldValues(SolrElementField.FIELD_WRITEPERMISSION).get(0));
+        assertEquals(user2, doc.getAllFieldValues(SolrElementField.FIELD_WRITEPERMISSION).get(1));
+        assertNull(doc.getField(SolrElementField.FIELD_CHANGEPERMISSION));
+    }
     /**
      * Test to index a resourcemap object which has a component that will never be indexed by
      * another task. But the component object is in hashstore.
@@ -249,6 +329,9 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SIZE));
         Assert.assertEquals("A placeholding document",
                             ((List)data.getFieldValues("abstract")).get(0));
+        Assert.assertEquals(
+            missingDataId, ((List) data.getFieldValues(SolrElementField.FIELD_ID)).get(0));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SERIES_ID));
         Assert.assertEquals(resourcemapId,
                             ((List) data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP)).get(
                                 0));
