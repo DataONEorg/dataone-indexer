@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrDataField;
+import org.dataone.cn.indexer.parser.ResourceMapSubprocessor;
 import org.dataone.cn.indexer.parser.SubprocessorUtility;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
@@ -250,9 +251,8 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
                                 }
                                 //If the SolrDoc doesn't exist yet, create one
                                 else {
-                                    solrDoc = new SolrDoc();
-                                    //Add the id as the ID field
-                                    solrDoc.addField(new SolrElementField(SolrElementField.FIELD_ID, id));
+                                    solrDoc = ResourceMapSubprocessor.generateDummySolrDoc(
+                                        id, indexDocument, SolrElementField.FIELD_ID);
                                     //Add the SolrDoc to the hash map
                                     documentsToIndexByPid.put(id, solrDoc);
                                 }
@@ -268,9 +268,8 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
                             
                             //If the SolrDoc doesn't exist yet, create one
                             if (solrDoc == null) {
-                                solrDoc = new SolrDoc();
-                                //Add the id as the seriesId field
-                                solrDoc.addField(new SolrElementField(SolrElementField.FIELD_SERIES_ID, id));
+                                solrDoc = ResourceMapSubprocessor.generateDummySolrDoc(
+                                    id, indexDocument, SolrElementField.FIELD_SERIES_ID);
                                 //Add to the hash map
                                 documentsToIndexBySeriesId.put(id, solrDoc);
                             }

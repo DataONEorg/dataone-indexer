@@ -124,7 +124,7 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
                     list.add(doc);
                 } else if ( !id.equals(resourceMapId)) {
                     // generate a dummy solr doc which only has the id and put it into the list.
-                    doc = generateDummySolrDoc(id, resourceMapSolrDoc);
+                    doc = generateDummySolrDoc(id, resourceMapSolrDoc, SolrElementField.FIELD_ID);
                     list.add(doc);
                 }
             }
@@ -138,15 +138,23 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
      * field with the value of "A placeholding document".
      * @param id  the identifier of the dummy solr doc
      * @param docHoldsPermission  it holds the access rules the dummy solr doc will have
+     * @param idFieldName  the name of the field for the id. It must be either "id" or "seriesId".
      * @return the dommy solr doc
      */
-    public static SolrDoc generateDummySolrDoc(String id, SolrDoc docHoldsPermission) {
+    public static SolrDoc generateDummySolrDoc(String id, SolrDoc docHoldsPermission,
+                                               String idFieldName) {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("The id used to generate a dummy solr doc can't be"
                                                    + " null or blank");
         }
+        if (idFieldName == null || !idFieldName.equals(SolrElementField.FIELD_ID)
+            || !idFieldName.equals(SolrElementField.FIELD_SERIES_ID)) {
+            throw new IllegalArgumentException(
+                "The idFieldName should not be " + idFieldName + ". It must be either "
+                    + SolrElementField.FIELD_ID + " or " + SolrElementField.FIELD_SERIES_ID);
+        }
         SolrDoc doc = new SolrDoc();
-        SolrElementField idField = new SolrElementField(SolrElementField.FIELD_ID, id);
+        SolrElementField idField = new SolrElementField(idFieldName, id);
         doc.addField(idField);
         // Set the version to -1. This makes sure that the solr doc only can be created
         // if the solr server doesn't have the id. Otherwise, it throws a version
