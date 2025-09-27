@@ -21,7 +21,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrDataField;
-import org.dataone.cn.indexer.parser.ResourceMapSubprocessor;
 import org.dataone.cn.indexer.parser.SubprocessorUtility;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
@@ -251,8 +250,10 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
                                 }
                                 //If the SolrDoc doesn't exist yet, create one
                                 else {
-                                    solrDoc = ResourceMapSubprocessor.generateDummySolrDoc(
-                                        id, indexDocument, SolrElementField.FIELD_ID);
+                                    solrDoc = new SolrDoc();
+                                    //Add the id as the ID field
+                                    solrDoc.addField(
+                                        new SolrElementField(SolrElementField.FIELD_ID, id));
                                     //Add the SolrDoc to the hash map
                                     documentsToIndexByPid.put(id, solrDoc);
                                 }
@@ -262,14 +263,16 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
                         else if (solution.contains("seriesId")) {
                             //Get the seriesId
                             String id = solution.getLiteral("seriesId").getString();
-                                
+
                             //Get the SolrDoc from the hash map, if it exists
                             solrDoc = documentsToIndexBySeriesId.get(id);
-                            
+
                             //If the SolrDoc doesn't exist yet, create one
                             if (solrDoc == null) {
-                                solrDoc = ResourceMapSubprocessor.generateDummySolrDoc(
-                                    id, indexDocument, SolrElementField.FIELD_SERIES_ID);
+                                solrDoc = new SolrDoc();
+                                //Add the id as the seriesId field
+                                solrDoc.addField(
+                                    new SolrElementField(SolrElementField.FIELD_SERIES_ID, id));
                                 //Add to the hash map
                                 documentsToIndexBySeriesId.put(id, solrDoc);
                             }
