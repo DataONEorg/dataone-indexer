@@ -58,7 +58,8 @@ xmlns:context="http://www.springframework.org/schema/context"
     <import resource="classpath:application-context-collections.xml" />  
     <import resource="classpath:application-context-portals.xml" />  
     <import resource="classpath:application-context-schema-org.xml" />
-    <import resource="classpath:application-context-json-ld.xml" /> 
+    <import resource="classpath:application-context-json-ld.xml" />
+    <import resource="classpath:application-context-relationship-merge.xml" />
 
     <import resource="classpath:org/dataone/cn/indexer/annotation/test-context-annotator.xml"/>
 

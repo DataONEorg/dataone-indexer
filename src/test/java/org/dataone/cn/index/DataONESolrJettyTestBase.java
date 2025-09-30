@@ -35,6 +35,7 @@ import org.dataone.cn.indexer.SolrIndex;
 import org.dataone.cn.indexer.object.MockMNode;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.ISolrField;
+import org.dataone.cn.indexer.parser.utility.RelationshipMergeUtility;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
 import org.dataone.indexer.storage.Storage;
@@ -430,5 +431,13 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
             context = new ClassPathXmlApplicationContext("org/dataone/cn/index/test-context.xml");
         }
         return context;
+    }
+
+    /**
+     * Get the Merge utility object
+     * @return
+     */
+    public RelationshipMergeUtility getRelationshipMergeUtility() {
+        return this.solrIndexService.getRelationshipMergeUtility();
     }
 }

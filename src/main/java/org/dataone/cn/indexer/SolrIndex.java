@@ -28,6 +28,7 @@ import org.dataone.cn.indexer.parser.BaseXPathDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.IDocumentDeleteSubprocessor;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrField;
+import org.dataone.cn.indexer.parser.utility.RelationshipMergeUtility;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementAdd;
@@ -71,6 +72,7 @@ public class SolrIndex {
     private XMLNamespaceConfig xmlNamespaceConfig = null;
     private static BaseXPathDocumentSubprocessor systemMetadataProcessor = null;
     private List<ISolrField> sysmetaSolrFields = null;
+    private RelationshipMergeUtility relationshipMergeUtility = null;
     private static Log log = LogFactory.getLog(SolrIndex.class);
 
 
@@ -911,6 +913,22 @@ public class SolrIndex {
      */
     public HTTPService getHttpService() {
         return httpService;
+    }
+
+    /**
+     * Set the merge utility
+     * @param relationshipMergeUtility  the merge utility will be set
+     */
+    public void setRelationshipMergeUtility(RelationshipMergeUtility relationshipMergeUtility) {
+        this.relationshipMergeUtility = relationshipMergeUtility;
+    }
+
+    /**
+     * Get the merge utility
+     * @return the merge utility object
+     */
+    public RelationshipMergeUtility getRelationshipMergeUtility() {
+        return this.relationshipMergeUtility;
     }
 
 }
