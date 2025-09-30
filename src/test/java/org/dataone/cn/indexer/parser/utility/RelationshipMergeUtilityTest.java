@@ -43,6 +43,7 @@ public class RelationshipMergeUtilityTest extends DataONESolrJettyTestBase {
         String resourceMapId1 = "resourceMap.1.1";
         String resourceMapId2 = "resourceMap.2.1";
         String resourceMapId3 = "resourceMap.3.1";
+        String version = "500";
         SolrDoc from = new SolrDoc();
         from.addField(new SolrElementField(SolrElementField.FIELD_ID, id));
         from.addField(new SolrElementField(SolrElementField.FIELD_SIZE, "111"));
@@ -53,6 +54,7 @@ public class RelationshipMergeUtilityTest extends DataONESolrJettyTestBase {
         from.addField(new SolrElementField(SolrElementField.FIELD_DOCUMENTS, documentsId2));
         from.addField(new SolrElementField(SolrElementField.FIELD_RESOURCEMAP, resourceMapId1));
         from.addField(new SolrElementField(SolrElementField.FIELD_RESOURCEMAP, resourceMapId2));
+        from.addField(new SolrElementField(SolrElementField.FIELD_VERSION, version));
         SolrDoc to = new SolrDoc();
         to.addField(new SolrElementField(SolrElementField.FIELD_ID, id));
         to.addField(new SolrElementField(SolrElementField.FIELD_SIZE, size));
@@ -61,9 +63,11 @@ public class RelationshipMergeUtilityTest extends DataONESolrJettyTestBase {
         to.addField(new SolrElementField(SolrElementField.FIELD_ISDOCUMENTEDBY, documentedById2));
         to.addField(new SolrElementField(SolrElementField.FIELD_RESOURCEMAP, resourceMapId1));
         to.addField(new SolrElementField(SolrElementField.FIELD_RESOURCEMAP, resourceMapId3));
+        to.addField(new SolrElementField(SolrElementField.FIELD_VERSION, "-1"));
+        to.addField(new SolrElementField(SolrElementField.FIELD_VERSION, "1"));
         mergeUtility.merge(from, to);
-        assertEquals(9, from.getFieldList().size());
-        assertEquals(10, to.getFieldList().size());
+        assertEquals(10, from.getFieldList().size());
+        assertEquals(11, to.getFieldList().size());
         assertEquals(id, to.getAllFieldValues(SolrElementField.FIELD_ID).get(0));
         assertEquals(1, to.getAllFieldValues(SolrElementField.FIELD_ID).size());
         assertEquals(size, to.getAllFieldValues(SolrElementField.FIELD_SIZE).get(0));
@@ -90,5 +94,7 @@ public class RelationshipMergeUtilityTest extends DataONESolrJettyTestBase {
         assertEquals(resourceMapId2,
                      to.getAllFieldValues(SolrElementField.FIELD_RESOURCEMAP).get(2));
         assertEquals(3, to.getAllFieldValues(SolrElementField.FIELD_RESOURCEMAP).size());
+        assertEquals(version, to.getAllFieldValues(SolrElementField.FIELD_VERSION).get(0));
+        assertEquals(1, to.getAllFieldValues(SolrElementField.FIELD_VERSION).size());
     }
 }

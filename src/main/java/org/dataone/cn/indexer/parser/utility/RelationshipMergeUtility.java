@@ -13,19 +13,16 @@ import java.util.Map;
  */
 public class RelationshipMergeUtility {
     private static Log log = LogFactory.getLog(RelationshipMergeUtility.class);
-
     private List<String> relationshipFieldsToMerge = null;
 
-    public void mergeFromServer(Map<String, SolrDoc> localSolrDocs) {
-
-    }
 
     /**
-     * Method the relationship fields from "from" to "to"
+     * Method the relationship fields and version from the "from" to the "to". The version of
+     * the "to" will be overwritten.
      * @param from  the source solr doc
      * @param to  the destination solr doc
      */
-    protected void merge(SolrDoc from, SolrDoc to) {
+    public void merge(SolrDoc from, SolrDoc to) {
         if (to == null) {
             throw new IllegalArgumentException("The solr doc receiving relationship fields should"
                                                    + " not be null");
@@ -38,6 +35,12 @@ public class RelationshipMergeUtility {
                     log.debug("Merge the relationship field " + field.getName() + " with value "
                                   + field.getValue() + " to the destination.");
                     to.addField(new SolrElementField(field.getName(), field.getValue()));
+                } else if (field.getName() != null && field.getName()
+                    .equals(SolrElementField.FIELD_VERSION)) {
+                    log.debug("Merge the relationship field " + field.getName() + " with value "
+                                  + field.getValue() + " to the destination.");
+                    to.removeAllFields(field.getName());
+                    to.addField(field);
                 }
             }
             to.setMerged(true);
