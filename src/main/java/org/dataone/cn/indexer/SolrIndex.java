@@ -287,7 +287,10 @@ public class SolrIndex {
                     //record this name since we can have multiple name/value for the same name.
                     //See https://projects.ecoinformatics.org/ecoinfo/issues/7168
                     mergeNeededFields.add(field);
-                } 
+                } else if (field.getName().equals(SolrElementField.FIELD_VERSION)) {
+                    mergeNeededFields.add(field);
+                    indexDocument.removeAllFields(field.getName());
+                }
             }
             if(mergeNeededFields != null) {
                 for(SolrElementField field: mergeNeededFields) {

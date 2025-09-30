@@ -37,6 +37,7 @@ import org.apache.commons.codec.EncoderException;
 import org.dataone.cn.indexer.XMLNamespaceConfig;
 import org.dataone.cn.indexer.XmlDocumentUtility;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
+import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.indexer.performance.PerformanceLogger;
 import org.w3c.dom.Document;
 
@@ -110,6 +111,8 @@ public class BaseXPathDocumentSubprocessor implements IDocumentSubprocessor {
         SolrDoc metaDocument = docs.get(identifier);
         if (metaDocument == null) {
             metaDocument = new SolrDoc();
+            metaDocument.addField(new SolrElementField(SolrElementField.FIELD_VERSION,
+                                                       SolrElementField.NEGATIVE_ONE));
             docs.put(identifier, metaDocument);
         }
         
