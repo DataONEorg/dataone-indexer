@@ -8,7 +8,7 @@ import java.util.List;
  * solr server.
  */
 public class DummySolrDoc extends SolrDoc {
-    private static final String INDICTATION_FIELD = "abstract";
+    private static final String INDICATION_FIELD = "abstract";
     private static final String INDICATION_VALUE = "A placeholding document";
 
     /**
@@ -29,7 +29,7 @@ public class DummySolrDoc extends SolrDoc {
         // conflict exception.
         addField(new SolrElementField(SolrElementField.FIELD_VERSION,
                                           SolrElementField.NEGATIVE_ONE));
-        addField(new SolrElementField(INDICTATION_FIELD, INDICATION_VALUE));
+        addField(new SolrElementField(INDICATION_FIELD, INDICATION_VALUE));
         if (docHoldsPermission != null) {
             // Copy the access rules from the resource map solr doc to the new solr doc
             copyFieldAllValue(SolrElementField.FIELD_READPERMISSION,
@@ -48,7 +48,7 @@ public class DummySolrDoc extends SolrDoc {
      * @return the field name
      */
     public static String getIndicationFieldName() {
-        return INDICTATION_FIELD;
+        return INDICATION_FIELD;
     }
 
     /**
@@ -56,7 +56,7 @@ public class DummySolrDoc extends SolrDoc {
      * @return the field value
      */
     public static String getIndicationFieldValue() {
-        return INDICTATION_FIELD;
+        return INDICATION_VALUE;
     }
 
     /**

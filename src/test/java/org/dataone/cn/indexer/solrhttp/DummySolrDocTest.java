@@ -1,0 +1,85 @@
+package org.dataone.cn.indexer.solrhttp;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
+
+/**
+ * Test the DummySolrDoc class
+ */
+public class DummySolrDocTest {
+
+    /**
+     * Test the constructor
+     * @throws Exception
+     */
+    @Test
+    public void testDummySolrDoc() throws Exception {
+        String pid = "pid";
+        String sid = "sid";
+        String publicUser = "public";
+        String user1 = "user1";
+        String user2 = "user2";
+        DummySolrDoc doc;
+        SolrDoc accessDoc = new SolrDoc();
+        accessDoc.addField(new SolrElementField(SolrElementField.FIELD_READPERMISSION, publicUser));
+        accessDoc.addField(new SolrElementField(SolrElementField.FIELD_WRITEPERMISSION, user1));
+        accessDoc.addField(new SolrElementField(SolrElementField.FIELD_WRITEPERMISSION, user2));
+
+        try {
+            doc = new DummySolrDoc(null, accessDoc);
+            fail("Test cannot reach here since the id is null");
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().contains(SolrElementField.FIELD_ID));
+        }
+
+        try {
+            doc = new DummySolrDoc("", accessDoc);
+            fail("Test cannot reach here since the id is blank");
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().contains(SolrElementField.FIELD_ID));
+        }
+
+        doc = new DummySolrDoc(pid, accessDoc);
+        assertEquals("-1", doc.getField(SolrElementField.FIELD_VERSION).getValue());
+        assertEquals(pid, doc.getField(SolrElementField.FIELD_ID).getValue());
+        assertNull(doc.getField(SolrElementField.FIELD_SERIES_ID));
+        assertNull(doc.getField(SolrElementField.FIELD_SIZE));
+        assertEquals(publicUser,
+                     doc.getAllFieldValues(SolrElementField.FIELD_READPERMISSION).get(0));
+        assertEquals(user1, doc.getAllFieldValues(SolrElementField.FIELD_WRITEPERMISSION).get(0));
+        assertEquals(user2, doc.getAllFieldValues(SolrElementField.FIELD_WRITEPERMISSION).get(1));
+        assertNull(doc.getField(SolrElementField.FIELD_CHANGEPERMISSION));
+
+        doc = new DummySolrDoc(sid, accessDoc);
+        assertEquals("-1", doc.getField(SolrElementField.FIELD_VERSION).getValue());
+        assertEquals(sid, doc.getField(SolrElementField.FIELD_ID).getValue());
+        assertNull(doc.getField(SolrElementField.FIELD_SIZE));
+        assertEquals(publicUser,
+                     doc.getAllFieldValues(SolrElementField.FIELD_READPERMISSION).get(0));
+        assertEquals(user1, doc.getAllFieldValues(SolrElementField.FIELD_WRITEPERMISSION).get(0));
+        assertEquals(user2, doc.getAllFieldValues(SolrElementField.FIELD_WRITEPERMISSION).get(1));
+        assertNull(doc.getField(SolrElementField.FIELD_CHANGEPERMISSION));
+    }
+
+    /**
+     * Test the getIndicationFieldName
+     * @throws Exception
+     */
+    @Test
+    public void testGetIndicationFieldName() throws Exception {
+        assertEquals("abstract", DummySolrDoc.getIndicationFieldName());
+    }
+
+    /**
+     * Test the getIndicationFieldName
+     * @throws Exception
+     */
+    @Test
+    public void testGetIndicationFieldValue() throws Exception {
+        assertEquals("A placeholding document", DummySolrDoc.getIndicationFieldValue());
+    }
+}
