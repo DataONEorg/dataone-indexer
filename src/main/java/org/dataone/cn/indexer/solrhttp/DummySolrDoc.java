@@ -10,6 +10,11 @@ import java.util.List;
 public class DummySolrDoc extends SolrDoc {
     private static final String INDICATION_FIELD = "abstract";
     private static final String INDICATION_VALUE = "A placeholding document";
+    // It doesn't include the id field.
+    private static final String[] artificialFields = {SolrElementField.FIELD_VERSION,
+        SolrElementField.FIELD_READPERMISSION, SolrElementField.FIELD_WRITEPERMISSION,
+        SolrElementField.FIELD_CHANGEPERMISSION, SolrElementField.FIELD_RIGHTSHOLDER,
+        INDICATION_FIELD};
 
     /**
      * Constructor
@@ -27,20 +32,21 @@ public class DummySolrDoc extends SolrDoc {
         // Set the version to -1. This makes sure that the solr doc only can be created
         // if the solr server doesn't have the id. Otherwise, it throws a version
         // conflict exception.
-        addField(new SolrElementField(SolrElementField.FIELD_VERSION,
-                                          SolrElementField.NEGATIVE_ONE));
-        addField(new SolrElementField(INDICATION_FIELD, INDICATION_VALUE));
+        // the version field
+        addField(new SolrElementField(artificialFields[0], SolrElementField.NEGATIVE_ONE));
         if (docHoldsPermission != null) {
             // Copy the access rules from the resource map solr doc to the new solr doc
-            copyFieldAllValue(SolrElementField.FIELD_READPERMISSION,
-                              docHoldsPermission, this);
-            copyFieldAllValue(SolrElementField.FIELD_WRITEPERMISSION,
-                              docHoldsPermission, this);
-            copyFieldAllValue(SolrElementField.FIELD_CHANGEPERMISSION,
-                              docHoldsPermission, this);
-            copyFieldAllValue(SolrElementField.FIELD_RIGHTSHOLDER,
-                              docHoldsPermission, this);
+            // The read permission field
+            copyFieldAllValue(artificialFields[1], docHoldsPermission, this);
+            // The write permission field
+            copyFieldAllValue(artificialFields[2], docHoldsPermission, this);
+            // The Change permission field
+            copyFieldAllValue(artificialFields[3], docHoldsPermission, this);
+            // The right holder field
+            copyFieldAllValue(artificialFields[4], docHoldsPermission, this);
         }
+        // the indication field (abstract)
+        addField(new SolrElementField(artificialFields[5], INDICATION_VALUE));
     }
 
     /**
@@ -57,6 +63,16 @@ public class DummySolrDoc extends SolrDoc {
      */
     public static String getIndicationFieldValue() {
         return INDICATION_VALUE;
+    }
+
+    /**
+     * Remove all artificial fields. After removing the fields, the solr doc only
+     * has the id initial field plus other fields added by the index subprocessors.
+     */
+    public void removeArtificialFields() {
+        for (String initialField : artificialFields) {
+            removeAllFields(initialField);
+        }
     }
 
     /**
