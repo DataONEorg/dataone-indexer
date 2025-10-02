@@ -19,7 +19,7 @@ public class DummySolrDocTest {
      * @throws Exception
      */
     @Test
-    public void testDummySolrDocConstructorAndRemoveArtificialFields() throws Exception {
+    public void testDummySolrDocConstructor() throws Exception {
         String pid = "pid";
         String sid = "sid";
         String pid1 = "pid1";
@@ -52,9 +52,7 @@ public class DummySolrDocTest {
         assertEquals("-1", doc.getField(SolrElementField.FIELD_VERSION).getValue());
         assertEquals(pid1, doc.getField(SolrElementField.FIELD_ID).getValue());
         assertEquals(INDICATION_FIELD_VALUE, doc.getField(INDICATION_FIELD_NAME).getValue());
-        doc.removeArtificialFields();
-        assertEquals(1, doc.getFieldList().size());
-        assertEquals(pid1, doc.getField(SolrElementField.FIELD_ID).getValue());
+
 
         doc = new DummySolrDoc(pid, accessDoc);
         assertEquals("-1", doc.getField(SolrElementField.FIELD_VERSION).getValue());
@@ -66,9 +64,6 @@ public class DummySolrDocTest {
         assertEquals(user1, doc.getAllFieldValues(SolrElementField.FIELD_WRITEPERMISSION).get(0));
         assertEquals(user2, doc.getAllFieldValues(SolrElementField.FIELD_WRITEPERMISSION).get(1));
         assertNull(doc.getField(SolrElementField.FIELD_CHANGEPERMISSION));
-        doc.removeArtificialFields();
-        assertEquals(1, doc.getFieldList().size());
-        assertEquals(pid, doc.getField(SolrElementField.FIELD_ID).getValue());
 
         doc = new DummySolrDoc(sid, accessDoc);
         doc.addField(new SolrElementField(SolrElementField.FIELD_RESOURCEMAP, resourceMapId));
@@ -80,10 +75,6 @@ public class DummySolrDocTest {
         assertEquals(user1, doc.getAllFieldValues(SolrElementField.FIELD_WRITEPERMISSION).get(0));
         assertEquals(user2, doc.getAllFieldValues(SolrElementField.FIELD_WRITEPERMISSION).get(1));
         assertNull(doc.getField(SolrElementField.FIELD_CHANGEPERMISSION));
-        doc.removeArtificialFields();
-        assertEquals(2, doc.getFieldList().size());
-        assertEquals(sid, doc.getField(SolrElementField.FIELD_ID).getValue());
-        // Since the resource map field is not the initial one, so it can be kept.
         assertEquals(resourceMapId, doc.getField(SolrElementField.FIELD_RESOURCEMAP).getValue());
     }
 

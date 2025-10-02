@@ -66,16 +66,6 @@ public class DummySolrDoc extends SolrDoc {
     }
 
     /**
-     * Remove all artificial fields. After removing the fields, the solr doc only
-     * has the id initial field plus other fields added by the index subprocessors.
-     */
-    public void removeArtificialFields() {
-        for (String initialField : artificialFields) {
-            removeAllFields(initialField);
-        }
-    }
-
-    /**
      * Copy all values of the given field name in the source solr doc to the destination solr doc
      * @param fieldName  the given field name
      * @param source  the source solr doc
