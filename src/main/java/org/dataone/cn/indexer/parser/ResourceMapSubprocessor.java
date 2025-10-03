@@ -18,6 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.cn.indexer.resourcemap.ResourceMap;
 import org.dataone.cn.indexer.resourcemap.ResourceMapFactory;
+import org.dataone.cn.indexer.solrhttp.DummySolrDoc;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
@@ -76,104 +77,83 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
         return processorUtility.mergeWithIndexedDocument(indexDocument, fieldsToMerge);
     }
 
-  
-    
-          
+
     @Override
     public Map<String, SolrDoc> processDocument(String identifier, Map<String, SolrDoc> docs,
     InputStream is) throws IOException, EncoderException, SAXException,
         XPathExpressionException, ParserConfigurationException, SolrServerException, 
         NotImplemented, NotFound, UnsupportedType, OREParserException, ServiceFailure,
         InterruptedException{
-        SolrDoc resourceMapDoc = docs.get(identifier);
         Identifier id = new Identifier();
         id.setValue(identifier);
-        
         //Get the path to the resource map file
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document resourceMap = builder.parse(is);
-        List<SolrDoc> processedDocs = processResourceMap(resourceMapDoc, resourceMap);
-        Map<String, SolrDoc> processedDocsMap = new HashMap<String, SolrDoc>();
+        // Process the resource map to get the result - a list of solr docs containing
+        // relationship. However, those solr docs haven't been merged (got information) from the
+        // existing solr docs on the solr server.
+        List<SolrDoc> processedDocs = processResourceMap(resourceMap, docs);
+        Map<String, SolrDoc> processedDocsMap = new HashMap<>();
         for (SolrDoc processedDoc : processedDocs) {
             processedDocsMap.put(processedDoc.getIdentifier(), processedDoc);
         }
         return processedDocsMap;
     }
 
-    private List<SolrDoc> processResourceMap(SolrDoc indexDocument, Document resourcMap)
-        throws XPathExpressionException, IOException, EncoderException, OREParserException {
-        ResourceMap resourceMap = ResourceMapFactory.buildResourceMap(resourcMap);
+    /**
+     * Process the resource map object - parse the resource map object and add the relationship
+     * fields to the solr docs.
+     * @param resourceMapDOMDoc  the representation of the resourcemap itself in the DOM format
+     * @param docs  the map of the solr docs inherited from the previous subprocessors
+     * @return a list of solr docs containing the relationship fields
+     * @throws OREParserException
+     */
+    private List<SolrDoc> processResourceMap(Document resourceMapDOMDoc,
+                                             Map<String, SolrDoc> docs) throws OREParserException {
+        ResourceMap resourceMap = ResourceMapFactory.buildResourceMap(resourceMapDOMDoc);
         //this list includes the resourceMap id itself.
         List<String> documentIds = resourceMap.getAllDocumentIDs();
+        // Get a list of solr docs for the above list of ids (but, it excludes the resource map
+        // id itself. The solr document in the list either inherits from the solr doc from the
+        // previous subprocessor or a new empty dummy solr doc. They are the baseline for
+        // resource map to process.
         List<SolrDoc> updateDocuments =
-            getSolrDocs(resourceMap.getIdentifier(), documentIds, indexDocument);
+            getSolrDocs(resourceMap.getIdentifier(), documentIds, docs);
+        // The resource map object merges the relationship fields into the baseline solr docs
         List<SolrDoc> mergedDocuments = resourceMap.mergeIndexedDocuments(updateDocuments);
-        mergedDocuments.add(indexDocument);
+        // Add the resource map solr doc back to the map
+        mergedDocuments.add(docs.get(resourceMap.getIdentifier()));
         return mergedDocuments;
     }
 
+    /**
+     * Create a list of the solr documents for the given id list in a resource map (it doesn't
+     * have the resource map itself). First, it looks up the solr doc from the map (docs) to see
+     * if it exists. If it exists, just use that one; otherwise generate a dummy solr doc. We
+     * don't merge the document from the solr server here.
+     * @param resourceMapId  the id of the resource map id
+     * @param ids  the list of ids in the resource map
+     * @param docs  the map of the solr docs inherited from the previous subprocessors
+     * @return a list of the solr documents for the given id list in a resource map (it doesn't
+     * have the resource map itself)
+     */
     private List<SolrDoc> getSolrDocs(String resourceMapId, List<String> ids,
-                                      SolrDoc resourceMapSolrDoc)
-        throws IOException, XPathExpressionException, EncoderException {
-        List<SolrDoc> list = new ArrayList<SolrDoc>();
+                                      Map<String, SolrDoc> docs) {
+        List<SolrDoc> list = new ArrayList<>();
         if(ids != null) {
             for(String id : ids) {
-                SolrDoc doc = httpService.getSolrDocumentById(solrQueryUri, id);
+                SolrDoc doc = docs.get(id);
                 if(doc != null) {
                     list.add(doc);
                 } else if ( !id.equals(resourceMapId)) {
                     // generate a dummy solr doc which only has the id and put it into the list.
-                    doc = generateDummySolrDoc(id, resourceMapSolrDoc, SolrElementField.FIELD_ID);
+                    doc = new DummySolrDoc(id, docs.get(resourceMapId));
                     list.add(doc);
                 }
             }
         }
         return list;
-    }
-
-    /**
-     * Generate a dummy solr doc for the given id. The _version_ of the dummy doc is -1.
-     * It has the same access rules as the docHoldsPermission solr doc. It also has an "abstract"
-     * field with the value of "A placeholding document".
-     * @param id  the identifier of the dummy solr doc
-     * @param docHoldsPermission  it holds the access rules the dummy solr doc will have
-     * @param idFieldName  the name of the field for the id. It must be either "id" or "seriesId".
-     * @return the dommy solr doc
-     */
-    public static SolrDoc generateDummySolrDoc(String id, SolrDoc docHoldsPermission,
-                                               String idFieldName) {
-        if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("The id used to generate a dummy solr doc can't be"
-                                                   + " null or blank");
-        }
-        if (idFieldName == null || (!idFieldName.equals(SolrElementField.FIELD_ID)
-            && !idFieldName.equals(SolrElementField.FIELD_SERIES_ID))) {
-            throw new IllegalArgumentException(
-                "The idFieldName should not be " + idFieldName + ". It must be either "
-                    + SolrElementField.FIELD_ID + " or " + SolrElementField.FIELD_SERIES_ID);
-        }
-        SolrDoc doc = new SolrDoc();
-        SolrElementField idField = new SolrElementField(idFieldName, id);
-        doc.addField(idField);
-        // Set the version to -1. This makes sure that the solr doc only can be created
-        // if the solr server doesn't have the id. Otherwise, it throws a version
-        // conflict exception.
-        doc.addField(new SolrElementField(SolrElementField.FIELD_VERSION,
-                                          SolrElementField.NEGATIVE_ONE));
-        doc.addField(new SolrElementField("abstract", "A placeholding document"));
-        if (docHoldsPermission != null) {
-            // Copy the access rules from the resource map solr doc to the new solr doc
-            copyFieldAllValue(SolrElementField.FIELD_READPERMISSION,
-                              docHoldsPermission, doc);
-            copyFieldAllValue(SolrElementField.FIELD_WRITEPERMISSION,
-                              docHoldsPermission, doc);
-            copyFieldAllValue(SolrElementField.FIELD_CHANGEPERMISSION,
-                              docHoldsPermission, doc);
-            copyFieldAllValue(SolrElementField.FIELD_RIGHTSHOLDER,
-                              docHoldsPermission, doc);
-        }
-        return doc;
     }
 
     /**
