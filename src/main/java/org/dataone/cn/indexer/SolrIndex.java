@@ -29,6 +29,7 @@ import org.dataone.cn.indexer.parser.IDocumentDeleteSubprocessor;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrField;
 import org.dataone.cn.indexer.parser.utility.RelationshipMergeUtility;
+import org.dataone.cn.indexer.solrhttp.DummySolrDoc;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementAdd;
@@ -235,9 +236,22 @@ public class SolrIndex {
            }
         }
        // Merge the new-generated documents with the existing solr documents in the solr server
-       for (SolrDoc mergeDoc : docs.values()) {
-           if (!mergeDoc.isMerged()) {
-               mergeRelationAttributesFromExistDocument(mergeDoc);
+       for (SolrDoc doc : docs.values()) {
+           String pid = doc.getIdentifier();
+           SolrDoc remoteDocument =
+               httpService.getSolrDocumentById(solrQueryUri, pid);
+           if (doc instanceof DummySolrDoc) {
+               DummySolrDoc dummySolrDoc = (DummySolrDoc) doc;
+               // To a dommy solr doc, we only needs its relationship. The newDoc has both the
+               // relationship fields from the dummy doc and other fields from the remoteDoc
+               SolrDoc newDoc = relationshipMergeUtility.mergeRelationships(dummySolrDoc,
+                                                                         remoteDocument);
+               // Replace the dummy doc by the new complete doc in the map
+               docs.put(pid, newDoc);
+           } else {
+               // Merge the relationship fields from the remote solrDoc to the just generated
+               // solr doc
+               relationshipMergeUtility.merge(remoteDocument, doc);
            }
        }
        return docs;
