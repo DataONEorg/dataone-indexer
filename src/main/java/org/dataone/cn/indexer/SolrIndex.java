@@ -238,23 +238,40 @@ public class SolrIndex {
        // Merge the new-generated documents with the existing solr documents in the solr server
        for (SolrDoc doc : docs.values()) {
            String pid = doc.getIdentifier();
-           SolrDoc remoteDocument =
-               httpService.getSolrDocumentById(solrQueryUri, pid);
-           if (doc instanceof DummySolrDoc) {
-               DummySolrDoc dummySolrDoc = (DummySolrDoc) doc;
-               // To a dommy solr doc, we only needs its relationship. The newDoc has both the
-               // relationship fields from the dummy doc and other fields from the remoteDoc
-               SolrDoc newDoc = relationshipMergeUtility.mergeRelationships(dummySolrDoc,
-                                                                         remoteDocument);
-               // Replace the dummy doc by the new complete doc in the map
-               docs.put(pid, newDoc);
-           } else {
-               // Merge the relationship fields from the remote solrDoc to the just generated
-               // solr doc
-               relationshipMergeUtility.merge(remoteDocument, doc);
-           }
+           docs.put(pid, mergeInfoWithRemoteDoc(doc));
        }
        return docs;
+    }
+
+    /**
+     * Combine the info between the locally generated solr doc and the existing solr doc in the
+     * remote server
+     * @param doc  the locally generated solr doc by subprocessors
+     * @return a solr doc Combine the info between the locally generated solr doc and the existing
+     * solr doc in the remote server
+     * @throws EncoderException
+     * @throws XPathExpressionException
+     * @throws IOException
+     */
+    private SolrDoc mergeInfoWithRemoteDoc(SolrDoc doc)
+        throws EncoderException, XPathExpressionException, IOException {
+        String pid = doc.getIdentifier();
+        SolrDoc remoteDocument =
+            httpService.getSolrDocumentById(solrQueryUri, pid);
+        if (doc instanceof DummySolrDoc) {
+            DummySolrDoc dummySolrDoc = (DummySolrDoc) doc;
+            // To a dommy solr doc, we only needs its relationship. The newDoc has both the
+            // relationship fields from the dummy doc and other fields from the remoteDoc
+            SolrDoc newDoc = relationshipMergeUtility.mergeRelationships(dummySolrDoc,
+                                                                         remoteDocument);
+            return newDoc;
+        } else {
+            // Merge the relationship fields from the remote solrDoc to the just generated
+            // solr doc
+            relationshipMergeUtility.merge(remoteDocument, doc);
+            return doc;
+        }
+
     }
 
     /**
