@@ -64,9 +64,9 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
     private SubprocessorUtility processorUtility;
 
     /**
-     * Returns true if subprocessor should be run against object
+     * Returns true if subprocessor should be run against objects
      * 
-     * @param formatId the the document to be processed
+     * @param formatId the document to be processed
      * @return true if this processor can parse the formatId
      */
     public boolean canProcess(String formatId) {
@@ -150,7 +150,7 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
         log.trace(documents.toString());
     }
 
-    private List<SolrDoc> process(SolrDoc indexDocument, InputStream is) throws Exception {
+    private List<SolrDoc> process(SolrDoc resourceMapDocument, InputStream is) throws Exception {
         
         // get the triplestore dataset
         long start = System.currentTimeMillis();
@@ -161,25 +161,25 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
                         System.currentTimeMillis() - start);
             
             // read the annotation
-            String indexDocId = indexDocument.getIdentifier();
-            String name = indexDocId;
+            String resourceMapDocId = resourceMapDocument.getIdentifier();
+            String name = resourceMapDocId;
     
             //Check if the identifier is a valid URI and if not, make it one by prepending "http://"
             URI nameURI;
             String scheme = null;
             try {
-                nameURI = new URI(indexDocId);
+                nameURI = new URI(resourceMapDocId);
                 scheme = nameURI.getScheme();
                 
             } catch (URISyntaxException use) {
                 // The identifier can't be parsed due to offending characters. It's not a URL
                 
-                name = "https://cn.dataone.org/cn/v1/resolve/"+indexDocId;
+                name = "https://cn.dataone.org/cn/v1/resolve/" + resourceMapDocId;
             }
             
             // The had no scheme prefix. It's not a URL
             if ((scheme == null) || (scheme.isEmpty())) {
-                name = "https://cn.dataone.org/cn/v1/resolve/"+indexDocId;
+                name = "https://cn.dataone.org/cn/v1/resolve/" + resourceMapDocId;
                 
             }
             
@@ -245,8 +245,8 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
                             if (solrDoc == null) {
 
                                 //If the id matches the document we are currently indexing, use that SolrDoc
-                                if(id.equals(indexDocId)) {
-                                    solrDoc = indexDocument;
+                                if(id.equals(resourceMapDocId)) {
+                                    solrDoc = resourceMapDocument;
                                 }
                                 //If the SolrDoc doesn't exist yet, create one
                                 else {
@@ -327,7 +327,7 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
             mergedDocuments = mergeDocs(allDocsToBeIndexed, allExistingDocs);
             
             //Add the resource map to the merged documents list
-            mergedDocuments.put(indexDocument.getIdentifier(), indexDocument);
+            mergedDocuments.put(resourceMapDocument.getIdentifier(), resourceMapDocument);
             
     
             perfLog.log("RdfXmlSubprocess.process() total take ", System.currentTimeMillis() - start);
