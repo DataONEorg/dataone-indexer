@@ -29,6 +29,13 @@
                 <value>resourceMap</value>
                 <value>documents</value>
                 <value>isDocumentedBy</value>
+                <!-- from application-context-annotator.xml -->
+                <value>sem_annotation</value>
+                <value>sem_annotation_bioportal_sm</value>
+                <value>sem_annotation_esor_sm</value>
+                <value>sem_annotation_cosine_sm</value>
+                <value>sem_annotates</value>
+                <value>sem_annotated_by</value>
             </list>
         </property>
     </bean>
