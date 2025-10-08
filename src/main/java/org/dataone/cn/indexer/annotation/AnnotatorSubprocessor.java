@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrDataField;
 import org.dataone.cn.indexer.parser.SubprocessorUtility;
+import org.dataone.cn.indexer.solrhttp.DummySolrDoc;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
@@ -141,21 +142,7 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
 
             // make sure we have a reference for the document we annotating
             if (referencedDoc == null) {
-                try {
-                    referencedDoc = httpService.retrieveDocumentFromSolrServer(referencedPid,
-                            solrQueryUri);
-                } catch (Exception e) {
-                    log.warn("Unable to retrieve solr document: " + referencedPid
-                                 + ". Exception attempting to communicate with solr server: "
-                                 + e.getMessage());
-                }
-
-                if (referencedDoc == null) {
-                    log.warn("DID NOT LOCATE REFERENCED DOC: " + referencedPid);
-                    referencedDoc = new SolrDoc();
-                    referencedDoc.addField(new SolrElementField(SolrElementField.FIELD_ID,
-                                                                referencedPid));
-                }
+                referencedDoc = new DummySolrDoc(referencedPid, null);
                 docs.put(referencedPid, referencedDoc);
             }
 
@@ -202,13 +189,13 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
             log.debug("RESULTS: " + results);
             JSONObject annotation = (JSONObject) JSONValue.parse(results);
 
-            SolrDoc annotations = new SolrDoc();
 
             // use catch-all annotation field for the tags
             String tagKey = FIELD_ANNOTATION;
 
             // make sure we know which pid we are talking about
             String pidValue = annotation.get("pid").toString();
+            SolrDoc annotations = new DummySolrDoc(pidValue, null);
             if (!annotations.hasFieldWithValue(SolrElementField.FIELD_ID, pidValue)) {
                 annotations.addField(new SolrElementField(SolrElementField.FIELD_ID, pidValue));
             }
