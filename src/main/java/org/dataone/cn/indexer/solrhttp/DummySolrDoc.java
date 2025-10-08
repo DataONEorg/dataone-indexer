@@ -8,8 +8,9 @@ import java.util.List;
  * solr server.
  */
 public class DummySolrDoc extends SolrDoc {
-    private static final String INDICATION_FIELD = "abstract";
-    private static final String INDICATION_VALUE = "A placeholding document";
+    private static final String INDICATION_FIELD = "title";
+    private static final String INDICATION_VALUE =
+        "dataone-indexer-placeholder-title-please-ignore";
     // It doesn't include the id field.
     private static final String[] artificialFields = {SolrElementField.FIELD_VERSION,
         SolrElementField.FIELD_READPERMISSION, SolrElementField.FIELD_WRITEPERMISSION,

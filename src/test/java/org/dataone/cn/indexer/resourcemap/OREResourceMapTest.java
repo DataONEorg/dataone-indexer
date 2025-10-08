@@ -16,6 +16,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.solr.common.SolrDocument;
 import org.dataone.cn.index.DataONESolrJettyTestBase;
+import org.dataone.cn.indexer.solrhttp.DummySolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.service.types.v1.Identifier;
 import org.dspace.foresite.OREException;
@@ -247,8 +248,8 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
             count++;
         }
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SIZE));
-        Assert.assertEquals("A placeholding document",
-                            ((List)data.getFieldValues("abstract")).get(0));
+        Assert.assertEquals(DummySolrDoc.getIndicationFieldValue(),
+            ((List)data.getFieldValues(DummySolrDoc.getIndicationFieldName())).get(0));
         Assert.assertEquals(
             missingDataId, ((List) data.getFieldValues(SolrElementField.FIELD_ID)).get(0));
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SERIES_ID));
