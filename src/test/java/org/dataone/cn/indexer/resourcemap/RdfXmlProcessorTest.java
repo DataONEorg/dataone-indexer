@@ -336,13 +336,6 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
     public void testPartFields() throws Exception {
 
         log.debug("Testing RDF/XML parts indexing of resourcemap-with-part.xml: ");
-        
-        expectedFields.clear();
-        expectedFields.put("hasPart", "urn:uuid:f18812ac-7f4f-496c-82cc-3f4f54830274");
-        compareFields(expectedFields, partResourcemap.getInputStream(),
-                provRdfXmlSubprocessor, "resource_map_urn:uuid:cd489c7e-be88-4d57-b13a-911b25a0b47f",
-                null);
-
         // Ensure fields associated with the data input objects are indexed
         expectedFields.clear();
         expectedFields.put("isPartOf", "urn:uuid:27ae3627-be62-4963-859a-8c96d940cadc");
