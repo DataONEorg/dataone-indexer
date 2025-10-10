@@ -29,10 +29,8 @@
                 <ref bean="prov20150115.instanceOfClass" />
                 <!--  <ref bean="prov20150115.hasSources" /> -->
                 <ref bean="prov20150115.hasDerivations" />
-                <ref bean="hasPart" />
                 <ref bean="isPartOf" />
                 <ref bean="hasPart.reverse" />
-                <ref bean="isPartOf.reverse" />
             </list>
         </property>
     </bean>
