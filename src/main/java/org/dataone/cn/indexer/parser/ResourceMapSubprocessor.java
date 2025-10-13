@@ -93,10 +93,12 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
         // Process the resource map to get the result - a list of solr docs containing
         // relationship. However, those solr docs haven't been merged (got information) from the
         // existing solr docs on the solr server.
-        List<SolrDoc> processedDocs = processResourceMap(resourceMap, docs);
+        List<SolrDoc> processedDocs = processResourceMap(identifier, resourceMap, docs);
         Map<String, SolrDoc> processedDocsMap = new HashMap<>();
         for (SolrDoc processedDoc : processedDocs) {
-            processedDocsMap.put(processedDoc.getIdentifier(), processedDoc);
+            if (processedDoc != null) {
+                processedDocsMap.put(processedDoc.getIdentifier(), processedDoc);
+            }
         }
         return processedDocsMap;
     }
@@ -104,12 +106,13 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
     /**
      * Process the resource map object - parse the resource map object and add the relationship
      * fields to the solr docs.
+     * @param identifier  the id of the resource map object
      * @param resourceMapDOMDoc  the representation of the resourcemap itself in the DOM format
      * @param docs  the map of the solr docs inherited from the previous subprocessors
      * @return a list of solr docs containing the relationship fields
      * @throws OREParserException
      */
-    private List<SolrDoc> processResourceMap(Document resourceMapDOMDoc,
+    private List<SolrDoc> processResourceMap(String identifier, Document resourceMapDOMDoc,
                                              Map<String, SolrDoc> docs) throws OREParserException {
         ResourceMap resourceMap = ResourceMapFactory.buildResourceMap(resourceMapDOMDoc);
         //this list includes the resourceMap id itself.
@@ -118,12 +121,11 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
         // id itself. The solr document in the list either inherits from the solr doc from the
         // previous subprocessor or a new empty dummy solr doc. They are the baseline for
         // resource map to process.
-        List<SolrDoc> updateDocuments =
-            getSolrDocs(resourceMap.getIdentifier(), documentIds, docs);
+        List<SolrDoc> updateDocuments = getSolrDocs(identifier, documentIds, docs);
         // The resource map object merges the relationship fields into the baseline solr docs
         List<SolrDoc> mergedDocuments = resourceMap.mergeIndexedDocuments(updateDocuments);
         // Add the resource map solr doc back to the map
-        mergedDocuments.add(docs.get(resourceMap.getIdentifier()));
+        mergedDocuments.add(docs.get(identifier));
         return mergedDocuments;
     }
 
