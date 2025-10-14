@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.xml.xpath.XPathExpressionException;
 
@@ -45,6 +46,8 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
  * The solr docs of the science metadata doc and data file have the annotation information.
  */
 public class RdfXmlSubprocessor implements IDocumentSubprocessor {
+
+    private static final String RESOLVE_URL = "https://cn.dataone.org/cn/v1/resolve/";
 
     private static Log log = LogFactory.getLog(RdfXmlSubprocessor.class);
     private static PerformanceLogger perfLog = PerformanceLogger.getInstance();
@@ -163,12 +166,12 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
             } catch (URISyntaxException use) {
                 // The identifier can't be parsed due to offending characters. It's not a URL
                 
-                name = "https://cn.dataone.org/cn/v1/resolve/" + resourceMapDocId;
+                name = RESOLVE_URL + resourceMapDocId;
             }
             
             // The had no scheme prefix. It's not a URL
             if ((scheme == null) || (scheme.isEmpty())) {
-                name = "https://cn.dataone.org/cn/v1/resolve/" + resourceMapDocId;
+                name = RESOLVE_URL + resourceMapDocId;
                 
             }
             
@@ -195,10 +198,12 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
 
                     //Get the Sparql query for this field
                     q = ((SparqlField) field).getQuery();
-                    
+
                     //Replace the graph name with the URI of this resource map
                     q = q.replaceAll("\\$GRAPH_NAME", name);
-                    
+                    q = q.replaceAll("\\$DEFAULT_URI", RESOLVE_URL);
+
+
                     //Create a Query object
                     Query query = QueryFactory.create(q);
                     log.trace("Executing SPARQL query:\n" + query.toString());

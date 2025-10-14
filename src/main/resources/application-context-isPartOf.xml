@@ -49,7 +49,7 @@
                 PREFIX dcterms: <http://purl.org/dc/terms/>
                 PREFIX schemaorg: <https://schema.org/>
 
-                SELECT (STR(?pidValue) AS ?pid) (REPLACE(STR(?project), "^https://cn.dataone.org/cn/v1/resolve/", "") AS ?isPartOf)
+                SELECT (STR(?pidValue) AS ?pid) (REPLACE(STR(?project), CONCAT("^", <$DEFAULT_URI>), "") AS ?isPartOf)
                 FROM <$GRAPH_NAME>
                 WHERE {
                         ?project schemaorg:hasPart ?resourceMap .
