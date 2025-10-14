@@ -293,19 +293,22 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
      */
     @Test
     public void testPartFields() throws Exception {
-
+        String portal1 = "clown-portal";
+        String portal2 = "https://doi.org/10.5063/12345";
         log.debug("Testing RDF/XML parts indexing of resourcemap-with-part.xml: ");
         // Ensure fields associated with the data input objects are indexed
         expectedFields.clear();
-        expectedFields.put("isPartOf", "clown-portal");
+        expectedFields.put("isPartOf", portal1);
         compareFields(expectedFields, partResourcemap.getInputStream(),
                 provRdfXmlSubprocessor, "resource_map_urn:uuid:cd489c7e-be88-4d57-b13a-911b25a0b47f",
                 "urn:uuid:f18812ac-7f4f-496c-82cc-3f4f54830274");
         expectedFields.clear();
-        expectedFields.put("isPartOf", "https://doi.org/10.5063/12345");
+        expectedFields.put("isPartOf", portal2);
         compareFields(expectedFields, partResourcemap.getInputStream(),
                       provRdfXmlSubprocessor, "resource_map_urn:uuid:cd489c7e-be88-4d57-b13a-911b25a0b47f",
                       "urn:uuid:f18812ac-7f4f-496c-82cc-12345");
+        // Make sure the portal doesn't have a solr doc
+        assertNotPresentInSolrIndex(portal1);
     }
 
 
