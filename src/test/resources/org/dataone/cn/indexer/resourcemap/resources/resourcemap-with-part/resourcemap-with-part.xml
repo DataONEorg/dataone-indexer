@@ -32,4 +32,15 @@
     <rdf:Description rdf:about="clown-portal">
         <schema:hasPart rdf:resource="https://cn-stage-2.test.dataone.org/cn/v2/resolve/urn%3Auuid%3Af18812ac-7f4f-496c-82cc-3f4f54830274"/>
     </rdf:Description>
+    <rdf:Description
+            rdf:about="https://cn-stage-2.test.dataone.org/cn/v2/resolve/urn%3Auuid%3Af18812ac-7f4f-496c-82cc-12345">
+        <terms:identifier>urn:uuid:f18812ac-7f4f-496c-82cc-12345</terms:identifier>
+        <cito:isDocumentedBy rdf:resource="https://cn-stage-2.test.dataone.org/cn/v2/resolve/urn%3Auuid%3Af18812ac-7f4f-496c-82cc-3f4f54830274"/>
+        <ter:isAggregatedBy rdf:resource="https://cn-stage-2.test.dataone.org/cn/v2/resolve/resource_map_urn%3Auuid%3Acd489c7e-be88-4d57-b13a-911b25a0b47f#aggregation"/>
+        <schema:isPartOf>https://doi.org/10.5063/12345</schema:isPartOf>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://doi.org/10.5063/F15M648T">
+        <schema:hasPart
+                rdf:resource="https://cn-stage-2.test.dataone.org/cn/v2/resolve/urn%3Auuid%3Af18812ac-7f4f-496c-82cc-12345"/>
+    </rdf:Description>
 </rdf:RDF>

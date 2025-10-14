@@ -301,8 +301,13 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
         compareFields(expectedFields, partResourcemap.getInputStream(),
                 provRdfXmlSubprocessor, "resource_map_urn:uuid:cd489c7e-be88-4d57-b13a-911b25a0b47f",
                 "urn:uuid:f18812ac-7f4f-496c-82cc-3f4f54830274");
+        expectedFields.clear();
+        expectedFields.put("isPartOf", "https://doi.org/10.5063/12345");
+        compareFields(expectedFields, partResourcemap.getInputStream(),
+                      provRdfXmlSubprocessor, "resource_map_urn:uuid:cd489c7e-be88-4d57-b13a-911b25a0b47f",
+                      "urn:uuid:f18812ac-7f4f-496c-82cc-12345");
     }
-    
+
 
     /**
      * Test the end to end index processing of a resource map with provenance statements
