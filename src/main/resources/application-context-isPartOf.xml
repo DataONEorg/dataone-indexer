@@ -36,8 +36,7 @@
     </bean>
 
 
-    <!-- handle the hasPart element in the resource map to figure out the subject and object.
-    Note: the predicate is isPartof rather than hasPart-->
+    <!-- Transform the hasPart element in the resource map to the relationship of isPartOf -->
     <bean id="hasPart.reverse" class="org.dataone.cn.indexer.annotation.SparqlField">
         <constructor-arg name="name" value="isPartOf" />
         <constructor-arg name="query">
