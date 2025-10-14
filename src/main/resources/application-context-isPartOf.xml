@@ -26,10 +26,8 @@
                 FROM <$GRAPH_NAME>
                 WHERE {
 
-                    ?resourceMap schemaorg:isPartOf ?project .
-                    ?project dcterms:identifier ?isPartOfValue .
                     ?resourceMap dcterms:identifier ?pidValue .
-
+                    ?resourceMap schemaorg:isPartOf ?isPartOfValue .
 
                     }
                  ]]>
@@ -51,15 +49,11 @@
                 PREFIX dcterms: <http://purl.org/dc/terms/>
                 PREFIX schemaorg: <https://schema.org/>
 
-                SELECT (str(?pidValue) as ?pid) (str(?isPartOfValue) as ?isPartOf)
+                SELECT (STR(?pidValue) AS ?pid) (REPLACE(STR(?project), "^https://cn.dataone.org/cn/v1/resolve/", "") AS ?isPartOf)
                 FROM <$GRAPH_NAME>
                 WHERE {
-
-                    ?project schemaorg:hasPart ?resourceMap .
-                    ?resourceMap dcterms:identifier ?pidValue .
-                    ?project dcterms:identifier ?isPartOfValue .
-
-
+                        ?project schemaorg:hasPart ?resourceMap .
+                        ?resourceMap dcterms:identifier ?pidValue .
                     }
                  ]]>
             </value>
