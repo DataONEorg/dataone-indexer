@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <ns1:systemMetadata xmlns:ns1="http://ns.dataone.org/service/types/v2.0">
-    <serialVersion>1</serialVersion>
-  <identifier>resourcemap-with-part.xml</identifier>
-  <formatId>http://www.openarchives.org/ore/terms</formatId>
-  <size>2919</size>
-  <checksum algorithm="MD5">e0fc4cd733048eb7cfebe55dbe05d414</checksum>
+  <serialVersion>1</serialVersion>
+  <identifier>foo.127.1</identifier>
+  <formatId>text/csv</formatId>
+  <size>9</size>
+  <checksum algorithm="SHA-1">aff0032ba64e33691653306a245a2f7c98eac8b7</checksum>
   <submitter>dataone_integration_test_user</submitter>
   <rightsHolder>dataone_integration_test_user</rightsHolder>
   <accessPolicy>

@@ -47,6 +47,7 @@
        <ref bean="annotationDeleteSubprocessor" />
       </list>
      </property>
+     <property name="relationshipMergeUtility" ref="relationshipMergeUtility"/>
  </bean>
 
 

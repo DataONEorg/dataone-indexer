@@ -58,7 +58,8 @@ xmlns:context="http://www.springframework.org/schema/context"
     <import resource="classpath:application-context-collections.xml" />  
     <import resource="classpath:application-context-portals.xml" />  
     <import resource="classpath:application-context-schema-org.xml" />
-    <import resource="classpath:application-context-json-ld.xml" /> 
+    <import resource="classpath:application-context-json-ld.xml" />
+    <import resource="classpath:application-context-relationship-merge.xml" />
 
     <import resource="classpath:org/dataone/cn/indexer/annotation/test-context-annotator.xml"/>
 
@@ -545,6 +546,46 @@ xmlns:context="http://www.springframework.org/schema/context"
         <constructor-arg type="java.lang.String" 
         value="org/dataone/cn/indexer/resourcemap/resources/incomplete_transitive_resourcemap.rdf"/>
     </bean>
-    
+
     <bean id="oreResourceMapTest" class="org.dataone.cn.indexer.resourcemap.OREResourceMapTest"/>
+
+    <bean id="missingComponentResourcemap" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/missing.component.resourcemap/missing.component.resourcemap"/>
+    </bean>
+
+    <bean id="peggym1321Sci" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.132.1/peggym.132.1"/>
+    </bean>
+
+    <bean id="peggym1331Resourcemap" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.133.1.resourcemap/peggym.133.1.resourcemap"/>
+    </bean>
+
+    <bean id="peggym1331Sci" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.133.1/peggym.133.1"/>
+    </bean>
+
+    <bean id="data11" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/data.1.1/data.1.1"/>
+    </bean>
+
+    <bean id="foo1271" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/foo.127.1/foo.127.1"/>
+    </bean>
+
+    <bean id="peggym1341Sci" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.134.1/peggym.134.1"/>
+    </bean>
+
+    <bean id="missingComponentResourcemap2" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/missing.component.resourcemap2/missing.component.resourcemap2"/>
+    </bean>
 </beans>

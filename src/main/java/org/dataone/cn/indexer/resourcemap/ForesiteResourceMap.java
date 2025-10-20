@@ -172,9 +172,9 @@ public class ForesiteResourceMap implements ResourceMap {
 
                 Identifier pid = new Identifier();
                 pid.setValue(documentedByIdentifier.getValue());
-                if (indexVisibilityDelegate.isDocumentVisible(pid)) {
-                    documentsResourceEntry.addDocuments(documentedByIdentifier.getValue());
-                }
+                // Now Metacat doesn't check if the systemmetadata or solr doc exists
+                // before adding it to the list.
+                documentsResourceEntry.addDocuments(documentedByIdentifier.getValue());
 
                 ForesiteResourceEntry documentedByResourceEntry = resourceMap
                         .get(documentedByIdentifier.getValue());
@@ -188,10 +188,10 @@ public class ForesiteResourceMap implements ResourceMap {
 
                 pid = new Identifier();
                 pid.setValue(entry.getKey().getValue());
+                // Now Metacat doesn't check if the systemmetadata or solr doc exists
+                // before adding it to the list.
+                documentedByResourceEntry.addDocumentedBy(entry.getKey().getValue());
 
-                if (indexVisibilityDelegate.isDocumentVisible(pid)) {
-                    documentedByResourceEntry.addDocumentedBy(entry.getKey().getValue());
-                }
             }
         }
     }
@@ -255,6 +255,9 @@ public class ForesiteResourceMap implements ResourceMap {
             }
         } catch (ClassCastException e) {
             logger.warn("The systemmetadata is a v1 object and we need to do nothing");
+        } catch (NotFound e) {
+            logger.warn("Metacat couldn't find the system metadata for " + identifier.getValue()
+                            + " but it still continues the merge process.");
         }
 
 

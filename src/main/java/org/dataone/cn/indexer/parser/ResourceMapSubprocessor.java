@@ -1,25 +1,3 @@
-/**
- * This work was created by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For 
- * more information on DataONE, see our web site at http://dataone.org.
- *
- *   Copyright ${year}
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- * 
- * $Id$
- */
-
 package org.dataone.cn.indexer.parser;
 
 import java.io.IOException;
@@ -40,17 +18,17 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.cn.indexer.resourcemap.ResourceMap;
 import org.dataone.cn.indexer.resourcemap.ResourceMapFactory;
+import org.dataone.cn.indexer.solrhttp.DummySolrDoc;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
+import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
-import org.dataone.indexer.performance.PerformanceLogger;
 import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.exceptions.UnsupportedType;
 import org.dataone.service.types.v1.Identifier;
 import org.dspace.foresite.OREParserException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -73,19 +51,6 @@ import org.xml.sax.SAXException;
 public class ResourceMapSubprocessor implements IDocumentSubprocessor {
 
     private static Log logger = LogFactory.getLog(ResourceMapSubprocessor.class.getName());
-    
-    private static int waitingTime = Settings.getConfiguration().getInt("index.resourcemap.waitingComponent.time", 600);
-    private static int maxAttempts = Settings.getConfiguration().getInt("index.resourcemap.waitingComponent.max.attempts", 15);
-    
-    //private static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    //private static DocumentBuilder builder = null;
-    /*static  {
-        try {
-            builder = factory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            logger.error("ResourceMapSubprocess.static - can't initialize the DocumentBuilder since " + e.getMessage());
-        }
-    }*/
 
     private HTTPService httpService = null;
 
@@ -93,12 +58,11 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
 
     private SubprocessorUtility processorUtility;
 
-    private PerformanceLogger perfLog = PerformanceLogger.getInstance();
-    
+
+
     private List<String> matchDocuments = null;
     private List<String> fieldsToMerge = new ArrayList<String>();
-    
-   
+
     /**
      * Merge updates with existing solr documents
      * 
@@ -113,83 +77,105 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
         return processorUtility.mergeWithIndexedDocument(indexDocument, fieldsToMerge);
     }
 
-  
-    
-          
+
     @Override
     public Map<String, SolrDoc> processDocument(String identifier, Map<String, SolrDoc> docs,
     InputStream is) throws IOException, EncoderException, SAXException,
         XPathExpressionException, ParserConfigurationException, SolrServerException, 
-        NotImplemented, NotFound, UnsupportedType, OREParserException, ServiceFailure, InterruptedException{
-        SolrDoc resourceMapDoc = docs.get(identifier);
-        //Document doc = XmlDocumentUtility.generateXmlDocument(is);
+        NotImplemented, NotFound, UnsupportedType, OREParserException, ServiceFailure,
+        InterruptedException{
         Identifier id = new Identifier();
         id.setValue(identifier);
-        
         //Get the path to the resource map file
-        //String resourcMapPath = DistributedMapsFactory.getObjectPathMap().get(id);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document resourceMap = builder.parse(is);
-        List<SolrDoc> processedDocs = processResourceMap(resourceMapDoc, resourceMap);
-        Map<String, SolrDoc> processedDocsMap = new HashMap<String, SolrDoc>();
+        // Process the resource map to get the result - a list of solr docs containing
+        // relationship. However, those solr docs haven't been merged (got information) from the
+        // existing solr docs on the solr server.
+        List<SolrDoc> processedDocs = processResourceMap(identifier, resourceMap, docs);
+        Map<String, SolrDoc> processedDocsMap = new HashMap<>();
         for (SolrDoc processedDoc : processedDocs) {
-            processedDocsMap.put(processedDoc.getIdentifier(), processedDoc);
+            if (processedDoc != null) {
+                processedDocsMap.put(processedDoc.getIdentifier(), processedDoc);
+            }
         }
         return processedDocsMap;
     }
 
-    private List<SolrDoc> processResourceMap(SolrDoc indexDocument, Document resourcMap)
-                    throws XPathExpressionException, IOException, SAXException, ParserConfigurationException, EncoderException, SolrServerException, NotImplemented, NotFound, UnsupportedType, OREParserException, InterruptedException {
-        //ResourceMap resourceMap = new ResourceMap(resourceMapDocument);
-        //IndexVisibilityHazelcastImplWithArchivedObj indexVisitility = new IndexVisibilityHazelcastImplWithArchivedObj();
-        ResourceMap resourceMap = ResourceMapFactory.buildResourceMap(resourcMap);
-        List<String> documentIds = resourceMap.getAllDocumentIDs();//this list includes the resourceMap id itself.
-        //List<SolrDoc> updateDocuments = httpService.getDocumentsById(getSolrQueryUri(), documentIds);
-        List<SolrDoc> updateDocuments = getSolrDocs(resourceMap.getIdentifier(), documentIds);
+    /**
+     * Process the resource map object - parse the resource map object and add the relationship
+     * fields to the solr docs.
+     * @param identifier  the id of the resource map object
+     * @param resourceMapDOMDoc  the representation of the resourcemap itself in the DOM format
+     * @param docs  the map of the solr docs inherited from the previous subprocessors
+     * @return a list of solr docs containing the relationship fields
+     * @throws OREParserException
+     */
+    private List<SolrDoc> processResourceMap(String identifier, Document resourceMapDOMDoc,
+                                             Map<String, SolrDoc> docs) throws OREParserException {
+        ResourceMap resourceMap = ResourceMapFactory.buildResourceMap(resourceMapDOMDoc);
+        //this list includes the resourceMap id itself.
+        List<String> documentIds = resourceMap.getAllDocumentIDs();
+        // Get a list of solr docs for the above list of ids (but, it excludes the resource map
+        // id itself. The solr document in the list either inherits from the solr doc from the
+        // previous subprocessor or a new empty dummy solr doc. They are the baseline for
+        // resource map to process.
+        List<SolrDoc> updateDocuments = getSolrDocs(identifier, documentIds, docs);
+        // The resource map object merges the relationship fields into the baseline solr docs
         List<SolrDoc> mergedDocuments = resourceMap.mergeIndexedDocuments(updateDocuments);
-        /*if(mergedDocuments != null) {
-            for(SolrDoc doc : mergedDocuments) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                doc.serialize(out, "UTF-8");
-                String result = new String(out.toByteArray(), "UTF-8");
-                System.out.println("after updated document===========================");
-                System.out.println(result);
-            }
-        }*/
-        mergedDocuments.add(indexDocument);
+        // Add the resource map solr doc back to the map
+        mergedDocuments.add(docs.get(identifier));
         return mergedDocuments;
     }
-    
-    private List<SolrDoc> getSolrDocs(String resourceMapId, List<String> ids) throws SolrServerException, IOException, ParserConfigurationException, SAXException, XPathExpressionException, NotImplemented, NotFound, UnsupportedType, InterruptedException, EncoderException {
-        List<SolrDoc> list = new ArrayList<SolrDoc>();
+
+    /**
+     * Create a list of the solr documents for the given id list in a resource map (it doesn't
+     * have the resource map itself). First, it looks up the solr doc from the map (docs) to see
+     * if it exists. If it exists, just use that one; otherwise generate a dummy solr doc. We
+     * don't merge the document from the solr server here.
+     * @param resourceMapId  the id of the resource map id
+     * @param ids  the list of ids in the resource map
+     * @param docs  the map of the solr docs inherited from the previous subprocessors
+     * @return a list of the solr documents for the given id list in a resource map (it doesn't
+     * have the resource map itself)
+     */
+    private List<SolrDoc> getSolrDocs(String resourceMapId, List<String> ids,
+                                      Map<String, SolrDoc> docs) {
+        List<SolrDoc> list = new ArrayList<>();
         if(ids != null) {
             for(String id : ids) {
-                SolrDoc doc = httpService.getSolrDocumentById(solrQueryUri, id);
+                SolrDoc doc = docs.get(id);
                 if(doc != null) {
                     list.add(doc);
                 } else if ( !id.equals(resourceMapId)) {
-                    for (int i=0; i<maxAttempts; i++) {
-                        Thread.sleep(waitingTime);
-                        doc = httpService.getSolrDocumentById(solrQueryUri, id);;
-                        logger.info("ResourceMapSubprocessor.getSolrDocs - the " + (i+1) + " time to wait " + 
-                                   waitingTime + " to get the solr doc for " + id);
-                        if (doc != null) {
-                            break;
-                        }
-                    }
-                    if (doc != null) {
-                        list.add(doc);
-                    } else {
-                        throw new SolrServerException("Solr index doesn't have the information about the id "+id+
-                                " which is a component in the resource map "+resourceMapId+
-                                ". Metacat-Index can't process the resource map prior to its components.");
-                    }
+                    // generate a dummy solr doc which only has the id and put it into the list.
+                    doc = new DummySolrDoc(id, docs.get(resourceMapId));
+                    list.add(doc);
                 }
             }
         }
         return list;
-    } 
+    }
+
+    /**
+     * Copy all values of the given field name in the source solr doc to the destination solr doc
+     * @param fieldName  the given field name
+     * @param source  the source solr doc
+     * @param dest  the destination solr doc
+     */
+    protected static void copyFieldAllValue(String fieldName, SolrDoc source, SolrDoc dest) {
+        if (fieldName != null && !fieldName.isBlank()) {
+            List<String> values = source.getAllFieldValues(fieldName);
+            logger.debug("The list of all values of the " + fieldName + " field in the source "
+                             + "solr doc is " + values);
+            if (values != null && !values.isEmpty()) {
+                for (String value : values) {
+                    dest.addField(new SolrElementField(fieldName, value));
+                }
+            }
+        }
+    }
 
     public List<String> getMatchDocuments() {
         return matchDocuments;

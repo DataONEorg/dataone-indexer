@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <ns1:systemMetadata xmlns:ns1="http://ns.dataone.org/service/types/v2.0">
     <serialVersion>1</serialVersion>
-  <identifier>resourcemap-with-part.xml</identifier>
+  <identifier>peggym.133.1.resourcemap</identifier>
   <formatId>http://www.openarchives.org/ore/terms</formatId>
-  <size>2919</size>
-  <checksum algorithm="MD5">e0fc4cd733048eb7cfebe55dbe05d414</checksum>
+  <size>2526</size>
+  <checksum algorithm="SHA-1">eb3fb71244c745197274c2226d32b8426f93046f</checksum>
   <submitter>dataone_integration_test_user</submitter>
   <rightsHolder>dataone_integration_test_user</rightsHolder>
   <accessPolicy>
@@ -18,8 +18,8 @@
     </allow>
   </accessPolicy>
   <replicationPolicy replicationAllowed="true"/>
-  <dateUploaded>2011-08-31T15:59:47.171874</dateUploaded>
-  <dateSysMetadataModified>2011-08-31T15:59:47.173344</dateSysMetadataModified>
+  <dateUploaded>2011-08-31T15:59:51.04191</dateUploaded>
+  <dateSysMetadataModified>2011-08-31T15:59:51.055664</dateSysMetadataModified>
   <originMemberNode>test_documents</originMemberNode>
   <authoritativeMemberNode>test_documents</authoritativeMemberNode>
 </ns1:systemMetadata>
