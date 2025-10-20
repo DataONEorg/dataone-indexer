@@ -62,16 +62,16 @@ public class RelationshipMergeUtility {
             if (dummy != null) {
                 //Just assign the field list from dummy to the new solr doc
                 newDoc.setFieldList(dummy.getFieldList());
-            } else {
-                // Dummy is null as well. Just return a new empty solr doc
             }
+            // else dummy is null as well. Just return a new empty solr doc
+
         } else {
             // The real doc is not null
             List<String> ids = realDoc.getAllFieldValues(SolrElementField.FIELD_ID);
             if (ids.size() != 1) {
                 throw new IllegalArgumentException(
                     "RelationshipMergeUtilityThe.mergeRelationships - real solr document should "
-                        + "have and have only one id.");
+                        + "have only one id.");
             }
             String id = ids.get(0);
             if (id == null || id.isBlank()) {
@@ -86,14 +86,14 @@ public class RelationshipMergeUtility {
             } else {
                 //Check if the realDoc matches the dummyId if the realDoc has an id
                 List<String> dummyIds = dummy.getAllFieldValues(SolrElementField.FIELD_ID);
-                if (dummyIds.size() == 1 && !id.equals(dummyIds.get(0))) {
-                    throw new IllegalArgumentException(
-                        "RelationshipMergeUtilityThe.mergeRelationships - dummy solr document should"
-                            + " have the same id as the one in the real doc.");
-                } else if (dummyIds.size() != 1) {
+                if (dummyIds.size() != 1) {
                     throw new IllegalArgumentException(
                         "RelationshipMergeUtilityThe.mergeRelationships - the dummy solr document "
                             + "should have only one id.");
+                } else if (!id.equals(dummyIds.get(0))) {
+                    throw new IllegalArgumentException(
+                        "RelationshipMergeUtilityThe.mergeRelationships - dummy solr document should"
+                            + " have the same id as the one in the real doc.");
                 }
                 // Assign the real doc's field list to the new doc. Now the newDoc preserves all
                 // fields from the realDoc
