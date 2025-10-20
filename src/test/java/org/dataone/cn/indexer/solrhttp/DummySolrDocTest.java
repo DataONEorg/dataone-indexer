@@ -2,8 +2,8 @@ package org.dataone.cn.indexer.solrhttp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -34,19 +34,13 @@ public class DummySolrDocTest {
         accessDoc.addField(new SolrElementField(SolrElementField.FIELD_WRITEPERMISSION, user1));
         accessDoc.addField(new SolrElementField(SolrElementField.FIELD_WRITEPERMISSION, user2));
 
-        try {
-            doc = new DummySolrDoc(null, accessDoc);
-            fail("Test cannot reach here since the id is null");
-        } catch (RuntimeException e) {
-            assertTrue(e.getMessage().contains(SolrElementField.FIELD_ID));
-        }
+        RuntimeException e = assertThrows(RuntimeException.class,
+                                                  () -> new DummySolrDoc(null, accessDoc));
+        assertTrue(e.getMessage().contains(SolrElementField.FIELD_ID));
 
-        try {
-            doc = new DummySolrDoc("", accessDoc);
-            fail("Test cannot reach here since the id is blank");
-        } catch (RuntimeException e) {
-            assertTrue(e.getMessage().contains(SolrElementField.FIELD_ID));
-        }
+        e = assertThrows(RuntimeException.class,
+                         () -> new DummySolrDoc("", accessDoc));
+        assertTrue(e.getMessage().contains(SolrElementField.FIELD_ID));
 
         doc = new DummySolrDoc(pid1, null);
         assertEquals(3, doc.getFieldList().size());
