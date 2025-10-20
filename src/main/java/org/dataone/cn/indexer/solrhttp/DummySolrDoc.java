@@ -11,16 +11,12 @@ public class DummySolrDoc extends SolrDoc {
     private static final String INDICATION_FIELD = "title";
     private static final String INDICATION_VALUE =
         "dataone-indexer-placeholder-title-please-ignore";
-    // It doesn't include the id field.
-    private static final String[] artificialFields = {SolrElementField.FIELD_VERSION,
-        SolrElementField.FIELD_READPERMISSION, SolrElementField.FIELD_WRITEPERMISSION,
-        SolrElementField.FIELD_CHANGEPERMISSION, SolrElementField.FIELD_RIGHTSHOLDER,
-        INDICATION_FIELD};
 
     /**
      * Constructor
      * @param pid  the id of the document
-     * @param docHoldsPermission  the permission of the doc will be used by the dummy doc
+     * @param docHoldsPermission  a doc containing the access rules that will be copied to this
+     *                            dummy doc
      */
     public DummySolrDoc(String pid, SolrDoc docHoldsPermission) {
         super();
@@ -34,20 +30,21 @@ public class DummySolrDoc extends SolrDoc {
         // if the solr server doesn't have the id. Otherwise, it throws a version
         // conflict exception.
         // the version field
-        addField(new SolrElementField(artificialFields[0], SolrElementField.NEGATIVE_ONE));
+        addField(
+            new SolrElementField(SolrElementField.FIELD_VERSION, SolrElementField.NEGATIVE_ONE));
         if (docHoldsPermission != null) {
             // Copy the access rules from the resource map solr doc to the new solr doc
             // The read permission field
-            copyFieldAllValue(artificialFields[1], docHoldsPermission, this);
+            copyFieldAllValue(SolrElementField.FIELD_READPERMISSION, docHoldsPermission, this);
             // The write permission field
-            copyFieldAllValue(artificialFields[2], docHoldsPermission, this);
+            copyFieldAllValue(SolrElementField.FIELD_WRITEPERMISSION, docHoldsPermission, this);
             // The Change permission field
-            copyFieldAllValue(artificialFields[3], docHoldsPermission, this);
+            copyFieldAllValue(SolrElementField.FIELD_CHANGEPERMISSION, docHoldsPermission, this);
             // The right holder field
-            copyFieldAllValue(artificialFields[4], docHoldsPermission, this);
+            copyFieldAllValue(SolrElementField.FIELD_RIGHTSHOLDER, docHoldsPermission, this);
         }
-        // the indication field (abstract)
-        addField(new SolrElementField(artificialFields[5], INDICATION_VALUE));
+        // the indication field (title)
+        addField(new SolrElementField(INDICATION_FIELD, INDICATION_VALUE));
     }
 
     /**
