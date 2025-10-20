@@ -7,12 +7,9 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
+
 
 import javax.xml.xpath.XPathExpressionException;
 
@@ -149,7 +146,7 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
         long start = System.currentTimeMillis();
         Dataset dataset = TripleStoreService.getInstance().getDataset();
         try {
-            perfLog.log("RdfXmlSubprocess.process gets a dataset from tripe store service ",
+            perfLog.log("RdfXmlSubprocess.process gets a dataset from triple store service ",
                         System.currentTimeMillis() - start);
             
             // read the annotation
@@ -245,7 +242,7 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
                                 docs.put(id, solrDoc);
                             }
                         }
-                        //If the Sparql query uses a pid, get the SolrDoc by seriesId
+
                         else if (solution.contains("seriesId")) {
                             throw new RuntimeException("DataONE-Indexer shouldn't handle the sid "
                                                            + "queries");
@@ -272,15 +269,6 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
             perfLog.log("RdfXmlSubprocess.process process the fields total ",
                         System.currentTimeMillis() - startField);
             // clean up the triple store
-    
-            long getStart = System.currentTimeMillis();
-
-
-            perfLog.log(
-                "RdfXmlSubprocess.process get existing solr docs ",
-                System.currentTimeMillis() - getStart);
-
-
             perfLog.log("RdfXmlSubprocess.process() total take ", System.currentTimeMillis() - start);
         } finally {
             try {
