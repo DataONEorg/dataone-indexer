@@ -167,8 +167,8 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
     protected static void copyFieldAllValue(String fieldName, SolrDoc source, SolrDoc dest) {
         if (fieldName != null && !fieldName.isBlank()) {
             List<String> values = source.getAllFieldValues(fieldName);
-            logger.debug("The all values of the field of " + fieldName + " in the source solr doc"
-                             + " is " + values);
+            logger.debug("The list of all values of the " + fieldName + " field in the source "
+                             + "solr doc is " + values);
             if (values != null && !values.isEmpty()) {
                 for (String value : values) {
                     dest.addField(new SolrElementField(fieldName, value));
