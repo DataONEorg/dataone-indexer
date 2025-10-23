@@ -196,71 +196,8 @@ public class ForesiteResourceMap implements ResourceMap {
         }
     }
 
-    public static boolean representsResourceMap(String formatId) {
-        return RESOURCE_MAP_FORMAT.equals(formatId);
-    }
 
-    private boolean isHeadVersion(Identifier pid, Identifier sid) {
-        boolean isHead = true;
-        if(pid != null && sid != null) {
-            Identifier head = null;
-            try {
-               //if the passed sid actually is a pid, the method will return the pid.
-               head = SeriesIdResolver.getPid(sid);
-            } catch (Exception e) {
-                isHead = true;
-            }
-            if(head != null ) {
-
-                logger.info("||||||||||||||||||| the head version is " + head.getValue()
-                            + " for sid " + sid.getValue());
-                if(head.equals(pid)) {
-                    logger.info("||||||||||||||||||| the pid " + pid.getValue()
-                                + " is the head version for sid " + sid.getValue());
-                    isHead=true;
-                } else {
-                    logger.info("||||||||||||||||||| the pid " + pid.getValue()
-                                   + " is NOT the head version for sid " + sid.getValue());
-                    isHead=false;
-                }
-            } else {
-                logger.info("||||||||||||||||||| can't find the head version for sid "
-                              + sid.getValue() + " and we think the given pid " + pid.getValue()
-                              + " is the head version.");
-            }
-        }
-        return isHead;
-    }
-
-    private SolrDoc _mergeMappedReference(ResourceEntry resourceEntry, SolrDoc mergeDocument)
-        throws InvalidToken, NotAuthorized, NotImplemented, NoSuchAlgorithmException, ServiceFailure,
-        NotFound, InstantiationException, IllegalAccessException, IOException, MarshallingException,
-        ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
-
-        Identifier identifier = new Identifier();
-        identifier.setValue(mergeDocument.getIdentifier());
-        try {
-            SystemMetadata sysMeta = (SystemMetadata) ObjectManagerFactory.getObjectManager()
-                                                        .getSystemMetadata(identifier.getValue());
-            if (sysMeta.getSeriesId() != null && sysMeta.getSeriesId().getValue() != null
-                                       && !sysMeta.getSeriesId().getValue().trim().equals("")) {
-                // skip this one
-                if(!isHeadVersion(identifier, sysMeta.getSeriesId())) {
-                    logger.info("The id " + identifier + " is not the head of the serial id "
-                               + sysMeta.getSeriesId().getValue()
-                               + " So, skip merge this one!!!!!!!!!!!!!!!!!!!!!!"
-                               + mergeDocument.getIdentifier());
-                    return mergeDocument;
-                }
-            }
-        } catch (ClassCastException e) {
-            logger.warn("The systemmetadata is a v1 object and we need to do nothing");
-        } catch (NotFound e) {
-            logger.warn("Metacat couldn't find the system metadata for " + identifier.getValue()
-                            + " but it still continues the merge process.");
-        }
-
-
+    private SolrDoc _mergeMappedReference(ResourceEntry resourceEntry, SolrDoc mergeDocument) {
         if (mergeDocument.hasField(SolrElementField.FIELD_ID) == false) {
             mergeDocument.addField(new SolrElementField(SolrElementField.FIELD_ID, resourceEntry
                     .getIdentifier()));
