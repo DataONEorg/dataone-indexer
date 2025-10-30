@@ -134,7 +134,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{  required "rabbitmq.auth.existingPasswordSecret IS REQUIRED" .Values.rabbitmq.auth.existingPasswordSecret }}
-                  key: rabbitmq-password
+                  key: password
                   optional: false
             {{- if .Values.solr.auth.enabled }}
             - name: SOLR_ADMIN_PASSWORD

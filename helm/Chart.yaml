@@ -31,19 +31,6 @@ appVersion: "3.2.0-SNAPSHOT"
 
 # Chart dependencies
 dependencies:
-  - name: rabbitmq
-    condition: rabbitmq.enabled, global.rabbitmq.enabled
-    repository: https://charts.bitnami.com/bitnami
-    ## get full list using:  $  helm search repo bitnami/rabbitmq --versions
-    version: 14.7.0    # rabbitmq version 3.13.7
-    ## REMEMBER TO CHANGE: .Values.rabbitmq.nameOverride FOR EACH NEW RELEASE!
-    ##
-    ## NOTE: each release should be a fresh install (using a new PV/PVC). We ensure this by changing
-    ## the rabbitmq.nameOverride for each new subchart version.
-    ## NOTE: If you decide to upgrade instead of using a new PV/PVC, you must upgrade to the latest
-    ## patch release of each minor (APP) version, before upgrading to the next minor (APP) version;
-    ## see: https://www.rabbitmq.com/docs/feature-flags#version-compatibility
-
   - name: solr
     condition: solr.enabled, global.solr.enabled
     repository: https://charts.bitnami.com/bitnami
