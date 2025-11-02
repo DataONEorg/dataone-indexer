@@ -178,6 +178,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
         Assert.assertEquals(1, ((List) data.getFieldValues(
             SolrElementField.FIELD_SIZE)).size());
+        Assert.assertNull(data.getFieldValues(DummySolrDoc.getIndicationFieldName()));
 
         // Index the missing data object so the real solr doc will overwrite the dummy solr doc
         // but still keeps the relationship fields
@@ -250,6 +251,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP));
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DOCUMENTS));
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
+        Assert.assertNull(data.getFieldValues(DummySolrDoc.getIndicationFieldName()));
 
         try {
             data = assertPresentInSolrIndex(missingDataId);
@@ -276,6 +278,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         }
         Assert.assertEquals(1, ((List) data.getFieldValues(
             SolrElementField.FIELD_SIZE)).size());
+        Assert.assertNull(data.getFieldValues(DummySolrDoc.getIndicationFieldName()));
         long originResourceMapSolrVersion =
             (Long)data.getFirstValue(SolrElementField.FIELD_VERSION);
 
@@ -330,6 +333,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
         Assert.assertEquals(1, ((List) data.getFieldValues(
             SolrElementField.FIELD_SIZE)).size());
+        Assert.assertNull(data.getFieldValues(DummySolrDoc.getIndicationFieldName()));
 
         //Reindex the resource map object
         indexObjectToSolr(resourcemapId, missingComponentsResourcemap2);
@@ -355,6 +359,8 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         // Nothing should change
         Assert.assertEquals(1, ((List) data.getFieldValues(
             SolrElementField.FIELD_SIZE)).size());
+        Assert.assertNull(data.getFieldValues(DummySolrDoc.getIndicationFieldName()));
+
         // The missing data object should still have a bare solr doc as well
         success = false;
         count = 0;
