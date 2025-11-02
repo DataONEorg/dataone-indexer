@@ -8,7 +8,7 @@ import java.util.List;
  * solr server.
  */
 public class DummySolrDoc extends SolrDoc {
-    private static final String INDICATION_FIELD = "title";
+    private static final String INDICATION_FIELD = "dataone-indexer-placeholder-title_tm";
     private static final String INDICATION_VALUE =
         "dataone-indexer-placeholder-title-please-ignore";
 

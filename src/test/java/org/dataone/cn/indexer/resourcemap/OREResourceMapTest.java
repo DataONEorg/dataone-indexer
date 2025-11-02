@@ -2,8 +2,10 @@ package org.dataone.cn.indexer.resourcemap;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -155,6 +157,11 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
             count++;
         }
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SIZE));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_CHECKSUM));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_CHECKSUMALGORITHM));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DATEUPLOADED));
+        Assert.assertEquals(DummySolrDoc.getIndicationFieldValue(),
+                            data.getFirstValue(DummySolrDoc.getIndicationFieldName()));
         Assert.assertEquals(resourcemapId,
                             ((List) data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP)).get(
                                 0));
@@ -171,6 +178,45 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
         Assert.assertEquals(1, ((List) data.getFieldValues(
             SolrElementField.FIELD_SIZE)).size());
+
+        // Index the missing data object so the real solr doc will overwrite the dummy solr doc
+        // but still keeps the relationship fields
+        indexObjectToSolr(missingDataId, foo1271);
+        success = false;
+        count = 0;
+        while (!success) {
+            try {
+                data = assertPresentInSolrIndex(missingDataId);
+                if (data.getFieldValues(SolrElementField.FIELD_SIZE) != null) {
+                    // The size of the object showing up means the dummy solr doc was overwritten.
+                    success = true;
+                }
+            } catch (AssertionError e) {
+                if (count < MAX_ATTEMPTS) {
+                    Thread.sleep(WAIT_TIME_MILLI);
+                } else {
+                    throw e;
+                }
+            }
+            count++;
+        }
+        Assert.assertEquals(Long.valueOf(9), data.getFirstValue(SolrElementField.FIELD_SIZE));
+        Assert.assertEquals("aff0032ba64e33691653306a245a2f7c98eac8b7",
+                            data.getFirstValue(SolrElementField.FIELD_CHECKSUM));
+        Assert.assertEquals("SHA-1",
+                            data.getFirstValue(SolrElementField.FIELD_CHECKSUMALGORITHM));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        Date date = formatter.parse("2011-08-31T15:59:47.171Z");
+        Assert.assertEquals(date.getTime(), ((Date) (data.getFirstValue(
+            SolrElementField.FIELD_DATEUPLOADED))).getTime());
+        // The indication field of the dummy doc should be removed since now it is a real document
+        Assert.assertNull(data.getFieldValues(DummySolrDoc.getIndicationFieldName()));
+        Assert.assertEquals(resourcemapId,
+                            ((List) data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP)).get(
+                                0));
+        Assert.assertEquals(metadataId, ((List) data.getFieldValues(
+            SolrElementField.FIELD_ISDOCUMENTEDBY)).get(0));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DOCUMENTS));
     }
 
     /**
@@ -230,6 +276,8 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         }
         Assert.assertEquals(1, ((List) data.getFieldValues(
             SolrElementField.FIELD_SIZE)).size());
+        long originResourceMapSolrVersion =
+            (Long)data.getFirstValue(SolrElementField.FIELD_VERSION);
 
         // The missing data object should have a bare solr doc as well
         success = false;
@@ -247,6 +295,8 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
             }
             count++;
         }
+        long originMissingDataSolrVersion =
+            (Long)data.getFirstValue(SolrElementField.FIELD_VERSION);
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SIZE));
         Assert.assertEquals(DummySolrDoc.getIndicationFieldValue(),
             ((List)data.getFieldValues(DummySolrDoc.getIndicationFieldName())).get(0));
@@ -280,6 +330,75 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
         Assert.assertEquals(1, ((List) data.getFieldValues(
             SolrElementField.FIELD_SIZE)).size());
+
+        //Reindex the resource map object
+        indexObjectToSolr(resourcemapId, missingComponentsResourcemap2);
+        success = false;
+        count = 0;
+        while (!success) {
+            try {
+                data = assertPresentInSolrIndex(resourcemapId);
+                long newResourceMapSolrVersion =
+                    (Long)data.getFirstValue(SolrElementField.FIELD_VERSION);
+                if (newResourceMapSolrVersion > originResourceMapSolrVersion) {
+                    success = true;
+                }
+            } catch (AssertionError e) {
+                if (count < MAX_ATTEMPTS) {
+                    Thread.sleep(WAIT_TIME_MILLI);
+                } else {
+                    throw e;
+                }
+            }
+            count++;
+        }
+        // Nothing should change
+        Assert.assertEquals(1, ((List) data.getFieldValues(
+            SolrElementField.FIELD_SIZE)).size());
+        // The missing data object should still have a bare solr doc as well
+        success = false;
+        count = 0;
+        while (!success) {
+            try {
+                data = assertPresentInSolrIndex(missingDataId);
+                long newMissingDataSolrVersion =
+                    (Long)data.getFirstValue(SolrElementField.FIELD_VERSION);
+                if (newMissingDataSolrVersion > originMissingDataSolrVersion) {
+                    success = true;
+                }
+            } catch (AssertionError e) {
+                if (count < MAX_ATTEMPTS) {
+                    Thread.sleep(WAIT_TIME_MILLI);
+                } else {
+                    throw e;
+                }
+            }
+            count++;
+        }
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SIZE));
+        Assert.assertEquals(DummySolrDoc.getIndicationFieldValue(),
+                            ((List) data.getFieldValues(DummySolrDoc.getIndicationFieldName())).get(
+                                0));
+        Assert.assertEquals(
+            missingDataId, ((List) data.getFieldValues(SolrElementField.FIELD_ID)).get(0));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SERIES_ID));
+        Assert.assertEquals(resourcemapId,
+                            ((List) data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP)).get(
+                                0));
+        Assert.assertEquals(metadataId, ((List) data.getFieldValues(
+            SolrElementField.FIELD_ISDOCUMENTEDBY)).get(0));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DOCUMENTS));
+        Assert.assertEquals("dataone_integration_test_user",
+                            ((List) data.getFieldValues(SolrElementField.FIELD_RIGHTSHOLDER)).get(
+                                0));
+        Assert.assertEquals("dataone_public_user",
+                            ((List) data.getFieldValues(SolrElementField.FIELD_READPERMISSION)).get(
+                                0));
+        Assert.assertEquals("dataone_integration_test_user", ((List) data.getFieldValues(
+            SolrElementField.FIELD_WRITEPERMISSION)).get(0));
+        Assert.assertEquals("dataone_integration_test_user2", ((List) data.getFieldValues(
+            SolrElementField.FIELD_WRITEPERMISSION)).get(1));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_CHANGEPERMISSION));
     }
 
     /**

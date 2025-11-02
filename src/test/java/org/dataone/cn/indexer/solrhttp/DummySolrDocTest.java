@@ -11,7 +11,7 @@ import org.junit.Test;
  * Test the DummySolrDoc class
  */
 public class DummySolrDocTest {
-    private static final String INDICATION_FIELD_NAME = "title";
+    private static final String INDICATION_FIELD_NAME = "dataone-indexer-placeholder-title_tm";
     private static final String INDICATION_FIELD_VALUE =
         "dataone-indexer-placeholder-title-please-ignore";
 
