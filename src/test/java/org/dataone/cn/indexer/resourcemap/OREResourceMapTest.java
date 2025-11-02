@@ -334,6 +334,8 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertEquals(1, ((List) data.getFieldValues(
             SolrElementField.FIELD_SIZE)).size());
         Assert.assertNull(data.getFieldValues(DummySolrDoc.getIndicationFieldName()));
+        long originMetadataSolrVersion =
+            (Long)data.getFirstValue(SolrElementField.FIELD_VERSION);
 
         //Reindex the resource map object
         indexObjectToSolr(resourcemapId, missingComponentsResourcemap2);
@@ -405,6 +407,35 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertEquals("dataone_integration_test_user2", ((List) data.getFieldValues(
             SolrElementField.FIELD_WRITEPERMISSION)).get(1));
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_CHANGEPERMISSION));
+
+        // The Metadata solr doc doesn't have changes except the version
+        success = false;
+        count = 0;
+        while (!success) {
+            try {
+                data = assertPresentInSolrIndex(metadataId);
+                long newMetadataSolrVersion =
+                    (Long)data.getFirstValue(SolrElementField.FIELD_VERSION);
+                if (newMetadataSolrVersion > originMetadataSolrVersion) {
+                    success = true;
+                }
+            } catch (AssertionError e) {
+                if (count < MAX_ATTEMPTS) {
+                    Thread.sleep(WAIT_TIME_MILLI);
+                } else {
+                    throw e;
+                }
+            }
+            count++;
+        }
+        Assert.assertEquals(resourcemapId, ((List) data.getFieldValues(
+            SolrElementField.FIELD_RESOURCEMAP)).get(0));
+        Assert.assertEquals(missingDataId, ((List) data.getFieldValues(
+            SolrElementField.FIELD_DOCUMENTS)).get(0));
+        Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
+        Assert.assertEquals(1, ((List) data.getFieldValues(
+            SolrElementField.FIELD_SIZE)).size());
+        Assert.assertNull(data.getFieldValues(DummySolrDoc.getIndicationFieldName()));
     }
 
     /**
