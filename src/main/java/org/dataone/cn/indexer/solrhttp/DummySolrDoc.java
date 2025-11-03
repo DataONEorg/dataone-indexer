@@ -8,9 +8,8 @@ import java.util.List;
  * solr server.
  */
 public class DummySolrDoc extends SolrDoc {
-    private static final String INDICATION_FIELD = "dataone-indexer-placeholder-title_tm";
-    private static final String INDICATION_VALUE =
-        "dataone-indexer-placeholder-title-please-ignore";
+    private static final String INDICATION_FIELD = "isPlaceHolder_b";
+    private static final String INDICATION_VALUE = "true";
 
     /**
      * Constructor
@@ -43,7 +42,7 @@ public class DummySolrDoc extends SolrDoc {
             // The right holder field
             copyFieldAllValue(SolrElementField.FIELD_RIGHTSHOLDER, docHoldsPermission, this);
         }
-        // the indication field (title)
+        // the indication field (isPlaceholder_b)
         addField(new SolrElementField(INDICATION_FIELD, INDICATION_VALUE));
     }
 

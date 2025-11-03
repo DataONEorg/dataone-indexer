@@ -113,6 +113,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP));
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DOCUMENTS));
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_ISDOCUMENTEDBY));
+        Assert.assertNull(data.getFieldValues(DummySolrDoc.getIndicationFieldName()));
 
         try {
             data = assertPresentInSolrIndex(missingDataId);
@@ -160,8 +161,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_CHECKSUM));
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_CHECKSUMALGORITHM));
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DATEUPLOADED));
-        Assert.assertEquals(DummySolrDoc.getIndicationFieldValue(),
-                            data.getFirstValue(DummySolrDoc.getIndicationFieldName()));
+        Assert.assertTrue((Boolean)data.getFirstValue(DummySolrDoc.getIndicationFieldName()));
         Assert.assertEquals(resourcemapId,
                             ((List) data.getFieldValues(SolrElementField.FIELD_RESOURCEMAP)).get(
                                 0));
@@ -301,8 +301,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         long originMissingDataSolrVersion =
             (Long)data.getFirstValue(SolrElementField.FIELD_VERSION);
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SIZE));
-        Assert.assertEquals(DummySolrDoc.getIndicationFieldValue(),
-            ((List)data.getFieldValues(DummySolrDoc.getIndicationFieldName())).get(0));
+        Assert.assertTrue(((Boolean)data.getFirstValue(DummySolrDoc.getIndicationFieldName())));
         Assert.assertEquals(
             missingDataId, ((List) data.getFieldValues(SolrElementField.FIELD_ID)).get(0));
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SERIES_ID));
@@ -384,9 +383,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
             count++;
         }
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SIZE));
-        Assert.assertEquals(DummySolrDoc.getIndicationFieldValue(),
-                            ((List) data.getFieldValues(DummySolrDoc.getIndicationFieldName())).get(
-                                0));
+        Assert.assertTrue((Boolean)data.getFirstValue(DummySolrDoc.getIndicationFieldName()));
         Assert.assertEquals(
             missingDataId, ((List) data.getFieldValues(SolrElementField.FIELD_ID)).get(0));
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_SERIES_ID));
