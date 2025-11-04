@@ -419,8 +419,10 @@ public class HTTPService {
                 fields.add(fieldName);
             }
             fields.removeAll(copyDestinationFields);
+            if (!fields.contains(DummySolrDoc.getIndicationFieldName())) {
+                fields.add(DummySolrDoc.getIndicationFieldName());
+            }
             validSolrFieldNames = fields;
-            //fields.remove("_version_");
         }
     }
 
