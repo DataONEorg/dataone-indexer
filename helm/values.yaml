@@ -362,16 +362,18 @@ rabbitmq:
   # must use the same number.
   #max.priority: 10
 
-  auth:
-    ## @param rabbitmq.username the username for rabbitmq access
-    ##
-    username: rmq
+  ## @param rabbitmq.username the username for rabbitmq access
+  ##
+  username: rmq
 
-    ## @param rabbitmq.existingPasswordSecret the k8s secret holding the rabbitmq password
-    ## (must be associated with key: 'rabbitmq-password')
-    ##
-    existingPasswordSecret: "ssss"
+  ## @param rabbitmq.existingPasswordSecret the k8s secret holding the rabbitmq password
+  ## (must be associated with key: 'rabbitmq-password')
+  ##
+  existingPasswordSecret: ""
 
+  ## @param rabbitmq.passwordKey key associated with the rabbitmq password in the existing secret
+  ##
+  passwordKey: "password"
 
 ## @section Solr Bitnami Sub-Chart Configuration
 ##
