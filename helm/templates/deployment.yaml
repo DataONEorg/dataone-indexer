@@ -133,8 +133,8 @@ spec:
             - name: RABBITMQ_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{  required "rabbitmq.existingPasswordSecret IS REQUIRED" .Values.rabbitmq.existingPasswordSecret }}
-                  key: {{ .Values.rabbitmq.passwordKey }}
+                  name: {{  include "idxworker.rabbitmq.secret.name" . }}
+                  key: {{ required "idxworker.rabbitmqPasswordKey IS REQUIRED" .Values.idxworker.rabbitmqPasswordKey }}
                   optional: false
             {{- if .Values.solr.auth.enabled }}
             - name: SOLR_ADMIN_PASSWORD

@@ -111,26 +111,48 @@ Either use the value set in .Values.persistence.claimName, or if blank, autopopu
 {{- end }}
 
 {{/*
-Check if RabbitMQ SubChart is enabled
+Create a default fully qualified app name for the embedded RabbitMQ Cluster Operator Deployment.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "rmq.enabled" -}}
-{{ $rmqEnabled := (or (((.Values.global).rabbitmq).enabled) ((.Values.rabbitmq).enabled)) }}
-{{ end }}
+{{- define "idxworker.rmq.fullname" -}}
+{{- $name := default "rmq" .Values.rabbitmq.nameOverride }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+If RabbitMQ Secret Name not defined, infer from bundled RMQ Cluster Operator, or error out.
+*/}}
+{{- define "idxworker.rabbitmq.secret.name" }}
+{{- $rmqSecret := .Values.idxworker.rabbitmqSecret }}
+{{- if and ((.Values.rabbitmq).enabled) (not $rmqSecret) }}
+{{- $rmqSecret = printf "%s-default-user" (include "idxworker.rmq.fullname" .) }}
+{{- end }}
+{{- required "idxworker.rabbitmqSecret REQUIRED if not using bundled RMQ Operator" $rmqSecret }}
+{{- end }}
+
+{{/*
+If RabbitMQ username not defined, infer from bundled RMQ Cluster Operator secret, or error out.
+*/}}
+{{- define "idxworker.rabbitmq.user" }}
+{{- $rmqUser := .Values.idxworker.rabbitmqUsername }}
+{{- if and ((.Values.rabbitmq).enabled) (not $rmqUser) }}
+{{- $key := .Values.idxworker.rabbitmqUserKey | default "username" }}
+{{- $secrets := (include "idxworker.rabbitmq.secret.name" .) }}
+{{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secrets).data | default dict -}}
+{{- $rmqUser = ((get $secretData $key) | b64dec) }}
+{{- end }}
+{{- required "idxworker.rabbitmqUsername REQUIRED if not using bundled RMQ Operator" $rmqUser }}
+{{- end }}
 
 {{/*
 set RabbitMQ HostName
 */}}
 {{- define "idxworker.rabbitmq.hostname" }}
 {{- $rmqHost := .Values.idxworker.rabbitmqHostname }}
-{{- if and (include "rmq.enabled" .) (not $rmqHost) }}
-{{- if .Values.rabbitmq.fullnameOverride }}
-{{- $rmqHost = printf "%s-headless" (.Values.rabbitmq.fullnameOverride | trunc 63 | trimSuffix "-") }}
-{{- else }}
-{{- $rmqName := (required ".Values.rabbitmq.nameOverride REQUIRED in indexer chart" .Values.rabbitmq.nameOverride) }}
-{{- $rmqHost = printf "%s-%s-headless" .Release.Name ($rmqName | trunc 63 | trimSuffix "-") }}
+{{- if and ((.Values.rabbitmq).enabled) (not $rmqHost) }}
+{{- $rmqHost = (include "idxworker.rmq.fullname" .) }}
 {{- end }}
-{{- end }}
-{{- $rmqHost }}
+{{- required "idxworker.rabbitmqHostname REQUIRED if not using bundled RMQ Operator" $rmqHost }}
 {{- end }}
 
 {{/*
@@ -138,7 +160,7 @@ set RabbitMQ HostPort
 */}}
 {{- define "idxworker.rabbitmq.hostport" }}
 {{- $rmqPort := .Values.idxworker.rabbitmqHostPort }}
-{{- if and (include "rmq.enabled" .) (not $rmqPort) -}}
+{{- if and ((.Values.rabbitmq).enabled) (not $rmqPort) -}}
 {{ $rmqPort = .Values.rabbitmq.service.ports.amqp }}
 {{- end }}
 {{- $rmqPort }}
