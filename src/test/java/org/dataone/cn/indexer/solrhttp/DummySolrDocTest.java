@@ -11,9 +11,8 @@ import org.junit.Test;
  * Test the DummySolrDoc class
  */
 public class DummySolrDocTest {
-    private static final String INDICATION_FIELD_NAME = "title";
-    private static final String INDICATION_FIELD_VALUE =
-        "dataone-indexer-placeholder-title-please-ignore";
+    private static final String INDICATION_FIELD_NAME = "isPlaceHolder_b";
+    private static final String INDICATION_FIELD_VALUE = "true";
 
     /**
      * Test the constructor
@@ -46,7 +45,7 @@ public class DummySolrDocTest {
         assertEquals(3, doc.getFieldList().size());
         assertEquals("-1", doc.getField(SolrElementField.FIELD_VERSION).getValue());
         assertEquals(pid1, doc.getField(SolrElementField.FIELD_ID).getValue());
-        assertEquals(INDICATION_FIELD_VALUE, doc.getField(INDICATION_FIELD_NAME).getValue());
+        assertTrue(Boolean.parseBoolean(doc.getField(INDICATION_FIELD_NAME).getValue()));
 
 
         doc = new DummySolrDoc(pid, accessDoc);
@@ -90,4 +89,5 @@ public class DummySolrDocTest {
     public void testGetIndicationFieldValue() throws Exception {
         assertEquals(INDICATION_FIELD_VALUE, DummySolrDoc.getIndicationFieldValue());
     }
+
 }
