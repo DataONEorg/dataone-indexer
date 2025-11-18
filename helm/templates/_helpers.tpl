@@ -115,8 +115,8 @@ Create a default fully qualified app name for the embedded RabbitMQ Cluster Oper
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "idxworker.rmq.fullname" -}}
-{{- $name := default "rmq" .Values.rabbitmq.nameOverride }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- $name := default "rmq" .Values.rabbitmq.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" .Release.Name $name }}
 {{- end }}
 
 {{/*
@@ -128,20 +128,6 @@ If RabbitMQ Secret Name not defined, infer from bundled RMQ Cluster Operator, or
 {{- $rmqSecret = printf "%s-default-user" (include "idxworker.rmq.fullname" .) }}
 {{- end }}
 {{- required "idxworker.rabbitmqSecret REQUIRED if not using bundled RMQ Operator" $rmqSecret }}
-{{- end }}
-
-{{/*
-If RabbitMQ username not defined, infer from bundled RMQ Cluster Operator secret, or error out.
-*/}}
-{{- define "idxworker.rabbitmq.user" }}
-{{- $rmqUser := .Values.idxworker.rabbitmqUsername }}
-{{- if and ((.Values.rabbitmq).enabled) (not $rmqUser) }}
-{{- $key := .Values.idxworker.rabbitmqUserKey | default "username" }}
-{{- $secrets := (include "idxworker.rabbitmq.secret.name" .) }}
-{{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secrets).data | default dict -}}
-{{- $rmqUser = ((get $secretData $key) | b64dec) }}
-{{- end }}
-{{- required "idxworker.rabbitmqUsername REQUIRED if not using bundled RMQ Operator" $rmqUser }}
 {{- end }}
 
 {{/*
@@ -161,7 +147,7 @@ set RabbitMQ HostPort
 {{- define "idxworker.rabbitmq.hostport" }}
 {{- $rmqPort := .Values.idxworker.rabbitmqHostPort }}
 {{- if and ((.Values.rabbitmq).enabled) (not $rmqPort) -}}
-{{ $rmqPort = .Values.rabbitmq.service.ports.amqp }}
+{{ $rmqPort = .Values.idxworker.rabbitmqHostPort }}
 {{- end }}
 {{- $rmqPort }}
 {{- end }}

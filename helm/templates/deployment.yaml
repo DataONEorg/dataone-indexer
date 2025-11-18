@@ -130,6 +130,12 @@ spec:
                   # If 'false', the secret must exist before the pod can start
                   # App versions before v2.3.4 will read this value from a config file, not the env var.
                   optional: true
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{  include "idxworker.rabbitmq.secret.name" . }}
+                  key: {{ required "idxworker.rabbitmqUserKey IS REQUIRED" .Values.idxworker.rabbitmqUserKey }}
+                  optional: false
             - name: RABBITMQ_PASSWORD
               valueFrom:
                 secretKeyRef:
