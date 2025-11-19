@@ -130,11 +130,17 @@ spec:
                   # If 'false', the secret must exist before the pod can start
                   # App versions before v2.3.4 will read this value from a config file, not the env var.
                   optional: true
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{  include "idxworker.rabbitmq.secret.name" . }}
+                  key: {{ required "idxworker.rabbitmqUserKey IS REQUIRED" .Values.idxworker.rabbitmqUserKey }}
+                  optional: false
             - name: RABBITMQ_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{  required "rabbitmq.auth.existingPasswordSecret IS REQUIRED" .Values.rabbitmq.auth.existingPasswordSecret }}
-                  key: rabbitmq-password
+                  name: {{  include "idxworker.rabbitmq.secret.name" . }}
+                  key: {{ required "idxworker.rabbitmqPasswordKey IS REQUIRED" .Values.idxworker.rabbitmqPasswordKey }}
                   optional: false
             {{- if .Values.solr.auth.enabled }}
             - name: SOLR_ADMIN_PASSWORD

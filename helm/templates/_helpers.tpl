@@ -111,26 +111,34 @@ Either use the value set in .Values.persistence.claimName, or if blank, autopopu
 {{- end }}
 
 {{/*
-Check if RabbitMQ SubChart is enabled
+Create a default fully qualified app name for the embedded RabbitMQ Cluster Operator Deployment.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "rmq.enabled" -}}
-{{ $rmqEnabled := (or (((.Values.global).rabbitmq).enabled) ((.Values.rabbitmq).enabled)) }}
-{{ end }}
+{{- define "idxworker.rmq.fullname" -}}
+{{- $name := default "rmq" .Values.rabbitmq.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" .Release.Name $name }}
+{{- end }}
+
+{{/*
+If RabbitMQ Secret Name not defined, infer from bundled RMQ Cluster Operator, or error out.
+*/}}
+{{- define "idxworker.rabbitmq.secret.name" }}
+{{- $rmqSecret := .Values.idxworker.rabbitmqSecret }}
+{{- if and ((.Values.rabbitmq).enabled) (not $rmqSecret) }}
+{{- $rmqSecret = printf "%s-default-user" (include "idxworker.rmq.fullname" .) }}
+{{- end }}
+{{- required "idxworker.rabbitmqSecret REQUIRED if not using bundled RMQ Operator" $rmqSecret }}
+{{- end }}
 
 {{/*
 set RabbitMQ HostName
 */}}
 {{- define "idxworker.rabbitmq.hostname" }}
 {{- $rmqHost := .Values.idxworker.rabbitmqHostname }}
-{{- if and (include "rmq.enabled" .) (not $rmqHost) }}
-{{- if .Values.rabbitmq.fullnameOverride }}
-{{- $rmqHost = printf "%s-headless" (.Values.rabbitmq.fullnameOverride | trunc 63 | trimSuffix "-") }}
-{{- else }}
-{{- $rmqName := (required ".Values.rabbitmq.nameOverride REQUIRED in indexer chart" .Values.rabbitmq.nameOverride) }}
-{{- $rmqHost = printf "%s-%s-headless" .Release.Name ($rmqName | trunc 63 | trimSuffix "-") }}
+{{- if and ((.Values.rabbitmq).enabled) (not $rmqHost) }}
+{{- $rmqHost = (include "idxworker.rmq.fullname" .) }}
 {{- end }}
-{{- end }}
-{{- $rmqHost }}
+{{- required "idxworker.rabbitmqHostname REQUIRED if not using bundled RMQ Operator" $rmqHost }}
 {{- end }}
 
 {{/*
@@ -138,8 +146,8 @@ set RabbitMQ HostPort
 */}}
 {{- define "idxworker.rabbitmq.hostport" }}
 {{- $rmqPort := .Values.idxworker.rabbitmqHostPort }}
-{{- if and (include "rmq.enabled" .) (not $rmqPort) -}}
-{{ $rmqPort = .Values.rabbitmq.service.ports.amqp }}
+{{- if and ((.Values.rabbitmq).enabled) (not $rmqPort) -}}
+{{ $rmqPort = .Values.idxworker.rabbitmqHostPort }}
 {{- end }}
 {{- $rmqPort }}
 {{- end }}
