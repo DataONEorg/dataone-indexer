@@ -35,6 +35,7 @@ import org.dataone.cn.indexer.SolrIndex;
 import org.dataone.cn.indexer.object.MockMNode;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.ISolrField;
+import org.dataone.cn.indexer.parser.utility.RelationshipMergeUtility;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
 import org.dataone.indexer.storage.Storage;
@@ -79,13 +80,27 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
      */
     protected void indexObjectToSolr(String identifier, Resource objectFile) throws Exception {
         boolean isSysmetaChangeOnly = false;
+        loadToHashStore(identifier, objectFile);
+        Identifier pid = new Identifier();
+        pid.setValue(identifier);
+        //null is the value for docId
+        solrIndexService.update(pid, isSysmetaChangeOnly, null);
+    }
+
+    /**
+     * Load the given resource into the hashstore with the given identifier
+     * @param identifier  the identifier of the object
+     * @param objectFile  the resource of the object
+     * @throws Exception
+     */
+    protected void loadToHashStore(String identifier, Resource objectFile) throws Exception {
         String relativePath = objectFile.getFile().getPath();
         try (InputStream ignored = Storage.getInstance().retrieveObject(identifier)) {
             System.out.println("pid: " + identifier + " exists in hashstore.");
         } catch (FileNotFoundException e) {
             // The pid is not in the hash store, so we need to save the object into hashstore
             System.out.println("pid: " + identifier + " not found in hashstore. Saving object ["
-                    + objectFile + "] into hashstore");
+                                   + objectFile + "] into hashstore");
             try (InputStream object = objectFile.getInputStream()) {
                 Storage.getInstance().storeObject(object, identifier);
             }
@@ -96,10 +111,6 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
                 }
             }
         }
-        Identifier pid = new Identifier();
-        pid.setValue(identifier);
-        //null is the value for docId
-        solrIndexService.update(pid, isSysmetaChangeOnly, null);
     }
 
     /**
@@ -420,5 +431,13 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
             context = new ClassPathXmlApplicationContext("org/dataone/cn/index/test-context.xml");
         }
         return context;
+    }
+
+    /**
+     * Get the Merge utility object
+     * @return
+     */
+    public RelationshipMergeUtility getRelationshipMergeUtility() {
+        return this.solrIndexService.getRelationshipMergeUtility();
     }
 }
