@@ -11,28 +11,30 @@ Indexer comprises three main subsystems, each defined by its own helm subsystem 
 
 ```mermaid
 flowchart TB
-  subgraph "`**DataONE Indexer
-  Helm Chart**`"
-    A("`Index Worker
-    *(1..n)*`")
-    A -- sub chart --> C("`RabbitMQ
-    *(1..n)*`")
-    A -- sub chart --> D("`solr
-    *(1..n)*`")
+  subgraph "`**DataONE Indexer Helm Chart**`"
+    A("`Index Worker *(1..n)*`")
+    A -- rmq operator --> C("`RabbitMQ *(1..n)*`")
+    A -- sub chart --> D("`solr *(1..n)*`")
+    D -- sub chart --> E("`zookeeper *(1..n)*`")
   end
 ```
 
 Clients are expected to register index task messages to be processed in the RabbitMQ queue. Upon
-startup, the RabbitMQ workers register themselves as handlers of the index task messages. As
+startup, the Index Workers register themselves as handlers of the index task messages. As
 messages enter the queue, RabbitMQ dispatches these to registered workers in parallel, and workers
 in turn process each associated object and insert a new index entry into SOLR.
 
 See [LICENSE.md](./LICENSE.md) for the details of distributing this software.
 
-## Building Docker image
+## Docker image
 
-The image can be built with either `docker` or `nerdctl` depending on which container environment
-you have installed. For example, using Rancher Desktop configured to use `nerdctl`:
+The image is automatically built and pushed to the [GitHub Container Registry (GHCR)](https://github.com/DataONEorg/dataone-indexer/pkgs/container/charts%2Fdataone-indexer) by a [GitHub Action](https://github.com/DataONEorg/dataone-indexer/blob/main/.github/workflows/build-test-publish.yaml).
+
+It can also be built and pushed manually, as follows:
+
+### Build the Docker image
+
+Build with either `docker` or `nerdctl` depending on which container environment you have installed. For example, using Rancher Desktop configured to use `nerdctl`:
 
 ```shell
 mvn clean package -DskipTests
@@ -48,7 +50,7 @@ nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG
          --namespace k8s.io  .
 ```
 
-## Publish the image to GHCR
+### Publish the image to GHCR
 
 For the built image to be deployable in a remote kubernetes cluster, it must first be published to
 an image registry that is visible to Kubernetes. For example, we can make the published image
@@ -93,7 +95,7 @@ sources:
 The chart must then be packaged:
 
 ```shell
-helm package ./helm
+helm package -u ./helm
 ```
 
 ...which creates a zipped tar file named `dataone-indexer-{version}.tgz`, where `{version}` reflects
@@ -136,35 +138,19 @@ Note that this helm chart also installs rabbitmq and solr, which can be partiall
 through the values.yaml file in the parent chart through exported child properties.
 
 > [!IMPORTANT]
-> Make sure the RabbitMQ queue is empty, before upgrading or installing a new chart version for the
-> first time, because each new chart version will create a new PV/PVC where the queue is stored.
-> This can be overridden by setting .Values.rabbitmq.nameOverride to the same name as the previous
-> version, but this is NOT recommended, since the RabbitMQ installation then becomes an upgrade
-> instead of a fresh install, and may require some manual intervention.
+>
+> 1. From version 1.4.0 onwards, the chart depends upon RabbitMQ Cluster Operator being pre-installed and working correctly - see the [DataONE k8s-cluster documentation](https://github.com/DataONEorg/k8s-cluster/blob/main/operators/rabbitmq/rabbitmq-operator.md). Alternatively, you can provide your own RabbitMQ installation by setting `rabbitmq.enabled=false` in `helm/values.yaml`, and configuring the `idxworker.rabbitmq*` connection parameters accordingly.
+>
+> 2. Make sure the RabbitMQ queue is empty, before upgrading or installing a new chart version for the first time, because each new chart version will create a new PV/PVC where the queue is stored. This can be overridden by setting .Values.rabbitmq.nameOverride to the same name as the previous version, but this is NOT recommended, since the RabbitMQ installation then becomes an upgrade instead of a fresh install, and may require some manual intervention.
 
 ### Authentication Notes
 
 #### RabbitMQ
 
-The rabbitmq service runs under the username and password that are set via values.yaml
+If you are using the bundled RabbitMQ service, this automatically creates a default user with a new username and password that can be found in `<release-name>-<rmq-svc-name>-default-user`. The chart then automatically configures the indexer to use these credentials. If you are not using the bundled RabbitMQ service, you will need to provide your own credentials by setting the appropriate `idxworker.rabbitmq*` values in `values.yaml`.
 
-```yaml
-rabbitmq:
-  auth:
-    username: rmq
-    existingPasswordSecret: ""      ## (must contain key: `rabbitmq-password`)
-```
+The [kubectl rabbitmq plugin](https://github.com/DataONEorg/k8s-cluster/blob/main/operators/rabbitmq/rabbitmq-operator.md#the-kubectl-rabbitmq-plugin) is extremely useful for configuring and monitoring the cluster.
 
-...where `existingPasswordSecret` is the name of a Kubernetes secret that contains the password,
-identified by a key named `rabbitmq-password`.
-
-> **NOTE:** it appears that this information is cached
-on a PersistentVolumeClaim that is created automatically by rabbitmq. If the credentials are changed
-in `values.yaml` and/or the secret, therefore, authentication will fail because they will conflict
-with the cached values in the PVC. If you are just testing, the problem can be resolved by deleting
-the PVC. In production, the PVC would also be used for maintaining durable queues, and so it may not
-be reasonable to delete the PVC. You can get the name and identifiers of the PVCs with
-`kubectl -n d1index get pvc`.
 
 #### Solr
 
@@ -175,7 +161,7 @@ solr instance outside the cluster.
 
 ## Checking if SOLR is configured
 
-Logging in using the SOLR_AUTHENTICATION_OPTS and SOLR_AUTH_TYPE env variables (if applicable)
+Logging in using the `SOLR_AUTHENTICATION_OPTS` and `SOLR_AUTH_TYPE` env variables (if applicable)
 allows the `solr` command to be executed to check the server status:
 
 ```shell
