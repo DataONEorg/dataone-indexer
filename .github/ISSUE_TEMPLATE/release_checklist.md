@@ -11,7 +11,7 @@ hidden: true    # do NOT show in template picker every time someone creates a ne
 ## Release checklist
 
 > [!TIP]
-> Create an issue from this template [using this link]()
+> Create an issue from this template [using this link](https://github.com/DataONEorg/dataone-indexer/issues/new?template=release_checklist.md)
 
 ### CHOOSE ONE, AND DELETE THE OTHER:
 
