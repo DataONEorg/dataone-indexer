@@ -139,7 +139,7 @@ through the values.yaml file in the parent chart through exported child properti
 
 > [!IMPORTANT]
 >
-> 1. From version 1.4.0 onwards, the chart depends upon RabbitMQ Cluster Operator being pre-installed and working correctly - see the [DataONE k8s-cluster documentation](https://github.com/DataONEorg/k8s-cluster/blob/main/operators/rabbitmq/rabbitmq-operator.md). Alternatively, you can provide your own RabbitMQ installation by setting `rabbitmq.enabled=false` in `helm/values.yaml`, and configuring the `idxworker.rabbitmq*` connection parameters accordingly.
+> 1. From Helm Chart version 2.0.0 onwards, the chart depends upon RabbitMQ Cluster Operator being pre-installed and working correctly - see the [DataONE k8s-cluster documentation](https://github.com/DataONEorg/k8s-cluster/blob/main/operators/rabbitmq/rabbitmq-operator.md). Alternatively, you can provide your own RabbitMQ installation by setting `rabbitmq.enabled=false` in `helm/values.yaml`, and configuring the `idxworker.rabbitmq*` connection parameters accordingly.
 >
 > 2. Make sure the RabbitMQ queue is empty, before upgrading or installing a new chart version for the first time, because each new chart version will create a new PV/PVC where the queue is stored. This can be overridden by setting .Values.rabbitmq.nameOverride to the same name as the previous version, but this is NOT recommended, since the RabbitMQ installation then becomes an upgrade instead of a fresh install, and may require some manual intervention.
 
@@ -216,7 +216,7 @@ Once rabbitmq is configured, the web console can be accessed by port-forwarding.
 k8 -n jones port-forward pod/d1index-rabbitmq-0 15672:15672 &
 ```
 
-then login to the Rabbitmq web console: http://localhost:15672
+then log into the Rabbitmq web console: http://localhost:15672
 
 You can also download a copy of `rabbitmqadmin` from http://localhost:15672/cli/rabbitmqadmin,
 and the `rabbitmqadmin` command can be used to interact with the server. First, you need to set up a
