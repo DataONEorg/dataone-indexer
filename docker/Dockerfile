@@ -1,7 +1,7 @@
 # Build from parent dir with a command like:
 #     `nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 .`
 # Use an OpenJDK runtime as a parent image
-FROM eclipse-temurin:17.0.15_6-jre-noble
+FROM eclipse-temurin:17.0.17_10-jre-noble
 
 ARG TAG="NO-TAG"
 ENV TAG=${TAG}
@@ -10,11 +10,17 @@ ENV DATAONE_INDEXER_CONFIG=/etc/dataone/dataone-indexer.properties
 # Set the working directory
 WORKDIR /var/lib/dataone-indexer
 
-RUN apt update && apt -y install \
-    bash \
-    figlet \
-    curl \
-    vim
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN set -eux \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        bash \
+        figlet \
+        curl \
+        vim \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 59997 d1indexer && useradd -u 59997 -g 59997 d1indexer \
     && touch ./livenessprobe && touch ./readinessprobe
