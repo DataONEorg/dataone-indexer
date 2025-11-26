@@ -10,11 +10,13 @@
 ### Release date: 2025-12-08
 
 ### dataone-indexer version 3.2.0
-
+- Update Docker base image from `eclipse-temurin:17.0.15_6-jre-noble` to `eclipse-temurin:17.0.17_10-jre-noble`
 # *** TO-DO ***
+
 
 ### helm chart version 2.0.0
 
+- RabbitMQ upgrade v3.1.7 -> v4.1.3
 # *** TO-DO ***
 
 
