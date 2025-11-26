@@ -1,6 +1,7 @@
 package org.dataone.cn.indexer.solrhttp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -42,10 +43,11 @@ public class DummySolrDocTest {
         assertTrue(e.getMessage().contains(SolrElementField.FIELD_ID));
 
         doc = new DummySolrDoc(pid1, null);
-        assertEquals(3, doc.getFieldList().size());
+        assertEquals(4, doc.getFieldList().size());
         assertEquals("-1", doc.getField(SolrElementField.FIELD_VERSION).getValue());
         assertEquals(pid1, doc.getField(SolrElementField.FIELD_ID).getValue());
         assertTrue(Boolean.parseBoolean(doc.getField(INDICATION_FIELD_NAME).getValue()));
+        assertFalse(Boolean.parseBoolean(doc.getField("archived").getValue()));
 
 
         doc = new DummySolrDoc(pid, accessDoc);
@@ -70,6 +72,7 @@ public class DummySolrDocTest {
         assertEquals(user2, doc.getAllFieldValues(SolrElementField.FIELD_WRITEPERMISSION).get(1));
         assertNull(doc.getField(SolrElementField.FIELD_CHANGEPERMISSION));
         assertEquals(resourceMapId, doc.getField(SolrElementField.FIELD_RESOURCEMAP).getValue());
+        assertFalse(Boolean.parseBoolean(doc.getField("archived").getValue()));
     }
 
     /**
