@@ -5,6 +5,19 @@
 > `Caution - ENSURE THAT THE RABBITMQ QUEUE IS EMPTY,` [in the release notes for helm chart v1.3.0
 > below!](#helm-chart-version-130)**,
 
+## dataone-indexer version 3.2.0 & helm chart version 2.0.0
+
+### Release date: 2025-12-08
+
+### dataone-indexer version 3.2.0
+
+# *** TO-DO ***
+
+### helm chart version 2.0.0
+
+# *** TO-DO ***
+
+
 ## helm chart version 1.3.3
 
 ### Release date: 2025-07-29
