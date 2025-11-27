@@ -78,25 +78,13 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if .Values.idxworker.readinessProbe.enabled }}
+          {{- if .Values.idxworker.livenessProbe.enabled }}
           livenessProbe:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - test $(($(date +%s) - $(stat -c %Y /var/lib/dataone-indexer/livenessprobe))) -lt 20
-            initialDelaySeconds: 20
-            periodSeconds: 15
+            {{- omit .Values.idxworker.livenessProbe "enabled" | toYaml | nindent 12 }}
           {{- end }}
           {{- if .Values.idxworker.readinessProbe.enabled }}
           readinessProbe:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - test $(($(date +%s) - $(stat -c %Y /var/lib/dataone-indexer/readinessprobe))) -lt 40
-            initialDelaySeconds: 20
-            periodSeconds: 35
+            {{- omit .Values.idxworker.readinessProbe "enabled" | toYaml | nindent 12 }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

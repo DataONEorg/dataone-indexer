@@ -249,12 +249,30 @@ idxworker:
     hashStoreDirWidth: 2
     hashStoreDirDepth: 3
 
-  ## @param idxworker.livenessProbe.enabled Enable or disable default probe (see deployment.yaml)
   livenessProbe:
+    ## @param idxworker.livenessProbe.enabled Enable or disable probe
     enabled: true
-  ## @param idxworker.readinessProbe.enabled Enable or disable default probe (see deployment.yaml)
+    # Default exec command (may be overridden)
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - test $(($(date +%s) - $(stat -c %Y /var/lib/dataone-indexer/livenessprobe))) -lt 20
+    initialDelaySeconds: 20
+    periodSeconds: 15
+
+
   readinessProbe:
+    ## @param idxworker.readinessProbe.enabled Enable or disable probe
     enabled: true
+    # Default exec command (may be overridden)
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - test $(($(date +%s) - $(stat -c %Y /var/lib/dataone-indexer/readinessprobe))) -lt 40
+    initialDelaySeconds: 20
+    periodSeconds: 35
 
   ## @param idxworker.javaMem Java memory options to pass to the index worker container
   ## (format: "-Xms512m -Xmx2g"). If you do not set a value, the JVM will default to using 1/4 of
