@@ -14,6 +14,7 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository_owner }}/dataone-index-worker
+  D1_OBJECT_MANAGER_CLASS_NAME: org.dataone.cn.indexer.object.hashstore.HashStoreObjManager
 
 jobs:
   maven-build:

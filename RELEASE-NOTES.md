@@ -48,6 +48,25 @@ This latest chart pulls the Bitnami RabbitMQ, Solr, and Zookeeper image versions
 dataone-indexer from the `bitnamilegacy` repository, which will remain functional after the August
 cutoff
 
+## helm chart version 1.3.3
+
+### Release date: 2025-07-29
+
+> [!CAUTION]
+> We strongly recommend that you upgrade to this version of the helm chart before August 28th, 2025,
+> since previous versions will stop working after Bitnami introduces restrictions to container image
+> availability!
+
+This is a patch release to account for upcoming changes to Bitnami container image availability; see
+Bitnami's announcements:
+
+- [Upcoming changes to the Bitnami catalog (effective August 28th, 2025)](https://github.com/bitnami/containers/issues/83267)
+- [Clarification on bitnami/charts after August 28th](https://github.com/bitnami/charts/issues/35256)
+
+This latest chart pulls the Bitnami RabbitMQ, Solr, and Zookeeper image versions used by
+dataone-indexer from the `bitnamilegacy` repository, which will remain functional after the August
+cutoff
+
 ## dataone-indexer version 3.1.5 & helm chart version 1.3.2
 
 ### Release date: 2025-06-26
