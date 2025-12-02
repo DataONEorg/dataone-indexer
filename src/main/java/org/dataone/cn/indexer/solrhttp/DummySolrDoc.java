@@ -44,6 +44,7 @@ public class DummySolrDoc extends SolrDoc {
         }
         // the indication field (isPlaceholder_b)
         addField(new SolrElementField(INDICATION_FIELD, INDICATION_VALUE));
+        addField(new SolrElementField("archived", "false"));
     }
 
     /**

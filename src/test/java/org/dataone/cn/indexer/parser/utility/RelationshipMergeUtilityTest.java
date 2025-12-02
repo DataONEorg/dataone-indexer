@@ -125,7 +125,7 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
         // doc is null, but dummy is not
         dummyDoc = new DummySolrDoc(id, null);
         newDoc = mergeUtility.mergeRelationships(dummyDoc, doc);
-        assertEquals(3, newDoc.getFieldList().size());
+        assertEquals(4, newDoc.getFieldList().size());
         assertEquals(id, newDoc.getFirstFieldValue(SolrElementField.FIELD_ID));
         assertEquals("-1", newDoc.getFirstFieldValue(SolrElementField.FIELD_VERSION));
         // dummy is null, but doc is not
