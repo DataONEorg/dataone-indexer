@@ -5,8 +5,8 @@ on:
   push:
     branches:
       - develop
+      - feature-*
       - bugfix-*
-      - '*-auto-img'
     tags: [ '*.*.*' ]
 
 env:
@@ -34,16 +34,9 @@ jobs:
         run: |
           echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
         id: get_version
-      - name: Setup var-metacat directories
-        run: |
-          sudo mkdir -p /var/metacat/data
-          sudo mkdir -p /var/metacat/documents
-          sudo chmod -R 777 /var/metacat
       - name: Build and Test
         id: build-and-test
-        run: |
-          echo "D1_OBJECT_MANAGER_CLASS_NAME is set to $D1_OBJECT_MANAGER_CLASS_NAME"
-          mvn -s .github/maven/settings.xml --batch-mode --update-snapshots test
+        run: mvn -s .github/maven/settings.xml --batch-mode --update-snapshots test
         continue-on-error: true
       - name: Upload test logs if tests failed
         if: steps.build-and-test.outcome != 'success'
@@ -64,13 +57,17 @@ jobs:
 
   docker-publish:
     name: Docker Build and Publish
-    if: github.ref_name == 'develop' || github.ref_name == '*.*.*'
+    if: startsWith(github.ref, 'refs/tags/')
+        || (github.ref_name == 'develop'
+            && (endsWith(needs.maven-build.outputs.version, '-SNAPSHOT')
+                || endsWith(needs.maven-build.outputs.version, '-snapshot')
+                || endsWith(needs.maven-build.outputs.version, '-DEVELOP')
+                || endsWith(needs.maven-build.outputs.version, '-develop')))
     needs: maven-build
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-
     steps:
       - uses: actions/cache@v4
         with:
@@ -79,7 +76,7 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-            
+
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
@@ -97,6 +94,8 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ needs.maven-build.outputs.version }}
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
@@ -105,6 +104,7 @@ jobs:
         with:
           context: .
           file: docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
           build-args: TAG=${{needs.maven-build.outputs.version}}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}

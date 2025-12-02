@@ -1,9 +1,52 @@
 # dataone-indexer Release Notes
 
+## dataone-indexer version 3.2.0 & helm chart version 2.0.0
+
+### Release date: 2025-12-02
+
+### dataone-indexer version 3.2.0
+
+- Performance Improvement: New Approach to index resource map objects (see [Issue #101](https://github.com/DataONEorg/dataone-indexer/issues/101))
+- Handle `pids`/`sids` in `isPartOf`/`hasPart`, within resource maps (see [Issue #291](https://github.com/DataONEorg/dataone-indexer/issues/291))
+- Remove `hasPart` from the json-ld subprocessor (see [Issue #297](https://github.com/DataONEorg/dataone-indexer/issues/297))
+- Dependency updates:
+  - bump `commons-beanutils` to 1.11.0
+  - bump `Apache commons-lang3` to 3.18.0
+  - Update Docker base image from `eclipse-temurin:17.0.15_6-jre-noble` to `eclipse-temurin:17.0.17_10-jre-noble`
+- Testing bugs resolved:
+  - LegacyStoreObjManagerTest no longer requires the existence of `/var/metacat/data` & `/var/metacat/documents`
+  - Spring no longer tries and fails to create `httpService` bean when running `IndexWorkerTest`
+
+### helm chart version 2.0.0
+
+> [!NOTE]
+> This chart now assumes you have the [RabbitMQ Cluster Operator](https://www.rabbitmq.com/kubernetes/operator/operator-overview) pre-installed on your Kubernetes cluster. Alternatively, it can be configured to use your existing RabbitMQ instance - see [the README file](./README.md#deploying-the-application-via-helm) for details.
+
 > [!CAUTION]
-> **If upgrading from Helm chart v1.2.0 or earlier, note the section entitled:
-> `Caution - ENSURE THAT THE RABBITMQ QUEUE IS EMPTY,` [in the release notes for helm chart v1.3.0
-> below!](#helm-chart-version-130)**,
+> **ENSURE THAT THE RABBITMQ QUEUE IS EMPTY**, before upgrading, because the new chart version will store the queue on a newly-created PV/PVC, and any jobs already in the old queue will be lost!
+
+- RabbitMQ has been upgraded from version `3.1.7` to version `4.1.3`, and is deployed using the RabbitMQ Cluster Operator (instead of the Bitnami RabbitMQ Helm subchart).
+- `livenessProbe` and `readinessProbe` parameters are now fully configurable in values.yaml
+
+
+## helm chart version 1.3.3
+
+### Release date: 2025-07-29
+
+> [!CAUTION]
+> We strongly recommend that you upgrade to this version of the helm chart before August 28th, 2025,
+> since previous versions will stop working after Bitnami introduces restrictions to container image
+> availability!
+
+This is a patch release to account for upcoming changes to Bitnami container image availability; see
+Bitnami's announcements:
+
+- [Upcoming changes to the Bitnami catalog (effective August 28th, 2025)](https://github.com/bitnami/containers/issues/83267)
+- [Clarification on bitnami/charts after August 28th](https://github.com/bitnami/charts/issues/35256)
+
+This latest chart pulls the Bitnami RabbitMQ, Solr, and Zookeeper image versions used by
+dataone-indexer from the `bitnamilegacy` repository, which will remain functional after the August
+cutoff
 
 ## helm chart version 1.3.3
 

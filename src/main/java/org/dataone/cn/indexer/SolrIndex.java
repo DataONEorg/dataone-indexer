@@ -28,6 +28,8 @@ import org.dataone.cn.indexer.parser.BaseXPathDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.IDocumentDeleteSubprocessor;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrField;
+import org.dataone.cn.indexer.parser.utility.RelationshipMergeUtility;
+import org.dataone.cn.indexer.solrhttp.DummySolrDoc;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementAdd;
@@ -71,6 +73,7 @@ public class SolrIndex {
     private XMLNamespaceConfig xmlNamespaceConfig = null;
     private static BaseXPathDocumentSubprocessor systemMetadataProcessor = null;
     private List<ISolrField> sysmetaSolrFields = null;
+    private RelationshipMergeUtility relationshipMergeUtility = null;
     private static Log log = LogFactory.getLog(SolrIndex.class);
 
 
@@ -201,7 +204,10 @@ public class SolrIndex {
             // Determine if subprocessors are available for this ID
             if (subprocessors != null) {
                 // for each subprocessor loaded from the spring config
+                int index = 0;
                 for (IDocumentSubprocessor subprocessor : subprocessors) {
+                    log.debug(index + ". The subprocessor is " + subprocessor.getClass().getName());
+                    index++;
                     // Does this subprocessor apply?
                     if (subprocessor.canProcess(formatId)) {
                         // if so, then extract the additional information from the
@@ -229,94 +235,43 @@ public class SolrIndex {
                 }
            }
         }
-       // TODO: in the XPathDocumentParser class in d1_cn_index_process module,
-       // merge is only for resource map. We need more work here.
-       for (SolrDoc mergeDoc : docs.values()) {
-           if (!mergeDoc.isMerged()) {
-                 mergeWithIndexedDocument(mergeDoc);
-           }
+       // Merge the new-generated documents with the existing solr documents in the solr server
+       for (SolrDoc doc : docs.values()) {
+           String pid = doc.getIdentifier();
+           docs.put(pid, mergeInfoWithRemoteDoc(doc));
        }
        return docs;
     }
 
     /**
-     * Merge updates with existing solr documents
-     * 
-     * This method appears to re-set the data package field data into the
-     * document about to be updated in the solr index. Since packaging
-     * information is derived from the package document (resource map), this
-     * information is not present when processing a document contained in a data
-     * package. This method replaces those values from the existing solr index
-     * record for the document being processed. -- sroseboo, 1-18-12
-     *
-     * @param indexDocument
-     * @return
-     * @throws IOException
+     * Combine the info between the locally generated solr doc and the existing solr doc in the
+     * remote server
+     * @param doc  the locally generated solr doc by subprocessors
+     * @return a solr doc Combine the info between the locally generated solr doc and the existing
+     * solr doc in the remote server
      * @throws EncoderException
      * @throws XPathExpressionException
+     * @throws IOException
      */
-    // TODO:combine merge function with resourcemap merge function
-
-    private SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument) throws IOException,
-            EncoderException, XPathExpressionException {
-        //Retrieve the existing solr document from the solr server for the id. If it doesn't exist,
-        //null or empty solr doc will be returned.
-        SolrDoc indexedDocument =
-            httpService.getSolrDocumentById(solrQueryUri, indexDocument.getIdentifier());
-        if (indexedDocument == null || indexedDocument.getFieldList().size() <= 0) {
-            return indexDocument;
+    private SolrDoc mergeInfoWithRemoteDoc(SolrDoc doc)
+        throws EncoderException, XPathExpressionException, IOException {
+        String pid = doc.getIdentifier();
+        SolrDoc remoteDocument =
+            httpService.getSolrDocumentById(solrQueryUri, pid);
+        if (doc instanceof DummySolrDoc) {
+            DummySolrDoc dummySolrDoc = (DummySolrDoc) doc;
+            // To a dommy solr doc, we only needs its relationship. The newDoc has both the
+            // relationship fields from the dummy doc and other fields from the remoteDoc
+            SolrDoc newDoc = relationshipMergeUtility.mergeRelationships(dummySolrDoc,
+                                                                         remoteDocument);
+            return newDoc;
         } else {
-            Vector<SolrElementField> mergeNeededFields = new Vector<>();
-            for (SolrElementField field : indexedDocument.getFieldList()) {
-                if ((field.getName().equals(SolrElementField.FIELD_ISDOCUMENTEDBY)
-                        || field.getName().equals(SolrElementField.FIELD_DOCUMENTS) || field
-                        .getName().equals(SolrElementField.FIELD_RESOURCEMAP))
-                        && !indexDocument.hasFieldWithValue(field.getName(), field.getValue())) {
-                    indexDocument.addField(field);
-                } else if (!copyFields.contains(field.getName())
-                        && !indexDocument.hasField(field.getName())
-                        && !isSystemMetadataField(field.getName())) {
-                    // we don't merge the system metadata field since they can be removed.
-                    // we don't merge the copyFields as well
-                    log.debug("SolrIndex.mergeWithIndexedDocument - put the merge-needed existing solr field "
-                              + field.getName() + " with value " + field.getValue()
-                              + " from the solr server to a vector. We will merge it later.");
-                    //record this name since we can have multiple name/value for the same name.
-                    //See https://projects.ecoinformatics.org/ecoinfo/issues/7168
-                    mergeNeededFields.add(field);
-                } 
-            }
-            if(mergeNeededFields != null) {
-                for(SolrElementField field: mergeNeededFields) {
-                    log.debug("SolrIndex.mergeWithIndexedDocument - merge the existing solr field "
-                              + field.getName() + " with value " + field.getValue()
-                              +" from the solr server to the currently processing document of "
-                              + indexDocument.getIdentifier());
-                    indexDocument.addField(field);
-                }
-            }
-            indexDocument.setMerged(true);
-            return indexDocument;
+            // Merge the relationship fields from the remote solrDoc to the just generated
+            // solr doc
+            relationshipMergeUtility.merge(remoteDocument, doc);
+            return doc;
         }
-    }
 
-    /*
-     * If the given field name is a system metadata field.
-     */
-    private boolean isSystemMetadataField(String fieldName) {
-        boolean is = false;
-        if (fieldName != null && !fieldName.isBlank() && sysmetaSolrFields != null) {
-            for(ISolrField field : sysmetaSolrFields) {
-                if(field !=  null && field.getName() != null && field.getName().equals(fieldName)) {
-                    log.debug("SolrIndex.isSystemMetadataField - the field name " + fieldName
-                                + " matches one record of system metadata field list. It is a "
-                                + "system metadata field.");
-                    is = true;
-                    break;
-                }
-            }
-        }
-        return is;
     }
 
     /**
@@ -440,7 +395,6 @@ public class SolrIndex {
                              + "fix the issues");
                 for (int i=0; i<VERSION_CONFLICT_MAX_ATTEMPTS; i++) {
                     try {
-                        Thread.sleep(VERSION_CONFLICT_WAITING);
                         insert(pid, isSysmetaChangeOnly, docId);
                         break;
                     } catch (SolrServerException ee) {
@@ -464,6 +418,7 @@ public class SolrIndex {
                             throw ee;
                         }
                     }
+                    Thread.sleep(VERSION_CONFLICT_WAITING);
                 }
             } else {
                 throw e;
@@ -910,6 +865,22 @@ public class SolrIndex {
      */
     public HTTPService getHttpService() {
         return httpService;
+    }
+
+    /**
+     * Set the merge utility
+     * @param relationshipMergeUtility  the merge utility will be set
+     */
+    public void setRelationshipMergeUtility(RelationshipMergeUtility relationshipMergeUtility) {
+        this.relationshipMergeUtility = relationshipMergeUtility;
+    }
+
+    /**
+     * Get the merge utility
+     * @return the merge utility object
+     */
+    public RelationshipMergeUtility getRelationshipMergeUtility() {
+        return this.relationshipMergeUtility;
     }
 
 }

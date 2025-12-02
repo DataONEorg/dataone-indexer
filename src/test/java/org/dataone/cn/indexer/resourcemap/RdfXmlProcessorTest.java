@@ -1,37 +1,9 @@
-/**
- * This work was crfield name: eated" by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For 
- * more information on DataONE, see our web site at http://dataone.org.
- *
- *   Copyright 2015
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- * 
- * $Id$
- */
-
 package org.dataone.cn.indexer.resourcemap;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,37 +11,18 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
-import org.dataone.exceptions.MarshallingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.util.ClientUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.params.ModifiableSolrParams;
 import org.dataone.cn.index.DataONESolrJettyTestBase;
 import org.dataone.cn.indexer.annotation.RdfXmlSubprocessor;
 import org.dataone.cn.indexer.convert.SolrDateConverter;
-import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
-import org.dataone.service.types.v1.AccessPolicy;
-import org.dataone.service.types.v1.Checksum;
-import org.dataone.service.types.v1.Identifier;
-import org.dataone.service.types.v1.NodeReference;
-import org.dataone.service.types.v1.ObjectFormatIdentifier;
-import org.dataone.service.types.v1.Permission;
-import org.dataone.service.types.v1.Subject;
-import org.dataone.service.types.v1.util.AccessUtil;
-import org.dataone.service.types.v1.util.ChecksumUtil;
-import org.dataone.service.types.v2.SystemMetadata;
-import org.dataone.service.util.TypeMarshaller;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -101,11 +54,14 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
 
     /* The three Matlab scripts involved in the processing */
     private Resource provAlaWaiNS02MatlabProcessingDataProcessor1m;
-    private String provAlaWaiNS02MatlabProcessingDataProcessor1mPid = "ala-wai-canal-ns02-matlab-processing-DataProcessor.1.m";
+    private String provAlaWaiNS02MatlabProcessingDataProcessor1mPid =
+        "ala-wai-canal-ns02-matlab-processing-DataProcessor.1.m";
     private Resource provAlaWaiNS02MatlabProcessingConfigure1m;
-    private String provAlaWaiNS02MatlabProcessingConfigure1mPid = "ala-wai-canal-ns02-matlab-processing-Configure.1.m";
+    private String provAlaWaiNS02MatlabProcessingConfigure1mPid =
+        "ala-wai-canal-ns02-matlab-processing-Configure.1.m";
     private Resource provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1m;
-    private String provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1mPid = "ala-wai-canal-ns02-matlab-processing-schedule_AW02XX_001CTDXXXXR00_processing.1.m";
+    private String provAlaWaiNS02MatlabProcessingScheduleAW02XX_001CTDXXXXR00Processing1mPid =
+        "ala-wai-canal-ns02-matlab-processing-schedule_AW02XX_001CTDXXXXR00_processing.1.m";
 
     /* The EML science metadata describing the processing */
     private Resource provAlaWaiNS02MatlabProcessingEML1xml;
@@ -117,7 +73,8 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
 
     /* The processed output image */
     private Resource provAlaWaiNS02ImageDataAW02XX_001CTDXXXXR00_20150203_10day1jpg;
-    private String provAlaWaiNS02ImageDataAW02XX_001CTDXXXXR00_20150203_10day1jpgPid = "ala-wai-canal-ns02-image-data-AW02XX_001CTDXXXXR00_20150203_10day.1.jpg";
+    private String provAlaWaiNS02ImageDataAW02XX_001CTDXXXXR00_20150203_10day1jpgPid =
+        "ala-wai-canal-ns02-image-data-AW02XX_001CTDXXXXR00_20150203_10day.1.jpg";
     
     /* The eml 2.2.0 object is part of a portal */
     private Resource partEml220;
@@ -312,7 +269,9 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
 
         // Ensure fields associated with the data input object's metadata are indexed
         expectedFields.clear();
-        expectedFields.put(HAS_DERIVATIONS_FIELD, "ala-wai-canal-ns02-image-data-AW02XX_001CTDXXXXR00_20150203_10day.1.jpg");
+        expectedFields.put(
+            HAS_DERIVATIONS_FIELD,
+            "ala-wai-canal-ns02-image-data-AW02XX_001CTDXXXXR00_20150203_10day.1.jpg");
         compareFields(expectedFields, provAlaWaiNS02MatlabProcessing2RDF.getInputStream(), 
             provRdfXmlSubprocessor, "ala-wai-ns02-matlab-processing.2.rdf", 
             "ala-wai-canal-ns02-ctd-data.1.txt");
@@ -334,23 +293,24 @@ public class RdfXmlProcessorTest extends DataONESolrJettyTestBase {
      */
     @Test
     public void testPartFields() throws Exception {
-
+        String portal1 = "clown-portal";
+        String portal2 = "https://doi.org/10.5063/12345";
         log.debug("Testing RDF/XML parts indexing of resourcemap-with-part.xml: ");
-        
-        expectedFields.clear();
-        expectedFields.put("hasPart", "urn:uuid:f18812ac-7f4f-496c-82cc-3f4f54830274");
-        compareFields(expectedFields, partResourcemap.getInputStream(),
-                provRdfXmlSubprocessor, "resource_map_urn:uuid:cd489c7e-be88-4d57-b13a-911b25a0b47f",
-                null);
-
         // Ensure fields associated with the data input objects are indexed
         expectedFields.clear();
-        expectedFields.put("isPartOf", "urn:uuid:27ae3627-be62-4963-859a-8c96d940cadc");
+        expectedFields.put("isPartOf", portal1);
         compareFields(expectedFields, partResourcemap.getInputStream(),
                 provRdfXmlSubprocessor, "resource_map_urn:uuid:cd489c7e-be88-4d57-b13a-911b25a0b47f",
                 "urn:uuid:f18812ac-7f4f-496c-82cc-3f4f54830274");
+        expectedFields.clear();
+        expectedFields.put("isPartOf", portal2);
+        compareFields(expectedFields, partResourcemap.getInputStream(),
+                      provRdfXmlSubprocessor, "resource_map_urn:uuid:cd489c7e-be88-4d57-b13a-911b25a0b47f",
+                      "urn:uuid:f18812ac-7f4f-496c-82cc-12345");
+        // Make sure the portal doesn't have a solr doc
+        assertNotPresentInSolrIndex(portal1);
     }
-    
+
 
     /**
      * Test the end to end index processing of a resource map with provenance statements

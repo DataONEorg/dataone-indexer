@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ns1:systemMetadata xmlns:ns1="http://ns.dataone.org/service/types/v2.0">
+    <serialVersion>1</serialVersion>
+  <identifier>missing.component.resourcemap2</identifier>
+  <formatId>http://www.openarchives.org/ore/terms</formatId>
+  <size>2572</size>
+  <checksum algorithm="SHA-1">0abb8762a189682d7658c16d7e919e5eaa6c3f71</checksum>
+  <submitter>dataone_integration_test_user</submitter>
+  <rightsHolder>dataone_integration_test_user</rightsHolder>
+  <accessPolicy>
+    <allow>
+      <subject>dataone_public_user</subject>
+      <permission>read</permission>
+    </allow>
+    <allow>
+      <subject>dataone_integration_test_user</subject>
+      <permission>write</permission>
+    </allow>
+    <allow>
+      <subject>dataone_integration_test_user2</subject>
+      <permission>write</permission>
+    </allow>
+  </accessPolicy>
+  <replicationPolicy replicationAllowed="true"/>
+  <dateUploaded>2011-08-31T15:59:51.04191</dateUploaded>
+  <dateSysMetadataModified>2011-08-31T15:59:51.055664</dateSysMetadataModified>
+  <originMemberNode>test_documents</originMemberNode>
+  <authoritativeMemberNode>test_documents</authoritativeMemberNode>
+</ns1:systemMetadata>
+

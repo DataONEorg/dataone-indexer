@@ -48,6 +48,11 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          {{- if .Values.idxworker.jmxEnabled }}
+          ports:
+            - containerPort: {{ .Values.idxworker.jmxPort }}
+              name: jmx
+          {{- end }}
         {{- if .Values.idxworker.enableMountWarmupHook }}
           lifecycle:
             postStart:
@@ -73,25 +78,13 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if .Values.idxworker.readinessProbe.enabled }}
+          {{- if .Values.idxworker.livenessProbe.enabled }}
           livenessProbe:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - test $(($(date +%s) - $(stat -c %Y /var/lib/dataone-indexer/livenessprobe))) -lt 20
-            initialDelaySeconds: 20
-            periodSeconds: 15
+            {{- omit .Values.idxworker.livenessProbe "enabled" | toYaml | nindent 12 }}
           {{- end }}
           {{- if .Values.idxworker.readinessProbe.enabled }}
           readinessProbe:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - test $(($(date +%s) - $(stat -c %Y /var/lib/dataone-indexer/readinessprobe))) -lt 40
-            initialDelaySeconds: 20
-            periodSeconds: 35
+            {{- omit .Values.idxworker.readinessProbe "enabled" | toYaml | nindent 12 }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
@@ -125,11 +118,17 @@ spec:
                   # If 'false', the secret must exist before the pod can start
                   # App versions before v2.3.4 will read this value from a config file, not the env var.
                   optional: true
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{  include "idxworker.rabbitmq.secret.name" . }}
+                  key: {{ required "idxworker.rabbitmqUserKey IS REQUIRED" .Values.idxworker.rabbitmqUserKey }}
+                  optional: false
             - name: RABBITMQ_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{  required "rabbitmq.auth.existingPasswordSecret IS REQUIRED" .Values.rabbitmq.auth.existingPasswordSecret }}
-                  key: rabbitmq-password
+                  name: {{  include "idxworker.rabbitmq.secret.name" . }}
+                  key: {{ required "idxworker.rabbitmqPasswordKey IS REQUIRED" .Values.idxworker.rabbitmqPasswordKey }}
                   optional: false
             {{- if .Values.solr.auth.enabled }}
             - name: SOLR_ADMIN_PASSWORD
@@ -139,6 +138,21 @@ spec:
                   key: SOLR_ADMIN_PASSWORD
                   optional: true
             {{ end }}
+            {{- if .Values.idxworker.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.idxworker.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+            {{- if or .Values.idxworker.extraJavaOpts .Values.idxworker.jmxEnabled }}
+            - name: IDX_JAVA_OPTS
+              value: {{ join " " .Values.idxworker.extraJavaOpts }}
+              {{- if .Values.idxworker.jmxEnabled }}
+                        {{- if .Values.idxworker.extraJavaOpts }}
+                          {{- printf " " }}
+                        {{- end }}
+                        {{- join " " .Values.idxworker.jmxJavaOpts }}
+            - name: IDX_JMX_ENABLED
+              value: "true"
+              {{- end }}
+            {{- end }}
       initContainers:
         - name: dependencies
           image: busybox:latest

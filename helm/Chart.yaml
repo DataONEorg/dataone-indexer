@@ -21,29 +21,16 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: "1.3.3"
+version: "2.0.0"
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "3.1.5"
+appVersion: "3.2.0"
 
 # Chart dependencies
 dependencies:
-  - name: rabbitmq
-    condition: rabbitmq.enabled, global.rabbitmq.enabled
-    repository: https://charts.bitnami.com/bitnami
-    ## get full list using:  $  helm search repo bitnami/rabbitmq --versions
-    version: 14.7.0    # rabbitmq version 3.13.7
-    ## REMEMBER TO CHANGE: .Values.rabbitmq.nameOverride FOR EACH NEW RELEASE!
-    ##
-    ## NOTE: each release should be a fresh install (using a new PV/PVC). We ensure this by changing
-    ## the rabbitmq.nameOverride for each new subchart version.
-    ## NOTE: If you decide to upgrade instead of using a new PV/PVC, you must upgrade to the latest
-    ## patch release of each minor (APP) version, before upgrading to the next minor (APP) version;
-    ## see: https://www.rabbitmq.com/docs/feature-flags#version-compatibility
-
   - name: solr
     condition: solr.enabled, global.solr.enabled
     repository: https://charts.bitnami.com/bitnami
