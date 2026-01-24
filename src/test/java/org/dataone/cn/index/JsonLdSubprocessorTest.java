@@ -270,6 +270,7 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
      */
     @Test
     public void testInsertSchemaOrgSOSO() throws Exception {
+        String sid = "DOI:10.15485/2529445";
         String id = schemaOrgDocSOSOPid;
         indexObjectToSolr(id, schemaOrgDocSOSO);
         Thread.sleep(SLEEPTIME);
@@ -317,6 +318,15 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
         assertTrue(compareFieldLength(id, "text", 3681));
         String[] license = {"https://creativecommons.org/licenses/by/4.0/"};
         assertTrue(compareFieldValue(id, "licenseUrl", license));
+        assertTrue(compareFieldValue(id, "seriesId", sid));
+
+        // The scenarios to search id/sid with non-case-sensitivity
+        assertEquals(0, findByField("id", id.toLowerCase()).size());
+        assertTrue(compareFieldValue("id_lc", id.toLowerCase(), "id", id));
+        assertTrue(compareFieldValue("seriesId", sid, "id", id));
+        assertEquals(0, findByField("seriesId",
+                                    ClientUtils.escapeQueryChars(sid.toLowerCase())).size());
+        assertTrue(compareFieldValue("seriesId_lc", sid.toLowerCase(), "id", id));
     }
 
     /**
