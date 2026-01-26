@@ -171,7 +171,7 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
         assertTrue(compareFieldValue(id, "investigator", investigator));
         assertTrue(compareFieldValue(id, "awardNumber", new String [] {"http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=1643466"}));
         assertTrue(compareFieldValue(id, "awardTitle", new String [] {"OPP-1643466"}));
-        assertTrue(compareFieldValue(id, "pubDate", new String [] {"2020-12-09T00:00:00.000Z"}));
+        assertTrue(compareFieldValue(id, "pubDate", new String [] {"2020-12-09T00:00:00Z"}));
         String[] origins = {"Nicola Kirby", "Ian Bailey", "David C Lang", "A Brombacher", "Thomas B Chalk",
                 "Rebecca L Parker", "Anya J Crocker", "Victoria E Taylor", "J Andy Milton", "Gavin L Foster", "Maureen E Raymo", "Dick Kroon", "David B Bell", "Paul A Wilson"};
         assertTrue(compareFieldValue(id, "origin", origins));
