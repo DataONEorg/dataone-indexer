@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -229,7 +230,13 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
                 String docValue = docField.getValue();
                 System.out.println("Doc Value:  " + docValue);
                 System.out.println("Solr Value: " + solrValue);
-                Assert.assertEquals(docField.getValue(), solrValue);
+                if (docField.getName().equals("pubDate")) {
+                    Instant expectedInstant = Instant.parse(docValue);
+                    Instant actualInstant = Instant.parse(solrValue);
+                    assertEquals(expectedInstant, actualInstant);
+                } else {
+                    Assert.assertEquals(docField.getValue(), solrValue);
+                }
             } else if (solrValueObject instanceof Boolean) {
                 Boolean solrValue = (Boolean) solrValueObject;
                 Boolean docValue = Boolean.valueOf(docField.getValue());
