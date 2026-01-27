@@ -121,6 +121,7 @@
        or "BEST_COMPRESSION".
   -->
   <codecFactory class="solr.SchemaCodecFactory"/>
+  <schemaFactory class="ClassicIndexSchemaFactory" />
 
   <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
        Index Config - These settings control low-level behavior of indexing
@@ -1131,7 +1132,7 @@
 
        See http://wiki.apache.org/solr/GuessingFieldTypes
     -->
-  <updateProcessor class="solr.UUIDUpdateProcessorFactory" name="uuid"/>
+  <!--<updateProcessor class="solr.UUIDUpdateProcessorFactory" name="uuid"/>
   <updateProcessor class="solr.RemoveBlankFieldUpdateProcessorFactory" name="remove-blank"/>
   <updateProcessor class="solr.FieldNameMutatingUpdateProcessorFactory" name="field-name-mutating">
     <str name="pattern">[^\w-\.]</str>
@@ -1159,7 +1160,6 @@
         <str name="dest">*_str</str>
         <int name="maxChars">256</int>
       </lst>
-      <!-- Use as default mapping instead of defaultFieldType -->
       <bool name="default">true</bool>
     </lst>
     <lst name="typeMapping">
@@ -1179,15 +1179,16 @@
       <str name="valueClass">java.lang.Number</str>
       <str name="fieldType">pdoubles</str>
     </lst>
-  </updateProcessor>
+  </updateProcessor> -->
 
   <!-- The update.autoCreateFields property can be turned to false to disable schemaless mode -->
-  <updateRequestProcessorChain name="add-unknown-fields-to-the-schema" default="${update.autoCreateFields:true}"
+  <!--<updateRequestProcessorChain name="add-unknown-fields-to-the-schema"
+                                default="${update.autoCreateFields:true}"
            processor="uuid,remove-blank,field-name-mutating,parse-boolean,parse-long,parse-double,parse-date,add-schema-fields">
     <processor class="solr.LogUpdateProcessorFactory"/>
     <processor class="solr.DistributedUpdateProcessorFactory"/>
     <processor class="solr.RunUpdateProcessorFactory"/>
-  </updateRequestProcessorChain>
+  </updateRequestProcessorChain>-->
 
   <!-- Deduplication
 

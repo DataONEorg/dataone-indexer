@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -229,7 +230,13 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
                 String docValue = docField.getValue();
                 System.out.println("Doc Value:  " + docValue);
                 System.out.println("Solr Value: " + solrValue);
-                Assert.assertEquals(docField.getValue(), solrValue);
+                if (docField.getName().equals("pubDate")) {
+                    Instant expectedInstant = Instant.parse(docValue);
+                    Instant actualInstant = Instant.parse(solrValue);
+                    assertEquals(expectedInstant, actualInstant);
+                } else {
+                    Assert.assertEquals(docField.getValue(), solrValue);
+                }
             } else if (solrValueObject instanceof Boolean) {
                 Boolean solrValue = (Boolean) solrValueObject;
                 Boolean docValue = Boolean.valueOf(docField.getValue());
@@ -333,12 +340,38 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         return createAndStartJetty(solrHome, config);
     }
 
+    /**
+     * Compare a search result with the given field/value pair. The search field uses the default
+     * one - id.
+     * @param id  the value of the identifier
+     * @param fieldName  the returned field will be compared
+     * @param expectedValue  the expected value for the returned field
+     * @return true if the search result matching the given pair; false otherwise
+     * @throws SolrServerException
+     * @throws IOException
+     */
     protected boolean compareFieldValue(String id, String fieldName, String expectedValue)
+        throws SolrServerException, IOException {
+        return compareFieldValue("id", id, fieldName, expectedValue);
+    }
+
+    /**
+     * Compare a search result with the given field/value pair
+     * @param searchField  the name of the query field
+     * @param searchValue  the value of the query field used to search
+     * @param fieldName  the returned field will be compared
+     * @param expectedValue  the expected value for the returned field
+     * @return true if the search result matching the given pair; false otherwise
+     * @throws SolrServerException
+     * @throws IOException
+     */
+    protected boolean compareFieldValue(String searchField, String searchValue, String fieldName,
+                                        String expectedValue)
         throws SolrServerException, IOException {
         System.out.println("==================== start of compare");
         boolean equal = false;
         ModifiableSolrParams solrParams = new ModifiableSolrParams();
-        solrParams.set("q", "id:" + ClientUtils.escapeQueryChars(id));
+        solrParams.set("q", searchField + ":" + ClientUtils.escapeQueryChars(searchValue));
         solrParams.set("fl", "*");
         QueryResponse qr = getSolrClient().query(solrParams);
         SolrDocument result = qr.getResults().get(0);
