@@ -744,6 +744,7 @@
        <int name="rows">10</int>
        <str name="archived">-archived:true</str>
      </lst>
+
     <!-- "appends" example to ensure only products in stock are returned when using this Search Handler -->
     <!--
        <lst name="appends">
@@ -762,6 +763,14 @@
          <str name="facet.query">price:[500 TO *]</str>
        </lst>
       -->
+    </requestHandler>
+
+    <!-- Full search handler, for CN to bypass access control filter (Do not expose to clients!) -->
+    <requestHandler name="/select-unfiltered" class="solr.SearchHandler">
+        <lst name="defaults">
+            <str name="echoParams">explicit</str>
+            <int name="rows">10</int>
+        </lst>
     </requestHandler>
 
   <!-- A request handler that returns indented JSON by default -->
