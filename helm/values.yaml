@@ -420,10 +420,14 @@ rabbitmq:
   ## See:
   ##   https://www.rabbitmq.com/docs/configure#config-items
   ##   https://www.rabbitmq.com/docs/production-checklist
-  ##   https://github.com/rabbitmq/cluster-operator/tree/main/docs/examples/production-ready
+  ##
   ##
   additionalConfig:
-    disk_free_limit.relative: "1.0"
+    ## @param rabbitmq.additionalConfig.disk_free_limit.absolute Disk space alarm limit
+    ## See: https://www.rabbitmq.com/docs/production-checklist#resource-limits-disk-space
+    ## For RMQ to parse correctly, must be int or string (MB/GB (not Mi/Gi) with NO DECIMAL POINTS)
+    ##
+    disk_free_limit.absolute: 1500MB
 
 ## @section Solr Bitnami Sub-Chart Configuration
 ##
