@@ -406,7 +406,7 @@ rabbitmq:
     weight: 100
     force: false
 
-  ## @param rabbitmq.affinity Custom affinity for rabbitmq pods. OVERRIDES enablePodAntiAffinity
+  ## @param rabbitmq.affinity Custom affinity for rabbitmq pods. Note: OVERRIDES autoPodAntiAffinity
   ## resulting in no anti-affinity being set unless included here.
   ##
   affinity: []
