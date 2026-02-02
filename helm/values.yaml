@@ -378,6 +378,39 @@ rabbitmq:
   ##
   replicaCount: 1
 
+  ## @param rabbitmq.autoPodAntiAffinity.enabled Enable to spread pods across nodes
+  ## @param rabbitmq.autoPodAntiAffinity.weight Weight for the anti-affinity rule (1-100)
+  ## @param rabbitmq.autoPodAntiAffinity.force use "required" anti-affinity, instead of "preferred"
+  ## "Required" means k8s will not schedule the pods on the same node under any circumstances (Note:
+  ## pods may remain unscheduled). "Preferred" means k8s will try to schedule the pods on different
+  ## nodes, but if it cannot, will allow multiple pods on the same node.
+  ##
+  ## Example: using the default settings below will insert the following yaml into the RMQ config:
+  ##
+  ##   affinity:
+  ##     podAntiAffinity:
+  ##       preferredDuringSchedulingIgnoredDuringExecution:
+  ##         - weight: 100
+  ##           podAffinityTerm:
+  ##             labelSelector:
+  ##               matchLabels:
+  ##                 app.kubernetes.io/name: <rmq-fullname>
+  ##             topologyKey: "kubernetes.io/hostname"
+  ##
+  ## Recommended for production installations with multiple replicas.
+  ## If you need to change any of these settings, use the rabbitmq.affinity section below, which
+  ## OVERRIDES autoPodAntiAffinity altogether.
+  ##
+  autoPodAntiAffinity:
+    enabled: true
+    weight: 100
+    force: false
+
+  ## @param rabbitmq.affinity Custom affinity for rabbitmq pods. Note: OVERRIDES autoPodAntiAffinity
+  ## resulting in no anti-affinity being set unless included here.
+  ##
+  affinity: []
+
   ## @param rabbitmq.resources Resource requests and limits for rabbitmq pods (OVERRIDE THESE!)
   ##
   ## NOTE:

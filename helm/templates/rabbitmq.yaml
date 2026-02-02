@@ -13,6 +13,26 @@ metadata:
   labels:
     app: rabbitmq
 spec:
+  {{- if .Values.rabbitmq.affinity }}
+    {{- with .Values.rabbitmq.affinity }}
+  affinity:
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- else if .Values.rabbitmq.autoPodAntiAffinity.enabled }}
+  affinity:
+    podAntiAffinity:
+    {{- if .Values.rabbitmq.autoPodAntiAffinity.force }}
+      requiredDuringSchedulingIgnoredDuringExecution:
+    {{- else }}
+      preferredDuringSchedulingIgnoredDuringExecution:
+    {{- end }}
+      - weight: {{ .Values.rabbitmq.autoPodAntiAffinity.weight }}
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ include "idxworker.rmq.fullname" . }}
+          topologyKey: "kubernetes.io/hostname"
+  {{- end }}
   replicas: {{ .Values.rabbitmq.replicaCount }}
   resources:
     {{ toYaml .Values.rabbitmq.resources | nindent 4 }}
