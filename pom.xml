@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>5.3.39</spring.version>
         <d1_libclient_java.version>2.3.1</d1_libclient_java.version>
-        <solr.version>9.8.0</solr.version>
+        <solr.version>9.8.1</solr.version>
         <solr.test.home>solr9home</solr.test.home>
         <log4j.version>2.25.3</log4j.version>
         <skipIntegrationTests>${skipTests}</skipIntegrationTests>
