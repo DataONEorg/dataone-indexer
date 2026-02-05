@@ -503,26 +503,27 @@ solr:
   ## @param solr.javaMem Java heap memory settings for solr - see below for recommendations...
   ## IMPORTANT:
   ## - Using the (recommended) default value of MaxRAMPercentage=50 will assign half of the
-  ## available memory to the Java heap, and half to the OS and other processes. One of those "other
-  ## processes" is Lucene, which uses MMapDirectory to load the entire index into memory (if
-  ## possible. If not, we get swapping/slowness).
+  ##   available memory to the Java heap, and half to the OS and other processes.
+  ## - One of those "other processes" is Lucene, which uses MMapDirectory to load the entire index
+  ##   into memory (if possible. If not, we get disk swapping/slowness).
+  ##
   ## We therefore recommend the following process for setting solr memory requests & limits:
   ##   1. Determine the size of your index on disk:
   ##      - web ui: http://localhost:8983/solr/#/~cloud?view=nodes (under "Disk Usage"), or
   ##      - curl http://localhost:8983/solr/admin/metrics?prefix=INDEX.merge.&wt=json&indent=true
   ##      - If you don't yet have an index, estimate its size, then come back and adjust as needed.
-  ##        (as an example, the cn-sandbox index was about 4.2GB for 800,000 objects)
-  ##   2. Round this value up in order to leave some headrooom for other OS and non-heap-Java usage.
-  ##      Be generous - e.g. if index is 4.2GB, round up to 8Gi.
-  ##   3. Calculate the total RAM needed:    Total = 100 * (non-heap RAM)/(100 - MaxRAMPercentage)
-  ##      for example, if non-heap RAM was calculated at 8Gi above, and MaxRAMPercentage=50, then
+  ##        (As an example, we've seen index sizes around 4.2GB for 800,000 objects)
+  ##   2. Round this value up, to leave some headrooom for other OS and non-heap-Java usage. Be
+  ##      generous - e.g. if index is 4.2GB, round up to 8Gi.
+  ##   3. Calculate the total RAM needed:    Total = 100 * non-heap-mem/(100 - MaxRAMPercentage)
+  ##      For example, if non-heap memory was calculated at 8Gi above, and MaxRAMPercentage=50, then
   ##      the total RAM requirement will be:  100 * 8Gi/(100 - 50) = 16Gi.
-  ##   4. Set BOTH solr.resources.requests.memory AND solr.resources.limits.memory to this value
-  ##      (since Solr seems to calculate MaxRAMPercentage against the lower "Request" value)
+  ##   4. Set solr.resources.limits.memory to this value
   ##
   ## IMPORTANT: The default bitnami solr chart resource values are set to "medium" (max mem 1536Mi),
-  ## which is insufficient to support any significant usage without containers being OOMKilled as
-  ## memory usage grows. We strongly recommend overriding both requests and limits for sole memory.
+  ## which may not be sufficient to avoid containers being OOMKilled as memory use grows under load.
+  ## We strongly recommend overriding solr.resources.limits.memory; 8-16Gb is common, according to:
+  ## https://solr.apache.org/guide/solr/latest/deployment-guide/jvm-settings.html
   ##
   javaMem: "-XX:MaxRAMPercentage=50"
 
