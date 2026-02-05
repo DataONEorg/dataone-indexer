@@ -565,6 +565,30 @@ solr:
       exec:
         command: ["/bin/bash", "-c", "/solrconfig/config-solr.sh"]
 
+  ## @param extraEnvVars Additional environment variables to set for Solr container
+  extraEnvVars:
+    ## SOLR_OPTS: Command-line options passed to JVM running Solr
+    ## autoCommit.maxTime: maximum time (mS) between hard commits
+    ## autoSoftCommit.maxTime: maximum time (mS) between soft commits see:
+    ## https://solr.apache.org/guide/solr/latest/configuration-guide/commits-transaction-logs.html
+    ##
+    - name: SOLR_OPTS
+      value: "-Dsolr.autoCommit.maxTime=120000 -Dsolr.autoSoftCommit.maxTime=5000"
+
+  ## Solr commit settings; see:
+  ## https://solr.apache.org/guide/solr/latest/configuration-guide/commits-transaction-logs.html
+  ##
+  commitPerUpdate:
+    ## @param solr.commitPerUpdate.hardCommit hard commit (to disk) after every update request?
+    ## Adds `?commit=true|false` to every update request URI.
+    ##
+    hardCommit: false
+
+    ## @param solr.commitPerUpdate.softCommit soft commit (to index) after every update request?
+    ## Adds `&softCommit=true|false` to every update request URI.
+    ##
+    softCommit: false
+
   zookeeper:
     ## As of 8/25/25, Bitnami charges for secure container images, unless we use the "latest" tag.
     ## As a stopgap, we reference the legacy images, which are still available for free (but note
