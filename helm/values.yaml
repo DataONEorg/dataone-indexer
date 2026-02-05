@@ -573,7 +573,7 @@ solr:
     ## https://solr.apache.org/guide/solr/latest/configuration-guide/commits-transaction-logs.html
     ##
     - name: SOLR_OPTS
-      value: "-Dsolr.autoCommit.maxTime=120000 -Dsolr.autoSoftCommit.maxTime=5000"
+      value: "-Dsolr.autoCommit.maxTime=120000 -Dsolr.autoSoftCommit.maxTime=1000"
 
   ## Solr commit settings; see:
   ## https://solr.apache.org/guide/solr/latest/configuration-guide/commits-transaction-logs.html
