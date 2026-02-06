@@ -500,22 +500,32 @@ solr:
   coreNames:
     - dataone-core
 
-  ## @param solr.javaMem Java heap memory settings for the solr container (format "-Xms512m -Xmx2g")
-  ## You may need to override for large production installations (e.g. "-Xms2g -Xmx15g" for
-  ## arcticdata.io).
-  ## IMPORTANT: the default bitnami solr chart resource values are set to "medium"
-  ## (memory limit 1536Mi), which is enough for the default java heap size of 512m, but insufficient
-  ## to support the max heap size of 2g, causing containers to be OOMKilled as memory usage grows.
-  ## It is strongly recommended that you override solr.resources.limits.memory to at least 512m more
-  ## than the max heap size. Example:
-  ## solr:
-  ##   resources:
-  ##     requests:
-  ##       memory: 1024Mi
-  ##     limits:
-  ##       memory: 2560Mi  ## 2g max heap size + 512m buffer
+  ## @param solr.javaMem Java heap memory settings for solr - see below for recommendations...
+  ## IMPORTANT:
+  ## - Using the (recommended) default value of MaxRAMPercentage=50 will assign half of the
+  ##   available memory to the Java heap, and half to the OS and other processes.
+  ## - One of those "other processes" is Lucene, which uses MMapDirectory to load the entire index
+  ##   into memory (if possible. If not, we get disk swapping/slowness).
   ##
-  javaMem: "-Xms512m -Xmx2g"
+  ## We therefore recommend the following process for setting solr memory requests & limits:
+  ##   1. Determine the size of your index on disk:
+  ##      - web ui: http://localhost:8983/solr/#/~cloud?view=nodes (under "Disk Usage"), or
+  ##      - curl http://localhost:8983/solr/admin/metrics?prefix=INDEX.merge.&wt=json&indent=true
+  ##      - If you don't yet have an index, estimate its size, then come back and adjust as needed.
+  ##        (As an example, we've seen index sizes around 4.2GB for 800,000 objects)
+  ##   2. Round this value up, to leave some headrooom for other OS and non-heap-Java usage. Be
+  ##      generous - e.g. if index is 4.2GB, round up to 8Gi.
+  ##   3. Calculate the total RAM needed:    Total = 100 * non-heap-mem/(100 - MaxRAMPercentage)
+  ##      For example, if non-heap memory was calculated at 8Gi above, and MaxRAMPercentage=50, then
+  ##      the total RAM requirement will be:  100 * 8Gi/(100 - 50) = 16Gi.
+  ##   4. Set solr.resources.limits.memory to this value
+  ##
+  ## IMPORTANT: The default bitnami solr chart resource values are set to "medium" (max mem 1536Mi),
+  ## which may not be sufficient to avoid containers being OOMKilled as memory use grows under load.
+  ## We strongly recommend overriding solr.resources.limits.memory; 8-16Gb is common, according to:
+  ## https://solr.apache.org/guide/solr/latest/deployment-guide/jvm-settings.html
+  ##
+  javaMem: "-XX:MaxRAMPercentage=50"
 
   containerSecurityContext:
     runAsUser: 1000
@@ -555,6 +565,30 @@ solr:
     postStart:
       exec:
         command: ["/bin/bash", "-c", "/solrconfig/config-solr.sh"]
+
+  ## @param extraEnvVars Additional environment variables to set for Solr container
+  extraEnvVars:
+    ## SOLR_OPTS: Command-line options passed to JVM running Solr
+    ## autoCommit.maxTime: maximum time (mS) between hard commits
+    ## autoSoftCommit.maxTime: maximum time (mS) between soft commits see:
+    ## https://solr.apache.org/guide/solr/latest/configuration-guide/commits-transaction-logs.html
+    ##
+    - name: SOLR_OPTS
+      value: "-Dsolr.autoCommit.maxTime=120000 -Dsolr.autoSoftCommit.maxTime=1000"
+
+  ## Solr commit settings; see:
+  ## https://solr.apache.org/guide/solr/latest/configuration-guide/commits-transaction-logs.html
+  ##
+  commitPerUpdate:
+    ## @param solr.commitPerUpdate.hardCommit hard commit (to disk) after every update request?
+    ## Adds `?commit=true|false` to every update request URI.
+    ##
+    hardCommit: false
+
+    ## @param solr.commitPerUpdate.softCommit soft commit (to index) after every update request?
+    ## Adds `&softCommit=true|false` to every update request URI.
+    ##
+    softCommit: false
 
   zookeeper:
     ## As of 8/25/25, Bitnami charges for secure container images, unless we use the "latest" tag.
