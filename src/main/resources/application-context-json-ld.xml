@@ -22,6 +22,8 @@
 				<ref bean="schema_org_funder_identifier" />
 				<ref bean="schema_org_funder_name" />
         		<ref bean="schema_org_creator_list" />
+        		<ref bean="schema_org_creator_role_name" />
+        		<ref bean="schema_org_creator_list_role_name" />
 				<ref bean="schema_org_hasPart" />
 				<ref bean="schema_org_keywords" />
 				<ref bean="schema_org_license_url" />
