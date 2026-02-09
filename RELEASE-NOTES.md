@@ -1,5 +1,32 @@
 # dataone-indexer Release Notes
 
+> [!NOTE]
+> The Helm chart now assumes you have the [RabbitMQ Cluster Operator](https://www.rabbitmq.com/kubernetes/operator/operator-overview) pre-installed on your Kubernetes cluster. Alternatively, it can be configured to use your existing RabbitMQ instance - see [the README file](./README.md#deploying-the-application-via-helm) for details.
+
+
+### helm chart version 2.0.1
+
+### Release date: 2026-02-09
+
+This is a patch release to fix a bug with the new RabbitMQ Cluster Operator-based deployment introduced in version 2.0.0, and to refine some performance settings for RabbitMQ and Solr.
+- Bug fix: Setting `rabbitmq.enabled: false` in the Helm values.yaml did not disable the installation of the RabbitMQ operator as expected ([Issue #308](https://github.com/DataONEorg/dataone-indexer/issues/308))
+
+- Indexing Performance - Configuration Changes for Index Worker and Solr ([Issue #319](https://github.com/DataONEorg/dataone-indexer/issues/319):
+  - Indexer is now configured to perform automatic Solr commits instead of forcing a hard commit after every Solr update
+    - Auto-commit time periods can be overridden using `solr.extraEnvVars` to set `SOLR_OPTS`
+      to `"-Dsolr.autoCommit.maxTime=<hardPeriod> -Dsolr.autoSoftCommit.maxTime=<softPeriod>"`. Default values are 1 second for auto soft commits, and 120 seconds for auto hard commits.
+    - Forced commits per update can be controlled using `commitPerUpdate.hardCommit` and `commitPerUpdate.softCommit`. Both default to `false`.
+    - See https://solr.apache.org/guide/solr/latest/configuration-guide/commits-transaction-logs.html for details
+  - `solr.javaMem` changed from `"-Xms512m -Xmx2g"` to `"-XX:MaxRAMPercentage=50"`
+
+- RabbitMQ Changes ([Issue #311])(https://github.com/DataONEorg/dataone-indexer/issues/311))
+  - Add `rabbitmq.autoPodAntiAffinity` to spread RabbitMQ pods across nodes - recommended for production installations with multiple replicas, to increase availability.
+    - Anti-affinity can be "required" or "preferred", and weigth is configurable
+    - Can be overridden disabled, or completely overridden using new `rabbitmq.affinity` section
+  -  `rabbitmq.additionalConfig`: removed `additionalConfig: disk_free_limit.relative: "1.0"` and replaced with `disk_free_limit.absolute: 1500MB`
+  - See: https://www.rabbitmq.com/docs/production-checklist#resource-limits-disk-space
+
+
 ## dataone-indexer version 3.2.0 & helm chart version 2.0.0
 
 ### Release date: 2025-12-02
