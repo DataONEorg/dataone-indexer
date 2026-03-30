@@ -30,8 +30,8 @@ public class SubprocessorUtility {
 
         logger.debug("about to merge indexed document with new doc to insert for pid: "
                 + indexDocument.getIdentifier());
-        SolrDoc solrDoc = httpService.retrieveDocumentFromSolrServer(indexDocument.getIdentifier(),
-                solrQueryUri);
+        SolrDoc solrDoc =
+            httpService.getSolrDocumentById(solrQueryUri, indexDocument.getIdentifier());
         if (solrDoc != null) {
             logger.debug("found existing doc to merge for pid: " + indexDocument.getIdentifier());
             for (SolrElementField field : solrDoc.getFieldList()) {
