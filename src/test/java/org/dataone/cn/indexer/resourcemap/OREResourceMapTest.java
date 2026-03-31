@@ -19,6 +19,8 @@ import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.common.SolrDocument;
 import org.dataone.cn.index.DataONESolrJettyTestBase;
 import org.dataone.cn.indexer.solrhttp.DummySolrDoc;
+import org.dataone.cn.indexer.solrhttp.HttpServiceTest;
+import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.service.types.v1.Identifier;
 import org.dspace.foresite.OREException;
@@ -168,6 +170,25 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Assert.assertEquals(metadataId, ((List) data.getFieldValues(
             SolrElementField.FIELD_ISDOCUMENTEDBY)).get(0));
         Assert.assertNull(data.getFieldValues(SolrElementField.FIELD_DOCUMENTS));
+
+        // The HttpService.getDocumentById should read the dummy solr doc as well
+        SolrDoc doc = solrIndexService.getHttpService()
+            .getSolrDocumentById(HttpServiceTest.solrGetUri, missingDataId);
+        doc.serialize(System.out, "UTF-8");
+        Assert.assertNull(doc.getFirstFieldValue(SolrElementField.FIELD_SIZE));
+        Assert.assertNull(doc.getFirstFieldValue(SolrElementField.FIELD_CHECKSUM));
+        Assert.assertNull(doc.getFirstFieldValue(SolrElementField.FIELD_CHECKSUMALGORITHM));
+        Assert.assertNull(doc.getFirstFieldValue(SolrElementField.FIELD_DATEUPLOADED));
+        Assert.assertEquals(missingDataId, doc.getFirstFieldValue(SolrElementField.FIELD_ID));
+        Assert.assertEquals("true",
+            doc.getFirstFieldValue(DummySolrDoc.getIndicationFieldName()));
+        Assert.assertEquals(resourcemapId,
+                            doc.getFirstFieldValue(SolrElementField.FIELD_RESOURCEMAP));
+        Assert.assertEquals(metadataId, doc.getFirstFieldValue(
+            SolrElementField.FIELD_ISDOCUMENTEDBY));
+        Assert.assertTrue(
+            Long.parseLong(doc.getFirstFieldValue(SolrElementField.FIELD_VERSION)) > 1);
+        Assert.assertFalse(doc.hasField(SolrElementField.FIELD_DOCUMENTS));
 
         // Check the metadata again and it should have the resourcemap and obsoletes fields
         data = assertPresentInSolrIndex(metadataId);

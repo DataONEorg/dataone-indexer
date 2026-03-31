@@ -588,4 +588,14 @@ xmlns:context="http://www.springframework.org/schema/context"
         <constructor-arg type="java.lang.String"
                          value="org/dataone/cn/index/resources/d1_testdocs/eml210/missing.component.resourcemap2/missing.component.resourcemap2"/>
     </bean>
+
+    <bean id="peggym1351Sci" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/peggym.135.1/peggym.135.1"/>
+    </bean>
+
+    <bean id="specialCharacterIdSci" class="org.springframework.core.io.ClassPathResource" >
+        <constructor-arg type="java.lang.String"
+                         value="org/dataone/cn/index/resources/d1_testdocs/eml210/special_characters_id/special_characters_id"/>
+    </bean>
 </beans>
