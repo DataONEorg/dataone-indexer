@@ -597,7 +597,7 @@
              Solr components, but may be useful when developing custom
              plugins.
            -->
-        <requestParsers multipartUploadLimitInKB="-1" formdataUploadLimitInKB="-1" addHttpRequestToContext="false" />
+        <requestParsers multipartUploadLimitInKB="-1" formdataUploadLimitInKB="-1" addHttpRequestToContext="true" />
 
         <!-- HTTP Caching
 
@@ -698,7 +698,7 @@
     </requestHandler>
 
     <!-- Full search handler, for CN to bypass access control filter (Do not expose to clients!) -->
-    <requestHandler name="/select-unfiltered" class="solr.SearchHandler">
+    <requestHandler name="/select-all" class="solr.SearchHandler">
         <lst name="defaults">
             <str name="echoParams">explicit</str>
             <int name="rows">10</int>
