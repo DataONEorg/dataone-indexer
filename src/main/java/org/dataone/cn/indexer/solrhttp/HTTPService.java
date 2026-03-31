@@ -77,7 +77,7 @@ public class HTTPService {
     private static Log log = LogFactory.getLog(HTTPService.class.getName());
     private static HttpClient httpClient;
 
-
+    public static String solrGetUri = Settings.getConfiguration().getString("solr.get.uri");
     private String SOLR_SCHEMA_PATH = Settings.getConfiguration().getString("solr.schema.path");
     private List<String> validSolrFieldNames = new ArrayList<String>();
 
@@ -247,7 +247,6 @@ public class HTTPService {
     /**
      * Get a single solr doc for a given id by the solr real time get api. It is better than
      * the query api to get values
-     * @param uir  the real time get url
      * @param id  the id to identify the solr doc
      * @return  the solr doc associated with the given id. Return null if nothing was found.
      * @throws XPathExpressionException
@@ -255,17 +254,20 @@ public class HTTPService {
      * @throws ParserConfigurationException
      * @throws SAXException
      */
-    public SolrDoc getSolrDocumentById(String uri, String id)
+    public SolrDoc getSolrDocumentById(String id)
         throws XPathExpressionException, IOException, ParserConfigurationException, SAXException {
-        if (uri == null || uri.isBlank() || id == null || id.isBlank()) {
-            throw new RuntimeException("The get uri or document id must not be blank.");
+        if (solrGetUri == null || solrGetUri.isBlank() ) {
+            throw new RuntimeException("The Solr get uri must not be blank.");
+        }
+        if (id == null || id.isBlank()) {
+            throw new RuntimeException("The document id must not be blank.");
         }
         SolrDoc doc = null;
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair(ID, id));
         params.add(new BasicNameValuePair(WT, "xml"));
         String paramString = URLEncodedUtils.format(params, "UTF-8");
-        String requestURI = uri + "?" + paramString;
+        String requestURI = solrGetUri + "?" + paramString;
         log.debug("HTTPService.doRequest - REQUEST URI: " + requestURI);
         HttpGet commandGet = new HttpGet(requestURI);
         HttpResponse response = getHttpClient().execute(commandGet);

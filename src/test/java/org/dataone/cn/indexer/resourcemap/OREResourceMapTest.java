@@ -173,7 +173,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
 
         // The HttpService.getDocumentById should read the dummy solr doc as well
         SolrDoc doc = solrIndexService.getHttpService()
-            .getSolrDocumentById(HttpServiceTest.solrGetUri, missingDataId);
+            .getSolrDocumentById(missingDataId);
         doc.serialize(System.out, "UTF-8");
         Assert.assertNull(doc.getFirstFieldValue(SolrElementField.FIELD_SIZE));
         Assert.assertNull(doc.getFirstFieldValue(SolrElementField.FIELD_CHECKSUM));

@@ -22,7 +22,6 @@ public class BaseDocumentDeleteSubprocessor implements IDocumentDeleteSubprocess
     private HTTPService httpService;
 
     private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
-    private String solrGetUri = Settings.getConfiguration().getString("solr.get.uri");
 
     private String relationSourceFormatId;
     private String relationSourceField;
@@ -35,7 +34,7 @@ public class BaseDocumentDeleteSubprocessor implements IDocumentDeleteSubprocess
     public Map<String, SolrDoc> processDocForDelete(String identifier, Map<String, SolrDoc> docs)
             throws Exception {
 
-        SolrDoc indexedDoc = httpService.getSolrDocumentById(solrGetUri, identifier);
+        SolrDoc indexedDoc = httpService.getSolrDocumentById(identifier);
         if (indexedDoc != null) {
             if (hasRelationsBySource(indexedDoc)) {
                 docs.putAll(removeBiDirectionalRelationsForDoc(identifier, indexedDoc, docs));

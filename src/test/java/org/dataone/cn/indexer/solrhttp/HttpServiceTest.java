@@ -21,7 +21,6 @@ public class HttpServiceTest extends DataONESolrJettyTestBase {
     private Resource specialCharacterIdSci;
     private String specialCharacterIdSciPid = "https://foo.com/?action=*";
 
-    public static String solrGetUri = Settings.getConfiguration().getString("solr.get.uri");
 
     private static final int SLEEP = 200;
     private static final int TIMES = 100;
@@ -60,7 +59,7 @@ public class HttpServiceTest extends DataONESolrJettyTestBase {
 
             }
         }
-        SolrDoc doc = solrIndexService.getHttpService().getSolrDocumentById(solrGetUri, id);
+        SolrDoc doc = solrIndexService.getHttpService().getSolrDocumentById(id);
         assertNotNull(doc);
         assertEquals(id, doc.getIdentifier());
         assertTrue(Long.parseLong(doc.getFirstFieldValue(SolrElementField.FIELD_VERSION)) > 1);
@@ -73,7 +72,7 @@ public class HttpServiceTest extends DataONESolrJettyTestBase {
     @Test
     public void testGetSolrDocByIdWithNonExistId() throws Exception {
         String id = "fooo.jing.1";
-        SolrDoc doc = solrIndexService.getHttpService().getSolrDocumentById(solrGetUri, id);
+        SolrDoc doc = solrIndexService.getHttpService().getSolrDocumentById(id);
         assertNull(doc);
     }
 
@@ -95,7 +94,7 @@ public class HttpServiceTest extends DataONESolrJettyTestBase {
 
             }
         }
-        SolrDoc doc = solrIndexService.getHttpService().getSolrDocumentById(solrGetUri, id);
+        SolrDoc doc = solrIndexService.getHttpService().getSolrDocumentById(id);
         assertNotNull(doc);
         assertEquals(id, doc.getIdentifier());
         assertTrue(Long.parseLong(doc.getField(SolrElementField.FIELD_VERSION).getValue()) > 1);

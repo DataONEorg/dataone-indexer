@@ -70,7 +70,6 @@ public class SolrIndex {
     private static HTTPService httpService = null;
     private String solrQueryUri = Settings.getConfiguration().getString("solr.query.uri");
     private String solrIndexUri = Settings.getConfiguration().getString("solr.index.uri");
-    private String solrGetUri = Settings.getConfiguration().getString("solr.get.uri");
     private XMLNamespaceConfig xmlNamespaceConfig = null;
     private static BaseXPathDocumentSubprocessor systemMetadataProcessor = null;
     private List<ISolrField> sysmetaSolrFields = null;
@@ -180,7 +179,7 @@ public class SolrIndex {
         log.debug("SolrIndex.process - the object format id for the pid "+id+" is "+formatId);
         if (resourceMapFormatIdList.contains(formatId) && isSysmetaChangeOnly) {
             //we need to make the solr doc exists (means the resource map was processed 
-            SolrDoc existingResourceMapSolrDoc = httpService.getSolrDocumentById(solrGetUri, id);
+            SolrDoc existingResourceMapSolrDoc = httpService.getSolrDocumentById(id);
             if (existingResourceMapSolrDoc != null ) {
                 log.info("SolrIndex.process - This is a systemmetadata-change-only event for the "
                         + "resource map " + id + ". So we only use the system metadata subprocessor");
@@ -262,7 +261,7 @@ public class SolrIndex {
         ParserConfigurationException, SAXException {
         String pid = doc.getIdentifier();
         SolrDoc remoteDocument =
-            httpService.getSolrDocumentById(solrGetUri, pid);
+            httpService.getSolrDocumentById(pid);
         if (doc instanceof DummySolrDoc) {
             DummySolrDoc dummySolrDoc = (DummySolrDoc) doc;
             // To a dommy solr doc, we only needs its relationship. The newDoc has both the
@@ -449,7 +448,7 @@ public class SolrIndex {
     private boolean isPartOfDataPackage(String pid)
         throws XPathExpressionException, IOException,
         ParserConfigurationException, SAXException {
-        SolrDoc dataPackageIndexDoc = httpService.getSolrDocumentById(solrGetUri, pid);
+        SolrDoc dataPackageIndexDoc = httpService.getSolrDocumentById(pid);
         if (dataPackageIndexDoc != null) {
             String resourceMapId = dataPackageIndexDoc
                     .getFirstFieldValue(SolrElementField.FIELD_RESOURCEMAP);
@@ -480,7 +479,7 @@ public class SolrIndex {
         if(pid != null ) {
             log.debug(
                 "SorIndex.remove - start to remove the solr index for the pid " + pid.getValue());
-            SolrDoc indexDoc = httpService.getSolrDocumentById(solrGetUri, pid.getValue());
+            SolrDoc indexDoc = httpService.getSolrDocumentById(pid.getValue());
             if (indexDoc != null) {
                 log.debug("SorIndex.remove - in the branch which the solr doc was found for "
                            + pid.getValue());
@@ -672,7 +671,7 @@ public class SolrIndex {
                 for (String item : aggregatedItems) {
                     SolrDoc doc = null;
                     try {
-                        doc = httpService.getSolrDocumentById(solrGetUri, item);
+                        doc = httpService.getSolrDocumentById(item);
                         List<String> fieldValues = doc.getAllFieldValues(newFieldName);
                         List<String> resourceMapIds = doc
                                 .getAllFieldValues(SolrElementField.FIELD_RESOURCEMAP);
@@ -798,15 +797,14 @@ public class SolrIndex {
     private void removeFromDataPackage(String pid)
         throws XPathExpressionException, IOException, SolrServerException,
         ParserConfigurationException, SAXException {
-        SolrDoc indexedDoc = httpService.getSolrDocumentById(solrGetUri, pid);
+        SolrDoc indexedDoc = httpService.getSolrDocumentById(pid);
         deleteDocFromIndex(pid);
         List<String> documents = indexedDoc.getAllFieldValues(SolrElementField.FIELD_DOCUMENTS);
         if (documents != null  && !documents.isEmpty()) {
             for (String documentsValue : documents) {
                 for (int i=0; i<VERSION_CONFLICT_MAX_ATTEMPTS; i++) {
                     try {
-                        SolrDoc solrDoc = httpService.getSolrDocumentById(solrGetUri,
-                                                                          documentsValue);
+                        SolrDoc solrDoc = httpService.getSolrDocumentById(documentsValue);
                         if (solrDoc != null) {
                             solrDoc.removeFieldsWithValue(SolrElementField.FIELD_ISDOCUMENTEDBY, pid);
                             insertToIndex(solrDoc);
@@ -831,8 +829,7 @@ public class SolrIndex {
             for (String documentedByValue : documentedBy) {
                 for (int i=0; i<VERSION_CONFLICT_MAX_ATTEMPTS; i++) {
                     try {
-                        SolrDoc solrDoc = httpService.getSolrDocumentById(solrGetUri,
-                                                                          documentedByValue);
+                        SolrDoc solrDoc = httpService.getSolrDocumentById(documentedByValue);
                         if (solrDoc != null) {
                             solrDoc.removeFieldsWithValue(SolrElementField.FIELD_DOCUMENTS, pid);
                             insertToIndex(solrDoc);
