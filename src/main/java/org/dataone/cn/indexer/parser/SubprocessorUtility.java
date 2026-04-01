@@ -29,6 +29,8 @@ public class SubprocessorUtility {
         throws IOException, XPathExpressionException,
         ParserConfigurationException, SAXException {
         if (indexDocument == null) {
+            logger.error("The given solr doc is null and the merge process cannot be processed. "
+                             + "Null will be returned back.");
             return null;
         }
 
