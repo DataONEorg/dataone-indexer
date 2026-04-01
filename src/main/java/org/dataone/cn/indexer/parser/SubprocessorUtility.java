@@ -28,6 +28,9 @@ public class SubprocessorUtility {
     public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument, List<String> fieldsToMerge)
         throws IOException, XPathExpressionException,
         ParserConfigurationException, SAXException {
+        if (indexDocument == null) {
+            return null;
+        }
 
         logger.debug("about to merge indexed document with new doc to insert for pid: "
                 + indexDocument.getIdentifier());
