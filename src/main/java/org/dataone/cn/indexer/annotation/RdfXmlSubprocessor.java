@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.codec.EncoderException;
@@ -36,6 +37,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.xml.sax.SAXException;
 
 /**
  * A solr index parser for an RDF/XML file.
@@ -281,8 +283,9 @@ public class RdfXmlSubprocessor implements IDocumentSubprocessor {
 
 
     @Override
-    public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument) throws IOException,
-            EncoderException, XPathExpressionException {
+    public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument)
+        throws IOException, XPathExpressionException,
+        ParserConfigurationException, SAXException {
         return processorUtility.mergeWithIndexedDocument(indexDocument, fieldsToMerge);
     }
 

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import net.minidev.json.JSONArray;
@@ -27,6 +28,7 @@ import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
 import org.dataone.indexer.performance.PerformanceLogger;
+import org.xml.sax.SAXException;
 
 /**
  * The intent of this subprocessor is to fetch annotations about the given 
@@ -294,9 +296,12 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
      * @throws IOException
      * @throws EncoderException
      * @throws XPathExpressionException
+     * @throws ParserConfigurationException
+     * @throws SAXException
      */
-    public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument) throws IOException,
-            EncoderException, XPathExpressionException {
+    public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument)
+        throws IOException, EncoderException, XPathExpressionException,
+        ParserConfigurationException, SAXException {
 
         return processorUtility.mergeWithIndexedDocument(indexDocument, fieldsToMerge);
 

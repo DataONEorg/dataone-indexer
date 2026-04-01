@@ -68,7 +68,7 @@ import org.xml.sax.SAXException;
 public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
 
     protected static ApplicationContext context;
-    private SolrIndex solrIndexService;
+    protected SolrIndex solrIndexService;
     private int solrPort = Settings.getConfiguration().getInt("test.solr.port", 8985);
     private static final String DEFAULT_SOL_RHOME = "solr9home";
     private static final String SYSTEMMETA_FILE_NAME = "systemmetadata.xml";

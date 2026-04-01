@@ -3,16 +3,16 @@ package org.dataone.cn.indexer.parser;
 import java.io.IOException;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.commons.codec.EncoderException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.xml.sax.SAXException;
 
 public class SubprocessorUtility {
 
@@ -26,12 +26,18 @@ public class SubprocessorUtility {
     }
 
     public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument, List<String> fieldsToMerge)
-            throws IOException, EncoderException, XPathExpressionException {
+        throws IOException, XPathExpressionException,
+        ParserConfigurationException, SAXException {
+        if (indexDocument == null) {
+            logger.error("The given solr doc is null and the merge process cannot be processed. "
+                             + "Null will be returned back.");
+            return null;
+        }
 
         logger.debug("about to merge indexed document with new doc to insert for pid: "
                 + indexDocument.getIdentifier());
-        SolrDoc solrDoc = httpService.retrieveDocumentFromSolrServer(indexDocument.getIdentifier(),
-                solrQueryUri);
+        SolrDoc solrDoc =
+            httpService.getSolrDocumentById(indexDocument.getIdentifier());
         if (solrDoc != null) {
             logger.debug("found existing doc to merge for pid: " + indexDocument.getIdentifier());
             for (SolrElementField field : solrDoc.getFieldList()) {
