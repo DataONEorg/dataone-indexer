@@ -1,10 +1,7 @@
 package org.dataone.cn.indexer.solrhttp;
 
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.index.DataONESolrJettyTestBase;
-import org.dataone.configuration.Settings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +12,6 @@ import org.springframework.core.io.Resource;
  */
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class HttpServiceTest extends DataONESolrJettyTestBase {
-    private static Log log = LogFactory.getLog(HTTPService.class);
     private Resource peggym1351Sci;
     private String peggym1351SciPid = "peggym.135.1";
     private Resource specialCharacterIdSci;
