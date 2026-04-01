@@ -77,7 +77,7 @@ public class HTTPService {
     private static Log log = LogFactory.getLog(HTTPService.class.getName());
     private static HttpClient httpClient;
 
-    public static String solrGetUri = Settings.getConfiguration().getString("solr.get.uri");
+    public static String SOLR_GET_URI = Settings.getConfiguration().getString("solr.get.uri");
     private String SOLR_SCHEMA_PATH = Settings.getConfiguration().getString("solr.schema.path");
     private List<String> validSolrFieldNames = new ArrayList<String>();
 
@@ -256,7 +256,7 @@ public class HTTPService {
      */
     public SolrDoc getSolrDocumentById(String id)
         throws XPathExpressionException, IOException, ParserConfigurationException, SAXException {
-        if (solrGetUri == null || solrGetUri.isBlank() ) {
+        if (SOLR_GET_URI == null || SOLR_GET_URI.isBlank() ) {
             throw new RuntimeException("The Solr get uri must not be blank.");
         }
         if (id == null || id.isBlank()) {
@@ -267,7 +267,7 @@ public class HTTPService {
         params.add(new BasicNameValuePair(ID, id));
         params.add(new BasicNameValuePair(WT, "xml"));
         String paramString = URLEncodedUtils.format(params, "UTF-8");
-        String requestURI = solrGetUri + "?" + paramString;
+        String requestURI = SOLR_GET_URI + "?" + paramString;
         log.debug("HTTPService.doRequest - REQUEST URI: " + requestURI);
         HttpGet commandGet = new HttpGet(requestURI);
         HttpResponse response = getHttpClient().execute(commandGet);
