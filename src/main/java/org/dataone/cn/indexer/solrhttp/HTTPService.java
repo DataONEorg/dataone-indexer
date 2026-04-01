@@ -68,7 +68,7 @@ public class HTTPService {
     final static String PARAM_QUERY = "q";
     final static String PARAM_RETURN = "fl";
     final static String VALUE_WILDCARD = "*";
-    final static String WT = "wt";
+    final static String RESPONSE_FORMAT = "wt";
     final static String ID = "id";
 
     private static final String MAX_ROWS = "5000";
@@ -265,7 +265,7 @@ public class HTTPService {
         SolrDoc doc = null;
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair(ID, id));
-        params.add(new BasicNameValuePair(WT, "xml"));
+        params.add(new BasicNameValuePair(RESPONSE_FORMAT, "xml"));
         String paramString = URLEncodedUtils.format(params, "UTF-8");
         String requestURI = SOLR_GET_URI + "?" + paramString;
         log.debug("HTTPService.doRequest - REQUEST URI: " + requestURI);
@@ -339,7 +339,7 @@ public class HTTPService {
         params.add(new BasicNameValuePair(PARAM_ROWS, rows));
         params.add(new BasicNameValuePair(PARAM_INDENT, VALUE_INDENT_ON));
         params.add(new BasicNameValuePair(PARAM_RETURN, VALUE_WILDCARD));
-        params.add(new BasicNameValuePair(WT, "xml"));
+        params.add(new BasicNameValuePair(RESPONSE_FORMAT, "xml"));
         //make sure archived objects being included
         params.add(new BasicNameValuePair(ARCHIVED_FIELD, ARCHIVED_SHOWING_VALUE));
         String paramString = URLEncodedUtils.format(params, "UTF-8");
