@@ -245,7 +245,7 @@ public class HTTPService {
     }
     
     /**
-     * Get a single solr doc for a given id by the solr real time get api. It is better than
+     * Get a single solr doc for a given id by the solr realtime GET api. It is better than
      * the query api to get values
      * @param id  the id to identify the solr doc
      * @return  the solr doc associated with the given id. Return null if nothing was found.
