@@ -183,6 +183,7 @@
                         ?datasetId SO:datePublished ?datePublished
                         # Don't include referenced sub-Datasets (i.e. a Dataset in a 'hasPart' property)
                         FILTER NOT EXISTS { ?id SO:hasPart ?datasetId . }
+                        FILTER NOT EXISTS { ?id SO:workExample ?datasetId . }
                     }
                 ]]>
             </value>
