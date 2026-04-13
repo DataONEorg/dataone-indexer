@@ -547,6 +547,12 @@ solr:
     ## instead connecting to a solr instance outside the cluster
     ##
     enabled: false
+
+  config:
+    ## @param solr.config.solrconfigPath path to solrconfig.xml within configMap specified in extraVolumes
+    solrconfigPath: /solrconfig/solrconfig.xml
+    ## @param solr.config.schemaPath path to schema.xml within configMap specified in extraVolumes
+    schemaPath: /solrconfig/schema.xml
   extraVolumes:
     - name: solr-config
       configMap:

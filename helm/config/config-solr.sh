@@ -33,8 +33,8 @@ done
 
 echo "** Sample configs found. Copying files... **" >> ${LOG}
 cp -R ${CONFIG}/sample_techproducts_configs ${CONFIG}/${SOLR_COLLECTION}
-cp /solrconfig/schema.xml ${CONFIG}/${SOLR_COLLECTION}/conf/
-cp /solrconfig/solrconfig.xml ${CONFIG}/${SOLR_COLLECTION}/conf/
+cp {{ .Values.solr.config.schemaPath }} ${CONFIG}/${SOLR_COLLECTION}/conf/
+cp {{ .Values.solr.config.solrconfigPath }} ${CONFIG}/${SOLR_COLLECTION}/conf/
 rm -f ${CONFIG}/${SOLR_COLLECTION}/conf/managed-schema
 
 echo "** Waiting for Zookeeper **" >> ${LOG}
