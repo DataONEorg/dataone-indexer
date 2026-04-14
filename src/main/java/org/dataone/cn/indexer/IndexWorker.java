@@ -86,7 +86,7 @@ public class IndexWorker {
     private static String defaultExternalPropertiesFile = "/etc/dataone/dataone-indexer.properties";
 
     protected static String propertyFilePath = null;
-    protected static float MAX_SUBMIT_TIME_MIN = 1;
+    private static final int MAX_SUBMIT_TIME_MIN = 1;
     private static final int SUBMIT_WAIT_MILLI = 250;
     protected boolean multipleThread = true;
     protected int nThreads = 1;
