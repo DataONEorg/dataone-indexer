@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -85,6 +86,8 @@ public class IndexWorker {
     private static String defaultExternalPropertiesFile = "/etc/dataone/dataone-indexer.properties";
 
     protected static String propertyFilePath = null;
+    protected static float MAX_SUBMIT_TIME_MIN = 1;
+    private static final int SUBMIT_WAIT_MILLI = 250;
     protected boolean multipleThread = true;
     protected int nThreads = 1;
 
@@ -370,14 +373,7 @@ public class IndexWorker {
             public void handleDelivery(
                 String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
                 throws IOException {
-
                 logger.debug("Received message with delivery tag: " + envelope.getDeliveryTag());
-
-                // Send acknowledgment back to RabbitMQ before processing index.
-                // This is a temporary solution for the RabbitMQ timeout issue.
-                // Set multiple false
-                rabbitMQchannel.basicAck(envelope.getDeliveryTag(), false);
-
                 final IndexQueueMessageParser parser = new IndexQueueMessageParser();
                 try {
                     parser.parse(properties, body);
@@ -391,12 +387,53 @@ public class IndexWorker {
                                 indexObject(parser, multipleThread);
                             }
                         };
-                        // submit the task, and that's it
-                        executor.submit(runner);
+                        // Submit the task. If the task cannot be submitted, try more times
+                        long start = System.currentTimeMillis();
+                        while (true) {
+                            try {
+                                executor.submit(runner);
+                                // Send acknowledgment back to RabbitMQ just after submitting the
+                                // job. The real process may not complete since it is running in
+                                // another thread.
+                                // This is a temporary solution for the RabbitMQ timeout issue.
+                                // Set multiple false
+                                rabbitMQchannel.basicAck(envelope.getDeliveryTag(), false);
+                                return;
+                            } catch (RejectedExecutionException e) {
+                                long end = System.currentTimeMillis();
+                                if ( (end - start) > MAX_SUBMIT_TIME_MIN * 1000 * 60 ) {
+                                    logger.warn("After waiting " + MAX_SUBMIT_TIME_MIN
+                                                    + " minutes, the worker still cannot find a "
+                                                    + "thread to process the pid "
+                                                    + parser.getIdentifier().getValue()
+                                                    + ". So it will let the RabbitMQ server to "
+                                                    + "resend it to another worker.");
+                                    // false is for multiple; true is for requeue
+                                    rabbitMQchannel.basicNack(envelope.getDeliveryTag(), false,
+                                                              true);
+                                    return;
+                                } else {
+                                    try {
+                                        logger.debug("Worker will wait " + SUBMIT_WAIT_MILLI
+                                                         + " milli seconds for a "
+                                                         + "available thread to process "
+                                                         + parser.getIdentifier().getValue());
+                                        Thread.sleep(SUBMIT_WAIT_MILLI);
+                                    } catch (InterruptedException ex) {
+                                        Thread.currentThread().interrupt(); // restore flag
+                                        return; // exit loop
+                                    }
+                                }
+                            }
+                        }
                     } else {
                         logger.debug(
                             "using single thread to index identifier " + parser.getIdentifier()
                                 .getValue());
+                        // Send acknowledgment back to RabbitMQ before processing index.
+                        // This is a temporary solution for the RabbitMQ timeout issue.
+                        // Set multiple false
+                        rabbitMQchannel.basicAck(envelope.getDeliveryTag(), false);
                         indexObject(parser, multipleThread);
                     }
                 } catch (InvalidRequest e) {
@@ -410,10 +447,8 @@ public class IndexWorker {
                 }
             }
         };
-
         // Set autoAck = false
         rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
-
         logger.info("IndexWorker.start - Calling basicConsume and waiting for the coming messages");
     }
 
