@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -338,7 +340,15 @@ public class IndexWorker {
             logger.info("IndexWorker.initExecutorService - the size of index thread pool specified in the propery file is " + specifiedThreadNumber +
                     ". The size computed from the available processors is " + availableProcessors +
                      ". Final computed thread pool size for index executor: " + nThreads);
-            executor = Executors.newFixedThreadPool(nThreads);
+            // Use an executor with a bound queue (size=0, no buffer)
+            executor = new ThreadPoolExecutor(
+                nThreads,                      // corePoolSize
+                nThreads,                      // maxPoolSize (fixed)
+                0L,
+                TimeUnit.MILLISECONDS,
+                new SynchronousQueue<>(),              // no queue
+                new ThreadPoolExecutor.AbortPolicy()   // reject if no thread available
+            );
             multipleThread = true;
         } else {
             logger.info("IndexWorker.initExecutorService - the size of index thread pool specified in the propery file is " + specifiedThreadNumber +
