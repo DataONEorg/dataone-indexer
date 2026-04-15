@@ -86,7 +86,7 @@ public class IndexWorker {
     private static String defaultExternalPropertiesFile = "/etc/dataone/dataone-indexer.properties";
 
     protected static String propertyFilePath = null;
-    private static final int MAX_SUBMIT_TIME_MIN = 1;
+    protected static float MAX_SUBMIT_TIME_MIN = 1;
     private static final int SUBMIT_WAIT_MILLI = 250;
     protected boolean multipleThread = true;
     protected int nThreads = 1;
@@ -615,4 +615,37 @@ public class IndexWorker {
     protected Channel getRabbitMQchannel() {
         return rabbitMQchannel;
     }
+
+    /**
+     * Get the consumer of the worker. This is for testing only.
+     * @return the consumer object
+     */
+    protected Consumer getRabbitMQConsumer() {
+        return consumer;
+    }
+
+    /**
+     * Set the given executor object to the class. This is for testing only.
+     * @param executor  the executor will be set
+     */
+    protected void setExecutor(ExecutorService executor) {
+        this.executor = executor;
+    }
+
+    /**
+     * Set the given RabbitMQ channel to the class. This for testing only.
+     * @param rabbitMQchannel  the channel will be set
+     */
+    protected void setRabbitMQchannel(Channel rabbitMQchannel) {
+        this.rabbitMQchannel = rabbitMQchannel;
+    }
+
+    /**
+     * Set MaxSubmitTime for the worker. This is for testing only.
+     * @param time  the time will be set. Its unit is minute.
+     */
+    protected static void setMaxSubmitTimeMin(float time) {
+        MAX_SUBMIT_TIME_MIN = time;
+    }
+
 }
