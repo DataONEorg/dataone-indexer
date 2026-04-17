@@ -16,6 +16,7 @@ import java.util.concurrent.TimeoutException;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+
 /**
  * An Integration test for the IndexWorker class.
  * It requires that the rabbitmq server is running
@@ -109,4 +110,5 @@ public class IndexWorkerIT {
         }
         assertFalse(Files.exists(path));
     }
+
 }

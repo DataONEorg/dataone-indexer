@@ -1,9 +1,27 @@
 package org.dataone.cn.indexer;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.impl.LongStringHelper;
 import org.dataone.configuration.Settings;
 import org.junit.Test;
 
@@ -159,6 +177,84 @@ public class IndexWorkerTest {
         assertTrue(Settings.getConfiguration().
                 getString("index.document.root.directory").equals("./target"));
         assertTrue(Settings.getConfiguration().getString("cn.router.hostname2").equals("cn.dataone.org"));
+    }
+
+    /**
+     * This method tests the Consumer.handleDelivery method. It covers this scenario:
+     * There are no threads available when the worker submits a job to the executor. The
+     * worker will try multiple times until the max waiting time reaches.
+     * @throws Exception
+     */
+    @Test
+    public void testHandleDeliveryWithMaxWaitingTime() throws Exception {
+        IndexWorker.setMaxSubmitTimeSec(1); // Shorten the testing time.
+        IndexWorker worker = new IndexWorker(false);
+        // Make ALL submit(...) calls throw RejectedExecutionException
+        ExecutorService executor = mock(ExecutorService.class);
+        when(executor.submit(any(Runnable.class)))
+            .thenThrow(new RejectedExecutionException("Rejected"));
+        worker.setExecutor(executor);
+        // Make channel.basicNack do nothing
+        Channel rabbitMQchannel = mock(Channel.class);
+        doNothing().when(rabbitMQchannel)
+            .basicNack(anyLong(), anyBoolean(), anyBoolean());
+        worker.setRabbitMQchannel(rabbitMQchannel);
+        worker.start();
+        Envelope envelope = mock(Envelope.class);
+        when(envelope.getDeliveryTag()).thenReturn(100L);
+        Consumer consumer = worker.getRabbitMQConsumer();
+        long start = System.currentTimeMillis();
+        consumer.handleDelivery("consumerTag", envelope, generateRabbitMQProperties(), null);
+        long end = System.currentTimeMillis();
+        // Make sure the submit/wait process last more than the MAX_SUBMIT_TIME_MIN
+        assertTrue((end - start) > IndexWorker.MAX_SUBMIT_TIME_SEC * 1000);
+        // verify the rabbitMQchannel.basicNack was called exactly once
+        verify(rabbitMQchannel, times(1))
+            .basicNack(anyLong(), anyBoolean(), anyBoolean());
+    }
+
+    /**
+     * This method tests the Consumer.handleDelivery method. It covers the scenario that executor
+     * .submit succeeds.
+     * @throws Exception
+     */
+    @Test
+    public void testHandleDelivery() throws Exception {
+        IndexWorker worker = new IndexWorker(false);
+        // Make ALL submit(...) calls do nothing
+        Future future = mock(Future.class);
+        ExecutorService executor = mock(ExecutorService.class);
+        when(executor.submit(any(Runnable.class))).thenReturn(future);
+        worker.setExecutor(executor);
+        // Make channel.basicAckdo nothing
+        Channel rabbitMQchannel = mock(Channel.class);
+        doNothing().when(rabbitMQchannel).basicAck(anyLong(), anyBoolean());
+        worker.setRabbitMQchannel(rabbitMQchannel);
+        worker.start();
+        Envelope envelope = mock(Envelope.class);
+        when(envelope.getDeliveryTag()).thenReturn(100L);
+        Consumer consumer = worker.getRabbitMQConsumer();
+        consumer.handleDelivery("consumerTag", envelope, generateRabbitMQProperties(), null);
+        // verify the rabbitMQchannel.basicAck was called exactly once
+        verify(rabbitMQchannel, times(1)).basicAck(anyLong(), anyBoolean());
+    }
+
+    /**
+     * A utility method to generate a RabbitMQ property
+     * @return a RabbitMQ basic property
+     */
+    private AMQP.BasicProperties generateRabbitMQProperties() {
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("id", LongStringHelper.asLongString("foo.1.1"));
+        headers.put("index_type", LongStringHelper.asLongString("create"));
+        AMQP.BasicProperties basicProperties =
+            new AMQP.BasicProperties.Builder()
+                .contentType("text/plain")
+                .deliveryMode(2) // set this message to persistent
+                .priority(3)
+                .headers(headers)
+                .build();
+        return basicProperties;
     }
 
 }
