@@ -187,7 +187,7 @@ public class IndexWorkerTest {
      */
     @Test
     public void testHandleDeliveryWithMaxWaitingTime() throws Exception {
-        IndexWorker.setMaxSubmitTimeMin(0.05F); // Shorten the testing time.
+        IndexWorker.setMaxSubmitTimeSec(1); // Shorten the testing time.
         IndexWorker worker = new IndexWorker(false);
         // Make ALL submit(...) calls throw RejectedExecutionException
         ExecutorService executor = mock(ExecutorService.class);
@@ -207,7 +207,7 @@ public class IndexWorkerTest {
         consumer.handleDelivery("consumerTag", envelope, generateRabbitMQProperties(), null);
         long end = System.currentTimeMillis();
         // Make sure the submit/wait process last more than the MAX_SUBMIT_TIME_MIN
-        assertTrue((end - start) > IndexWorker.MAX_SUBMIT_TIME_MIN * 60 * 1000);
+        assertTrue((end - start) > IndexWorker.MAX_SUBMIT_TIME_SEC * 1000);
         // verify the rabbitMQchannel.basicNack was called exactly once
         verify(rabbitMQchannel, times(1))
             .basicNack(anyLong(), anyBoolean(), anyBoolean());

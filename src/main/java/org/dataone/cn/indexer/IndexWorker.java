@@ -86,7 +86,7 @@ public class IndexWorker {
     private static String defaultExternalPropertiesFile = "/etc/dataone/dataone-indexer.properties";
 
     protected static String propertyFilePath = null;
-    protected static float MAX_SUBMIT_TIME_MIN = 1;
+    protected static int MAX_SUBMIT_TIME_SEC = 5;
     private static final int SUBMIT_WAIT_MILLI = 250;
     protected boolean multipleThread = true;
     protected int nThreads = 1;
@@ -401,9 +401,9 @@ public class IndexWorker {
                                 return;
                             } catch (RejectedExecutionException e) {
                                 long end = System.currentTimeMillis();
-                                if ( (end - start) > MAX_SUBMIT_TIME_MIN * 1000 * 60 ) {
-                                    logger.warn("After waiting " + MAX_SUBMIT_TIME_MIN
-                                                    + " minutes, the worker still cannot find a "
+                                if ((end - start) > MAX_SUBMIT_TIME_SEC * 1000) {
+                                    logger.warn("After waiting " + MAX_SUBMIT_TIME_SEC
+                                                    + " seconds, the worker still cannot find a "
                                                     + "thread to process the pid "
                                                     + parser.getIdentifier().getValue()
                                                     + ". So it will let the RabbitMQ server to "
@@ -642,10 +642,10 @@ public class IndexWorker {
 
     /**
      * Set MaxSubmitTime for the worker. This is for testing only.
-     * @param time  the time will be set. Its unit is minute.
+     * @param time  the time will be set. Its unit is seconds.
      */
-    protected static void setMaxSubmitTimeMin(float time) {
-        MAX_SUBMIT_TIME_MIN = time;
+    protected static void setMaxSubmitTimeSec(int time) {
+        MAX_SUBMIT_TIME_SEC = time;
     }
 
 }
