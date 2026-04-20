@@ -34,15 +34,13 @@ It can also be built and pushed manually, as follows:
 
 ### Build the Docker image
 
-Build with either `docker` or `nerdctl` depending on which container environment you have installed. For example, using Rancher Desktop configured to use `nerdctl`:
-
+Example: building a release image for linux/amd64 architecture: 
 ```shell
 mvn clean package -DskipTests
-nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 .
+docker buildx build --platform linux/amd64 -t dataone-index-worker:3.3.0 -f docker/Dockerfile --build-arg TAG=3.3.0 .
 ```
 
-If you are building locally for Kubernetes on rancher-desktop, you'll need to set the namespace
-to `k8s.io` using a build command such as:
+If you are using `nerdctl` to build locally for Kubernetes on rancher-desktop, you'll need to set the namespace to `k8s.io` using a build command such as:
 
 ```shell
 mvn clean package -DskipTests
