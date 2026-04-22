@@ -69,11 +69,13 @@ public class ResourceMapSubprocessor implements IDocumentSubprocessor {
      * @param indexDocument
      * @return
      * @throws IOException
-     * @throws EncoderException
      * @throws XPathExpressionException
+     * @throws ParserConfigurationException
+     * @throws SAXException
      */
-    public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument) throws IOException,
-            EncoderException, XPathExpressionException {
+    public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument)
+        throws IOException, XPathExpressionException,
+        ParserConfigurationException, SAXException {
         return processorUtility.mergeWithIndexedDocument(indexDocument, fieldsToMerge);
     }
 

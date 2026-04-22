@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.dataone</groupId>
     <artifactId>dataone-index-worker</artifactId>
-    <version>3.2.0</version>
+    <version>3.3.0</version>
     <packaging>jar</packaging>
     <name>dataone-index-worker</name>
     <url>http://maven.apache.org</url>
@@ -14,9 +14,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>5.3.39</spring.version>
         <d1_libclient_java.version>2.3.1</d1_libclient_java.version>
-        <solr.version>9.8.0</solr.version>
+        <solr.version>9.10.1</solr.version>
         <solr.test.home>solr9home</solr.test.home>
-        <log4j.version>2.24.3</log4j.version>
+        <log4j.version>2.25.3</log4j.version>
         <skipIntegrationTests>${skipTests}</skipIntegrationTests>
     </properties>
 
@@ -51,7 +51,7 @@
             <version>${solr.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>log4j</groupId> 
+                    <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                 </exclusion>
                 <exclusion>
@@ -75,7 +75,7 @@
             <version>${solr.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>log4j</groupId> 
+                    <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                 </exclusion>
                 <exclusion>
@@ -119,7 +119,7 @@
                     <artifactId>jena-core</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>log4j</groupId> 
+                    <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
@@ -195,7 +195,7 @@
             <version>2.0.17</version>
             <exclusions>
                 <exclusion>
-                    <groupId>log4j</groupId> 
+                    <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
@@ -211,11 +211,11 @@
             <version>1.1.2</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.slf4j</groupId> 
+                    <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>log4j</groupId> 
+                    <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
@@ -307,6 +307,12 @@
             <groupId>uk.org.webcompere</groupId>
             <artifactId>system-stubs-junit4</artifactId>
             <version>2.1.7</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.23.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -416,24 +422,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>com.coderplus.maven.plugins</groupId>
-                <artifactId>copy-rename-maven-plugin</artifactId>
-                <version>1.0.1</version>
-                <executions>
-                    <execution>
-                        <id>copy-file</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <sourceFile>src/main/resources/solr-conf/schema.xml</sourceFile>
-                            <destinationFile>src/test/resources/org/dataone/cn/index/resources/${solr.test.home}/collection1/conf/schema.xml</destinationFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
             <!-- The command to run IT is mvn failsafe:integration-test -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

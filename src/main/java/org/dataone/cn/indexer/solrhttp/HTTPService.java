@@ -68,7 +68,8 @@ public class HTTPService {
     final static String PARAM_QUERY = "q";
     final static String PARAM_RETURN = "fl";
     final static String VALUE_WILDCARD = "*";
-    final static String WT = "wt";
+    final static String RESPONSE_FORMAT = "wt";
+    final static String ID = "id";
 
     private static final String MAX_ROWS = "5000";
     private List<String> copyDestinationFields = null;
@@ -76,7 +77,7 @@ public class HTTPService {
     private static Log log = LogFactory.getLog(HTTPService.class.getName());
     private static HttpClient httpClient;
 
-
+    public static String SOLR_GET_URI = Settings.getConfiguration().getString("solr.get.uri");
     private String SOLR_SCHEMA_PATH = Settings.getConfiguration().getString("solr.schema.path");
     private List<String> validSolrFieldNames = new ArrayList<String>();
 
@@ -207,22 +208,7 @@ public class HTTPService {
         return sb.toString();
     }
 
-    /**
-     * Return the SOLR records for the specified PIDs
-     * 
-     * @param uir
-     * @param ids
-     * @return
-     * @throws IOException
-     * @throws XPathExpressionException
-     * @throws EncoderException
-     */
-    public List<SolrDoc> getDocumentsById(String uir, List<String> ids) throws IOException,
-            XPathExpressionException, EncoderException {
-        List<SolrDoc> docs = getDocumentsByField(uir, ids, SolrElementField.FIELD_ID, false);
-        return docs;
-    }
-    
+
     /**
      * Gets a single solr document that is at the top of the version chain for the given seriesId
      * @param seriesId - the target object's seriesId
@@ -259,30 +245,44 @@ public class HTTPService {
     }
     
     /**
-     * Get a single solr doc for a given id
-     * @param uir  the query url
+     * Get a single solr doc for a given id by the solr realtime GET api. It is better than
+     * the query api to get values
      * @param id  the id to identify the solr doc
      * @return  the solr doc associated with the given id. Return null if nothing was found.
      * @throws XPathExpressionException
      * @throws IOException
-     * @throws EncoderException
+     * @throws ParserConfigurationException
+     * @throws SAXException
      */
-    public SolrDoc getSolrDocumentById(String uir, String id) throws XPathExpressionException, 
-                                                                IOException, EncoderException {
-        int targetIndex = 0;
+    public SolrDoc getSolrDocumentById(String id)
+        throws XPathExpressionException, IOException, ParserConfigurationException, SAXException {
+        if (SOLR_GET_URI == null || SOLR_GET_URI.isBlank() ) {
+            throw new RuntimeException("The Solr get uri must not be blank.");
+        }
+        if (id == null || id.isBlank()) {
+            throw new RuntimeException("The document id must not be blank.");
+        }
         SolrDoc doc = null;
-        List<SolrDoc> list = getDocumentById(uir, id);
-        if(list != null && !list.isEmpty()) {
-            doc = list.get(targetIndex);
+        List<NameValuePair> params = new ArrayList<>();
+        params.add(new BasicNameValuePair(ID, id));
+        params.add(new BasicNameValuePair(RESPONSE_FORMAT, "xml"));
+        String paramString = URLEncodedUtils.format(params, "UTF-8");
+        String requestURI = SOLR_GET_URI + "?" + paramString;
+        log.debug("HTTPService.doRequest - REQUEST URI: " + requestURI);
+        HttpGet commandGet = new HttpGet(requestURI);
+        HttpResponse response = getHttpClient().execute(commandGet);
+        HttpEntity entity = response.getEntity();
+        InputStream content = entity.getContent();
+        Document document = null;
+        document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(content);
+        commandGet.abort();
+        List<SolrDoc> docs = parseResults(document, "/response/doc");
+        if (docs != null && docs.size() > 0) {
+            doc = docs.get(0); //The first doc since the get method only returns one doc.
         }
         return doc;
     }
 
-    public List<SolrDoc> getDocumentById(String uir, String id) throws IOException,
-            XPathExpressionException, EncoderException {
-        return getDocumentsByField(uir, Collections.singletonList(id), SolrElementField.FIELD_ID,
-                false);
-    }
 
     public List<SolrDoc> getDocumentsByResourceMap(String uir, String resourceMapId)
             throws IOException, XPathExpressionException, EncoderException {
@@ -339,7 +339,7 @@ public class HTTPService {
         params.add(new BasicNameValuePair(PARAM_ROWS, rows));
         params.add(new BasicNameValuePair(PARAM_INDENT, VALUE_INDENT_ON));
         params.add(new BasicNameValuePair(PARAM_RETURN, VALUE_WILDCARD));
-        params.add(new BasicNameValuePair(WT, "xml"));
+        params.add(new BasicNameValuePair(RESPONSE_FORMAT, "xml"));
         //make sure archived objects being included
         params.add(new BasicNameValuePair(ARCHIVED_FIELD, ARCHIVED_SHOWING_VALUE));
         String paramString = URLEncodedUtils.format(params, "UTF-8");
@@ -365,29 +365,20 @@ public class HTTPService {
         return docs;
     }
 
-    public SolrDoc retrieveDocumentFromSolrServer(String id, String solrQueryUri)
-            throws XPathExpressionException, IOException, EncoderException {
-        List<String> ids = new ArrayList<String>();
-        ids.add(id);
-        List<SolrDoc> indexedDocuments = getDocumentsById(solrQueryUri, ids);
-        if (indexedDocuments.size() > 0) {
-            return indexedDocuments.get(0);
-        } else {
-            return null;
-        }
+    private List<SolrDoc> parseResults(Document document) throws XPathExpressionException {
+        return parseResults(document, "/response/result/doc");
     }
 
-    private List<SolrDoc> parseResults(Document document) throws XPathExpressionException {
-
+    private List<SolrDoc> parseResults(Document document, String xpath)
+                                            throws XPathExpressionException {
         NodeList nodeList = (NodeList) XPathFactory.newInstance().newXPath()
-                .evaluate("/response/result/doc", document, XPathConstants.NODESET);
+                .evaluate(xpath, document, XPathConstants.NODESET);
         List<SolrDoc> docList = new ArrayList<SolrDoc>();
         for (int i = 0; i < nodeList.getLength(); i++) {
             Element docElement = (Element) nodeList.item(i);
             docList.add(parseDoc(docElement));
 
         }
-
         return docList;
     }
 
