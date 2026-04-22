@@ -3,6 +3,48 @@
 > [!NOTE]
 > The Helm chart now assumes you have the [RabbitMQ Cluster Operator](https://www.rabbitmq.com/kubernetes/operator/operator-overview) pre-installed on your Kubernetes cluster. Alternatively, it can be configured to use your existing RabbitMQ instance - see [the README file](./README.md#deploying-the-application-via-helm) for details.
 
+## dataone-indexer version 3.3.0 & helm chart version 2.1.0
+
+### Release date: 2026-04-22
+
+### dataone-indexer version 3.3.0
+
+This release includes improvements to indexing speed and robustness under load, Solr interaction improvements (including use of the realtime GET API), and schema updates to support case-insensitive identifier lookups.
+
+#### RabbitMQ/Worker-Concurrency Robustness:
+
+IndexWorker now rejects additional jobs from RabbitMQ when all threads are busy, instead of loading them into memory. This eliminates the risk of losing jobs when pods restart, and allows RabbitMQ to redeliver the message elsewhere, thus increasing throughput.
+
+#### Solr retrieval correctness & performance:
+
+HTTPService.getSolrDocumentById(...) was reworked to use Solr’s realtime GET endpoint (/get), instead of query-based retrieval. This improves performance and also ensures that the most up-to-date version of the document is retrieved, even if it has not yet been indexed. 
+
+#### Schema/Search Behavior:
+
+Added support for finding records by ID and series ID even when uppercase and lowercase letters do not exactly match.
+Internally, this uses a new case-insensitive field type and the new fields `id_lc` and `seriesId_lc`, which are automatically populated from `id` and `seriesId`.
+
+### Dependency updates:
+
+- Bumped Solr dependency version (property) to 9.10.1
+- Bumped Log4j dependency version (property) to 2.25.3
+
+### helm chart version 2.1.0
+
+In addition to deploying the above changes for indexer version 3.3.0, this chart release includes configuration refinements for Solr, and additional guardrails and scheduling controls for the RabbitMQ Cluster Operator deployment.
+
+> [!NOTE]
+> In order to benefit from the new solr schema changes (see above), please ensure your solr pod(s) restart when doing a helm upgrade. This should be triggered manually, if they don't restart automatically. Either delete each node and wait for it to restart, or use `kubectl rollout restart statefulset [solr-statefulset-name]` to restart the whole statefulset at once.
+
+#### Solr configuration flexibility:
+
+In order to facilitate Coordinating Node functionality, `config-solr.sh` now copies `schema.xml` and `solrconfig.xml` from configurable paths defined by new values: `solr.config.schemaPath` and `solr.config.solrconfigPath`, instead of assuming fixed paths.
+
+### RabbitMQ scheduling / deployment hardening:
+
+Added optional pod anti-affinity support to spread RabbitMQ replicas across nodes, via new values: `rabbitmq.autoPodAntiAffinity` and `rabbitmq.affinity`
+If `rabbitmq.affinity` is set, it overrides the auto-generated anti-affinity behavior
+
 
 ## helm chart version 2.0.1
 
@@ -292,7 +334,7 @@ This is a patch release with the following minor fixes and upgrades:
 * Release date: 2024-07-08
 * **dataone-indexer version 3.0.1**
   * Bump rmq amqp client to 5.21.0
-  * Add healthcheck code
+  * Add health check code
   * Exit app if unrecoverable exception occurs when started from `main()` method
 * **helm chart version 1.0.1**
   * Change `.Values.idxworker.cn_url` to `.Values.global.d1ClientCnUrl`
