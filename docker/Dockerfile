@@ -42,7 +42,12 @@ USER 59997:59997
 EXPOSE 9010
 
 # Connect this image to a GitHub repository
+LABEL org.opencontainers.image.title="DataONE Index Worker"
+LABEL org.opencontainers.image.description="Consumer/worker class for parallel-processing of jobs from a queue and updating a Solr index accordingly"
 LABEL org.opencontainers.image.source="https://github.com/dataoneorg/dataone-indexer"
+LABEL org.opencontainers.image.version=${TAG}
+LABEL org.opencontainers.image.licenses="Apache-2.0"
+LABEL maintainer="DataONE <https://github.com/DataONEorg/dataone-indexer>"
 
 # Run the Worker process
 CMD ["./entrypoint.sh"]
