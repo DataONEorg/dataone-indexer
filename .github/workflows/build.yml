@@ -1,12 +1,7 @@
-name: Java Build SNAPSHOT and push to Maven Central
-#
+name: Java Build Jar File and Push to Maven Central
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-      #- develop
 
 jobs:
   build:
@@ -23,7 +18,6 @@ jobs:
           gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY}}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
           distribution: 'temurin'
-
       - name: Cache Maven packages
         uses: actions/cache@v5
         with:
