@@ -36,15 +36,17 @@ It can also be built and pushed manually, as follows:
 
 Example: building a release image for linux/amd64 architecture: 
 ```shell
+TAG=2.4.0  # replace with your tag/version
 mvn clean package -DskipTests
-docker buildx build --platform linux/amd64 -t dataone-index-worker:3.3.0 -f docker/Dockerfile --build-arg TAG=3.3.0 .
+docker buildx build --no-cache --platform linux/amd64 -t ghcr.io/dataoneorg/dataone-index-worker:$TAG -f docker/Dockerfile --build-arg TAG=$TAG .
 ```
 
 If you are using `nerdctl` to build locally for Kubernetes on rancher-desktop, you'll need to set the namespace to `k8s.io` using a build command such as:
 
 ```shell
+TAG=2.4.0  # replace with your tag/version
 mvn clean package -DskipTests
-nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 \
+nerdctl build -t dataone-index-worker:$TAG -f docker/Dockerfile --build-arg TAG=$TAG \
          --namespace k8s.io  .
 ```
 
@@ -67,9 +69,8 @@ Commands for pushing the built image (example assuming tag is `2.4.0`):
 
 ```shell
 GITHUB_PAT="your-own-secret-GitHub-Personal-Access-Token-goes-here"
-TAG=2.4.0
+TAG=2.4.0  # replace with your tag/version
 
-nerdctl tag dataone-index-worker:$TAG ghcr.io/dataoneorg/dataone-index-worker:$TAG
 echo $GITHUB_PAT | nerdctl login ghcr.io -u DataONEorg --password-stdin
 nerdctl push ghcr.io/dataoneorg/dataone-index-worker:$TAG
 ```
