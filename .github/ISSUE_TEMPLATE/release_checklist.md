@@ -29,8 +29,9 @@ hidden: true    # do NOT show in template picker every time someone creates a ne
     - [ ] DON'T FORGET TO SET CORRECT RELEASE DATE!
   - [ ] PR & merge release prep branch to `develop`
 - [ ] PR & merge `develop` -> `main`
-- [ ] **(on Mac)** package and push helm chart
-- [ ] **(on Mac)** build jar & `mvn deploy` to maven repo
+- [ ] Build and push `linux/amd64` docker image
+- [ ] Package and push helm chart
+- [ ] Build jar & `mvn deploy` to maven repo
 - [ ] Tag the release; look up the `<commit-sha>` from `git log`, then:
   ```shell
   git tag x.x.x <commit-sha>
