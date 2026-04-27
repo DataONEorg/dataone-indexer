@@ -29,17 +29,19 @@ hidden: true    # do NOT show in template picker every time someone creates a ne
     - [ ] DON'T FORGET TO SET CORRECT RELEASE DATE!
   - [ ] PR & merge release prep branch to `develop`
 - [ ] PR & merge `develop` -> `main`
+- NOTE: when code is merged to `main` and tagged, the GH Action will automatically build and push the docker image with the version tag 
 - [ ] **(on Mac)** package and push helm chart
 - [ ] **(on Mac)** build jar & `mvn deploy` to maven repo
 - [ ] Tag the release; look up the `<commit-sha>` from `git log`, then:
   ```shell
-  git tag x.x.x <commit-sha>
-  git tag chart-x.x.x <commit-sha>
+  # Always use annotated tags (-a) for releases
+  git tag -a x.x.x <commit-sha> -m "DataONE Indexer Release x.x.x"
+  git tag -a chart-x.x.x <commit-sha> -m "DataONE Indexer Helm Chart chart-x.x.x"
   git push --tags    ## IMPORTANT - DON'T FORGET THIS!
   ```
 - [ ] Verify that the GH Action successfully built and pushed docker image with version==release tag
 - [ ] Add to GH `Releases` page
-- [ ] Announce on Slack?
+- [ ] Announce on Slack
 
 ---
 ### OR:
@@ -64,8 +66,9 @@ hidden: true    # do NOT show in template picker every time someone creates a ne
   ```
 - [ ] Tag the release; look up the `<commit-sha>` from `git log`, then:
   ```shell
-  git tag chart-x.x.x <commit-sha>
+  # Always use annotated tags (-a) for releases
+  git tag -a chart-x.x.x <commit-sha> -m "DataONE Indexer Helm Chart chart-x.x.x"
   git push --tags    ## IMPORTANT - DON'T FORGET THIS!
   ```
 - [ ] Add to GH `Releases` page
-- [ ] Announce on Slack?
+- [ ] Announce on Slack
