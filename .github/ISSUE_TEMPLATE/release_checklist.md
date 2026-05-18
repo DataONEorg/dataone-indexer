@@ -29,6 +29,11 @@ hidden: true    # do NOT show in template picker every time someone creates a ne
     - [ ] DON'T FORGET TO SET CORRECT RELEASE DATE!
   - [ ] PR & merge release prep branch to `develop`
 - [ ] PR & merge `develop` -> `main`
+- [ ] Merge `main` back to `develop`
+  ```shell
+  git checkout develop; git merge main --ff-only
+  git push
+  ```
 - NOTE: when code is merged to `main` and tagged, the GH Action will automatically build and push the docker image with the version tag 
 - [ ] **(on Mac)** package and push helm chart
 - [ ] **(on Mac)** build jar & `mvn deploy` to maven repo
@@ -56,8 +61,13 @@ hidden: true    # do NOT show in template picker every time someone creates a ne
     - [ ] Update for new version(s).
     - [ ] DON'T FORGET TO SET CORRECT RELEASE DATE!
   - [ ] `git cherry-pick` any commits that need to be included from develop
-  - [ ] PR & merge to develop
-  - [ ] PR & merge to main
+  - [ ] PR & merge to `develop`
+- [ ] PR & merge `develop` to `main`
+- [ ] Merge `main` back to `develop`
+  ```shell
+  git checkout develop; git merge main --ff-only
+  git push
+  ```
 - [ ] **(Mac)** package and push helm chart
   ```shell
   helm package -u ./helm
