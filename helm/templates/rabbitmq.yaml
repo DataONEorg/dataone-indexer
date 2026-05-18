@@ -51,6 +51,6 @@ spec:
       {{- end }}
     {{- end }}
   persistence:
-    storageClassName: {{ .Values.rabbitmq.persistence.storageClassName | default .Values.global.storageClassName }}
+    storageClassName: {{ .Values.rabbitmq.persistence.storageClassName | default .Values.global.storageClass }}
     storage: {{ .Values.rabbitmq.persistence.size }}
 {{- end }}
