@@ -1,7 +1,6 @@
 # Build from parent dir with a command like:
 #     `nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 .`
-# Use an OpenJDK runtime as a parent image
-FROM eclipse-temurin:17.0.17_10-jre-noble
+FROM eclipse-temurin:25.0.3_9-jre-resolute
 
 ARG TAG="NO-TAG"
 ENV TAG=${TAG}
