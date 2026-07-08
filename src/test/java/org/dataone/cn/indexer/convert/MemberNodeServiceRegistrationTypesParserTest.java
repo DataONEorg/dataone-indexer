@@ -25,7 +25,10 @@ import java.util.Collection;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.dataone.cn.indexer.IndexWorkerTest;
 import org.dataone.cn.indexer.parser.utility.MemberNodeServiceRegistrationTypesParser;
+import org.dataone.configuration.Settings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,13 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "../../index/test-context.xml" })
 public class MemberNodeServiceRegistrationTypesParserTest extends TestCase {
+    static {
+        try {
+            Settings.augmentConfiguration(IndexWorkerTest.PORT_8985_PROPERTY_FILE_PATH);
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Autowired
     MemberNodeServiceRegistrationTypeDocumentService serviceTypeDocService;

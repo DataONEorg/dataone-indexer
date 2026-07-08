@@ -3,6 +3,25 @@
 > [!NOTE]
 > The Helm chart now assumes you have the [RabbitMQ Cluster Operator](https://www.rabbitmq.com/kubernetes/operator/operator-overview) pre-installed on your Kubernetes cluster. Alternatively, it can be configured to use your existing RabbitMQ instance - see [the README file](./README.md#deploying-the-application-via-helm) for details.
 
+## dataone-indexer version 3.4.0 & helm chart version 2.2.0
+
+### Release date: 2026-07-08
+
+### dataone indexer version 3.4.0
+
+This release upgrades the codebase to compile and run under Java 25 (upgraded from Java 17).
+
+### Dependency updates:
+
+- Updated d1_libclient_java to 2.4.0
+- Updated d1_common_java to 2.5.0
+- Updated Log4j to 2.26.0
+- Updated Docker base image to `eclipse-temurin:25.0.3_9-jre-resolute`
+
+### helm chart version 2.2.0
+
+In addition to deploying the above changes for indexer version 3.4.0, this chart release includes a configuration improvement for the RabbitMQ operator: if `.Values.rabbitmq.persistence.storageClassName` is not set explicitly, the chart now defaults to `.Values.global.storageClass`.
+
 ## dataone-indexer version 3.3.0 & helm chart version 2.1.0
 
 ### Release date: 2026-04-23

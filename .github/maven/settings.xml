@@ -1,15 +1,45 @@
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
-    <!-- sonatype.org is referenced by d1_libclient_java, but is no longer available, resulting -->
-    <!-- in long timeouts that slow down the build. Block that call by referencing this file    -->
-    <!-- with the maven "-s" flag, e.g: mvn -s ./.github/maven/settings.xml package (etc.), or  -->
-    <!-- do so permanently by copying the following <mirrors> section to your local settings    -->
-    <!-- file at: ~/.m2/settings.xml. It's Included in the repo because it's used by GH Actions -->
+    <!--
+        d1_libclient_java's POM declares several HTTP repositories. Maven 3.8+ blocks HTTP repos
+        by default, producing warnings. The mirrors below intercept them before Maven's HTTP
+        blocker fires, eliminating the warnings.
+
+        Use this file with: mvn -s ./.github/maven/settings.xml <goals>
+        Or copy the <mirrors> section to ~/.m2/settings.xml for permanent effect.
+        This file is also used by GitHub Actions workflows.
+    -->
     <mirrors>
+        <!-- d1_libclient_java declares http://maven.dataone.org/ — redirect to HTTPS -->
         <mirror>
-            <id>block-unavailable-sonatype</id>
-            <mirrorOf>external:http:*,sonatype.org</mirrorOf>
+            <id>dataone-https</id>
+            <mirrorOf>dataone.org</mirrorOf>
+            <url>https://maven.dataone.org</url>
+        </mirror>
+        <!-- d1_libclient_java declares sonatype.org (no longer available) — redirect to
+             Central so Maven gets a quiet 404 instead of a timeout or connection-refused -->
+        <mirror>
+            <id>sonatype-to-central</id>
+            <mirrorOf>sonatype.org</mirrorOf>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </mirror>
+        <!-- d1_libclient_java declares these dead HTTP repos — redirect to Central so Maven
+             gets a quiet 404 instead of a block warning -->
+        <mirror>
+            <id>jibx-to-central</id>
+            <mirrorOf>Jibx Maven Repository</mirrorOf>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </mirror>
+        <mirror>
+            <id>javanet-to-central</id>
+            <mirrorOf>maven2-repository.dev.java.net</mirrorOf>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </mirror>
+        <!-- Block all remaining external HTTP repos -->
+        <mirror>
+            <id>block-unavailable-http</id>
+            <mirrorOf>external:http:*</mirrorOf>
             <url>http://0.0.0.0/</url>
         </mirror>
     </mirrors>

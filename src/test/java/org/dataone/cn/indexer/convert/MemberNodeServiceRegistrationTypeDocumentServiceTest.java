@@ -1,5 +1,8 @@
 package org.dataone.cn.indexer.convert;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.dataone.cn.indexer.IndexWorkerTest;
+import org.dataone.configuration.Settings;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +17,13 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "../../index/test-context.xml" })
 public class MemberNodeServiceRegistrationTypeDocumentServiceTest {
+    static {
+        try {
+            Settings.augmentConfiguration(IndexWorkerTest.PORT_8985_PROPERTY_FILE_PATH);
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Autowired
     private MemberNodeServiceRegistrationTypeDocumentService serviceTypeDocService;
