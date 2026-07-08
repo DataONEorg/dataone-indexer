@@ -1,0 +1,24 @@
+{
+    "@context": "http://schema.org/",
+    "@type":"Dataset",
+    "description":"Vocab https://schema.org/, creator without @list and with @type: 'Role'. Modeled after CanWIN SO format.",
+    "name":"test of alternative creator field configuration",
+    "creator": {
+        "@type": "Role",
+        "creator": {
+            "@type": "Person",
+            "Affiliation": {
+                "@type": "Organization",
+                "name": "National Center for Ecological Analaysis and Synthesis"
+            },
+            "Email": "nesbitt@nceas.ucsb.edu",
+            "Identifier": {
+                "@type": "PropertyValue",
+                "propertyID": "https://registry.identifiers.org/registry/orcid",
+                "url": "http://orcid.org/0000-0001-5828-6070",
+                "value": "0000-0001-5828-6070"
+            },
+            "Name": "Nesbitt, Ian\t"
+        }
+    }
+}

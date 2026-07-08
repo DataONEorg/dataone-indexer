@@ -323,6 +323,97 @@
         </constructor-arg>
     </bean>
 
+    <!-- This query extracts the name from a creator field that uses no list when there is a single creator,
+            and also nests creator fields with @type definitions.
+    {
+        "@context": {
+            "@vocab": "https://schema.org/"
+        },
+        "@graph": {
+            "creator": {
+                "@type": "Role",
+                "creator": {
+                    "@type": "Person",
+                    ...
+                    "name": "..."
+                }
+            }
+        }
+    }
+    -->
+    <bean id="schema_org_creator_role_name" class="org.dataone.cn.indexer.annotation.SparqlField">
+        <constructor-arg name="name" value="origin" />
+        <constructor-arg name="query">
+            <value>
+                <![CDATA[
+                PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
+                PREFIX SO:   <http://schema.org/>
+
+                SELECT (?name as ?origin)
+                WHERE {
+                    ?dsId rdf:type SO:Dataset .
+                    ?dsId SO:creator $creator .
+                    $creator SO:creator ?role .
+                    $role SO:name ?name .
+                }
+                ]]>
+            </value>
+        </constructor-arg>
+    </bean>
+
+    <!-- This query extracts the names from a creator field that uses ordered list syntax when there are multiple creators,
+            and also nests creator fields with @type definitions.
+    {
+        "@context": {
+            "@vocab": "https://schema.org/"
+        },
+        "@graph": {
+            "creator": [
+                {
+                    "@type": "Role",
+                    "creator": {
+                        "@type": "Person",
+                        ...
+                        "name": "Person 1"
+                    }
+                },
+                {
+                    "@type": "Role",
+                    "creator": {
+                        "@type": "Person",
+                        ...
+                        "name": "Person 2"
+                    }
+                }
+            ]
+        }
+    }
+    -->
+    <bean id="schema_org_creator_list_role_name" class="org.dataone.cn.indexer.annotation.SparqlField">
+        <constructor-arg name="name" value="origin" />
+        <constructor-arg name="query">
+            <value>
+                <![CDATA[
+                PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
+                PREFIX SO:   <http://schema.org/>
+
+                SELECT (?name as ?origin)
+                WHERE {
+                    ?dsId rdf:type SO:Dataset .
+                    ?dsId SO:creator ?creatorList .
+                    ?creatorList list:member ?creator .
+                    ?creatorList list:index ?pos .
+                    ?creator SO:creator ?role .
+                    ?role SO:name ?name .
+                }
+                order by (?pos)
+                ]]>
+            </value>
+        </constructor-arg>
+    </bean>
+
     <bean id="schema_org_prov_hadDerivation" class="org.dataone.cn.indexer.annotation.SparqlField">
         <constructor-arg name="name" value="prov_hasDerivations" />
         <constructor-arg name="query">
