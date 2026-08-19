@@ -15,7 +15,7 @@
         <d1_libclient_java.version>2.4.0</d1_libclient_java.version>
         <solr.version>9.10.1</solr.version>
         <solr.test.home>solr9home</solr.test.home>
-        <log4j.version>2.26.0</log4j.version>
+        <log4j.version>2.26.1</log4j.version>
         <skipIntegrationTests>${skipTests}</skipIntegrationTests>
     </properties>
 
@@ -246,7 +246,7 @@
         <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
-            <version>5.21.0</version>
+            <version>5.34.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
