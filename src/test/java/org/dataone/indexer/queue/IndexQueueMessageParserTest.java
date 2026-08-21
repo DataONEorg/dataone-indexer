@@ -102,6 +102,7 @@ public class IndexQueueMessageParserTest {
         assertEquals(indexType, parser.getIndexType());
         assertEquals(priority, parser.getPriority());
         assertEquals(docId, parser.getDocId());
+        assertNull(parser.getSysmetaMetadata());
 
         id = "urn:uuid:45298965-f867-440c-841f-91d3abd729b7";
         indexType = "delete";
@@ -117,6 +118,7 @@ public class IndexQueueMessageParserTest {
         assertEquals(indexType, parser.getIndexType());
         assertEquals(priority, parser.getPriority());
         assertEquals(docId, parser.getDocId());
+        assertNull(parser.getSysmetaMetadata());
 
         id = "urn:uuid:45298965-f867-440c-841f-000000";
         indexType = "create";
@@ -130,6 +132,7 @@ public class IndexQueueMessageParserTest {
         assertEquals(indexType, parser.getIndexType());
         assertEquals(priority, parser.getPriority());
         assertNull(parser.getDocId());
+        assertNull(parser.getSysmetaMetadata());
 
         id = "urn:uuid:45298965-f867-440c-841f-000000";
         indexType = "create";
@@ -145,6 +148,7 @@ public class IndexQueueMessageParserTest {
         assertEquals(indexType, parser.getIndexType());
         assertEquals(priority, parser.getPriority());
         assertEquals(docId, parser.getDocId());
+        assertNull(parser.getSysmetaMetadata());
 
         id = "test-foo";
         indexType = "sysmeta";
@@ -160,10 +164,12 @@ public class IndexQueueMessageParserTest {
         assertEquals(indexType, parser.getIndexType());
         assertEquals(priority, parser.getPriority());
         assertEquals(docId, parser.getDocId());
+        assertNull(parser.getSysmetaMetadata());
 
         id = "test-foo2";
         indexType = "sysmeta2";
         priority = 10;
+        body = buildSystemMetadataString(id).getBytes();
         longId = LongStringHelper.asLongString(id);
         longIndexType = LongStringHelper.asLongString(indexType);
         properties = generateProperties(longId, longIndexType, priority, null);
@@ -173,6 +179,8 @@ public class IndexQueueMessageParserTest {
         assertEquals(indexType, parser.getIndexType());
         assertEquals(priority, parser.getPriority());
         assertNull(parser.getDocId());
+        assertEquals(id, parser.getSysmetaMetadata().getIdentifier().getValue());
+        assertEquals("usco95.xls", parser.getSysmetaMetadata().getFileName());
     }
 
     /**
@@ -196,6 +204,30 @@ public class IndexQueueMessageParserTest {
                 .headers(headers)
                 .build();
         return basicProperties;
+    }
+
+    private String buildSystemMetadataString(String pid) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+        buffer.append("<ns3:systemMetadata xmlns:ns2=\"http://ns.dataone.org/service/types/v1\" "
+                          + "xmlns:ns3=\"http://ns.dataone.org/service/types/v2.0\">");
+        buffer.append("<serialVersion>159</serialVersion>");
+        buffer.append("<identifier>");
+        buffer.append(pid);
+        buffer.append("</identifier>");
+        buffer.append("<formatId>application/vnd.ms-excel</formatId>");
+        buffer.append("<size>4139493</size>");
+        buffer.append("<checksum algorithm=\"SHA-256\">c311ce9b3540ab538bd7cebd98fae</checksum>");
+        buffer.append("<submitter>CN=Bryce Mecum,O=Google,C=US,DC=cilogon,DC=org</submitter>");
+        buffer.append("<archived>false</archived>");
+        buffer.append("<dateUploaded>2016-03-15T23:04:35.072+00:00</dateUploaded>");
+        buffer.append(
+            "<dateSysMetadataModified>2016-03-15T23:04:35.072+00:00</dateSysMetadataModified>");
+        buffer.append("<originMemberNode>urn:node:mnTestKNB</originMemberNode>");
+        buffer.append("<authoritativeMemberNode>urn:node:mnTestKNB</authoritativeMemberNode>");
+        buffer.append("<fileName>usco95.xls</fileName>");
+        buffer.append("</ns3:systemMetadata>");
+        return buffer.toString();
     }
 
 }

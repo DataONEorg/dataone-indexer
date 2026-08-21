@@ -1,14 +1,19 @@
 package org.dataone.indexer.queue;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dataone.exceptions.MarshallingException;
 import org.dataone.service.exceptions.InvalidRequest;
 import org.dataone.service.types.v1.Identifier;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.LongString;
+import org.dataone.service.types.v2.SystemMetadata;
+import org.dataone.service.util.TypeMarshaller;
 
 /**
  * This class parses the messages coming from the index queue and 
@@ -27,6 +32,7 @@ public class IndexQueueMessageParser {
     private String indexType = null;
     private int priority = 1;
     private String docId = null;
+    private SystemMetadata sysmeta = null;
 
     private static Log logger = LogFactory.getLog(IndexQueueMessageParser.class);
     
@@ -91,6 +97,17 @@ public class IndexQueueMessageParser {
         logger.debug(
             "IndexQueueMessageParser.parse - the priority in the message is " + priority + " for "
                 + pid);
+        if (body != null && body.length >1) {
+            try {
+                sysmeta = TypeMarshaller.unmarshalTypeFromStream(
+                    SystemMetadata.class, new ByteArrayInputStream(body));
+            } catch (IOException | InstantiationException | IllegalAccessException |
+                     MarshallingException e) {
+                throw new InvalidRequest("0000", "The body in the index queue message for " + pid
+                    + " is not a valid system metadata");
+            }
+            logger.debug("There is a system metadata in the message is for " + pid);
+        }
     }
 
     /**
@@ -125,6 +142,15 @@ public class IndexQueueMessageParser {
      */
     public String getDocId() {
         return docId;
+    }
+
+    /**
+     * Get the system metadata part from the index queue message. This part is optional
+     * @return the system metadata ebbeded in the queue message. Null is return if there is no
+     * system metadata part in the message.
+     */
+    public SystemMetadata getSysmetaMetadata() {
+        return sysmeta;
     }
 
 }
