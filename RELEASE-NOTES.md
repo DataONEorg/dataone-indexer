@@ -5,7 +5,7 @@
 
 ## dataone-indexer version 3.4.1 & helm chart version 2.2.1
 
-### Release date: 2026-09-09
+### Release date: 2026-09-10
 
 ### dataone indexer version 3.4.1
 
