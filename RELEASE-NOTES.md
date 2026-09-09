@@ -3,6 +3,23 @@
 > [!NOTE]
 > The Helm chart now assumes you have the [RabbitMQ Cluster Operator](https://www.rabbitmq.com/kubernetes/operator/operator-overview) pre-installed on your Kubernetes cluster. Alternatively, it can be configured to use your existing RabbitMQ instance - see [the README file](./README.md#deploying-the-application-via-helm) for details.
 
+## dataone-indexer version 3.4.1 & helm chart version 2.2.1
+
+### Release date: 2026-09-10
+
+### dataone indexer version 3.4.1
+
+This is a patch release to upgrade dependencies
+
+### Dependency updates:
+- Updated `d1_libclient_java` to 2.4.1
+- Updated RabbitMQ amqp-client to 5.34.0
+- Updated `log4j-api` to 2.26.1
+
+### helm chart version 2.2.1
+
+This chart is a patch release to deploy the above changes for indexer version 3.4.1. There are no other changes to the chart.
+
 ## dataone-indexer version 3.4.0 & helm chart version 2.2.0
 
 ### Release date: 2026-07-08
