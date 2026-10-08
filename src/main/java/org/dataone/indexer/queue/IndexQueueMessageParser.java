@@ -104,8 +104,12 @@ public class IndexQueueMessageParser {
         parseBody(body, pid);
     }
 
-    private void parseBody(byte[] body, String id) {
+    private void parseBody(byte[] body, String id) throws InvalidRequest {
         if (body != null && body.length != 0) {
+            if (id == null || id.isBlank()) {
+                throw new InvalidRequest(
+                    "0000", "The identifier cannot be null or blank in the index queue message.");
+            }
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 JsonNode message = objectMapper.readTree(body);
@@ -127,13 +131,22 @@ public class IndexQueueMessageParser {
                 }
                 // Get the SystemMetadata XML
                 String sysmetaStr = sysmetaNode.asText();
-                logger.debug("SystemMetadata:" + sysmetaStr);
 
                 // Process the SystemMetadata XML here
                 sysMeta = TypeMarshaller.unmarshalTypeFromStream(SystemMetadata.class,
                                                   new ByteArrayInputStream(sysmetaStr.getBytes()));
+                if (sysMeta != null) {
+                    if (sysMeta.getIdentifier() == null || !id.equals(
+                        sysMeta.getIdentifier().getValue())) {
+                        sysMeta = null; //Reset to null
+                        logger.warn("The identifier in the embedded system metadata doesn't "
+                                        + "match the id in the message " + id
+                                        + " So the system metadata will be ignored: " + sysmetaStr);
+                        return;
+                    }
+                }
                 logger.debug("The RabbitMQ message for object " + id + " has an embedded system "
-                                 + "metadata object.");
+                                 + "metadata object: " + sysmetaStr);
             } catch (JsonProcessingException e) {
                 logger.warn("Unable to understand RabbitMQ message: invalid JSON" + e.getMessage());
             } catch (IOException e) {
