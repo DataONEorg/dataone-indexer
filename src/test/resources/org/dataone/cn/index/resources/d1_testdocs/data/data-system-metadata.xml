@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns3:systemMetadata xmlns:ns2="http://ns.dataone.org/service/types/v1" xmlns:ns3="http://ns.dataone.org/service/types/v2.0">
+    <serialVersion>0</serialVersion>
+    <identifier>urn:uuid:c30472f4-5b97-4a2b-b35d-e78eba19f77d</identifier>
+    <formatId>application/octet-stream</formatId>
+    <size>23</size>
+    <checksum algorithm="MD5">c5e0815b9d729df135968d535bd4a6de</checksum>
+    <submitter>http://orcid.org/0000-0002-1209-5268</submitter>
+    <rightsHolder>http://orcid.org/0000-0002-1209-5268</rightsHolder>
+    <accessPolicy>
+        <allow>
+            <subject>public</subject>
+            <permission>read</permission>
+        </allow>
+        <allow>
+            <subject>CN=knb-data-admins,DC=dataone,DC=org</subject>
+            <permission>read</permission>
+            <permission>write</permission>
+            <permission>changePermission</permission>
+        </allow>
+    </accessPolicy>
+    <replicationPolicy replicationAllowed="false"/>
+    <archived>false</archived>
+    <dateUploaded>2026-10-06T19:51:47.732+00:00</dateUploaded>
+    <dateSysMetadataModified>2026-10-06T19:51:47.841+00:00</dateSysMetadataModified>
+    <originMemberNode>urn:node:mnTestKNB</originMemberNode>
+    <authoritativeMemberNode>urn:node:mnTestKNB</authoritativeMemberNode>
+    <fileName>letter</fileName>
+</ns3:systemMetadata>

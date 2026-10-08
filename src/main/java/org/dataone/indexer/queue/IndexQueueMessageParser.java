@@ -31,7 +31,7 @@ public class IndexQueueMessageParser {
     private final static String HEADER_INDEX_TYPE = "index_type";
     //The header name in the message to store the docid of the object
     private final static String HEADER_DOCID = "doc_id";
-    private final static String SYSMETA_TAG = "sysmeta";
+    protected final static String SYSMETA_TAG = "sysmeta";
     private Identifier identifier = null;
     private String indexType = null;
     private int priority = 1;
