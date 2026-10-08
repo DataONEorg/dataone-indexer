@@ -1,14 +1,22 @@
 package org.dataone.indexer.queue;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dataone.exceptions.MarshallingException;
 import org.dataone.service.exceptions.InvalidRequest;
 import org.dataone.service.types.v1.Identifier;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.LongString;
+import org.dataone.service.types.v2.SystemMetadata;
+import org.dataone.service.util.TypeMarshaller;
 
 /**
  * This class parses the messages coming from the index queue and 
@@ -23,10 +31,12 @@ public class IndexQueueMessageParser {
     private final static String HEADER_INDEX_TYPE = "index_type";
     //The header name in the message to store the docid of the object
     private final static String HEADER_DOCID = "doc_id";
+    private final static String SYSMETA_TAG = "sysmeta";
     private Identifier identifier = null;
     private String indexType = null;
     private int priority = 1;
     private String docId = null;
+    private SystemMetadata sysMeta = null;
 
     private static Log logger = LogFactory.getLog(IndexQueueMessageParser.class);
     
@@ -91,6 +101,48 @@ public class IndexQueueMessageParser {
         logger.debug(
             "IndexQueueMessageParser.parse - the priority in the message is " + priority + " for "
                 + pid);
+        parseBody(body, pid);
+    }
+
+    private void parseBody(byte[] body, String id) {
+        if (body != null && body.length != 0) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                JsonNode message = objectMapper.readTree(body);
+                // Body is not a JSON object
+                if (message == null || !message.isObject()) {
+                    logger.warn("Unable to understand RabbitMQ message: not a JSON object");
+                    return;
+                }
+                // sysmeta is missing or null
+                JsonNode sysmetaNode = message.get(SYSMETA_TAG);
+                if (sysmetaNode == null || sysmetaNode.isNull()) {
+                    logger.warn("Unable to understand RabbitMQ message: missing sysmeta");
+                    return;
+                }
+                // sysmeta exists, but is not a JSON string
+                if (!sysmetaNode.isTextual()) {
+                    logger.warn("Unable to understand RabbitMQ message: sysmeta is not a string");
+                    return;
+                }
+                // Get the SystemMetadata XML
+                String sysmetaStr = sysmetaNode.asText();
+                logger.debug("SystemMetadata:" + sysmetaStr);
+
+                // Process the SystemMetadata XML here
+                sysMeta = TypeMarshaller.unmarshalTypeFromStream(SystemMetadata.class,
+                                                  new ByteArrayInputStream(sysmetaStr.getBytes()));
+                logger.debug("The RabbitMQ message for object " + id + " has an embedded system "
+                                 + "metadata object.");
+            } catch (JsonProcessingException e) {
+                logger.warn("Unable to understand RabbitMQ message: invalid JSON" + e.getMessage());
+            } catch (IOException e) {
+                logger.warn("Unable to read RabbitMQ message body " + e.getMessage());
+            } catch (MarshallingException | InstantiationException | IllegalAccessException e) {
+                logger.warn("Unable to convert the message body to the system metadata object "
+                                + e.getMessage());
+            }
+        }
     }
 
     /**
@@ -125,6 +177,15 @@ public class IndexQueueMessageParser {
      */
     public String getDocId() {
         return docId;
+    }
+
+    /**
+     * Get the system metadata ebeded in the message
+     * @return the system metadata in the message. It can be null if there is not one inside the
+     * message.
+     */
+    public SystemMetadata getSystemMetadata() {
+        return this.sysMeta;
     }
 
 }
