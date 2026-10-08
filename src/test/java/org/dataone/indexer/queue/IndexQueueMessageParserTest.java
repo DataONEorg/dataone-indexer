@@ -102,6 +102,7 @@ public class IndexQueueMessageParserTest {
         assertEquals(indexType, parser.getIndexType());
         assertEquals(priority, parser.getPriority());
         assertEquals(docId, parser.getDocId());
+        assertNull(parser.getSystemMetadata());
 
         id = "urn:uuid:45298965-f867-440c-841f-91d3abd729b7";
         indexType = "delete";
@@ -117,6 +118,7 @@ public class IndexQueueMessageParserTest {
         assertEquals(indexType, parser.getIndexType());
         assertEquals(priority, parser.getPriority());
         assertEquals(docId, parser.getDocId());
+        assertNull(parser.getSystemMetadata());
 
         id = "urn:uuid:45298965-f867-440c-841f-000000";
         indexType = "create";
@@ -130,6 +132,7 @@ public class IndexQueueMessageParserTest {
         assertEquals(indexType, parser.getIndexType());
         assertEquals(priority, parser.getPriority());
         assertNull(parser.getDocId());
+        assertNull(parser.getSystemMetadata());
 
         id = "urn:uuid:45298965-f867-440c-841f-000000";
         indexType = "create";
@@ -145,6 +148,7 @@ public class IndexQueueMessageParserTest {
         assertEquals(indexType, parser.getIndexType());
         assertEquals(priority, parser.getPriority());
         assertEquals(docId, parser.getDocId());
+        assertNull(parser.getSystemMetadata());
 
         id = "test-foo";
         indexType = "sysmeta";
@@ -160,6 +164,7 @@ public class IndexQueueMessageParserTest {
         assertEquals(indexType, parser.getIndexType());
         assertEquals(priority, parser.getPriority());
         assertEquals(docId, parser.getDocId());
+        assertNull(parser.getSystemMetadata());
 
         id = "test-foo2";
         indexType = "sysmeta2";
@@ -173,6 +178,7 @@ public class IndexQueueMessageParserTest {
         assertEquals(indexType, parser.getIndexType());
         assertEquals(priority, parser.getPriority());
         assertNull(parser.getDocId());
+        assertNull(parser.getSystemMetadata());
     }
 
     /**
