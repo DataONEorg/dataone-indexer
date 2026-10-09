@@ -84,8 +84,8 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         loadToHashStore(identifier, objectFile);
         Identifier pid = new Identifier();
         pid.setValue(identifier);
-        //null is the value for docId
-        solrIndexService.update(pid, isSysmetaChangeOnly, null);
+        //The first null is the value for docId; the second one is for embedded system metadata
+        solrIndexService.update(pid, isSysmetaChangeOnly, null, null);
     }
 
     /**

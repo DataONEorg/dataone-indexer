@@ -40,6 +40,7 @@ import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.exceptions.UnsupportedType;
 import org.dataone.service.types.v1.Identifier;
+import org.dataone.service.types.v2.SystemMetadata;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.xml.sax.SAXException;
@@ -502,6 +503,7 @@ public class IndexWorker {
         String indexType = parser.getIndexType();
         int priority = parser.getPriority();
         String docId = parser.getDocId();// It can be null.
+        SystemMetadata embeddedSysMeta = parser.getSystemMetadata();// It can be null
         try {
             long threadId = Thread.currentThread().getId();
             logger.info("IndexWorker.consumer.indexObject by multiple thread? " + multipleThread
@@ -509,14 +511,17 @@ public class IndexWorker {
                     + " - Received the index task from the index queue with the identifier: "
                             + pid.getValue() + " , the index type: " + indexType
                             + ", the priority: " + priority + ", the docId(can be null): " + docId);
+            if (embeddedSysMeta != null) {
+                logger.info("The index task has an embedded system metadata");
+            }
             switch (indexType) {
                 case CREATE_INDEX_TYPE -> {
                     boolean sysmetaOnly = false;
-                    solrIndex.update(pid, sysmetaOnly, docId);
+                    solrIndex.update(pid, sysmetaOnly, docId, embeddedSysMeta);
                 }
                 case SYSMETA_CHANGE_TYPE -> {
                     boolean sysmetaOnly = true;
-                    solrIndex.update(pid, sysmetaOnly, docId);
+                    solrIndex.update(pid, sysmetaOnly, docId, embeddedSysMeta);
                 }
                 case DELETE_INDEX_TYPE -> solrIndex.remove(pid);
                 default -> throw new InvalidRequest(
