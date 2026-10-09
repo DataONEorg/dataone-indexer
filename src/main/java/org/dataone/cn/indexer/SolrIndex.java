@@ -1,6 +1,7 @@
 package org.dataone.cn.indexer;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -46,6 +47,7 @@ import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.exceptions.UnsupportedType;
 import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v2.SystemMetadata;
+import org.dataone.service.util.TypeMarshaller;
 import org.xml.sax.SAXException;
 
 
@@ -169,10 +171,13 @@ public class SolrIndex {
         long start = System.currentTimeMillis();
         Map<String, SolrDoc> docs = new HashMap<>();
         if (embeddedSysMeta != null) {
-            log.debug("Use the embedded system metadata directly from the RabbitMQ message "
+            log.debug("Directly use the embedded system metadata in the RabbitMQ message "
                           + "for object " + id);
             try {
-                docs = systemMetadataProcessor.processDocument(id, docs, null);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                TypeMarshaller.marshalTypeToOutputStream(embeddedSysMeta, baos);
+                docs = systemMetadataProcessor.processDocument(
+                    id, docs, new ByteArrayInputStream(baos.toByteArray()));
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 throw new SolrServerException(e.getMessage());
