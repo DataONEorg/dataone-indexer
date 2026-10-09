@@ -5,8 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -343,7 +345,12 @@ public class SolrIndex {
         long end = System.currentTimeMillis();
         log.info("SolrIndex.insert - the subprocessor processing time of " + pid.getValue() + " is "
                  + (end-start) + " milliseconds.");
-        //transform the Map to the SolrInputDocument which can be used by the solr server
+        // Before sending the docs to the solr service, we need to make sure if the embedded
+        // system metadata is a newer version than the one in the solr
+        if (embeddedSysMeta != null) {
+            isModifiedDateOlderThanSolr(
+                pid.getValue(), embeddedSysMeta.getDateSysMetadataModified());
+        }
         if(docs != null) {
             start = System.currentTimeMillis();
             Set<String> ids = docs.keySet();
@@ -885,6 +892,47 @@ public class SolrIndex {
                 throw e;
             }
 
+        }
+    }
+
+    /**
+     * Check if the given modified date is older than the modified date field in the solr doc of
+     * the given id. The method will throw an InvalidRequest exception if the solr document exists
+     * and given modified date is older than the modified date field in the solr.
+     * @param id  the id to identify the solr doc
+     * @param modifiedDate  the date will be compared
+     * @throws InvalidRequest
+     */
+    private void isModifiedDateOlderThanSolr(String id, Date modifiedDate) throws InvalidRequest {
+        if (id == null || id.isBlank()) {
+            throw new InvalidRequest("0000", "DataONE-Indexer cannot compare the given "
+                + "modification date with the value in the solr since the id is blank/null");
+        }
+        if (modifiedDate == null) {
+            throw new InvalidRequest("0000", "DataONE-Indexer cannot compare the given "
+                + "modification date with the value in the solr for " + id + " since the given "
+                + "date is null");
+        }
+        SolrDoc document;
+        try {
+            document = httpService.getSolrDocumentById(id);
+        } catch (XPathExpressionException | IOException | ParserConfigurationException | SAXException e) {
+            throw new InvalidRequest("0000", "DataONE-Indexer cannot compare the given "
+                + "modification date with the value in the solr for " + id +" since it cannot "
+                + "query solr: " + e.getMessage());
+        }
+        if (document != null) {
+            String modifiedDateStr =
+                document.getFirstFieldValue(SolrElementField.FIELD_DATEMODIFIED);
+            if (modifiedDateStr != null && !modifiedDateStr.isBlank()) {
+                Date modifiedDateInSolr = Date.from(Instant.parse(modifiedDateStr));
+                if (modifiedDate.getTime() < modifiedDateInSolr.getTime()) {
+                    throw new InvalidRequest("0000", "The embedded system metadata in the "
+                        + "RabbitMQ message has an older modification date than the existing solr"
+                        + " doc: " + modifiedDateInSolr + " for object " + id + " So "
+                        + "Dataone-Indexer has rejected the request");
+                }
+            }
         }
     }
 
