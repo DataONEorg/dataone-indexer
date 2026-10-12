@@ -510,10 +510,8 @@ public class IndexWorker {
                             + ", with the thread id " + threadId
                     + " - Received the index task from the index queue with the identifier: "
                             + pid.getValue() + " , the index type: " + indexType
-                            + ", the priority: " + priority + ", the docId(can be null): " + docId);
-            if (embeddedSysMeta != null) {
-                logger.info("The index task has an embedded system metadata");
-            }
+                            + ", the priority: " + priority + ", the docId(can be null): " + docId
+                            + " the embeddedSysMeta (can be null): " + embeddedSysMeta);
             switch (indexType) {
                 case CREATE_INDEX_TYPE -> {
                     boolean sysmetaOnly = false;
