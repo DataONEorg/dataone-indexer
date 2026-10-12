@@ -193,7 +193,7 @@ public class IndexQueueMessageParser {
     }
 
     /**
-     * Get the system metadata ebeded in the message
+     * Get the system metadata embedded in the message
      * @return the system metadata in the message. It can be null if there is not one inside the
      * message.
      */
