@@ -39,25 +39,6 @@ public class ForesiteResourceMap implements ResourceMap {
     private String identifier = null;
     private HashMap<String, ForesiteResourceEntry> resourceMap = null;
 
-    private IndexVisibilityDelegate indexVisibilityDelegate = new IndexVisibilityDelegateImpl();
-
-    public ForesiteResourceMap(String fileObjectPath) throws OREParserException {
-        FileInputStream fileInputStream = null;
-        try {
-            fileInputStream = new FileInputStream(fileObjectPath);
-            _init(fileInputStream);
-        } catch (Exception e) {
-            throw new OREParserException(e);
-        } finally {
-            try {
-                if (fileInputStream != null) {
-                    fileInputStream.close();
-                }
-            } catch (IOException e) {
-                logger.error("error closing file input stream", e);
-            }
-        }
-    }
 
     public ForesiteResourceMap(Document doc) throws OREParserException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -98,17 +79,12 @@ public class ForesiteResourceMap implements ResourceMap {
      * Constructor for testing, allows test class to override the index visibility delegate object.  
      * To avoid need for hazelcast during testing.
      * @param fileObjectPath
-     * @param ivd
      * @throws OREException
      * @throws URISyntaxException
      * @throws OREParserException
      * @throws IOException
      */
-    public ForesiteResourceMap(String fileObjectPath, IndexVisibilityDelegate ivd)
-            throws OREParserException {
-        if (ivd != null) {
-            this.indexVisibilityDelegate = ivd;
-        }
+    public ForesiteResourceMap(String fileObjectPath) throws OREParserException {
         FileInputStream fileInputStream = null;
         try {
             fileInputStream = new FileInputStream(fileObjectPath);

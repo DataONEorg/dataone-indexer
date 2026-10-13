@@ -44,9 +44,4 @@ public class ResourceMapFactory {
     public static ResourceMap buildResourceMap(Document oreDoc) throws OREParserException {
         return new ForesiteResourceMap(oreDoc);
     }
-
-    public static ResourceMap buildResourceMap(String objectFilePath, IndexVisibilityDelegate ivd)
-            throws OREParserException {
-        return new ForesiteResourceMap(objectFilePath, ivd);
-    }
 }
