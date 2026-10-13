@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,19 +18,10 @@ import java.util.Set;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dataone.cn.indexer.object.ObjectManagerFactory;
-import org.dataone.cn.indexer.parser.utility.SeriesIdResolver;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
-import org.dataone.exceptions.MarshallingException;
 import org.dataone.ore.ResourceMapFactory;
-import org.dataone.service.exceptions.InvalidToken;
-import org.dataone.service.exceptions.NotAuthorized;
-import org.dataone.service.exceptions.NotFound;
-import org.dataone.service.exceptions.NotImplemented;
-import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.types.v1.Identifier;
-import org.dataone.service.types.v2.SystemMetadata;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.OREParserException;
 import org.w3c.dom.Document;
@@ -238,13 +227,8 @@ public class ForesiteResourceMap implements ResourceMap {
         for (ResourceEntry resourceEntry : this.resourceMap.values()) {
             Identifier pid = new Identifier();
             pid.setValue(resourceEntry.getIdentifier());
-            // if the document does not have system metadata yet, cannot check visibility.  include in list of ids.
-            // if document does exist, it must be visible in the index to be included.
-            if (!indexVisibilityDelegate.documentExists(pid)
-                    || indexVisibilityDelegate.isDocumentVisible(pid)) {
-                if (resourceEntry.getIdentifier().equals(this.getIdentifier()) == false) {
-                    resourceEntries.add(resourceEntry);
-                }
+            if (resourceEntry.getIdentifier().equals(this.getIdentifier()) == false) {
+                resourceEntries.add(resourceEntry);
             }
         }
 
