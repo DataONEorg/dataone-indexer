@@ -1157,27 +1157,6 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
                 foresiteResourceMap.getAllDocumentIDs().size());
     }
 
-    private class IndexVisibilityDelegateTestImpl implements IndexVisibilityDelegate {
-        public boolean isDocumentVisible(Identifier pid) {
-            return true;
-        }
-
-        public boolean documentExists(Identifier pid) {
-            return true;
-        }
-    }
-
-    private class NullSmdVisibilityDelegate implements IndexVisibilityDelegate {
-
-        public boolean isDocumentVisible(Identifier pid) {
-            return true;
-        }
-
-        public boolean documentExists(Identifier pid) {
-            return false;
-        }
-    }
-    
     /**
      * For each test, set up the Solr service and test data
      * 
