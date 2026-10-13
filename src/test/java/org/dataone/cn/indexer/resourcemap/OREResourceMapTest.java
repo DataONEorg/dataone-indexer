@@ -560,7 +560,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
             OREParserException, IOException {
         /* Resource map with all resources visible */
         ResourceMap resourceMap = new ForesiteResourceMap(transitiveRelationshipsDoc.getFile()
-                .getAbsolutePath(), new IndexVisibilityDelegateTestImpl());
+                .getAbsolutePath());
 
         List<String> docs = resourceMap.getAllDocumentIDs();
 
@@ -652,7 +652,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
 
         /* Resource map with all resources visible */
         ResourceMap resourceMap = new ForesiteResourceMap(incompleteTransitiveRelationshipsDoc
-                .getFile().getAbsolutePath(), new IndexVisibilityDelegateTestImpl());
+                .getFile().getAbsolutePath());
 
         List<String> docs = resourceMap.getAllDocumentIDs();
 
@@ -742,7 +742,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
             IOException {
         /* Resource map with all resources visible */
         ResourceMap resourceMap = ResourceMapFactory.buildResourceMap(dryadDoc.getFile()
-                .getAbsolutePath(), new IndexVisibilityDelegateTestImpl());
+                .getAbsolutePath());
 
         /* Tests the identifer */
         Assert.assertEquals(
@@ -993,7 +993,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
             OREParserException, IOException {
         /* Resource map with all resources visible */
         ResourceMap resourceMap = new ForesiteResourceMap(incompleteResourceMap.getFile()
-                .getAbsolutePath(), new IndexVisibilityDelegateTestImpl());
+                .getAbsolutePath());
 
         Set<ResourceEntry> resources = resourceMap.getMappedReferences();
 
@@ -1058,7 +1058,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Document doc = builder.parse(testDoc.getFile());
 
         ResourceMap foresiteResourceMap = new ForesiteResourceMap(testDoc.getFile()
-                .getAbsolutePath(), new IndexVisibilityDelegateTestImpl());
+                .getAbsolutePath());
 
         ResourceMap xpathResourceMap = new XPathResourceMap(doc,
                 new IndexVisibilityDelegateTestImpl());
@@ -1155,7 +1155,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Document doc = builder.parse(testDoc.getFile());
 
         ResourceMap foresiteResourceMap = new ForesiteResourceMap(testDoc.getFile()
-                .getAbsolutePath(), new NullSmdVisibilityDelegate());
+                .getAbsolutePath());
 
         ResourceMap xpathResourceMap = new XPathResourceMap(doc, new NullSmdVisibilityDelegate());
 

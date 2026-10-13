@@ -164,13 +164,8 @@ public class XPathResourceMap implements ResourceMap {
                             this, this.indexVisibilityDelegate);
                     Identifier pid = new Identifier();
                     pid.setValue(resourceEntry.getIdentifier());
-                    // if the document does not have system metadata yet, cannot check visibility.  include in list of ids.
-                    // if document does exist, it must be visible in the index to be included.
-                    if (!indexVisibilityDelegate.documentExists(pid)
-                            || indexVisibilityDelegate.isDocumentVisible(pid)) {
-                        if (resourceEntry.getIdentifier().equals(this.getIdentifier()) == false) {
-                            resourceEntries.add(resourceEntry);
-                        }
+                    if (resourceEntry.getIdentifier().equals(this.getIdentifier()) == false) {
+                        resourceEntries.add(resourceEntry);
                     }
                 }
 
