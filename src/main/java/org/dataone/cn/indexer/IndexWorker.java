@@ -511,7 +511,7 @@ public class IndexWorker {
                     + " - Received the index task from the index queue with the identifier: "
                             + pid.getValue() + " , the index type: " + indexType
                             + ", the priority: " + priority + ", the docId(can be null): " + docId
-                            + " the embeddedSysMeta (can be null): " + embeddedSysMeta);
+                            + ", the embeddedSysMeta (can be null): " + embeddedSysMeta);
             switch (indexType) {
                 case CREATE_INDEX_TYPE -> {
                     boolean sysmetaOnly = false;
