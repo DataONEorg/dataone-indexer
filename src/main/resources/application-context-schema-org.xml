@@ -181,8 +181,11 @@
                     WHERE {
                         ?datasetId rdf:type SO:Dataset .
                         ?datasetId SO:datePublished ?datePublished
-                        # Don't include referenced sub-Datasets (i.e. a Dataset in a 'hasPart' property)
-                        FILTER NOT EXISTS { ?id SO:hasPart ?datasetId . }
+                        # Filter out any dataset that is a child of another dataset
+                        FILTER NOT EXISTS {
+                            ?parentDataset rdf:type SO:Dataset .
+                            ?parentDataset ?p ?datasetId . 
+                        }
                     }
                 ]]>
             </value>
