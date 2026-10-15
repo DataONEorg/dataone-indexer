@@ -2,8 +2,7 @@
 
 Also see [RELEASE-NOTES.md](./RELEASE-NOTES.md)
 
-The DataONE Indexer is a system that processes index tasks created by other components. The DataONE
-Indexer comprises three main subsystems, each defined by its own helm subsystem chart:
+The DataONE Indexer is a system that processes index tasks created by other components. The DataONE Indexer comprises three main subsystems, each defined by its own helm subsystem chart:
 
 - **index-worker**: a subsystem implementing a Worker class to process index jobs in parallel
 - **rabbitmq**: a deployment of the RabbitMQ queue management system
@@ -19,71 +18,21 @@ flowchart TB
   end
 ```
 
-Clients are expected to register index task messages to be processed in the RabbitMQ queue. Upon
-startup, the Index Workers register themselves as handlers of the index task messages. As
-messages enter the queue, RabbitMQ dispatches these to registered workers in parallel, and workers
-in turn process each associated object and insert a new index entry into SOLR.
+Clients are expected to register index task messages to be processed in the RabbitMQ queue. Upon startup, the Index Workers register themselves as handlers of the index task messages. As messages enter the queue, RabbitMQ dispatches these to registered workers in parallel, and workers in turn process each associated object and insert a new index entry into SOLR.
 
 See [LICENSE.md](./LICENSE.md) for the details of distributing this software.
 
-## Docker image
+## Container Image
 
-The image is automatically built and pushed to the [GitHub Container Registry (GHCR)](https://github.com/DataONEorg/dataone-indexer/pkgs/container/charts%2Fdataone-indexer) by a [GitHub Action](https://github.com/DataONEorg/dataone-indexer/blob/main/.github/workflows/build-test-publish.yaml).
+> [!TIP]
+> You do not need to build the container image yourself, as it is already built and published to the [GitHub Container Registry (GHCR)](https://github.com/DataONEorg/dataone-indexer/pkgs/container/charts%2Fdataone-indexer) for each release, by [this GitHub Action](https://github.com/DataONEorg/dataone-indexer/blob/main/.github/workflows/build-test-publish.yaml).
 
-It can also be built and pushed manually, as follows:
-
-### Build the Docker image
-
-Example: building a release image for linux/amd64 architecture: 
-```shell
-TAG=2.4.0  # replace with your tag/version
-mvn clean package -DskipTests
-docker buildx build --no-cache --platform linux/amd64 -t ghcr.io/dataoneorg/dataone-index-worker:$TAG -f docker/Dockerfile --build-arg TAG=$TAG .
-```
-
-If you are using `nerdctl` to build locally for Kubernetes on rancher-desktop, you'll need to set the namespace to `k8s.io` using a build command such as:
-
-```shell
-TAG=2.4.0  # replace with your tag/version
-mvn clean package -DskipTests
-nerdctl build -t dataone-index-worker:$TAG -f docker/Dockerfile --build-arg TAG=$TAG \
-         --namespace k8s.io  .
-```
-
-### Publish the image to GHCR
-
-For the built image to be deployable in a remote kubernetes cluster, it must first be published to
-an image registry that is visible to Kubernetes. For example, we can make the published image
-available via the GitHub Container Registry (ghcr.io) so that it can be pulled by
-Kubernetes. For this to work, the image must be tagged with the ghcr.io URL, so it can be published.
-Then the image can be pushed to the registry after logging in with a suitable GitHub PAT.
-
-Note that, for the image to be associated with a particular GitHub repository, a metadata LABEL can
-be added to the image that associates it when it is built; see this entry in the Dockerfile:
-
-```dockerfile
-LABEL org.opencontainers.image.source="https://github.com/dataoneorg/dataone-indexer"
-```
-
-Commands for pushing the built image (example assuming tag is `2.4.0`):
-
-```shell
-GITHUB_PAT="your-own-secret-GitHub-Personal-Access-Token-goes-here"
-TAG=2.4.0  # replace with your tag/version
-
-echo $GITHUB_PAT | nerdctl login ghcr.io -u DataONEorg --password-stdin
-nerdctl push ghcr.io/dataoneorg/dataone-index-worker:$TAG
-```
-
-Once the image has been pushed, it may be private and will need to be made public and assigned to
-the `dataone-indexer` repository if the LABEL wasn't set as described above.
+See [Appendix 1](#appendix-1-building-and-publishing-the-container-image) for instructions on how to build and publish the image manually, if you wish to do so.
 
 ## Publishing the Helm Chart
 
-The helm chart may also be published to a helm repository for use by others as a top-level
-application deployment or as a dependency sub-chart. For example, we can publish the chart
-via the GitHub Container Registry (ghcr.io). For this to work, the chart must contain an annotation
-to associate it with the correct repository; see this entry in [`Chart.yaml`](./helm/Chart.yaml):
+The helm chart is published to the [GitHub Container Registry (GHCR)](https://github.com/DataONEorg/dataone-indexer/pkgs/container/charts%2Fdataone-indexer) for use by others as a top-level application deployment or as a dependency sub-chart. For this to work, the chart must contain an annotation
+to associate it with the correct repository; see the [`sources:` entry in `Chart.yaml`](https://github.com/DataONEorg/dataone-indexer/blob/18da01fdae0c22eae4ad214f2a3e8e88793db185/helm/Chart.yaml#L8):
 
 ```yaml
 # OCI Annotations - see https://github.com/helm/helm/pull/11204
@@ -98,32 +47,39 @@ helm package -u ./helm
 ```
 
 ...which creates a zipped tar file named `dataone-indexer-{version}.tgz`, where `{version}` reflects
-the chart `version` in [`Chart.yaml`](./helm/Chart.yaml). The chart can then be published to the
+the chart `version:` in [`Chart.yaml`](./helm/Chart.yaml). The chart can then be published to the
 correct ghcr.io URL, after logging in with a suitable GitHub PAT:
 
-(example assumes the chart version is 0.5.0)
+(example assumes the chart version was 1.2.3)
+
 ```shell
 GITHUB_PAT="your-own-secret-GitHub-Personal-Access-Token-goes-here"
-TAG=2.4.0
-helm push  dataone-indexer-0.5.0.tgz  oci://ghcr.io/dataoneorg/charts
+
+helm push  dataone-indexer-1.2.3.tgz  oci://ghcr.io/dataoneorg/charts
 ```
-NOTE the use of **charts** in the oci url, to distinguish helm charts from docker images.
+
+> [!IMPORTANT]
+> Always use **/charts** in the oci url, to distinguish helm charts from docker images.
 
 ## Deploying the application via Helm
 
-Helm provides a simple mechanism to install all application dependencies and configure the
-application in a single command. To deploy using helm to a release named `d1index` and also in a
-namespace named `d1index`, and then view the deployed pods and services, use a sequence like:
+To deploy or upgrade using helm:
+(assuming both your release and your namespace are named `d1index`)
 
 ```shell
-kubectl create namespace d1index
+# Needed only one time, before initial deployment:
+kubectl create namespace d1index 
 
-# to use the local files
-helm install -n d1index d1index ./helm
+# to use the local files:
+helm upgrade --install -n d1index d1index ./helm
 
-# or to pull the packaged chart with a specific release version (e.g. 1.2.0)...
-helm install -n d1index d1index oci://ghcr.io/dataoneorg/charts/dataone-indexer --version 1.2.0
+# ...or to pull the packaged chart with a specific release version (e.g. 1.2.3)...
+helm upgrade --install -n d1index d1index oci://ghcr.io/dataoneorg/charts/dataone-indexer --version 1.2.3
+```
 
+To view the deployed pods and services:
+
+```shell
 kubectl -n d1index get all
 ```
 
@@ -133,8 +89,7 @@ and to uninstall the helm release, use:
 helm -n d1index uninstall d1index
 ```
 
-Note that this helm chart also installs rabbitmq and solr, which can be partially configured
-through the values.yaml file in the parent chart through exported child properties.
+Note that this helm chart also installs Apache Solr and RabbitMQ (but see important note below). Both can be partially configured through the values.yaml file in the parent chart, via exported child properties.
 
 > [!IMPORTANT]
 >
@@ -144,24 +99,18 @@ through the values.yaml file in the parent chart through exported child properti
 
 ### Authentication Notes
 
-#### RabbitMQ
+#### RabbitMQ Authentication
 
-If you are using the bundled RabbitMQ service, this automatically creates a default user with a new username and password that can be found in `<release-name>-<rmq-svc-name>-default-user`. The chart then automatically configures the indexer to use these credentials. If you are not using the bundled RabbitMQ service, you will need to provide your own credentials by setting the appropriate `idxworker.rabbitmq*` values in `values.yaml`.
+If you are using the bundled RabbitMQ service (requires RabbitMQ Cluster Operator), this automatically creates a default user with a new username and password that can be found in `<release-name>-<rmq-svc-name>-default-user`. The chart then automatically configures the indexer to use these credentials. If you are not using the bundled RabbitMQ service, you will need to provide your own credentials by setting the appropriate `idxworker.rabbitmq*` values in `values.yaml`.
 
-The [kubectl rabbitmq plugin](https://github.com/DataONEorg/k8s-cluster/blob/main/operators/rabbitmq/rabbitmq-operator.md#the-kubectl-rabbitmq-plugin) is extremely useful for configuring and monitoring the cluster.
+#### Solr Authentication
 
+The helm installation does not currently configure Solr with authentication enabled, since the service is not exposed outside the Kubernetes cluster. Mentions of logins in the following sections can therefore be ignored. However, this should be changed to use authentication if connecting to a solr instance outside the cluster.
 
-#### Solr
-
-The helm installation does not currently configure Solr with authentication enabled, since the
-service is not exposed outside the Kubernetes cluster. Mentions of logins in the following sections
-can therefore be ignored. However, this should be changed to use authentication if connecting to a
-solr instance outside the cluster.
 
 ## Checking if SOLR is configured
 
-Logging in using the `SOLR_AUTHENTICATION_OPTS` and `SOLR_AUTH_TYPE` env variables (if applicable)
-allows the `solr` command to be executed to check the server status:
+Logging in using the `SOLR_AUTHENTICATION_OPTS` and `SOLR_AUTH_TYPE` env variables (if applicable) allows the `solr` command to be executed to check the server status:
 
 ```shell
 $ export SOLR_AUTH_TYPE=basic
@@ -185,8 +134,7 @@ Solr process 8 running on port 8983
 
 # SOLR Dashboard
 
-Once the SOLR server is up and running, connect to the SOLR Dashboard by creating a kube proxy, and
-then browse to the local address:
+Once the SOLR server is up and running, connect to the SOLR Dashboard by creating a kube proxy, and then browse to the local address:
 
 ```shell
 k8 port-forward -n d1index service/d1index-solr 8983:8983 & echo "Solr URL: 127.0.0.1:8983/solr/"
@@ -207,19 +155,19 @@ curl -u ${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD} http://localhost:8983/solr
 curl -u ${SOLR_ADMIN_USERNAME}:${SOLR_ADMIN_PASSWORD} http://localhost:8983/solr/admin/collections?action=list
 ```
 
-### Admin tools for rabbitmq
+### Rabbitmq Dashboard and Admin Tools
 
-Once rabbitmq is configured, the web console can be accessed by port-forwarding.
+The [kubectl rabbitmq plugin](https://github.com/DataONEorg/k8s-cluster/blob/main/operators/rabbitmq/rabbitmq-operator.md#the-kubectl-rabbitmq-plugin) is extremely useful for configuring and monitoring the cluster. In particular, you can view the rabbitmq dashboard in a browser, using:
 
 ```shell
-k8 -n jones port-forward pod/d1index-rabbitmq-0 15672:15672 &
+# this prints out the username and password for the default user:
+kubectl rabbitmq secrets -n <namespace> <release-name>-<rmq-svc-name>
+
+# This starts up port-forwarding, and opens the browser at the dashboard login page:
+kubectl rabbitmq dashboard -n <namespace> <release-name>-<rmq-svc-name>
 ```
 
-then log into the Rabbitmq web console: http://localhost:15672
-
-You can also download a copy of `rabbitmqadmin` from http://localhost:15672/cli/rabbitmqadmin,
-and the `rabbitmqadmin` command can be used to interact with the server. First, you need to set up a
-config file for `rabbitmqadmin` that provides some default values:
+When port-forwarding is running, you can also download a copy of `rabbitmqadmin` from http://localhost:15672/cli/rabbitmqadmin (using curl), and the `rabbitmqadmin` command can be used to interact with the server. First, you need to set up a config file for `rabbitmqadmin` that provides some default values:
 
 ```shell
 $ cat rmq.conf
@@ -297,3 +245,55 @@ This is a refactored version of the original DataONE [d1_cn_index_processor](htt
 completely independently of other DataONE Coordinating Node services. It is intended to be deployed
 in a Kubernetes cluster environment, but is written such that it can also be deployed in other
 environments as needed.
+
+## Appendix 1: Building and Publishing the Container Image
+
+> [!TIP]
+> These are instructions on how to build and publish an image manually, if you wish to do so. However, note that this should not typically be needed, since the image is automatically built and published to the [GitHub Container Registry (GHCR)](https://github.com/DataONEorg/dataone-indexer/pkgs/container/charts%2Fdataone-indexer) for each release, by [this GitHub Action](https://github.com/DataONEorg/dataone-indexer/blob/main/.github/workflows/build-test-publish.yaml).
+
+### Build the Image
+
+Example: building a release image for linux/amd64 architecture:
+
+```shell
+TAG=2.4.0  # replace with your tag/version
+mvn clean package -DskipTests
+docker buildx build --no-cache --platform linux/amd64 -t ghcr.io/dataoneorg/dataone-index-worker:$TAG -f docker/Dockerfile --build-arg TAG=$TAG .
+```
+
+If you are using `nerdctl` to build locally for Kubernetes on rancher-desktop, you'll need to set the namespace to `k8s.io` using a build command such as:
+
+```shell
+TAG=2.4.0  # replace with your tag/version
+mvn clean package -DskipTests
+nerdctl build -t dataone-index-worker:$TAG -f docker/Dockerfile --build-arg TAG=$TAG \
+         --namespace k8s.io  .
+```
+
+### Publish the image to GHCR
+
+For the built image to be deployable in a remote kubernetes cluster, it must first be published to
+an image registry that is visible to Kubernetes. For example, we can make the published image
+available via the GitHub Container Registry (ghcr.io) so that it can be pulled by
+Kubernetes. For this to work, the image must be tagged with the ghcr.io URL, so it can be published.
+Then the image can be pushed to the registry after logging in with a suitable GitHub PAT.
+
+Note that, for the image to be associated with a particular GitHub repository, a metadata LABEL can
+be added to the image that associates it when it is built; see this entry in the Dockerfile:
+
+```dockerfile
+LABEL org.opencontainers.image.source="https://github.com/dataoneorg/dataone-indexer"
+```
+
+Commands for pushing the built image (example assuming tag is `2.4.0`):
+
+```shell
+GITHUB_PAT="your-own-secret-GitHub-Personal-Access-Token-goes-here"
+TAG=2.4.0  # replace with your tag/version
+
+echo $GITHUB_PAT | nerdctl login ghcr.io -u DataONEorg --password-stdin
+nerdctl push ghcr.io/dataoneorg/dataone-index-worker:$TAG
+```
+
+Once the image has been pushed, it may be private and will need to be made public and assigned to
+the `dataone-indexer` repository if the LABEL wasn't set as described above.
