@@ -576,6 +576,110 @@
         <property name="converter" ref="solrLongitudeConverter" />
     </bean>
 
+<!-- Extract south bounding coordinate from a 'SO:spatialCoverage' property of type 'GeoCoordinates'. -->
+<bean id="schema_org_geoCoordinates_south" class="org.dataone.cn.indexer.annotation.SparqlField">
+    <constructor-arg name="name" value="southBoundCoord" />
+    <constructor-arg name="query">
+        <value>
+            <![CDATA[
+                PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                PREFIX SO:   <http://schema.org/>
+
+                SELECT ?southBoundCoord
+                WHERE {
+                    ?datasetId rdf:type           SO:Dataset .
+                    ?datasetId SO:spatialCoverage ?spatial .
+                    ?spatial   rdf:type           SO:Place .
+                    ?spatial   SO:geo             ?geo .
+                    ?geo       rdf:type           SO:GeoCoordinates .
+                    ?geo       SO:latitude        ?southBoundCoord .
+                }
+                LIMIT 1
+            ]]>
+        </value>
+    </constructor-arg>
+    <property name="converter" ref="solrLatitudeConverter" />
+</bean>
+
+<!-- Extract west bounding coordinate from a 'SO:spatialCoverage' property of type 'GeoCoordinates'. -->
+<bean id="schema_org_geoCoordinates_west" class="org.dataone.cn.indexer.annotation.SparqlField">
+    <constructor-arg name="name" value="westBoundCoord" />
+    <constructor-arg name="query">
+        <value>
+            <![CDATA[
+                PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                PREFIX SO:   <http://schema.org/>
+
+                SELECT ?westBoundCoord
+                WHERE {
+                    ?datasetId rdf:type           SO:Dataset .
+                    ?datasetId SO:spatialCoverage ?spatial .
+                    ?spatial   rdf:type           SO:Place .
+                    ?spatial   SO:geo             ?geo .
+                    ?geo       rdf:type           SO:GeoCoordinates .
+                    ?geo       SO:longitude       ?westBoundCoord .
+                }
+                LIMIT 1
+            ]]>
+        </value>
+    </constructor-arg>
+    <property name="converter" ref="solrLongitudeConverter" />
+</bean>
+
+<!-- Extract north bounding coordinate from a 'SO:spatialCoverage' property of type 'GeoCoordinates'. -->
+<bean id="schema_org_geoCoordinates_north" class="org.dataone.cn.indexer.annotation.SparqlField">
+    <constructor-arg name="name" value="northBoundCoord" />
+    <constructor-arg name="query">
+        <value>
+            <![CDATA[
+                PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                PREFIX SO:   <http://schema.org/>
+
+                SELECT ?northBoundCoord
+                WHERE {
+                    ?datasetId rdf:type           SO:Dataset .
+                    ?datasetId SO:spatialCoverage ?spatial .
+                    ?spatial   rdf:type           SO:Place .
+                    ?spatial   SO:geo             ?geo .
+                    ?geo       rdf:type           SO:GeoCoordinates .
+                    ?geo       SO:latitude        ?northBoundCoord .
+                }
+                LIMIT 1
+            ]]>
+        </value>
+    </constructor-arg>
+    <property name="converter" ref="solrLatitudeConverter" />
+</bean>
+
+<!-- Extract east bounding coordinate from a 'SO:spatialCoverage' property of type 'GeoCoordinates'. -->
+<bean id="schema_org_geoCoordinates_east" class="org.dataone.cn.indexer.annotation.SparqlField">
+    <constructor-arg name="name" value="eastBoundCoord" />
+    <constructor-arg name="query">
+        <value>
+            <![CDATA[
+                PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                PREFIX SO:   <http://schema.org/>
+
+                SELECT ?eastBoundCoord
+                WHERE {
+                    ?datasetId rdf:type           SO:Dataset .
+                    ?datasetId SO:spatialCoverage ?spatial .
+                    ?spatial   rdf:type           SO:Place .
+                    ?spatial   SO:geo             ?geo .
+                    ?geo       rdf:type           SO:GeoCoordinates .
+                    ?geo       SO:longitude       ?eastBoundCoord .
+                }
+                LIMIT 1
+            ]]>
+        </value>
+    </constructor-arg>
+    <property name="converter" ref="solrLongitudeConverter" />
+</bean>
+
     <!-- Extract 'SO:spatialCoverage'. This property can have several different forms, for different
          types of spatial coverage representations. if the value is simple text (i.e. not SO:Place),
          then it should be assigned to Solr 'namedLocation' field,
