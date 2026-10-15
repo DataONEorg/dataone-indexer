@@ -3,6 +3,7 @@ package org.dataone.cn.indexer.resourcemap;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -19,7 +20,6 @@ import javax.xml.xpath.XPathExpressionException;
 import org.apache.solr.common.SolrDocument;
 import org.dataone.cn.index.DataONESolrJettyTestBase;
 import org.dataone.cn.indexer.solrhttp.DummySolrDoc;
-import org.dataone.cn.indexer.solrhttp.HttpServiceTest;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.service.types.v1.Identifier;
@@ -560,7 +560,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
             OREParserException, IOException {
         /* Resource map with all resources visible */
         ResourceMap resourceMap = new ForesiteResourceMap(transitiveRelationshipsDoc.getFile()
-                .getAbsolutePath(), new IndexVisibilityDelegateTestImpl());
+                .getAbsolutePath());
 
         List<String> docs = resourceMap.getAllDocumentIDs();
 
@@ -652,7 +652,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
 
         /* Resource map with all resources visible */
         ResourceMap resourceMap = new ForesiteResourceMap(incompleteTransitiveRelationshipsDoc
-                .getFile().getAbsolutePath(), new IndexVisibilityDelegateTestImpl());
+                .getFile().getAbsolutePath());
 
         List<String> docs = resourceMap.getAllDocumentIDs();
 
@@ -742,7 +742,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
             IOException {
         /* Resource map with all resources visible */
         ResourceMap resourceMap = ResourceMapFactory.buildResourceMap(dryadDoc.getFile()
-                .getAbsolutePath(), new IndexVisibilityDelegateTestImpl());
+                .getAbsolutePath());
 
         /* Tests the identifer */
         Assert.assertEquals(
@@ -993,7 +993,7 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
             OREParserException, IOException {
         /* Resource map with all resources visible */
         ResourceMap resourceMap = new ForesiteResourceMap(incompleteResourceMap.getFile()
-                .getAbsolutePath(), new IndexVisibilityDelegateTestImpl());
+                .getAbsolutePath());
 
         Set<ResourceEntry> resources = resourceMap.getMappedReferences();
 
@@ -1052,53 +1052,45 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
     @Test
     public void testOREResourceMap() throws OREException, URISyntaxException, OREParserException,
             IOException, XPathExpressionException, SAXException, ParserConfigurationException {
+        List<String> contains = new ArrayList<>();
+        contains.add("ipumsi_6.3_de_1987_DC.xml");
+        contains.add("ipumsi_6.3_de_1987_ddic.xml");
+        contains.add("ipumsi_6.3_de_1987_ddic_xml.html");
+        List<String> allDocs = new ArrayList<>();
+        allDocs.add("ipumsi_6.3_de_1987_DC.xml");
+        allDocs.add("ipumsi_6.3_de_1987_RM.xml");
+        allDocs.add("ipumsi_6.3_de_1987_ddic.xml");
+        allDocs.add("ipumsi_6.3_de_1987_ddic_xml.html");
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
         domFactory.setNamespaceAware(true);
-        DocumentBuilder builder = domFactory.newDocumentBuilder();
-        Document doc = builder.parse(testDoc.getFile());
-
         ResourceMap foresiteResourceMap = new ForesiteResourceMap(testDoc.getFile()
-                .getAbsolutePath(), new IndexVisibilityDelegateTestImpl());
-
-        ResourceMap xpathResourceMap = new XPathResourceMap(doc,
-                new IndexVisibilityDelegateTestImpl());
+                .getAbsolutePath());
 
         /*** Checks that top level identifiers match ***/
-        Assert.assertEquals("Identifiers do not match", foresiteResourceMap.getIdentifier(),
-                xpathResourceMap.getIdentifier());
+        Assert.assertEquals("Identifiers do not match", "ipumsi_6.3_de_1987_RM.xml",
+        foresiteResourceMap.getIdentifier());
 
         /*** Tests getAllDocumentIDs() ***/
         List<String> foresiteDocs = foresiteResourceMap.getAllDocumentIDs();
-        List<String> xpathDocs = xpathResourceMap.getAllDocumentIDs();
-
         /* Check the number of doc ids */
-        Assert.assertEquals("Number of documents IDs don't match", foresiteDocs.size(),
-                xpathDocs.size());
-
+        Assert.assertEquals("Number of documents IDs don't match", 4, foresiteDocs.size());
         Collections.sort(foresiteDocs);
-        Collections.sort(xpathDocs);
-
         /* Check the individual elements match */
         for (int i = 0; i < foresiteDocs.size(); i++) {
-            Assert.assertEquals("Document ID at " + i + "don't match", foresiteDocs.get(i),
-                    xpathDocs.get(i));
+            Assert.assertEquals(
+                "Document ID at " + i + "don't match", allDocs.get(i), foresiteDocs.get(i));
         }
 
         /*** Tests the getContains method ***/
         List<String> foresiteContains = new LinkedList<String>(foresiteResourceMap.getContains());
-        List<String> xpathContains = new LinkedList<String>(xpathResourceMap.getContains());
-
         Collections.sort(foresiteContains);
-        Collections.sort(xpathContains);
-
         /* Checks that the number of resources is the same */
-        Assert.assertEquals("Number of mapped references don't match", foresiteContains.size(),
-                xpathContains.size());
+        Assert.assertEquals("Number of mapped references don't match", 3, foresiteContains.size());
 
         /* Check the individual resource ids match */
         for (int i = 0; i < foresiteContains.size(); i++) {
-            Assert.assertEquals("Document ID at " + i + "don't match", foresiteContains.get(i),
-                    xpathContains.get(i));
+            Assert.assertEquals(
+                "Document ID at " + i + "don't match", contains.get(i), foresiteContains.get(i));
         }
 
         /*** Tests getIdentifierFromResource ***/
@@ -1108,8 +1100,6 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         /* Builds a sorted list of documents IDs for comparison */
         List<ResourceEntry> foresiteResourceMapDocs = new LinkedList<ResourceEntry>(
                 foresiteResourceMap.getMappedReferences());
-        List<ResourceEntry> xpathResourceMapDocs = new LinkedList<ResourceEntry>(
-                xpathResourceMap.getMappedReferences());
 
         Collections.sort(foresiteResourceMapDocs, new Comparator<ResourceEntry>() {
             @Override
@@ -1117,22 +1107,13 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
                 return o1.getIdentifier().compareTo(o2.getIdentifier());
             }
         });
-
-        Collections.sort(xpathResourceMapDocs, new Comparator<ResourceEntry>() {
-            @Override
-            public int compare(ResourceEntry o1, ResourceEntry o2) {
-                return o1.getIdentifier().compareTo(o2.getIdentifier());
-            }
-        });
-
         /* Checks that the number of mapped references is the same */
-        Assert.assertEquals("Number of mapped references don't match",
-                foresiteResourceMapDocs.size(), xpathResourceMapDocs.size());
-
+        Assert.assertEquals(
+            "Number of mapped references don't match", 3, foresiteResourceMapDocs.size());
         /* Check the individual mapped references match */
         for (int i = 0; i < foresiteResourceMapDocs.size(); i++) {
-            Assert.assertEquals("Document ID at " + i + "don't match", foresiteDocs.get(i),
-                    xpathDocs.get(i));
+            Assert.assertEquals(
+                "Document ID at " + i + "don't match", allDocs.get(i), foresiteDocs.get(i));
         }
     }
 
@@ -1155,9 +1136,8 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
         Document doc = builder.parse(testDoc.getFile());
 
         ResourceMap foresiteResourceMap = new ForesiteResourceMap(testDoc.getFile()
-                .getAbsolutePath(), new NullSmdVisibilityDelegate());
+                .getAbsolutePath());
 
-        ResourceMap xpathResourceMap = new XPathResourceMap(doc, new NullSmdVisibilityDelegate());
 
         Map<Identifier, Map<Identifier, List<Identifier>>> relations = org.dataone.ore.ResourceMapFactory
                 .getInstance().parseResourceMap(testDoc.getInputStream());
@@ -1175,31 +1155,8 @@ public class OREResourceMapTest extends DataONESolrJettyTestBase{
 
         Assert.assertEquals("foresite pid count does not match actual pid count.", pidCount,
                 foresiteResourceMap.getAllDocumentIDs().size());
-        Assert.assertEquals("xpath pid count does not match actual pid count.", pidCount,
-                xpathResourceMap.getAllDocumentIDs().size());
     }
 
-    private class IndexVisibilityDelegateTestImpl implements IndexVisibilityDelegate {
-        public boolean isDocumentVisible(Identifier pid) {
-            return true;
-        }
-
-        public boolean documentExists(Identifier pid) {
-            return true;
-        }
-    }
-
-    private class NullSmdVisibilityDelegate implements IndexVisibilityDelegate {
-
-        public boolean isDocumentVisible(Identifier pid) {
-            return true;
-        }
-
-        public boolean documentExists(Identifier pid) {
-            return false;
-        }
-    }
-    
     /**
      * For each test, set up the Solr service and test data
      * 

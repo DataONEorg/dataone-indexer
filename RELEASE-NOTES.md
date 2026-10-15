@@ -3,6 +3,21 @@
 > [!NOTE]
 > The Helm chart now assumes you have the [RabbitMQ Cluster Operator](https://www.rabbitmq.com/kubernetes/operator/operator-overview) pre-installed on your Kubernetes cluster. Alternatively, it can be configured to use your existing RabbitMQ instance - see [the README file](./README.md#deploying-the-application-via-helm) for details.
 
+
+## dataone-indexer version 3.5.0 & helm chart version 2.3.0
+
+### Release date: 2026-10-15
+
+### dataone indexer version 3.5.0
+
+#### New Feature: Use embedded system metadata from RabbitMQ messages
+When incoming RabbitMQ messages contain embedded system metadata, DataONE-indexer now uses it directly instead of retrieving it from Hashstore or through API calls. This improves performance and supports compatibility with Coordination Nodes (CNs).
+
+### helm chart version 2.3.0
+
+This chart release deploys the above changes for indexer version 3.5.0. There are no other changes to the chart.
+
+
 ## dataone-indexer version 3.4.1 & helm chart version 2.2.1
 
 ### Release date: 2026-09-09
@@ -11,7 +26,7 @@
 
 This is a patch release to upgrade dependencies
 
-### Dependency updates:
+#### Dependency updates:
 - Updated `d1_libclient_java` to 2.4.1
 - Updated RabbitMQ amqp-client to 5.34.0
 - Updated `log4j-api` to 2.26.1
@@ -28,7 +43,7 @@ This chart is a patch release to deploy the above changes for indexer version 3.
 
 This release upgrades the codebase to compile and run under Java 25 (upgraded from Java 17).
 
-### Dependency updates:
+#### Dependency updates:
 
 - Updated d1_libclient_java to 2.4.0
 - Updated d1_common_java to 2.5.0
@@ -60,7 +75,7 @@ HTTPService.getSolrDocumentById(...) was reworked to use Solr’s realtime GET e
 Added support for finding records by ID and series ID even when uppercase and lowercase letters do not exactly match.
 Internally, this uses a new case-insensitive field type and the new fields `id_lc` and `seriesId_lc`, which are automatically populated from `id` and `seriesId`.
 
-### Dependency updates:
+#### Dependency updates:
 
 - Bumped Solr dependency version (property) to 9.10.1
 - Bumped Log4j dependency version (property) to 2.25.3

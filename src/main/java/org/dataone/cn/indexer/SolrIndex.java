@@ -1,10 +1,14 @@
 package org.dataone.cn.indexer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +48,8 @@ import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.exceptions.UnsupportedType;
 import org.dataone.service.types.v1.Identifier;
+import org.dataone.service.types.v2.SystemMetadata;
+import org.dataone.service.util.TypeMarshaller;
 import org.xml.sax.SAXException;
 
 
@@ -144,6 +150,7 @@ public class SolrIndex {
      * @param id  the id which will be indexed
      * @param isSysmetaChangeOnly  if this is a change on the system metadata only
      * @param docId  the docId (file name) of the object. This is only for LegacyObjManager
+     * @param embeddedSysMeta  the embedded system metadata in the message. It can be null.
      * @return a map of solr doc with ids
      * @throws IOException
      * @throws XPathExpressionException
@@ -157,20 +164,36 @@ public class SolrIndex {
      * @throws ParserConfigurationException
      * @throws SAXException
      */
-    private Map<String, SolrDoc> process(String id, boolean isSysmetaChangeOnly, String docId)
+    private Map<String, SolrDoc> process(String id, boolean isSysmetaChangeOnly, String docId,
+                                         SystemMetadata embeddedSysMeta)
         throws IOException, XPathExpressionException, EncoderException, SolrServerException,
         ClassNotFoundException, InvocationTargetException, NoSuchMethodException,
         InstantiationException, IllegalAccessException, ParserConfigurationException, SAXException {
         log.debug("SolrIndex.process - trying to generate the solr doc object for the pid "+id);
         long start = System.currentTimeMillis();
         Map<String, SolrDoc> docs = new HashMap<>();
-        // Load the System Metadata document
-        try (InputStream systemMetadataStream =
-                 ObjectManagerFactory.getObjectManager().getSystemMetadataStream(id)){
-            docs = systemMetadataProcessor.processDocument(id, docs, systemMetadataStream);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new SolrServerException(e.getMessage());
+        if (embeddedSysMeta != null) {
+            log.debug("Directly use the embedded system metadata in the RabbitMQ message "
+                          + "for object " + id);
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                TypeMarshaller.marshalTypeToOutputStream(embeddedSysMeta, baos);
+                docs = systemMetadataProcessor.processDocument(
+                    id, docs, new ByteArrayInputStream(baos.toByteArray()));
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                throw new SolrServerException(e.getMessage());
+            }
+        } else {
+            log.debug("Read the System Metadata document from hashstore or the DataONE API calls "
+                          + "for object " + id);
+            try (InputStream systemMetadataStream =
+                     ObjectManagerFactory.getObjectManager().getSystemMetadataStream(id)){
+                docs = systemMetadataProcessor.processDocument(id, docs, systemMetadataStream);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                throw new SolrServerException(e.getMessage());
+            }
         }
         long end = System.currentTimeMillis();
         // get the format id for this object
@@ -295,6 +318,7 @@ public class SolrIndex {
      * @param pid  the id of this document
      * @param isSysmetaChangeOnly  if this change is only for systemmetadata
      * @param docId  the docId (file name) of the object. This is only for LegacyObjManager
+     * @param embeddedSysMeta  the embedded system metadata in the message. It can be null.
      * @throws IOException
      * @throws InvalidRequest
      * @throws XPathExpressionException
@@ -308,18 +332,25 @@ public class SolrIndex {
      * @throws ParserConfigurationException
      * @throws SAXException
      */
-    private void insert(Identifier pid, boolean isSysmetaChangeOnly, String docId)
+    private void insert(
+        Identifier pid, boolean isSysmetaChangeOnly, String docId, SystemMetadata embeddedSysMeta)
         throws IOException, InvalidRequest, XPathExpressionException, SolrServerException,
         EncoderException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException,
         InstantiationException, IllegalAccessException, ParserConfigurationException, SAXException {
         checkParams(pid);
         log.debug("SolrIndex.insert - trying to insert the solrDoc for object "+pid.getValue());
         long start = System.currentTimeMillis();
-        Map<String, SolrDoc> docs = process(pid.getValue(), isSysmetaChangeOnly, docId);
+        Map<String, SolrDoc> docs =
+            process(pid.getValue(), isSysmetaChangeOnly, docId, embeddedSysMeta);
         long end = System.currentTimeMillis();
         log.info("SolrIndex.insert - the subprocessor processing time of " + pid.getValue() + " is "
                  + (end-start) + " milliseconds.");
-        //transform the Map to the SolrInputDocument which can be used by the solr server
+        // Before sending the docs to the solr service, we need to make sure if the embedded
+        // system metadata is a newer version than the one in the solr
+        if (embeddedSysMeta != null) {
+            isModifiedDateOlderThanSolr(
+                pid.getValue(), embeddedSysMeta.getDateSysMetadataModified());
+        }
         if(docs != null) {
             start = System.currentTimeMillis();
             Set<String> ids = docs.keySet();
@@ -362,6 +393,7 @@ public class SolrIndex {
      * @param pid  the identifier of object which will be indexed
      * @param isSysmetaChangeOnly  the flag indicating if the change is system metadata only
      * @param docId  the docId (file name) of the object. This is only for LegacyObjManager
+     * @param embeddedSysMeta  the embedded system metadata in the message. It can be null.
      * @throws InvalidToken
      * @throws NotAuthorized
      * @throws NotImplemented
@@ -383,7 +415,8 @@ public class SolrIndex {
      * @throws InvocationTargetException
      * @throws NoSuchMethodException
      */
-    public void update(Identifier pid, boolean isSysmetaChangeOnly, String docId)
+    public void update(
+        Identifier pid, boolean isSysmetaChangeOnly, String docId, SystemMetadata embeddedSysMeta)
         throws InvalidToken, NotAuthorized, NotImplemented, ServiceFailure, NotFound,
         XPathExpressionException, UnsupportedType, SAXException, ParserConfigurationException,
         SolrServerException, MarshallingException, EncoderException, InterruptedException,
@@ -392,7 +425,7 @@ public class SolrIndex {
         log.debug("SolrIndex.update - trying to update(insert or remove) solr index of object "
                     + pid.getValue());
         try {
-            insert(pid, isSysmetaChangeOnly, docId);
+            insert(pid, isSysmetaChangeOnly, docId, embeddedSysMeta);
         } catch (SolrServerException e) {
             if (e.getMessage().contains(VERSION_CONFLICT) && VERSION_CONFLICT_MAX_ATTEMPTS > 0) {
                 log.info("SolrIndex.update - Indexer grabbed an older version (version conflict) "
@@ -401,7 +434,7 @@ public class SolrIndex {
                              + "fix the issues");
                 for (int i=0; i<VERSION_CONFLICT_MAX_ATTEMPTS; i++) {
                     try {
-                        insert(pid, isSysmetaChangeOnly, docId);
+                        insert(pid, isSysmetaChangeOnly, docId, embeddedSysMeta);
                         break;
                     } catch (SolrServerException ee) {
                         if (ee.getMessage().contains(VERSION_CONFLICT)) {
@@ -859,6 +892,47 @@ public class SolrIndex {
                 throw e;
             }
 
+        }
+    }
+
+    /**
+     * Check if the given modified date is older than the modified date field in the solr doc of
+     * the given id. The method will throw an InvalidRequest exception if the solr document exists
+     * and given modified date is older than the modified date field in the solr.
+     * @param id  the id to identify the solr doc
+     * @param modifiedDate  the date will be compared
+     * @throws InvalidRequest
+     */
+    private void isModifiedDateOlderThanSolr(String id, Date modifiedDate) throws InvalidRequest {
+        if (id == null || id.isBlank()) {
+            throw new InvalidRequest("0000", "DataONE-Indexer cannot compare the given "
+                + "modification date with the value in the solr since the id is blank/null");
+        }
+        if (modifiedDate == null) {
+            throw new InvalidRequest("0000", "DataONE-Indexer cannot compare the given "
+                + "modification date with the value in the solr for " + id + " since the given "
+                + "date is null");
+        }
+        SolrDoc document;
+        try {
+            document = httpService.getSolrDocumentById(id);
+        } catch (XPathExpressionException | IOException | ParserConfigurationException | SAXException e) {
+            throw new InvalidRequest("0000", "DataONE-Indexer cannot compare the given "
+                + "modification date with the value in the solr for " + id +" since it cannot "
+                + "query solr: " + e.getMessage());
+        }
+        if (document != null) {
+            String modifiedDateStr =
+                document.getFirstFieldValue(SolrElementField.FIELD_DATEMODIFIED);
+            if (modifiedDateStr != null && !modifiedDateStr.isBlank()) {
+                Date modifiedDateInSolr = Date.from(Instant.parse(modifiedDateStr));
+                if (modifiedDate.getTime() < modifiedDateInSolr.getTime()) {
+                    throw new InvalidRequest("0000", "The embedded system metadata in the "
+                        + "RabbitMQ message has an older modification date than the existing solr"
+                        + " doc: " + modifiedDateInSolr + " for object " + id + " So "
+                        + "Dataone-Indexer has rejected the request");
+                }
+            }
         }
     }
 
