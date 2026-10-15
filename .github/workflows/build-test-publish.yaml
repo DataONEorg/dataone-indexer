@@ -4,9 +4,11 @@ on:
   workflow_dispatch:
   push:
     branches:
+      - main
       - develop
       - feature-*
       - bugfix-*
+      - task-*
     tags: [ '*.*.*' ]
 
 env:
