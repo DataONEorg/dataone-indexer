@@ -46,16 +46,19 @@ The chart must then be packaged:
 helm package -u ./helm
 ```
 
-...which creates a zipped tar file named `dataone-indexer-{version}.tgz`, where `{version}` reflects
+...which creates a zipped tar file named `dataone-indexer-<version>.tgz`, where `<version>` reflects
 the chart `version:` in [`Chart.yaml`](./helm/Chart.yaml). The chart can then be published to the
 correct ghcr.io URL, after logging in with a suitable GitHub PAT:
 
 (example assumes the chart version was 1.2.3)
 
 ```shell
+# Log in to GHCR with a GitHub Personal Access Token (PAT) that has the "write:packages" scope
 GITHUB_PAT="your-own-secret-GitHub-Personal-Access-Token-goes-here"
+echo $GITHUB_PAT | docker login ghcr.io -u <your-gh-username> --password-stdin
 
-helm push  dataone-indexer-1.2.3.tgz  oci://ghcr.io/dataoneorg/charts
+# Publish the chart to GHCR
+helm push  dataone-indexer-<version>.tgz  oci://ghcr.io/dataoneorg/charts
 ```
 
 > [!IMPORTANT]
