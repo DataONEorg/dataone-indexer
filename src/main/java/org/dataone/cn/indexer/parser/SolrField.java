@@ -35,7 +35,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.convert.IConverter;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.w3c.dom.Document;
@@ -61,7 +62,7 @@ import org.xml.sax.SAXException;
 
 public class SolrField implements ISolrField {
 
-    private static Logger log = Logger.getLogger(SolrField.class);
+    private static Log log = LogFactory.getLog(SolrField.class);
 
     protected String name = null;
     protected String xpath = null;

@@ -32,10 +32,23 @@ global:
 ## @section Dataone-Indexer Application-Specific Properties
 
 image:
+  ## @param image.repository repository that the image will be pulled from
+  ##
   repository: ghcr.io/dataoneorg/dataone-index-worker
+
+  ## @param image.pullPolicy image pull policy - Always, Never, or IfNotPresent
+  ##
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  #tag: ""
+
+  ## @param image.tag Overrides the image tag. Will default to the chart appVersion if set to ""
+  ##
+  tag: ""
+
+  ## @param image.debug Specify if container debugging should be enabled (sets log level to "DEBUG")
+  ## Set to true if you would like to see extra information in metacat/tomcat logs.
+  ## * * WARNING - FOR TESTING ONLY! * * May result in secrets being printed to logs in plain text.
+  ##
+  debug: false
 
 imagePullSecrets: []
 
@@ -60,8 +73,10 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext:
+  runAsUser: 59997
   fsGroup: 1000 # must match metacat group for shared volume at /var/metacat
 
+## @param securityContext Security context for the container (This will be applied to all containers)
 securityContext:
   runAsNonRoot: true
 
@@ -93,6 +108,11 @@ tolerations: []
 
 affinity: {}
 
+## @param extraVolumes Additional volumes to be added to the pod
+extraVolumes: []
+## @param extraVolumeMounts Additional volume mounts to be added to the pod
+extraVolumeMounts: []
+
 persistence:
   ## @param persistence.claimName Name of existing PVC to use (typically shared with metacat)
   ## Set a value for 'claimName' only if you want to re-use a Persistent Volume Claim that has
@@ -110,6 +130,15 @@ persistence:
   ## Useful in dev environments and one PV for multiple services
   ##
   subPath: ""
+
+  ## @param persistence.hostPath Use a hostPath volume for the index worker.
+  ## This will override the claimName and use the mountPath settings.
+  hostPath:
+    ## @param persistence.hostPath.path The path on the host to use for the hostPath volume
+    path: ""
+    ## @param persistence.hostPath.type The type of hostPath volume to use
+    type: Directory
+
 
 ## @section IndexWorker properties
 ##
@@ -138,32 +167,40 @@ idxworker:
   ## @param idxworker.solrVerConflictWaitMs wait time (mS) before indexer grabs a newer version
   ## of solr doc after a version conflict
   ##
-  solrVerConflictWaitMs: 1000
+  solrVerConflictWaitMs: 10
 
   ## @param idxworker.solrVerConflictMaxTries Number of tries to get a newer version of solr doc
   ## after a version conflict
   ##
-  solrVerConflictMaxTries: 50
+  solrVerConflictMaxTries: 25000
 
-  ## @param idxworker.resourcemapWaitMs resource map processor wait time (mS) for solr doc readiness
-  ## of its components
-  ##
-  resourcemapWaitMs: 800
-
-  ## @param idxworker.resourcemapMaxTries resource map processor number of tries for solr doc
-  ## readiness of its components
-  ##
-  resourcemapMaxTries: 25
-
-  ## @param idxworker.rabbitmqHostname hostname of the rabbitmq service to use
-  ## Leave unset (rabbitmqHostname: "") to automatically populate when using rmq bitnami subchart
+  ## @param idxworker.rabbitmqHostname RMQ host to be called by indexer. Leave blank to autopopulate
+  ## from the bundled rabbitmq operator installation (if rabbitmq.enabled)
   ##
   rabbitmqHostname: ""
 
-  ## @param idxworker.rabbitmqHostPort hostport of the rabbitmq service
-  ## Leave unset (rabbitmqHostPort: "") to automatically populate when using rmq bitnami subchart
+  ## @param idxworker.rabbitmqHostPort RMQ port to be called by indexer. (Doesn't set rmq's port!)
+  ## Only tells the indexer which port to use in the connection string.
   ##
-  rabbitmqHostPort: ""
+  rabbitmqHostPort: "5672"
+
+  ## @param idxworker.rabbitmqUsername The username needed for rabbitmq access. Leave blank to autopopulate
+  ## from 'idxworker.rabbitmqSecret'
+  ##
+  rabbitmqUsername: ""
+
+  ## @param idxworker.rabbitmqSecret Secret holding rmq credentials. Leave blank to autopopulate
+  ## from the bundled rabbitmq operator installation (if rabbitmq.enabled)
+  ##
+  rabbitmqSecret: ""
+
+  ## @param idxworker.rabbitmqUserKey key associated with rabbitmq username in existing secret
+  ##
+  rabbitmqUserKey: "username"
+
+  ## @param idxworker.rabbitmqPasswordKey key associated with rabbitmq password in existing secret
+  ##
+  rabbitmqPasswordKey: "password"
 
   ## @param idxworker.data_directory Location of data within the metacat shared volume
   ##
@@ -181,32 +218,271 @@ idxworker:
   ##
   tripleDbDirectory: /etc/dataone/tdb-cache
 
-## @section RabbitMQ Bitnami Sub-Chart Configuration
+  ## @param idxworker.tripleDbStorageDefinition type of storage for the triple store (default is "ephemeral"). Other
+  ## options  are "hostPath" and "emptyDir".  Must give full definition for hostPath or emptyDir.
+  ## For example:
+  ##  tripleDbStorageDefinition:
+  ##    emptyDir: {}
+  ##
+  ##  For the emptyDir option you will need to think about specifying the ephemeral-storage limit in the
+  ##  resources section.
+  ##
+  ## For example:
+  ##    resources:
+  ##      requests:
+  ##        ephemeral-storage: 1Gi
+  ##      limits:
+  ##        ephemeral-storage: 2Gi
+  tripleDbStorageDefinition: {}
+
+  ## @param idxworker.enableMountWarmupHook Enable or disable the mount warmup hook.  This is a workaround for
+  ## specifically Lustre filesystems. This workaround addresses known behavior with Lustre and other HPC
+  ## file systems that require access within the container runtime to finalize mount visibility.
+  enableMountWarmupHook: false
+
+  storage:
+    hashStoreClassName: "org.dataone.hashstore.filehashstore.FileHashStore"
+    hashStoreRootDir: "/var/metacat/hashstore"
+    hashStoreDefaultNamespace: "https://ns.dataone.org/service/types/v2.0#SystemMetadata"
+    # The following three properties must NOT be modified after the hashstore is initialized
+    hashStoreAlgorithm: "SHA-256"
+    hashStoreDirWidth: 2
+    hashStoreDirDepth: 3
+
+  livenessProbe:
+    ## @param idxworker.livenessProbe.enabled Enable or disable probe
+    enabled: true
+    # Default exec command (may be overridden)
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - test $(($(date +%s) - $(stat -c %Y /var/lib/dataone-indexer/livenessprobe))) -lt 20
+    initialDelaySeconds: 20
+    periodSeconds: 15
+
+
+  readinessProbe:
+    ## @param idxworker.readinessProbe.enabled Enable or disable probe
+    enabled: true
+    # Default exec command (may be overridden)
+    exec:
+      command:
+        - /bin/sh
+        - -c
+        - test $(($(date +%s) - $(stat -c %Y /var/lib/dataone-indexer/readinessprobe))) -lt 40
+    initialDelaySeconds: 20
+    periodSeconds: 35
+
+  ## @param idxworker.javaMem Java memory options to pass to the index worker container
+  ## (format: "-Xms512m -Xmx2g"). If you do not set a value, the JVM will default to using 1/4 of
+  ## the available memory as the maximum
+  ##
+  javaMem: ""
+
+  ## @param idxworker.jmxEnabled Enable JMX for idxworker, to inspect JVM usage of CPU, memory, etc.
+  ## When JMX is enabled by setting this to 'true', you can view the JMX metrics using a JMX client
+  ## such as VisualVM or JConsole, connected via port-forwarding to port set in idxworker.jmxPort
+  ##
+  jmxEnabled: false
+
+  ## @param idxworker.jmxPort The port to use for JMX connections. IMPORTANT: If you change this...
+  ## 1. you must also change the port in the idxworker.jmxCatalinaOpts section, in the following two
+  ##    entries:
+  ##     -Dcom.sun.management.jmxremote.port=9010
+  ##     -Dcom.sun.management.jmxremote.rmi.port=9010
+  ##
+  ## 2. If you plan on using a different port # on localhost, it's easiest to use that same port on
+  ##    the pod, so you're using a single port for both JMX and RMI.(e.g. instead of port
+  ##    forwarding from pod:9010 to localhost:9011, expose jmx on pod:9011 and forward from pod:9011
+  ##    to localhost:9011)
+  ##
+  ## Note that the JMX port is not (and should not be) exposed outside the cluster. It is therefore
+  ## necessary to use port-forwarding in order to connect.
+  ##
+  jmxPort: 9010
+
+  ## @param idxworker.jmxJavaOpts [default: see values.yaml] idxworker JVM options for enabling JMX
+  ## Use these to change the port, for example, or to enable authentication.
+  ##
+  ## IMPORTANT NOTES:
+  ## 1. If you change the port numbers here, you must also change the value of idxworker.jmxPort to
+  ##    match!
+  ## 2. If you plan on using a different port # on localhost, it's easiest to use that same port on
+  ##    the pod, so you're using a single port for both JMX and RMI.(e.g. instead of port
+  ##    forwarding from pod:9010 to localhost:9011, expose jmx on pod:9011 and forward from pod:9011
+  ##    to localhost:9011)
+  ##
+  ## (jmxJavaOpts is a yaml list, so each entry must be preceded by a dash (-) and a space. It
+  ## looks strange when the options also contain dashes, but is correct YAML syntax.)
+  ##
+  jmxJavaOpts:
+    - -Dcom.sun.management.jmxremote
+    - -Dcom.sun.management.jmxremote.port=9010
+    - -Dcom.sun.management.jmxremote.rmi.port=9010
+    - -Dcom.sun.management.jmxremote.local.only=false
+    - -Dcom.sun.management.jmxremote.authenticate=false
+    - -Dcom.sun.management.jmxremote.ssl=false
+    - -Djava.rmi.server.hostname=127.0.0.1
+
+  ## @param idxworker.extraJavaOpts Extra JVM options for idxworker. SEE IMPORTANT NOTES BELOW:
+  ## 1. Do not pass -Xms or -Xmx here. Those values should be passed separately, using the value:
+  ##    idxworker.javaMem
+  ## 2. Do not set JMX-related values here, without first checking they're not already defined in
+  ##    idxworker.jmxJavaOpts (assuming idxworker.jmxEnabled is true)
+  ## 3. -XX:MaxRAMPercentage may be set here, but note that it will be ignored by the JVM if you
+  ##    also set a value for -Xmx (i.e. -Xmx takes precedence over MaxRAMPercentage)
+  ##
+  ## (extraJavaOpts is a yaml list, so each entry must be preceded by a dash (-) and a space. It
+  ## looks strange when the options also contain dashes, but is correct YAML syntax.) example:
+  ##
+  ##  idxworker:
+  ##    extraJavaOpts:
+  ##      - -XX:MaxRAMPercentage=75
+  ##
+  extraJavaOpts:
+    - -XX:MaxRAMPercentage=75
+
+  ## @param idxworker.extraEnvVars Additional environment variables to set
+  ## Example (used for putting indexer in legacy mode):
+  ##   extraEnvVars:
+  ##     - name: DATAONE_INDEXER_OBJECT_MANAGER_CLASS_NAME
+  ##       value: "org.dataone.cn.indexer.object.legacystore.LegacyStoreObjManager"
+  ##
+  extraEnvVars: []
+
+## @section RabbitMQ Configuration
+## For a production example of a multi-zone Kubernetes deployment with 3 worker nodes, each in a
+## different zone, see:
+## https://github.com/rabbitmq/cluster-operator/tree/main/docs/examples/production-ready
 ##
 rabbitmq:
   enabled: true
+
+  ## @param rabbitmq.nameOverride REQUIRED partial override for resourcename used for pods, PVCs etc
+  ## Automatically prepends the release name, so the resulting resource name for the pods etc. will
+  ## begin:  <myrelease>-<rabbitmq.nameOverride>-...
+  ##
+  ## We change this with every change in RabbitMQ app version, so that we can use a new PV/PVC for
+  ## each release. This means each new installation is a fresh install, instead of being an upgrade,
+  ## which would be a lot more onerous (see rabbitMQ docs).
+  ##
+  ## Convention is to use 'rmq', followed by the rabbitmq app version, with periods replaced by
+  ## dashes; e.g.:
+  ##  nameOverride: "rmq-4-1-3"  ## for rabbitmq app version 4.1.3
+  ##
+  nameOverride: "rmq-4-1-3"
+
+  ## @param rabbitmq.replicaCount Number of desired rabbitmq pods (always use an odd number)
+  ## see: https://www.rabbitmq.com/docs/clustering#node-count
+  ##
+  replicaCount: 1
+
+  ## @param rabbitmq.autoPodAntiAffinity.enabled Enable to spread pods across nodes
+  ## @param rabbitmq.autoPodAntiAffinity.weight Weight for the anti-affinity rule (1-100)
+  ## @param rabbitmq.autoPodAntiAffinity.force use "required" anti-affinity, instead of "preferred"
+  ## "Required" means k8s will not schedule the pods on the same node under any circumstances (Note:
+  ## pods may remain unscheduled). "Preferred" means k8s will try to schedule the pods on different
+  ## nodes, but if it cannot, will allow multiple pods on the same node.
+  ##
+  ## Example: using the default settings below will insert the following yaml into the RMQ config:
+  ##
+  ##   affinity:
+  ##     podAntiAffinity:
+  ##       preferredDuringSchedulingIgnoredDuringExecution:
+  ##         - weight: 100
+  ##           podAffinityTerm:
+  ##             labelSelector:
+  ##               matchLabels:
+  ##                 app.kubernetes.io/name: <rmq-fullname>
+  ##             topologyKey: "kubernetes.io/hostname"
+  ##
+  ## Recommended for production installations with multiple replicas.
+  ## If you need to change any of these settings, use the rabbitmq.affinity section below, which
+  ## OVERRIDES autoPodAntiAffinity altogether.
+  ##
+  autoPodAntiAffinity:
+    enabled: true
+    weight: 100
+    force: false
+
+  ## @param rabbitmq.affinity Custom affinity for rabbitmq pods. Note: OVERRIDES autoPodAntiAffinity
+  ## resulting in no anti-affinity being set unless included here.
+  ##
+  affinity: []
+
+  ## @param rabbitmq.resources Resource requests and limits for rabbitmq pods (OVERRIDE THESE!)
+  ##
+  ## NOTE:
+  ##   CPU: For production, the ABSOLUTE MINIMUM is 2 CPUs per RabbitMQ node (and 4 CPUs
+  ##        RECOMMENDED).
+  ##        RMQ will work poorly with 1 CPU, which is why it's not recommended for production
+  ##        workloads
+  ##   MEMORY: For production, min. 2GB of RAM is recommended, increasing to 4Gi or even 8 - 10Gi,
+  ##        depending on load. It is recommended to keep the memory requests and limits both at the
+  ##        same value.
+  ##
+  resources:
+    requests:
+      cpu: 500m
+      memory: 500Mi
+    limits:
+      cpu: 800m
+      memory: 500Mi
+
   persistence:
+    ## @param rabbitmq.persistence.storageClassName Storage class name for rabbitmq data PV
+    ## Leave blank ("") to use the default storage class for the cluster
+    ##
+    storageClassName: ""
+
+    ## @param rabbitmq.persistence Size of persistent volume for rabbitmq data
+    ##
     size: 10Gi
-  #replicaCount: 3
-  #If you change the number of the max priority, the existing queue must be deleted, and consumers
-  # must use the same number.
-  #max.priority: 10
 
-  auth:
-    ## @param rabbitmq.username the username for rabbitmq access
+  ## @param rabbitmq.envConfig Additional rabbitmq environment variable settings
+  ## See:
+  ##   https://www.rabbitmq.com/kubernetes/operator/using-operator#env-config
+  ##   https://www.rabbitmq.com/docs/configure#customise-environment
+  ## Example:
+  ##   envConfig:
+  ##     RABBITMQ_USE_LONGNAME: "true"
+  envConfig: {}
+
+  ## @param rabbitmq.additionalConfig Additional rabbitmq configuration settings
+  ## See:
+  ##   https://www.rabbitmq.com/docs/configure#config-items
+  ##   https://www.rabbitmq.com/docs/production-checklist
+  ##
+  ##
+  additionalConfig:
+    ## @param rabbitmq.additionalConfig.disk_free_limit.absolute Disk space alarm limit
+    ## See: https://www.rabbitmq.com/docs/production-checklist#resource-limits-disk-space
+    ## For RMQ to parse correctly, must be int or string (MB/GB (not Mi/Gi) with NO DECIMAL POINTS)
     ##
-    username: rmq
-
-    ## @param rabbitmq.existingPasswordSecret the k8s secret holding the rabbitmq password
-    ## (must be associated with key: 'rabbitmq-password')
-    ##
-    existingPasswordSecret: ""
-
+    disk_free_limit.absolute: 1500MB
 
 ## @section Solr Bitnami Sub-Chart Configuration
 ##
 solr:
   enabled: true
+
+  ## As of 8/25/25, Bitnami charges for secure container images, unless we use the "latest" tag.
+  ## As a stopgap, we reference the legacy images, which are still available for free (but note
+  ## that newer versions will not become available in the future, so we need to find an alternative
+  ## source for images...)
+  ## @param postgresql.global.security.allowInsecureImages Allow non-bitnami-hardened images
+  ## @param rabbitmq.image.repository source repo for main image
+  ## @param postgresql.volumePermissions.image.repository  source repo for volumePermissions image
+  global:
+    security:
+      allowInsecureImages: true
+  image:
+    repository: bitnamilegacy/solr
+  volumePermissions:
+    image:
+      repository: bitnamilegacy/os-shell
+
   collection: temp_collection
 
   ## @param solr.customCollection (required) name of the solr collection to use
@@ -224,7 +500,32 @@ solr:
   coreNames:
     - dataone-core
 
-  #javaMem: "-Xms512m -Xmx2g"
+  ## @param solr.javaMem Java heap memory settings for solr - see below for recommendations...
+  ## IMPORTANT:
+  ## - Using the (recommended) default value of MaxRAMPercentage=50 will assign half of the
+  ##   available memory to the Java heap, and half to the OS and other processes.
+  ## - One of those "other processes" is Lucene, which uses MMapDirectory to load the entire index
+  ##   into memory (if possible. If not, we get disk swapping/slowness).
+  ##
+  ## We therefore recommend the following process for setting solr memory requests & limits:
+  ##   1. Determine the size of your index on disk:
+  ##      - web ui: http://localhost:8983/solr/#/~cloud?view=nodes (under "Disk Usage"), or
+  ##      - curl http://localhost:8983/solr/admin/metrics?prefix=INDEX.merge.&wt=json&indent=true
+  ##      - If you don't yet have an index, estimate its size, then come back and adjust as needed.
+  ##        (As an example, we've seen index sizes around 4.2GB for 800,000 objects)
+  ##   2. Round this value up, to leave some headrooom for other OS and non-heap-Java usage. Be
+  ##      generous - e.g. if index is 4.2GB, round up to 8Gi.
+  ##   3. Calculate the total RAM needed:    Total = 100 * non-heap-mem/(100 - MaxRAMPercentage)
+  ##      For example, if non-heap memory was calculated at 8Gi above, and MaxRAMPercentage=50, then
+  ##      the total RAM requirement will be:  100 * 8Gi/(100 - 50) = 16Gi.
+  ##   4. Set solr.resources.limits.memory to this value
+  ##
+  ## IMPORTANT: The default bitnami solr chart resource values are set to "medium" (max mem 1536Mi),
+  ## which may not be sufficient to avoid containers being OOMKilled as memory use grows under load.
+  ## We strongly recommend overriding solr.resources.limits.memory; 8-16Gb is common, according to:
+  ## https://solr.apache.org/guide/solr/latest/deployment-guide/jvm-settings.html
+  ##
+  javaMem: "-XX:MaxRAMPercentage=50"
 
   containerSecurityContext:
     runAsUser: 1000
@@ -239,12 +540,19 @@ solr:
       http: *global-solr-port
   containerPorts:
     http: *global-solr-port
+
   auth:
     ## Nov 2023: Agreed with Matt we don't need solr auth for now, since solr isn't exposed
     ## outside the cluster. Can add later if needed by anyone not using the subchart, and
     ## instead connecting to a solr instance outside the cluster
     ##
     enabled: false
+
+  config:
+    ## @param solr.config.solrconfigPath path to solrconfig.xml within configMap specified in extraVolumes
+    solrconfigPath: /solrconfig/solrconfig.xml
+    ## @param solr.config.schemaPath path to schema.xml within configMap specified in extraVolumes
+    schemaPath: /solrconfig/schema.xml
   extraVolumes:
     - name: solr-config
       configMap:
@@ -263,3 +571,44 @@ solr:
     postStart:
       exec:
         command: ["/bin/bash", "-c", "/solrconfig/config-solr.sh"]
+
+  ## @param extraEnvVars Additional environment variables to set for Solr container
+  extraEnvVars:
+    ## SOLR_OPTS: Command-line options passed to JVM running Solr
+    ## autoCommit.maxTime: maximum time (mS) between hard commits
+    ## autoSoftCommit.maxTime: maximum time (mS) between soft commits see:
+    ## https://solr.apache.org/guide/solr/latest/configuration-guide/commits-transaction-logs.html
+    ##
+    - name: SOLR_OPTS
+      value: "-Dsolr.autoCommit.maxTime=120000 -Dsolr.autoSoftCommit.maxTime=1000"
+
+  ## Solr commit settings; see:
+  ## https://solr.apache.org/guide/solr/latest/configuration-guide/commits-transaction-logs.html
+  ##
+  commitPerUpdate:
+    ## @param solr.commitPerUpdate.hardCommit hard commit (to disk) after every update request?
+    ## Adds `?commit=true|false` to every update request URI.
+    ##
+    hardCommit: false
+
+    ## @param solr.commitPerUpdate.softCommit soft commit (to index) after every update request?
+    ## Adds `&softCommit=true|false` to every update request URI.
+    ##
+    softCommit: false
+
+  zookeeper:
+    ## As of 8/25/25, Bitnami charges for secure container images, unless we use the "latest" tag.
+    ## As a stopgap, we reference the legacy images, which are still available for free (but note
+    ## that newer versions will not become available in the future, so we need to find an alternative
+    ## source for images...)
+    ## @param postgresql.global.security.allowInsecureImages Allow non-bitnami-hardened images
+    ## @param rabbitmq.image.repository source repo for main image
+    ## @param postgresql.volumePermissions.image.repository  source repo for volumePermissions image
+    global:
+      security:
+        allowInsecureImages: true
+    image:
+      repository: bitnamilegacy/zookeeper
+    volumePermissions:
+      image:
+        repository: bitnamilegacy/os-shell

@@ -3,13 +3,12 @@ package org.dataone.cn.indexer.annotation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import net.minidev.json.JSONArray;
@@ -18,17 +17,18 @@ import net.minidev.json.JSONValue;
 
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrDataField;
 import org.dataone.cn.indexer.parser.SubprocessorUtility;
+import org.dataone.cn.indexer.solrhttp.DummySolrDoc;
 import org.dataone.cn.indexer.solrhttp.HTTPService;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
 import org.dataone.indexer.performance.PerformanceLogger;
-import org.dataone.cn.indexer.annotation.OntologyModelService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.xml.sax.SAXException;
 
 /**
  * The intent of this subprocessor is to fetch annotations about the given 
@@ -45,7 +45,7 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
     public static final String FIELD_ANNOTATED_BY = "sem_annotated_by";
     public static final String FIELD_COMMENT = "sem_comment";
 
-    private static Logger log = Logger.getLogger(AnnotatorSubprocessor.class.getName());
+    private static Log log = LogFactory.getLog(AnnotatorSubprocessor.class.getName());
 
     private SubprocessorUtility processorUtility;
 
@@ -134,7 +134,9 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
         // check for annotations, and add them if found
         long parseAnnotationStart = System.currentTimeMillis();
         SolrDoc annotations = parseAnnotation(is);
-        perfLog.log("AnnotatorSubprocessor.processDocument() parseAnnotation() ", System.currentTimeMillis() - parseAnnotationStart);
+        perfLog.log(
+            "AnnotatorSubprocessor.processDocument() parseAnnotation() ",
+            System.currentTimeMillis() - parseAnnotationStart);
         
         if (annotations != null) {
             String referencedPid = annotations.getIdentifier();
@@ -142,20 +144,7 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
 
             // make sure we have a reference for the document we annotating
             if (referencedDoc == null) {
-                try {
-                    referencedDoc = httpService.retrieveDocumentFromSolrServer(referencedPid,
-                            solrQueryUri);
-                } catch (Exception e) {
-                	//} catch (XPathExpressionException | IOException | EncoderException e) {
-                    log.error("Unable to retrieve solr document: " + referencedPid
-                            + ".  Exception attempting to communicate with solr server.", e);
-                }
-
-                if (referencedDoc == null) {
-                	log.warn("DID NOT LOCATE REFERENCED DOC: " + referencedPid);
-                    referencedDoc = new SolrDoc();
-                    referencedDoc.addField(new SolrElementField(SolrElementField.FIELD_ID, referencedPid));
-                }
+                referencedDoc = new DummySolrDoc(referencedPid, null);
                 docs.put(referencedPid, referencedDoc);
             }
 
@@ -187,7 +176,7 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
     /**
      * Parse the annotation for fields
      * @see "http://docs.annotatorjs.org/en/latest/storage.html"
-     * @param the stream of the [JSON] annotation
+     * @param is the inputstream of the [JSON] annotation
      * @return
      */
     protected SolrDoc parseAnnotation(InputStream is) {
@@ -202,13 +191,13 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
             log.debug("RESULTS: " + results);
             JSONObject annotation = (JSONObject) JSONValue.parse(results);
 
-            SolrDoc annotations = new SolrDoc();
 
             // use catch-all annotation field for the tags
             String tagKey = FIELD_ANNOTATION;
 
             // make sure we know which pid we are talking about
             String pidValue = annotation.get("pid").toString();
+            SolrDoc annotations = new DummySolrDoc(pidValue, null);
             if (!annotations.hasFieldWithValue(SolrElementField.FIELD_ID, pidValue)) {
                 annotations.addField(new SolrElementField(SolrElementField.FIELD_ID, pidValue));
             }
@@ -271,7 +260,8 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
                 for (String tag : annotations.getAllFieldValues(tagKey)) {
                     try {
                         // get the expanded tags
-                        Map<String, Set<String>> expandedConcepts = OntologyModelService.getInstance().expandConcepts(tag);
+                        Map<String, Set<String>> expandedConcepts =
+                            OntologyModelService.getInstance().expandConcepts(tag);
 
                         for (Map.Entry<String, Set<String>> entry : expandedConcepts.entrySet()) {
                             for (String value : entry.getValue()) {
@@ -306,11 +296,14 @@ public class AnnotatorSubprocessor implements IDocumentSubprocessor {
      * @throws IOException
      * @throws EncoderException
      * @throws XPathExpressionException
+     * @throws ParserConfigurationException
+     * @throws SAXException
      */
-    public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument) throws IOException,
-            EncoderException, XPathExpressionException {
-    	
+    public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument)
+        throws IOException, EncoderException, XPathExpressionException,
+        ParserConfigurationException, SAXException {
+
         return processorUtility.mergeWithIndexedDocument(indexDocument, fieldsToMerge);
-        
+
     }
 }

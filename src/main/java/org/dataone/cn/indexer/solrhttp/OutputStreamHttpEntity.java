@@ -26,10 +26,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
 
 /**
   * User: Porter
@@ -42,7 +43,7 @@ import org.apache.log4j.Logger;
 
 public class OutputStreamHttpEntity implements HttpEntity {
 
-    private static Logger log = Logger.getLogger(OutputStreamHttpEntity.class);
+    private static Log log = LogFactory.getLog(OutputStreamHttpEntity.class);
 
     private Header contentType;
 

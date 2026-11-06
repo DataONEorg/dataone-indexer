@@ -30,7 +30,8 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.XmlDocumentUtility;
 import org.dataone.cn.indexer.parser.BaseXPathDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrField;
@@ -64,7 +65,7 @@ public class InvalidXmlCharTest {
     @Autowired
     //private IndexTaskRepository repo;
 
-    private static Logger logger = Logger.getLogger(InvalidXmlCharTest.class.getName());
+    private static Log logger = LogFactory.getLog(InvalidXmlCharTest.class.getName());
 
     @BeforeClass
     public static void init() {

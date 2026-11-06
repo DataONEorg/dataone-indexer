@@ -22,7 +22,8 @@
 
 package org.dataone.cn.index;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.solr.common.SolrDocument;
 import org.dataone.cn.indexer.XmlDocumentUtility;
 import org.dataone.cn.indexer.parser.BaseXPathDocumentSubprocessor;
@@ -48,7 +49,7 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class SolrIndexFieldTest extends DataONESolrJettyTestBase {
 
-    protected static Logger logger = Logger.getLogger(SolrIndexFieldTest.class.getName());
+    protected static Log logger = LogFactory.getLog(SolrIndexFieldTest.class.getName());
 
     protected BaseXPathDocumentSubprocessor systemMetadata200Subprocessor;
 

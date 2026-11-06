@@ -31,7 +31,9 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 import org.dataone.cn.indexer.convert.IConverter;
 import org.dataone.cn.indexer.convert.SolrDateConverter;
 import org.dataone.cn.indexer.parser.TemporalPeriodSolrField;
@@ -62,7 +64,7 @@ import org.w3c.dom.Document;
  */
 public class TemporalPeriodParsingUtility {
 
-    private static Logger log = Logger.getLogger(TemporalPeriodSolrField.class);
+    private static Log log = LogFactory.getLog(TemporalPeriodSolrField.class);
     
     public static final String START_FIELD = "start";
     public static final String END_FIELD = "end";

@@ -2,6 +2,7 @@ package org.dataone.cn.indexer;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,20 +11,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.dataone.cn.indexer.annotation.OntologyModelService;
-import org.dataone.cn.indexer.object.ObjectManager;
+import org.dataone.cn.indexer.object.ObjectManagerFactory;
 import org.dataone.configuration.Settings;
 import org.dataone.exceptions.MarshallingException;
 import org.dataone.indexer.queue.IndexQueueMessageParser;
@@ -35,6 +40,7 @@ import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.exceptions.UnsupportedType;
 import org.dataone.service.types.v1.Identifier;
+import org.dataone.service.types.v2.SystemMetadata;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.xml.sax.SAXException;
@@ -57,7 +63,7 @@ public class IndexWorker {
     //The create is the index task type for the action when a new object was created. So the solr index will be generated.
     //delete is the index task type for the action when an object was deleted. So the solr index will be deleted
     //sysmeta is the index task type for the action when the system metadata of an existing object was updated.
-    public final static String CREATE_INDEXT_TYPE = "create";
+    public final static String CREATE_INDEX_TYPE = "create";
     public final static String DELETE_INDEX_TYPE = "delete";
     public final static String SYSMETA_CHANGE_TYPE = "sysmeta"; //this handle for resource map only
 
@@ -77,10 +83,12 @@ public class IndexWorker {
     private static final String springConfigFileURL = "/index-parser-context.xml";
     private static final String ENV_NAME_OF_PROPERTIES_FILE = "DATAONE_INDEXER_CONFIG";
 
-    private static Logger logger = Logger.getLogger(IndexWorker.class);
+    private static Log logger = LogFactory.getLog(IndexWorker.class);
     private static String defaultExternalPropertiesFile = "/etc/dataone/dataone-indexer.properties";
 
     protected static String propertyFilePath = null;
+    protected static int MAX_SUBMIT_TIME_SEC = 5;
+    private static final int SUBMIT_WAIT_MILLI = 250;
     protected boolean multipleThread = true;
     protected int nThreads = 1;
 
@@ -89,7 +97,13 @@ public class IndexWorker {
     private ApplicationContext context = null;
     protected SolrIndex solrIndex = null;
     private ExecutorService executor = null;
+    private ConnectionFactory factory = null;
 
+    private final ReentrantLock connectionLock = new ReentrantLock();
+    private boolean isK8s = false;
+    private Consumer consumer;
+    protected static int readinessInitialDelaySec = 2;
+    protected static int readinessPeriodSec = 10;
     /**
      * Commandline main for the IndexWorker to be started.
      *
@@ -98,15 +112,21 @@ public class IndexWorker {
     public static void main(String[] args) {
         logger.info("IndexWorker.main - Starting index worker...");
         String propertyFile = null;
+        if (args != null && args.length == 1) {
+            // The args should be a property file which the dataone-indexer will use
+            propertyFile = args[0];
+            logger.debug("The external property file specified in the argument is " + propertyFile);
+        }
         loadExternalPropertiesFile(propertyFile);
         try {
             IndexWorker worker = new IndexWorker();
             worker.start();
+            worker.startReadinessProbe();
+            worker.startLivenessProbe();
         } catch (Exception e) {
             logger.fatal("IndexWorker.main() exiting due to fatal error: " + e.getMessage(), e);
             System.exit(1);
         }
-        startLivenessProbe();
     }
 
     /**
@@ -205,7 +225,10 @@ public class IndexWorker {
      * @throws TimeoutException
      * @throws ServiceFailure
      */
-    public IndexWorker() throws IOException, TimeoutException, ServiceFailure {
+    public IndexWorker()
+        throws IOException, TimeoutException, ServiceFailure, ClassNotFoundException,
+        InvocationTargetException, NoSuchMethodException, InstantiationException,
+        IllegalAccessException {
         this(true);
     }
 
@@ -217,12 +240,21 @@ public class IndexWorker {
      * @throws TimeoutException
      * @throws ServiceFailure
      */
-    public IndexWorker(Boolean initialize) throws IOException, TimeoutException, ServiceFailure {
+    public IndexWorker(Boolean initialize)
+        throws IOException, TimeoutException, ClassNotFoundException, InvocationTargetException,
+        NoSuchMethodException, InstantiationException, IllegalAccessException {
+        String value = System.getenv("KUBERNETES_SERVICE_HOST");
+        // Java doc says: the string value of the variable, or null if the variable is not defined
+        // in the system environment
+        if (value != null) {
+            isK8s = true;
+            logger.info("The index worker is in the k8s environment.");
+        }
         if (initialize) {
             initExecutorService();//initialize the executor first
             initIndexQueue();
             initIndexParsers();
-            ObjectManager.getInstance();
+            ObjectManagerFactory.getObjectManager();
             OntologyModelService.getInstance();
         }
     }
@@ -241,8 +273,7 @@ public class IndexWorker {
             Settings.getConfiguration().getString("index.rabbitmq.username", "guest");
         String rabbitMQpassword =
             Settings.getConfiguration().getString("index.rabbitmq.password", "guest");
-        int rabbitMQMaxPriority = Settings.getConfiguration().getInt("index.rabbitmq.max.priority");
-        ConnectionFactory factory = new ConnectionFactory();
+        factory = new ConnectionFactory();
         factory.setHost(rabbitMQhost);
         factory.setPort(rabbitMQport);
         factory.setPassword(rabbitMQpassword);
@@ -251,28 +282,27 @@ public class IndexWorker {
         factory.setAutomaticRecoveryEnabled(true);
         // attempt recovery every 10 seconds after a failure
         factory.setNetworkRecoveryInterval(10000);
-        logger.debug("IndexWorker.initIndexQueue - Set RabbitMQ host to: " + rabbitMQhost);
-        logger.debug("IndexWorker.initIndexQueue - Set RabbitMQ port to: " + rabbitMQport);
+        logger.debug("Set RabbitMQ host to: " + rabbitMQhost);
+        logger.debug("Set RabbitMQ port to: " + rabbitMQport);
+        generateConnectionAndChannel();
+    }
 
-        // Setup the 'InProcess' queue with a routing key - messages consumed by this queue require that
-        // this routine key be used. The routine key INDEX_ROUTING_KEY sends messages to the index worker,
+    private void generateConnectionAndChannel() throws IOException, TimeoutException {
+        int rabbitMQMaxPriority = Settings.getConfiguration().getInt("index.rabbitmq.max.priority");
         boolean durable = true;
         rabbitMQconnection = factory.newConnection();
         rabbitMQchannel = rabbitMQconnection.createChannel();
         rabbitMQchannel.exchangeDeclare(EXCHANGE_NAME, "direct", durable);
-
         boolean exclusive = false;
         boolean autoDelete = false;
         Map<String, Object> args = new HashMap<>();
         args.put("x-max-priority", rabbitMQMaxPriority);
-        logger.debug(
-            "IndexWorker.initIndexQueue - Set RabbitMQ max priority to: " + rabbitMQMaxPriority);
+        logger.debug("Set RabbitMQ max priority to: " + rabbitMQMaxPriority);
         rabbitMQchannel.queueDeclare(INDEX_QUEUE_NAME, durable, exclusive, autoDelete, args);
         rabbitMQchannel.queueBind(INDEX_QUEUE_NAME, EXCHANGE_NAME, INDEX_ROUTING_KEY);
-
-        logger.info("IndexWorker.initIndexQueue - the allowed unacknowledged message(s) number is " + nThreads);
+        logger.info("The allowed unacknowledged message(s) number is " + nThreads);
         rabbitMQchannel.basicQos(nThreads);
-        logger.debug("IndexWorker.initIndexQueue - Connected to the RabbitMQ queue with the name of " + INDEX_QUEUE_NAME);
+        logger.debug("Connected to the RabbitMQ queue with the name of " + INDEX_QUEUE_NAME);
     }
 
     /**
@@ -314,7 +344,15 @@ public class IndexWorker {
             logger.info("IndexWorker.initExecutorService - the size of index thread pool specified in the propery file is " + specifiedThreadNumber +
                     ". The size computed from the available processors is " + availableProcessors +
                      ". Final computed thread pool size for index executor: " + nThreads);
-            executor = Executors.newFixedThreadPool(nThreads);
+            // Use an executor with a bound queue (size=0, no buffer)
+            executor = new ThreadPoolExecutor(
+                nThreads,                      // corePoolSize
+                nThreads,                      // maxPoolSize (fixed)
+                0L,
+                TimeUnit.MILLISECONDS,
+                new SynchronousQueue<>(),              // no queue
+                new ThreadPoolExecutor.AbortPolicy()   // reject if no thread available
+            );
             multipleThread = true;
         } else {
             logger.info("IndexWorker.initExecutorService - the size of index thread pool specified in the propery file is " + specifiedThreadNumber +
@@ -331,19 +369,12 @@ public class IndexWorker {
      * @throws IOException
      */
     public void start() throws IOException {
-        final Consumer consumer = new DefaultConsumer(rabbitMQchannel) {
+        consumer = new DefaultConsumer(rabbitMQchannel) {
             @Override
             public void handleDelivery(
                 String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
                 throws IOException {
-
                 logger.debug("Received message with delivery tag: " + envelope.getDeliveryTag());
-
-                // Send acknowledgment back to RabbitMQ before processing index.
-                // This is a temporary solution for the RabbitMQ timeout issue.
-                // Set multiple false
-                rabbitMQchannel.basicAck(envelope.getDeliveryTag(), false);
-
                 final IndexQueueMessageParser parser = new IndexQueueMessageParser();
                 try {
                     parser.parse(properties, body);
@@ -357,64 +388,108 @@ public class IndexWorker {
                                 indexObject(parser, multipleThread);
                             }
                         };
-                        // submit the task, and that's it
-                        executor.submit(runner);
+                        // Submit the task. If the task cannot be submitted, try more times
+                        long start = System.currentTimeMillis();
+                        while (true) {
+                            try {
+                                executor.submit(runner);
+                                // Send acknowledgment back to RabbitMQ just after submitting the
+                                // job. The real process may not complete since it is running in
+                                // another thread.
+                                // This is a temporary solution for the RabbitMQ timeout issue.
+                                // Set multiple false
+                                rabbitMQchannel.basicAck(envelope.getDeliveryTag(), false);
+                                return;
+                            } catch (RejectedExecutionException e) {
+                                long end = System.currentTimeMillis();
+                                if ((end - start) > MAX_SUBMIT_TIME_SEC * 1000) {
+                                    logger.warn("After waiting " + MAX_SUBMIT_TIME_SEC
+                                                    + " seconds, the worker still cannot find a "
+                                                    + "thread to process the pid "
+                                                    + parser.getIdentifier().getValue()
+                                                    + ". So it will let the RabbitMQ server to "
+                                                    + "resend it to another worker.");
+                                    // false is for multiple; true is for requeue
+                                    rabbitMQchannel.basicNack(envelope.getDeliveryTag(), false,
+                                                              true);
+                                    return;
+                                } else {
+                                    try {
+                                        logger.debug("Worker will wait " + SUBMIT_WAIT_MILLI
+                                                         + " milli seconds for a "
+                                                         + "available thread to process "
+                                                         + parser.getIdentifier().getValue());
+                                        Thread.sleep(SUBMIT_WAIT_MILLI);
+                                    } catch (InterruptedException ex) {
+                                        Thread.currentThread().interrupt(); // restore flag
+                                        return; // exit loop
+                                    }
+                                }
+                            }
+                        }
                     } else {
                         logger.debug(
                             "using single thread to index identifier " + parser.getIdentifier()
                                 .getValue());
+                        // Send acknowledgment back to RabbitMQ before processing index.
+                        // This is a temporary solution for the RabbitMQ timeout issue.
+                        // Set multiple false
+                        rabbitMQchannel.basicAck(envelope.getDeliveryTag(), false);
                         indexObject(parser, multipleThread);
                     }
                 } catch (InvalidRequest e) {
-                    logger.error(
-                        "cannot index the task for identifier " + parser.getIdentifier().getValue()
-                            + " since " + e.getMessage());
+                    String error = "Cannot index the task for the object since " + e.getMessage();
+                    if (parser.getIdentifier() != null) {
+                        error = error + " with the identifier " + parser.getIdentifier().getValue();
+                    }
+                    logger.error(error);
                     boolean requeue = false;
                     rabbitMQchannel.basicReject(envelope.getDeliveryTag(), requeue);
                 }
             }
-
-            @Override
-            public void handleShutdownSignal(String consumerTag, ShutdownSignalException sig) {
-
-                logger.debug(
-                    "handleShutdownSignal called by amqp client code. Consumer tag: " + consumerTag
-                        + "; ShutdownSignalException: " + sig.getMessage());
-                try {
-                    recreateConnection(this);
-                    logger.debug(
-                        "handleShutdownSignal successfully recreated connection. Consumer tag: "
-                            + consumerTag);
-                } catch (IOException e) {
-                    logger.debug(
-                        "handleShutdownSignal unable to recreate connection. Consumer tag: "
-                            + consumerTag + "; ShutdownSignalException" + sig.getMessage());
-                }
-            }
         };
-
         // Set autoAck = false
         rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
-
         logger.info("IndexWorker.start - Calling basicConsume and waiting for the coming messages");
     }
 
-    private void recreateConnection(Consumer consumer) throws IOException {
-
-        rabbitMQconnection.close();
+    private void recreateConnection() throws IOException {
+        connectionLock.lock();
         try {
-            if (rabbitMQchannel.isOpen()) {
-                rabbitMQchannel.close();
+            if (rabbitMQchannel != null && rabbitMQchannel.isOpen()) {
+                try {
+                    rabbitMQchannel.close();
+                    logger.debug("After closing the RabbitMQ channel.");
+                } catch (Exception e) {
+                    logger.warn("The rabbitmq channel can't be closed since " + e.getMessage());
+                }
             }
-            initIndexQueue();
-
-        } catch (TimeoutException e) {
-            throw new IOException("TimeoutException trying to re-initialize Queue: "
-                + e.getMessage(), e);
+            if (rabbitMQconnection != null && rabbitMQconnection.isOpen()) {
+                try {
+                    rabbitMQconnection.close();
+                    logger.debug("After closing the RabbitMQ connection.");
+                } catch (Exception e) {
+                    logger.warn("The rabbitmq connection can't be closed since " + e.getMessage());
+                }
+            }
+            try {
+                generateConnectionAndChannel();
+            } catch (TimeoutException | IOException e) {
+                throw new IOException("Exception trying to re-initialize connection and "
+                                          + "channel: " + e.getMessage(), e);
+            }
+            // Tell RabbitMQ this worker is ready for tasks
+            if (consumer == null) {
+                throw new RuntimeException(
+                    "The consumer object is null and hasn't been initialized. IndexWorker.start "
+                        + "should be called first.");
+            }
+            rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
+            logger.debug("RabbitMQ connection and channel successfully re-created");
+        } finally {
+            connectionLock.unlock();
+            logger.debug("The connection lock was released");
         }
-        // Tell RabbitMQ this worker is ready for tasks
-        rabbitMQchannel.basicConsume(INDEX_QUEUE_NAME, false, consumer);
-        logger.debug("rabbitMQ connection successfully re-created");
     }
 
     /**
@@ -427,23 +502,24 @@ public class IndexWorker {
         Identifier pid = parser.getIdentifier();
         String indexType = parser.getIndexType();
         int priority = parser.getPriority();
-        String finalFilePath = parser.getObjectPath();
+        String docId = parser.getDocId();// It can be null.
+        SystemMetadata embeddedSysMeta = parser.getSystemMetadata();// It can be null
         try {
             long threadId = Thread.currentThread().getId();
             logger.info("IndexWorker.consumer.indexObject by multiple thread? " + multipleThread
                             + ", with the thread id " + threadId
                     + " - Received the index task from the index queue with the identifier: "
                             + pid.getValue() + " , the index type: " + indexType
-                            + ", the file path (null means not to have): " + finalFilePath
-                            + ", the priority: " + priority);
+                            + ", the priority: " + priority + ", the docId(can be null): " + docId
+                            + ", the embeddedSysMeta (can be null): " + embeddedSysMeta);
             switch (indexType) {
-                case CREATE_INDEXT_TYPE -> {
+                case CREATE_INDEX_TYPE -> {
                     boolean sysmetaOnly = false;
-                    solrIndex.update(pid, finalFilePath, sysmetaOnly);
+                    solrIndex.update(pid, sysmetaOnly, docId, embeddedSysMeta);
                 }
                 case SYSMETA_CHANGE_TYPE -> {
                     boolean sysmetaOnly = true;
-                    solrIndex.update(pid, finalFilePath, sysmetaOnly);
+                    solrIndex.update(pid, sysmetaOnly, docId, embeddedSysMeta);
                 }
                 case DELETE_INDEX_TYPE -> solrIndex.remove(pid);
                 default -> throw new InvalidRequest(
@@ -455,7 +531,6 @@ public class IndexWorker {
             logger.info("IndexWorker.indexOjbect with the thread id " + threadId
                     + " - Completed the index task from the index queue with the identifier: "
                             + pid.getValue() + " , the index type: " + indexType
-                            + ", the file path (null means not to have): " + finalFilePath
                             + ", the priority: " + priority + " and the time taking is "
                             + (end - start) + " milliseconds");
 
@@ -463,13 +538,18 @@ public class IndexWorker {
                  ServiceFailure | XPathExpressionException | UnsupportedType | SAXException |
                  ParserConfigurationException | SolrServerException | MarshallingException |
                  EncoderException | InterruptedException | IOException | InstantiationException |
-                 IllegalAccessException e) {
+                 IllegalAccessException | ClassNotFoundException | InvocationTargetException |
+                 NoSuchMethodException e) {
             logger.error("Cannot index the task for identifier " + pid.getValue()
                              + " since " + e.getMessage(), e);
         }
     }
 
-    private static void startLivenessProbe() {
+    private void startLivenessProbe() {
+        if (!isK8s) {
+            logger.debug("This is a non-k8s deployment and LivenessProbe do nothing.");
+            return;
+        }
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         Path path = Paths.get("./livenessprobe");
         Runnable task = () -> {
@@ -482,4 +562,93 @@ public class IndexWorker {
         scheduler.scheduleAtFixedRate(task, 0, 10, TimeUnit.SECONDS);
         logger.info("IndexWorker.startLivenessProbe - livenessProbe started");
     }
+
+    /**
+     * Start the timer task to check if the index-worker is ready
+     */
+    public void startReadinessProbe() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        Path path = Paths.get("./readinessprobe");
+        Runnable task = () -> {
+            try {
+                if (isK8s && !Files.exists(path)) {
+                    Files.createFile(path);
+                }
+                if (rabbitMQconnection != null && rabbitMQchannel != null
+                    && rabbitMQconnection.isOpen() && rabbitMQchannel.isOpen()) {
+                    if (isK8s) {
+                        Files.setLastModifiedTime(
+                            path, FileTime.fromMillis(System.currentTimeMillis()));
+                    }
+                    logger.debug("The RabbitMQ connection and channel are healthy.");
+                } else {
+                    logger.error("The RabbitMQ connection or channel were closed. DataONE-indexer "
+                                     + "has a mechanism to restore them. However, if this error "
+                                     + "message shows up repeatedly and there is no network outage,"
+                                     + " intervention may be required (e.g. checking "
+                                     + "configuration)");
+                    try {
+                        recreateConnection();
+                    } catch (IOException | RuntimeException e) {
+                        logger.error("DataONE-indexer cannot recreate the RabbitMQ "
+                                         + "connections/channels since " + e.getMessage());
+                    }
+                }
+            } catch (IOException e) {
+                logger.error("Failed to update file: " + path, e);
+            }
+        };
+        scheduler.scheduleAtFixedRate(
+            task, readinessInitialDelaySec, readinessPeriodSec, TimeUnit.SECONDS);
+        logger.info("ReadinessProb started");
+    }
+
+    /**
+     * Get the Rabbitmq connection
+     * @return the Rabbitmq connection
+     */
+    protected Connection getRabbitMQconnection() {
+        return rabbitMQconnection;
+    }
+
+    /**
+     * Get the Rabbitmq channel
+     * @return the Rabbitmq channel
+     */
+    protected Channel getRabbitMQchannel() {
+        return rabbitMQchannel;
+    }
+
+    /**
+     * Get the consumer of the worker. This is for testing only.
+     * @return the consumer object
+     */
+    protected Consumer getRabbitMQConsumer() {
+        return consumer;
+    }
+
+    /**
+     * Set the given executor object to the class. This is for testing only.
+     * @param executor  the executor will be set
+     */
+    protected void setExecutor(ExecutorService executor) {
+        this.executor = executor;
+    }
+
+    /**
+     * Set the given RabbitMQ channel to the class. This for testing only.
+     * @param rabbitMQchannel  the channel will be set
+     */
+    protected void setRabbitMQchannel(Channel rabbitMQchannel) {
+        this.rabbitMQchannel = rabbitMQchannel;
+    }
+
+    /**
+     * Set MaxSubmitTime for the worker. This is for testing only.
+     * @param time  the time will be set. Its unit is seconds.
+     */
+    protected static void setMaxSubmitTimeSec(int time) {
+        MAX_SUBMIT_TIME_SEC = time;
+    }
+
 }

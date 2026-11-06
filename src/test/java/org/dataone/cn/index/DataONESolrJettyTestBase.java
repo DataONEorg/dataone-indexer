@@ -1,31 +1,15 @@
-/**
- * This work was created by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For 
- * more information on DataONE, see our web site at http://dataone.org.
- *
- *   Copyright ${year}
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- * 
- * $Id$
- */
-
 package org.dataone.cn.index;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,12 +22,11 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.SolrJettyTestBase;
 import org.apache.solr.SolrTestCaseJ4.SuppressSSL;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.embedded.JettyConfig;
-import org.apache.solr.client.solrj.embedded.JettySolrRunner;
+import org.apache.solr.embedded.JettyConfig;
+import org.apache.solr.embedded.JettySolrRunner;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
@@ -53,16 +36,16 @@ import org.dataone.cn.indexer.SolrIndex;
 import org.dataone.cn.indexer.object.MockMNode;
 import org.dataone.cn.indexer.object.ObjectManager;
 import org.dataone.cn.indexer.parser.ISolrField;
+import org.dataone.cn.indexer.parser.utility.RelationshipMergeUtility;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.configuration.Settings;
+import org.dataone.indexer.storage.Storage;
 import org.dataone.service.exceptions.NotFound;
 import org.dataone.service.exceptions.NotImplemented;
 import org.dataone.service.exceptions.ServiceFailure;
 import org.dataone.service.exceptions.UnsupportedType;
 import org.dataone.service.types.v1.Identifier;
-import org.dataone.service.types.v2.SystemMetadata;
 import org.dataone.service.util.DateTimeMarshaller;
-import org.dataone.service.util.TypeMarshaller;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -85,10 +68,11 @@ import org.xml.sax.SAXException;
 public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
 
     protected static ApplicationContext context;
-    private SolrIndex solrIndexService;
+    protected SolrIndex solrIndexService;
     private int solrPort = Settings.getConfiguration().getInt("test.solr.port", 8985);
-    private static final String DEFAULT_SOL_RHOME = "solr8home";
-    
+    private static final String DEFAULT_SOL_RHOME = "solr9home";
+    private static final String SYSTEMMETA_FILE_NAME = "systemmetadata.xml";
+
     /**
      * Index the given object into solr
      * @param identifier  the identifier of the object which needs to be indexed
@@ -97,12 +81,67 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
      */
     protected void indexObjectToSolr(String identifier, Resource objectFile) throws Exception {
         boolean isSysmetaChangeOnly = false;
-        String relativePath = objectFile.getFile().getPath();
+        loadToHashStore(identifier, objectFile);
         Identifier pid = new Identifier();
         pid.setValue(identifier);
-        solrIndexService.update(pid, relativePath, isSysmetaChangeOnly);
+        //The first null is the value for docId; the second one is for embedded system metadata
+        solrIndexService.update(pid, isSysmetaChangeOnly, null, null);
     }
-    
+
+    /**
+     * Load the given resource into the hashstore with the given identifier
+     * @param identifier  the identifier of the object
+     * @param objectFile  the resource of the object
+     * @throws Exception
+     */
+    protected void loadToHashStore(String identifier, Resource objectFile) throws Exception {
+        String relativePath = objectFile.getFile().getPath();
+        try (InputStream ignored = Storage.getInstance().retrieveObject(identifier)) {
+            System.out.println("pid: " + identifier + " exists in hashstore.");
+        } catch (FileNotFoundException e) {
+            // The pid is not in the hash store, so we need to save the object into hashstore
+            System.out.println("pid: " + identifier + " not found in hashstore. Saving object ["
+                                   + objectFile + "] into hashstore");
+            try (InputStream object = objectFile.getInputStream()) {
+                Storage.getInstance().storeObject(object, identifier);
+            }
+            File sysmetaFile = getSysmetaFile(relativePath);
+            if (sysmetaFile != null) {
+                try (InputStream sysmeta = new FileInputStream(sysmetaFile)) {
+                    Storage.getInstance().storeMetadata(sysmeta, identifier);
+                }
+            }
+        }
+    }
+
+    /**
+     * The convention method to get the system metadata file path from the objectPath.
+     * We assume the object and system metadata file are in the same directory.
+     * The system metadata file has a fixed name - systemmetadata.xml
+     * @param  relativeObjPath  the relative path of the object
+     * @return the file of system metadata. If it is null, this means the system metadata file
+     * does not exist.
+     */
+    private static File getSysmetaFile(String relativeObjPath) {
+        File sysmetaFile = null;
+        String sysmetaPath = null;
+        String relativeSysmetaPath = null;
+        if (relativeObjPath != null) {
+            if (relativeObjPath.contains(File.separator)) {
+                relativeSysmetaPath = relativeObjPath.substring(0,
+                            relativeObjPath.lastIndexOf(File.separator) + 1) + SYSTEMMETA_FILE_NAME;
+            } else {
+                // There is not path information in the object path ( it only has the file name).
+                // So we just simply return systemmetadata.xml
+                relativeSysmetaPath = SYSTEMMETA_FILE_NAME;
+            }
+        }
+        if (relativeSysmetaPath != null) {
+            sysmetaFile = new File(relativeSysmetaPath);
+        }
+        return sysmetaFile;
+    }
+
     /**
      * Delete the given identifier from the solr server
      * @param identifier
@@ -117,33 +156,15 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
      * @throws ParserConfigurationException
      * @throws SAXException
      */
-    protected void deleteSolrDoc(String identifier) throws XPathExpressionException, ServiceFailure, NotImplemented, 
-                            NotFound, UnsupportedType, IOException, EncoderException, SolrServerException, 
-                            ParserConfigurationException, SAXException {
+    protected void deleteSolrDoc(String identifier)
+        throws XPathExpressionException, ServiceFailure, NotImplemented, NotFound, UnsupportedType,
+        IOException, EncoderException, SolrServerException, ParserConfigurationException,
+        SAXException {
         Identifier pid = new Identifier();
         pid.setValue(identifier);
         solrIndexService.remove(pid);
     }
 
-    protected void addEmlToSolrIndex(Resource sysMetaFile) throws Exception {
-        SolrIndex indexService = solrIndexService;
-        SystemMetadata smd = TypeMarshaller.unmarshalTypeFromStream(SystemMetadata.class,
-                sysMetaFile.getInputStream());
-        // path to actual science metadata document
-        String path = StringUtils.remove(sysMetaFile.getFile().getPath(), File.separator + "SystemMetadata");
-        boolean isSysmetaChangeOnly = false;
-        indexService.update(smd.getIdentifier(), path, isSysmetaChangeOnly);
-       
-    }
-
-    protected void addSysAndSciMetaToSolrIndex(Resource sysMeta, Resource sciMeta) throws Exception {
-        SolrIndex indexService = solrIndexService;
-        SystemMetadata smd = TypeMarshaller.unmarshalTypeFromStream(SystemMetadata.class,
-                sysMeta.getInputStream());
-        String path = sciMeta.getFile().getAbsolutePath();
-        boolean isSysmetaChangeOnly = false;
-        indexService.update(smd.getIdentifier(), path, isSysmetaChangeOnly);
-    }
 
     protected SolrDocument assertPresentInSolrIndex(String pid) throws SolrServerException,
             IOException {
@@ -209,7 +230,13 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
                 String docValue = docField.getValue();
                 System.out.println("Doc Value:  " + docValue);
                 System.out.println("Solr Value: " + solrValue);
-                Assert.assertEquals(docField.getValue(), solrValue);
+                if (docField.getName().equals("pubDate")) {
+                    Instant expectedInstant = Instant.parse(docValue);
+                    Instant actualInstant = Instant.parse(solrValue);
+                    assertEquals(expectedInstant, actualInstant);
+                } else {
+                    Assert.assertEquals(docField.getValue(), solrValue);
+                }
             } else if (solrValueObject instanceof Boolean) {
                 Boolean solrValue = (Boolean) solrValueObject;
                 Boolean docValue = Boolean.valueOf(docField.getValue());
@@ -266,7 +293,8 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
         MockMNode mockMNode = new MockMNode("http://mnode.foo");
         mockMNode.setContext(context);
         ObjectManager.setD1Node(mockMNode);
-        System.out.println("--------------After setting mockNode for object manager in the test base setup method");
+        System.out.println(
+            "After setting mockNode for object manager in the test base setup method");
         sendSolrDeleteAll();
     }
 
@@ -282,18 +310,24 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     }
 
     protected void startJettyAndSolr() throws Exception {
-        if (jetty == null) {
+        try {
+            getJetty();
+        } catch (IllegalStateException e) {
             String solrTestHome = System.getProperty("solrTestHome");
-            System.out.println("===========================The test solr home from the system property is " + solrTestHome);
+            System.out.println(
+                "===========================The test solr home from the system property is "
+                    + solrTestHome);
             if (solrTestHome == null || solrTestHome.trim().equals("")) {
                 solrTestHome = DEFAULT_SOL_RHOME;
             }
-            System.out.println("============================The final test solr home  is " + solrTestHome);
+            System.out.println(
+                "============================The final test solr home  is " + solrTestHome);
             JettyConfig jconfig = JettyConfig.builder().setPort(solrPort).build();
             File f = new File(".");
             String localPath = f.getAbsolutePath();
-            createJettyWithPort(localPath
-                    + "/src/test/resources/org/dataone/cn/index/resources/" + solrTestHome, jconfig);
+            createJettyWithPort(
+                localPath + "/src/test/resources/org/dataone/cn/index/resources/" + solrTestHome,
+                jconfig);
         }
     }
 
@@ -303,24 +337,53 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
     // port.
     protected static JettySolrRunner createJettyWithPort(String solrHome, JettyConfig config)
             throws Exception {
-        createAndStartJetty(solrHome, config);
-        return jetty;
+        return createAndStartJetty(solrHome, config);
     }
-    
-    protected boolean compareFieldValue(String id, String fieldName, String expectedValue) throws SolrServerException, IOException {
+
+    /**
+     * Compare a search result with the given field/value pair. The search field uses the default
+     * one - id.
+     * @param id  the value of the identifier
+     * @param fieldName  the returned field will be compared
+     * @param expectedValue  the expected value for the returned field
+     * @return true if the search result matching the given pair; false otherwise
+     * @throws SolrServerException
+     * @throws IOException
+     */
+    protected boolean compareFieldValue(String id, String fieldName, String expectedValue)
+        throws SolrServerException, IOException {
+        return compareFieldValue("id", id, fieldName, expectedValue);
+    }
+
+    /**
+     * Compare a search result with the given field/value pair
+     * @param searchField  the name of the query field
+     * @param searchValue  the value of the query field used to search
+     * @param fieldName  the returned field will be compared
+     * @param expectedValue  the expected value for the returned field
+     * @return true if the search result matching the given pair; false otherwise
+     * @throws SolrServerException
+     * @throws IOException
+     */
+    protected boolean compareFieldValue(String searchField, String searchValue, String fieldName,
+                                        String expectedValue)
+        throws SolrServerException, IOException {
         System.out.println("==================== start of compare");
         boolean equal = false;
         ModifiableSolrParams solrParams = new ModifiableSolrParams();
-        solrParams.set("q", "id:" + ClientUtils.escapeQueryChars(id));
+        solrParams.set("q", searchField + ":" + ClientUtils.escapeQueryChars(searchValue));
         solrParams.set("fl", "*");
         QueryResponse qr = getSolrClient().query(solrParams);
         SolrDocument result = qr.getResults().get(0);
         String value = (String)result.getFieldValue(fieldName);
-        System.out.println("+++++++++++++++++++The value of the field "+ fieldName + " from Solr is " + value);
+        System.out.println(
+            "+++++++++++++++++++The value of the field " + fieldName + " from Solr is " + value);
         System.out.println("The expected value of the field " + fieldName + " is " + expectedValue);
         return expectedValue.equals(value);
     }
-    protected boolean compareFieldValue(String id, String fieldName, String[] expectedValues) throws SolrServerException, IOException {
+
+    protected boolean compareFieldValue(String id, String fieldName, String[] expectedValues)
+        throws SolrServerException, IOException {
 
         boolean equal = true;
         ModifiableSolrParams solrParams = new ModifiableSolrParams();
@@ -364,8 +427,12 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
             }
         }
 
-        System.out.println("++++++++++++++++ the solr result array for the field " + fieldName + " is " + solrValuesArray);
-        System.out.println("++++++++++++++++ the expected values for the field " + fieldName + " is " + expectedValues);
+        System.out.println(
+            "++++++++++++++++ the solr result array for the field " + fieldName + " is "
+                + solrValuesArray);
+        System.out.println(
+            "++++++++++++++++ the expected values for the field " + fieldName + " is "
+                + expectedValues);
         if (solrValuesArray.length != expectedValues.length) {
             equal = false;
             return equal;
@@ -375,7 +442,9 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
             Arrays.sort(solrValuesArray);
         }
         for (int i=0; i<solrValuesArray.length; i++) {
-            System.out.println("++++++++++++++++ compare values for field " + "\"" + fieldName + "\"" + " Solr: " + solrValuesArray[i] + " expected value: " + expectedValues[i]);
+            System.out.println(
+                "++++++++++++++++ compare values for field " + "\"" + fieldName + "\"" + " Solr: "
+                    + solrValuesArray[i] + " expected value: " + expectedValues[i]);
 
             if (!solrValuesArray[i].equals(expectedValues[i])) {
                 equal = false;
@@ -395,5 +464,13 @@ public abstract class DataONESolrJettyTestBase extends SolrJettyTestBase {
             context = new ClassPathXmlApplicationContext("org/dataone/cn/index/test-context.xml");
         }
         return context;
+    }
+
+    /**
+     * Get the Merge utility object
+     * @return
+     */
+    public RelationshipMergeUtility getRelationshipMergeUtility() {
+        return this.solrIndexService.getRelationshipMergeUtility();
     }
 }

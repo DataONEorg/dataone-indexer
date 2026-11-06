@@ -9,13 +9,16 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.codec.EncoderException;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrField;
 import org.dataone.cn.indexer.parser.SubprocessorUtility;
@@ -25,6 +28,7 @@ import org.dataone.indexer.performance.PerformanceLogger;
 import org.dataone.cn.indexer.XmlDocumentUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * A subprocessor that extracts semantic annotations from EML records and
@@ -39,7 +43,7 @@ import org.w3c.dom.Document;
  *
  */
 public class EmlAnnotationSubprocessor implements IDocumentSubprocessor {
-    private static Logger log = Logger.getLogger(EmlAnnotationSubprocessor.class.getName());
+    private static Log log = LogFactory.getLog(EmlAnnotationSubprocessor.class.getName());
 
     private PerformanceLogger perfLog = PerformanceLogger.getInstance();
 
@@ -136,42 +140,44 @@ public class EmlAnnotationSubprocessor implements IDocumentSubprocessor {
      * @param indexDocument
      * @return
      * @throws IOException
-     * @throws EncoderException
      * @throws XPathExpressionException
+     * @throws ParserConfigurationException
+     * @throws SAXException
      */
-    public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument) throws IOException,
-            EncoderException, XPathExpressionException {
+    public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument)
+        throws IOException, XPathExpressionException,
+        ParserConfigurationException, SAXException {
 
         return processorUtility.mergeWithIndexedDocument(indexDocument, fieldsToMerge);
     }
 
-	/**
-	 * @return the processorUtility
-	 */
-	public SubprocessorUtility getProcessorUtility() {
-		return processorUtility;
-	}
+    /**
+     * @return the processorUtility
+     */
+    public SubprocessorUtility getProcessorUtility() {
+        return processorUtility;
+    }
 
-	/**
-	 * @param processorUtility the processorUtility to set
-	 */
-	public void setProcessorUtility(SubprocessorUtility processorUtility) {
-		this.processorUtility = processorUtility;
-	}
+    /**
+     * @param processorUtility the processorUtility to set
+     */
+    public void setProcessorUtility(SubprocessorUtility processorUtility) {
+        this.processorUtility = processorUtility;
+    }
 
-	/**
-	 * @return the perfLog
-	 */
-	public PerformanceLogger getPerfLog() {
-		return perfLog;
-	}
+    /**
+     * @return the perfLog
+     */
+    public PerformanceLogger getPerfLog() {
+        return perfLog;
+    }
 
-	/**
-	 * @param perfLog the perfLog to set
-	 */
-	public void setPerfLog(PerformanceLogger perfLog) {
-		this.perfLog = perfLog;
-	}
+    /**
+     * @param perfLog the perfLog to set
+     */
+    public void setPerfLog(PerformanceLogger perfLog) {
+        this.perfLog = perfLog;
+    }
 
 
     public List<String> getMatchDocuments() {

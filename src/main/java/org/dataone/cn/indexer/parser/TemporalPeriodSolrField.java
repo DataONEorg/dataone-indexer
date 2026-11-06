@@ -24,7 +24,8 @@ package org.dataone.cn.indexer.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.parser.utility.TemporalPeriodParsingUtility;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.w3c.dom.Document;
@@ -46,7 +47,7 @@ import org.w3c.dom.Document;
  */
 public class TemporalPeriodSolrField extends SolrField implements ISolrField {
 
-    private static Logger log = Logger.getLogger(TemporalPeriodSolrField.class);
+    private static Log log = LogFactory.getLog(TemporalPeriodSolrField.class);
     
     public static final String BEGIN_FIELD_NAME = "beginDate";
     public static final String END_FIELD_NAME = "endDate";

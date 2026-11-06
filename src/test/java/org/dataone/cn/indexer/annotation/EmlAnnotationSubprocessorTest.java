@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.dataone.cn.indexer.IndexWorkerTest;
+import org.dataone.configuration.Settings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,14 @@ import org.springframework.core.io.Resource;
 @ContextConfiguration(locations = { "../../index/test-context.xml" })
 
 public class EmlAnnotationSubprocessorTest {
+    static {
+        try {
+            Settings.augmentConfiguration(IndexWorkerTest.PORT_8985_PROPERTY_FILE_PATH);
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private String FIELD_NAME = "sem_annotation";
 
     @Autowired

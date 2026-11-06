@@ -4,7 +4,7 @@
   <identifier>resourcemap-with-part.xml</identifier>
   <formatId>http://www.openarchives.org/ore/terms</formatId>
   <size>2919</size>
-  <checksum algorithm="MD5">38bc67ce4782051e037bafe9411f86d0</checksum>
+  <checksum algorithm="MD5">e0fc4cd733048eb7cfebe55dbe05d414</checksum>
   <submitter>dataone_integration_test_user</submitter>
   <rightsHolder>dataone_integration_test_user</rightsHolder>
   <accessPolicy>

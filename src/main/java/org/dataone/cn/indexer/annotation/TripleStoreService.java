@@ -8,14 +8,15 @@ import java.nio.file.attribute.FileAttribute;
 import java.util.Hashtable;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.configuration.Settings;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.tdb.TDBFactory;
 
 public class TripleStoreService {
-    private static Logger log = Logger.getLogger(TripleStoreService.class);
+    private static Log log = LogFactory.getLog(TripleStoreService.class);
 	private static TripleStoreService instance;
 	private static Hashtable<Dataset, File> dataset_location_map = new Hashtable<Dataset, File>();
 	

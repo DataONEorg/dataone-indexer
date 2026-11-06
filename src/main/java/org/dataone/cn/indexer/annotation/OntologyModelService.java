@@ -5,15 +5,13 @@ import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
@@ -26,11 +24,11 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.parser.ISolrDataField;
-import org.dataone.cn.indexer.annotation.SparqlField;
 
 public class OntologyModelService {
-  private static Logger log = Logger.getLogger(OntologyModelService.class);
+  private static Log log = LogFactory.getLog(OntologyModelService.class);
   private static String jarPrefix = "jar:file:";
   private static String jarAppendix = "!/";
   private static String filePrefix = "file:src/main/resources/";
@@ -58,7 +56,7 @@ public class OntologyModelService {
   }
 
   private void init() {
-    log.info(OntologyModelService.class.getName() + " init() called");
+    log.debug(OntologyModelService.class.getName() + " init() called");
 
     if (ontModel != null) {
       return;
@@ -119,7 +117,8 @@ public class OntologyModelService {
           QuerySolution solution = results.next();
           log.debug("Solution SPARQL result: " + solution.toString());
           long end = System.currentTimeMillis();
-          log.info("OntologyMondelService.expandConcepts - the time to execute results.hasNext() " + (end - start) + "milliseconds.");
+          log.debug("OntologyMondelService.expandConcepts - the time to execute results.hasNext()"
+                        + " " + (end - start) + "milliseconds.");
           if (!solution.contains(name)) {
             continue;
           }
@@ -193,7 +192,8 @@ public class OntologyModelService {
                 //the file exists and we will use the file path
                 prefix = filePrefix;
             }
-            log.info("OntologyModelService.loadAltEntries - the final prefix for ontology files is " + prefix);
+            log.debug("OntologyModelService.loadAltEntries - the final prefix for ontology files "
+                          + "is " + prefix);
         }
         ontManager.addAltEntry(entry.getKey(), prefix + path);
     }
@@ -210,7 +210,7 @@ public class OntologyModelService {
           return jarPath;
       }
       String url = classResource.toString();
-      log.info("OntologyModelService.getJarFilePrefix - the full path of the class is " + url);
+      log.debug("OntologyModelService.getJarFilePrefix - the full path of the class is " + url);
       if (url.startsWith(jarPrefix)) {
           // extract 'file:......jarName.jar' part from the url string
           String path = url.replaceAll("^jar:(file:.*[.]jar)!/.*", "$1");
@@ -220,7 +220,8 @@ public class OntologyModelService {
             jarPath = "";
         }
       }
-      log.info("OntologyModelService.getJarFilePrefix - the full path of the jar file is " + jarPath);
+      log.debug(
+          "OntologyModelService.getJarFilePrefix - the full path of the jar file is " + jarPath);
       return jarPath;
   }
 }

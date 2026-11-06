@@ -1,31 +1,30 @@
-/**
- * This work was created by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For 
- * more information on DataONE, see our web site at http://dataone.org.
- *
- *   Copyright 2022
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- * 
- */
 package org.dataone.cn.indexer;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.impl.LongStringHelper;
 import org.dataone.configuration.Settings;
 import org.junit.Test;
+
 
 /**
  * A junit test class for methods without third party software running
@@ -33,17 +32,24 @@ import org.junit.Test;
  *
  */
 public class IndexWorkerTest {
-    
+    public static final String PORT_8985_PROPERTY_FILE_PATH =
+        "./src/test/resources/org/dataone/configuration/index-processor-port-8985.properties";
+
     /**
      * Test the initIndexParsers methdo
      * @throws Exception
      */
     @Test
     public void testInitIndexParsers() throws Exception {
+        Settings.augmentConfiguration(PORT_8985_PROPERTY_FILE_PATH);
         boolean initialize = false;
         IndexWorker worker = new IndexWorker(initialize);
         worker.initIndexParsers();
         assertTrue(worker.solrIndex != null);
+        // Reset the path null
+        IndexWorker.propertyFilePath = null;
+        //Reset the property of cn.rounter.hostname2 null
+        Settings.getConfiguration().setProperty("cn.router.hostname2", null);
     }
     
     /**
@@ -69,7 +75,7 @@ public class IndexWorkerTest {
         }
         String propertyName = "index.thread.number";
         String numberStr = "5";
-        int number = (new Integer(numberStr)).intValue();
+        int number = Integer.parseInt(numberStr);
         // only test setting multiple threads if enough processors are available
         if (finalThreads > number) { 
             Settings.getConfiguration().setProperty(propertyName, numberStr);
@@ -79,7 +85,7 @@ public class IndexWorkerTest {
             assertTrue(worker.multipleThread);
         }
         numberStr = "1";
-        number = (new Integer(numberStr)).intValue();
+        number = Integer.parseInt(numberStr);
         Settings.getConfiguration().setProperty(propertyName, numberStr);
         worker.initExecutorService();
         System.out.println("worker.nThreads(1): " + worker.nThreads);
@@ -161,16 +167,94 @@ public class IndexWorkerTest {
                 getString("index.document.root.directory").equals("/var/metacat/documents"));
         assertTrue(Settings.getConfiguration().getString("cn.router.hostname2") == null);
         //load another file, it will overwrite the properties which have different values
-        String propertyFilePath2 = "./src/test/resources/org/dataone/configuration/index-processor-2.properties";
+        String propertyFilePath2 = PORT_8985_PROPERTY_FILE_PATH;
         IndexWorker.loadAdditionalPropertyFile(propertyFilePath2);
         assertTrue(IndexWorker.propertyFilePath.equals(propertyFilePath));
         assertTrue(Settings.getConfiguration().getString("dataone.mn.baseURL").
                 equals("https://valley.duckdns.org/metacat/d1/mn"));
         assertTrue(Settings.getConfiguration().
-                getString("index.data.root.directory").equals("/objects"));
+                getString("index.data.root.directory").equals("./target"));
         assertTrue(Settings.getConfiguration().
-                getString("index.document.root.directory").equals("/objects"));
+                getString("index.document.root.directory").equals("./target"));
         assertTrue(Settings.getConfiguration().getString("cn.router.hostname2").equals("cn.dataone.org"));
+    }
+
+    /**
+     * This method tests the Consumer.handleDelivery method. It covers this scenario:
+     * There are no threads available when the worker submits a job to the executor. The
+     * worker will try multiple times until the max waiting time reaches.
+     * @throws Exception
+     */
+    @Test
+    public void testHandleDeliveryWithMaxWaitingTime() throws Exception {
+        IndexWorker.setMaxSubmitTimeSec(1); // Shorten the testing time.
+        IndexWorker worker = new IndexWorker(false);
+        // Make ALL submit(...) calls throw RejectedExecutionException
+        ExecutorService executor = mock(ExecutorService.class);
+        when(executor.submit(any(Runnable.class)))
+            .thenThrow(new RejectedExecutionException("Rejected"));
+        worker.setExecutor(executor);
+        // Make channel.basicNack do nothing
+        Channel rabbitMQchannel = mock(Channel.class);
+        doNothing().when(rabbitMQchannel)
+            .basicNack(anyLong(), anyBoolean(), anyBoolean());
+        worker.setRabbitMQchannel(rabbitMQchannel);
+        worker.start();
+        Envelope envelope = mock(Envelope.class);
+        when(envelope.getDeliveryTag()).thenReturn(100L);
+        Consumer consumer = worker.getRabbitMQConsumer();
+        long start = System.currentTimeMillis();
+        consumer.handleDelivery("consumerTag", envelope, generateRabbitMQProperties(), null);
+        long end = System.currentTimeMillis();
+        // Make sure the submit/wait process last more than the MAX_SUBMIT_TIME_MIN
+        assertTrue((end - start) > IndexWorker.MAX_SUBMIT_TIME_SEC * 1000);
+        // verify the rabbitMQchannel.basicNack was called exactly once
+        verify(rabbitMQchannel, times(1))
+            .basicNack(anyLong(), anyBoolean(), anyBoolean());
+    }
+
+    /**
+     * This method tests the Consumer.handleDelivery method. It covers the scenario that executor
+     * .submit succeeds.
+     * @throws Exception
+     */
+    @Test
+    public void testHandleDelivery() throws Exception {
+        IndexWorker worker = new IndexWorker(false);
+        // Make ALL submit(...) calls do nothing
+        Future future = mock(Future.class);
+        ExecutorService executor = mock(ExecutorService.class);
+        when(executor.submit(any(Runnable.class))).thenReturn(future);
+        worker.setExecutor(executor);
+        // Make channel.basicAckdo nothing
+        Channel rabbitMQchannel = mock(Channel.class);
+        doNothing().when(rabbitMQchannel).basicAck(anyLong(), anyBoolean());
+        worker.setRabbitMQchannel(rabbitMQchannel);
+        worker.start();
+        Envelope envelope = mock(Envelope.class);
+        when(envelope.getDeliveryTag()).thenReturn(100L);
+        Consumer consumer = worker.getRabbitMQConsumer();
+        consumer.handleDelivery("consumerTag", envelope, generateRabbitMQProperties(), null);
+        // verify the rabbitMQchannel.basicAck was called exactly once
+        verify(rabbitMQchannel, times(1)).basicAck(anyLong(), anyBoolean());
+    }
+
+    /**
+     * A utility method to generate a RabbitMQ property
+     * @return a RabbitMQ basic property
+     */
+    private AMQP.BasicProperties generateRabbitMQProperties() {
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("id", LongStringHelper.asLongString("foo.1.1"));
+        headers.put("index_type", LongStringHelper.asLongString("create"));
+        AMQP.BasicProperties basicProperties =
+            new AMQP.BasicProperties.Builder()
+                .contentType("text/plain")
+                .deliveryMode(2) // set this message to persistent
+                .priority(3)
+                .headers(headers)
+                .build();
+        return basicProperties;
     }
 
 }

@@ -26,10 +26,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.codec.EncoderException;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
+import org.xml.sax.SAXException;
 
 /**
  * 
@@ -61,6 +63,7 @@ public interface IDocumentSubprocessor {
     public Map<String, SolrDoc> processDocument(String identifier, Map<String, SolrDoc> docs,
             InputStream is) throws Exception;
 
-    public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument) throws IOException,
-            EncoderException, XPathExpressionException;
+    public SolrDoc mergeWithIndexedDocument(SolrDoc indexDocument)
+        throws IOException, EncoderException, XPathExpressionException,
+        ParserConfigurationException, SAXException;
 }

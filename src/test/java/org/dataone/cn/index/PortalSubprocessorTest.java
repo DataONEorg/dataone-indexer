@@ -8,30 +8,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.*;
-import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
+import org.dataone.cn.indexer.IndexWorkerTest;
 import org.dataone.cn.indexer.parser.ScienceMetadataDocumentSubprocessor;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.configuration.Settings;
 import org.junit.Test;
 import org.junit.Before;
 
 import static org.junit.Assert.assertTrue;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.io.Resource;
 
 /**
  *
  */
 public class PortalSubprocessorTest {
-    
+    static {
+        try {
+            Settings.augmentConfiguration(IndexWorkerTest.PORT_8985_PROPERTY_FILE_PATH);
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
     protected ApplicationContext context;
     protected ScienceMetadataDocumentSubprocessor processor;
 
     /**
      * Attempt to parse example 'portal' documents using the indexer PortalSubProcessor. See 'application-context-portals.xml'
-     * for details on the indexer beans that are configured for parsing these type of documents.
+     * for details on the indexer beans that are configured for parsing these types of documents.
      * @throws Exception something bad happened
      */
     @Test
@@ -39,7 +46,7 @@ public class PortalSubprocessorTest {
         String id = "urn:uuid:349aa330-4645-4dab-a02d-3bf950cf708i";
 
         // Three different portal documents will be processed
-        ArrayList<String> portalFiles = new ArrayList<String>();
+        ArrayList<String> portalFiles = new ArrayList<>();
         portalFiles.add("src/test/resources/collection/portal-1.1.0-example.xml");
         portalFiles.add("src/test/resources/collection/collection-1.1.0-example-filterGroup.xml");
         portalFiles.add("src/test/resources/collection/collection-1.1.0-example2-filterGroup.xml");
@@ -63,7 +70,7 @@ public class PortalSubprocessorTest {
         portalFiles.add("src/test/resources/collection/portal-example-multiple-fields-or-operator.xml");
         
         // The resulting 'collectionQuery' field will be compared to known values
-        ArrayList<String> collectionQueryResultFiles = new ArrayList<String>();
+        ArrayList<String> collectionQueryResultFiles = new ArrayList<>();
         collectionQueryResultFiles.add("src/test/resources/collection/collectionQuery-result-portal-1.1.0.txt");
         collectionQueryResultFiles.add("src/test/resources/collection/collectionQuery-result-example-filterGroup.txt");
         collectionQueryResultFiles.add("src/test/resources/collection/collectionQuery-result-example2-filterGroup.txt");
@@ -86,7 +93,7 @@ public class PortalSubprocessorTest {
         collectionQueryResultFiles.add("src/test/resources/collection/collectionQuery-result-example-multiple-fields-or-operator.txt");
 
         // Also test that the title is properly added and retrievable
-        ArrayList<String> portalNames = new ArrayList<String>();
+        ArrayList<String> portalNames = new ArrayList<>();
         portalNames.add("portal-1.1.0-example");
         portalNames.add("filterGroup-example");
         portalNames.add("filterGroup-example2");
@@ -111,10 +118,10 @@ public class PortalSubprocessorTest {
         for(int i=0; i < portalFiles.size(); i++) {
             String collectionQuery = null;
             InputStream is = getPortalDoc(portalFiles.get(i));
-            System.out.println("Processing documment: " + portalFiles.get(i));
-            List<SolrElementField> sysSolrFields = new ArrayList<SolrElementField>();
+            System.out.println("Processing document: " + portalFiles.get(i));
+            List<SolrElementField> sysSolrFields = new ArrayList<>();
             SolrDoc indexDocument = new SolrDoc(sysSolrFields);
-            Map<String, SolrDoc> docs = new HashMap<String, SolrDoc>();
+            Map<String, SolrDoc> docs = new HashMap<>();
             docs.put(id, indexDocument);
 
             // Process the document, creating a Solr document from the input XML document

@@ -30,7 +30,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.convert.GeohashConverter;
 import org.dataone.cn.indexer.convert.SolrLatitudeConverter;
 import org.dataone.cn.indexer.convert.SolrLongitudeConverter;
@@ -39,7 +40,7 @@ import org.w3c.dom.Document;
 
 public class SpatialBoxParsingUtility {
 
-    private static Logger logger = Logger.getLogger(SpatialBoxParsingUtility.class.getName());
+    private static Log logger = LogFactory.getLog(SpatialBoxParsingUtility.class.getName());
 
     public static final String INDEX_NORTH_PROPERTY = "northBoundCoord";
     public static final String INDEX_SOUTH_PROPERTY = "southBoundCoord";

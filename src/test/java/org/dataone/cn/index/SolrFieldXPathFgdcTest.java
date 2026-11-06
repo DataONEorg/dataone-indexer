@@ -296,8 +296,8 @@ public class SolrFieldXPathFgdcTest extends BaseSolrFieldXPathTest {
         fgdcNasaExpected.put("mediaTypeProperty", "");
         fgdcNasaExpected.put("formatId", "FGDC-STD-001.1-1999");
         fgdcNasaExpected.put("formatType", "METADATA");
-        fgdcNasaExpected.put("size", "14880");
-        fgdcNasaExpected.put("checksum", "c72ff66bbe7fa99e5fb399bab8cb6f85");
+        fgdcNasaExpected.put("size", "14828");
+        fgdcNasaExpected.put("checksum", "1755a557c13be7af44d676bb09274b0e");
         fgdcNasaExpected.put("checksumAlgorithm", "MD5");
         fgdcNasaExpected.put("submitter", "CN=Dave Vieglais T799,O=Google,C=US,DC=cilogon,DC=org");
         fgdcNasaExpected.put("rightsHolder",

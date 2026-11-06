@@ -1,9 +1,6 @@
 dependencies:
-- name: rabbitmq
-  repository: https://charts.bitnami.com/bitnami
-  version: 10.1.14
 - name: solr
   repository: https://charts.bitnami.com/bitnami
-  version: 6.2.3
-digest: sha256:8a0c7f616956207f7a5161ec1f5f3b58c432b8c8051ad4ef927dacee81c52be9
-generated: "2024-05-27T16:09:36.080811-07:00"
+  version: 9.5.5
+digest: sha256:07fc39bbbeadb46195e79fca6e5dae3c747cbcd8744b3449c0385271913b351b
+generated: "2025-10-30T14:22:41.820563-07:00"

@@ -1,41 +1,52 @@
 # Build from parent dir with a command like:
 #     `nerdctl build -t dataone-index-worker:2.4.0 -f docker/Dockerfile --build-arg TAG=2.4.0 .`
-# Use an OpenJDK runtime as a parent image
-# Note: the prior alpine-based openjdk image had network DNS issues, so replacing with Eclipse Temurin
-FROM eclipse-temurin:17.0.8.1_1-jre-jammy
+FROM eclipse-temurin:25.0.3_9-jre-resolute
 
-ARG TAG=3.0.0-SNAPSHOT
+ARG TAG="NO-TAG"
 ENV TAG=${TAG}
 ENV DATAONE_INDEXER_CONFIG=/etc/dataone/dataone-indexer.properties
 
-# Set the working directory 
+# Set the working directory
 WORKDIR /var/lib/dataone-indexer
 
-RUN apt update && apt -y install \
-    bash \
-    figlet \
-    curl \
-    nano
+ARG DEBIAN_FRONTEND=noninteractive
 
-#Add a user & group with id=1001 and name=d1indexer
-RUN groupadd -g 1000 d1indexer && useradd -u 1000 -g 1000 d1indexer \
-    && touch ./livenessprobe
+RUN set -eux \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        bash \
+        figlet \
+        curl \
+        vim \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN groupadd -g 59997 d1indexer && useradd -u 59997 -g 59997 d1indexer \
+    && touch ./livenessprobe && touch ./readinessprobe
 
 # The most recently built jar file is copied from the maven build directory to this dir by maven, so that
 # it can be copied to the image.
-COPY ../target/dataone-index-worker-${TAG}-shaded.jar .
+COPY ./target/dataone-index-worker-${TAG}-shaded.jar .
 COPY ./docker/entrypoint.sh .
 
 # Change the ownership of the jar and sh files
 RUN chown d1indexer dataone-index-worker-${TAG}-shaded.jar
 RUN chown d1indexer entrypoint.sh
 RUN chown d1indexer livenessprobe
+RUN chown d1indexer readinessprobe
 
 #Run Container as d1indexer
-USER 1000
+USER 59997:59997
+
+EXPOSE 9010
 
 # Connect this image to a GitHub repository
+LABEL org.opencontainers.image.title="DataONE Index Worker"
+LABEL org.opencontainers.image.description="Consumer/worker class for parallel-processing of jobs from a queue and updating a Solr index accordingly"
 LABEL org.opencontainers.image.source="https://github.com/dataoneorg/dataone-indexer"
+LABEL org.opencontainers.image.version=${TAG}
+LABEL org.opencontainers.image.licenses="Apache-2.0"
+LABEL maintainer="DataONE <https://github.com/DataONEorg/dataone-indexer>"
 
 # Run the Worker process
 CMD ["./entrypoint.sh"]

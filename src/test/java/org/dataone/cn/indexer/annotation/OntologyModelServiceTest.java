@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.dataone.cn.indexer.IndexWorkerTest;
+import org.dataone.configuration.Settings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,6 +21,14 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 @ContextConfiguration(locations = { "../../index/test-context.xml" })
 
 public class OntologyModelServiceTest {
+    static {
+        try {
+            Settings.augmentConfiguration(IndexWorkerTest.PORT_8985_PROPERTY_FILE_PATH);
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 	@Test
 	public void testConceptNotFoundExpansion() {
 		/**

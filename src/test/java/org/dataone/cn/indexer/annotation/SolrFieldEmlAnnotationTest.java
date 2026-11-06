@@ -1,24 +1,3 @@
-/**
- * This work was created by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For
- * more information on DataONE, see our web site at http://dataone.org.
- *
- *   Copyright ${year}
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
 package org.dataone.cn.indexer.annotation;
 
 import java.io.InputStream;
@@ -28,12 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.io.IOUtils;
+
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.dataone.cn.index.BaseSolrFieldXPathTest;
-import org.dataone.cn.indexer.convert.SolrDateConverter;
+import org.dataone.cn.indexer.IndexWorkerTest;
 import org.dataone.cn.indexer.solrhttp.SolrDoc;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
+import org.dataone.configuration.Settings;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,14 +30,19 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "../../index/test-context.xml" })
 public class SolrFieldEmlAnnotationTest extends BaseSolrFieldXPathTest {
+    static {
+        try {
+            Settings.augmentConfiguration(IndexWorkerTest.PORT_8985_PROPERTY_FILE_PATH);
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Autowired
     private Resource eml220TestDocSciMeta;
 
     @Autowired
     private EmlAnnotationSubprocessor emlAnnotationSubprocessor;
-
-    private SolrDateConverter dateConverter = new SolrDateConverter();
 
     // what are we expecting from the annotation?
     private HashMap<String, String> annotationExpected = new HashMap<String, String>();
@@ -117,8 +103,9 @@ public class SolrFieldEmlAnnotationTest extends BaseSolrFieldXPathTest {
      */
     @Test
     public void testAnnotationFields() throws Exception {
-        compareFields(annotationExpected, eml220TestDocSciMeta.getInputStream(), emlAnnotationSubprocessor,
-                "eml_annotation_example");
+        compareFields(
+            annotationExpected, eml220TestDocSciMeta.getInputStream(), emlAnnotationSubprocessor,
+            "eml_annotation_example");
     }
 
 }

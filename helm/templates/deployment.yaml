@@ -19,6 +19,7 @@ spec:
       {{- end }}
       labels:
         {{- include "idxworker.selectorLabels" . | nindent 8 }}
+      namespace: {{ .Release.Namespace }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -47,27 +48,53 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          {{- if .Values.idxworker.jmxEnabled }}
+          ports:
+            - containerPort: {{ .Values.idxworker.jmxPort }}
+              name: jmx
+          {{- end }}
+        {{- if .Values.idxworker.enableMountWarmupHook }}
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - |
+                    {
+                      ## This is a workaround for the Lustre file system
+                      echo "$(date '+%Y-%m-%d %H:%M:%S.%3N') - Warming up mounted directories..." >> /tmp/postStart.log
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/metadata/tmp > /dev/null 2>&1 || true
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/refs/tmp > /dev/null 2>&1 || true
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/objects > /dev/null 2>&1 || true
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/refs/pids > /dev/null 2>&1 || true
+                      ls -1 {{ .Values.idxworker.storage.hashStoreRootDir }}/refs/cids > /dev/null 2>&1 || true
+                      echo "$(date '+%Y-%m-%d %H:%M:%S.%3N') - Warm-up complete." >> /tmp/postStart.log
+                    }
+        {{- end }}
+          {{- if .Values.securityContext }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.idxworker.livenessProbe.enabled }}
           livenessProbe:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - test $(($(date +%s) - $(stat -c %Y /var/lib/dataone-indexer/livenessprobe))) -lt 20
-            initialDelaySeconds: 20
-            periodSeconds: 15
+            {{- omit .Values.idxworker.livenessProbe "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.idxworker.readinessProbe.enabled }}
+          readinessProbe:
+            {{- omit .Values.idxworker.readinessProbe "enabled" | toYaml | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - mountPath: /etc/dataone/dataone-indexer.properties
-              subPath: dataone-indexer.properties
+            {{- if .Values.extraVolumeMounts }}
+            {{- tpl (toYaml .Values.extraVolumeMounts) . | nindent 12 }}
+            {{- end }}
+            - mountPath: /etc/dataone
               name: {{ .Release.Name }}-config-volume
-            - mountPath: /etc/dataone/log4j.properties
-              subPath: log4j2.properties
-              name: {{ .Release.Name }}-config-volume
+              readOnly: true
             - mountPath: {{ .Values.persistence.mountPath }}
               name: indexer-metacat-pv
               {{- if .Values.persistence.subPath }}
@@ -79,7 +106,11 @@ spec:
           env:
             - name: DEBUG
               value: "{{ .Values.idxworker.debug }}"
-            - name: DATAONE_AUTH_TOKEN
+            {{- if .Values.idxworker.javaMem }}
+            - name: IDX_JAVA_MEM
+              value: {{ .Values.idxworker.javaMem | quote }}
+            {{- end }}
+            - name: DATAONE_INDEXER_AUTH_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-indexer-token
@@ -87,11 +118,17 @@ spec:
                   # If 'false', the secret must exist before the pod can start
                   # App versions before v2.3.4 will read this value from a config file, not the env var.
                   optional: true
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{  include "idxworker.rabbitmq.secret.name" . }}
+                  key: {{ required "idxworker.rabbitmqUserKey IS REQUIRED" .Values.idxworker.rabbitmqUserKey }}
+                  optional: false
             - name: RABBITMQ_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{  required "rabbitmq.auth.existingPasswordSecret IS REQUIRED" .Values.rabbitmq.auth.existingPasswordSecret }}
-                  key: rabbitmq-password
+                  name: {{  include "idxworker.rabbitmq.secret.name" . }}
+                  key: {{ required "idxworker.rabbitmqPasswordKey IS REQUIRED" .Values.idxworker.rabbitmqPasswordKey }}
                   optional: false
             {{- if .Values.solr.auth.enabled }}
             - name: SOLR_ADMIN_PASSWORD
@@ -101,43 +138,77 @@ spec:
                   key: SOLR_ADMIN_PASSWORD
                   optional: true
             {{ end }}
+            {{- if .Values.idxworker.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.idxworker.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+            {{- if or .Values.idxworker.extraJavaOpts .Values.idxworker.jmxEnabled }}
+            - name: IDX_JAVA_OPTS
+              value: {{ join " " .Values.idxworker.extraJavaOpts }}
+              {{- if .Values.idxworker.jmxEnabled }}
+                        {{- if .Values.idxworker.extraJavaOpts }}
+                          {{- printf " " }}
+                        {{- end }}
+                        {{- join " " .Values.idxworker.jmxJavaOpts }}
+            - name: IDX_JMX_ENABLED
+              value: "true"
+              {{- end }}
+            {{- end }}
       initContainers:
-        - name: init-rabbitmq
+        - name: dependencies
           image: busybox:latest
+          {{- if .Values.securityContext }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
           command:
             - sh
             - -c
-            - >
-              HOST="{{ include "idxworker.rabbitmq.hostname" . }}";
-              PORT={{ include "idxworker.rabbitmq.hostport" . }};
-              until nc -z $HOST $PORT > /dev/null; do
-              echo waiting for RabbitMQ at $HOST - port $PORT; sleep 1; done;
-        - name: init-solr
-          image: busybox:latest
-          command:
-            - sh
-            - -c
-            - >
-              URI="/solr/
+            - |
+              ##
+              ## wait for RabbitMQ to be ready...
+              ##
+              RMQHOST="{{ include "idxworker.rabbitmq.hostname" . }}";
+              RMQPORT={{ include "idxworker.rabbitmq.hostport" . }};
+              echo "* * * Checking if RabbitMQ is ready at $RMQHOST:$RMQPORT * * *";
+              until nc -z $RMQHOST $RMQPORT > /dev/null; do
+              echo waiting for RabbitMQ at $RMQHOST - port $RMQPORT; sleep 1; done;
+              ##
+              ## wait for Solr to be ready...
+              ##
+              SOLRURI="/solr/
               {{- required "solr.customCollection IS REQUIRED" .Values.solr.customCollection -}}
                   /admin/file?file=schema.xml&contentType=text/xml";
               {{- $solrHost := (include "idxworker.solr.hostname" .) }}
   {{- $solrPort := (required "solr.service.ports.http REQUIRED" .Values.solr.service.ports.http) }}
-              until [[ $(echo -e "GET $URI HTTP/1.1\r\nHost: {{ $solrHost -}}
+              echo "* * * Checking if Solr is ready at http://{{ $solrHost }}:
+              {{- $solrPort }}$SOLRURI * * *";
+              until [[ $(echo -e "GET $SOLRURI HTTP/1.1\r\nHost: {{ $solrHost -}}
               \r\n\r\n" | nc {{ $solrHost }} {{ $solrPort -}}
               | grep -c "<schema name=\"dataone") == 1 ]]; do
               echo waiting for Solr Schema to be accessible at http://{{ $solrHost }}:
-              {{- $solrPort }}$URI; sleep 1; done;
+              {{- $solrPort }}$SOLRURI; sleep 1; done;
       volumes:
+        {{- if .Values.extraVolumes }}
+        {{- tpl (toYaml .Values.extraVolumes) . | nindent 8 }}
+        {{- end }}
         - name: {{ .Release.Name }}-config-volume
           configMap:
             name: {{ .Release.Name }}-indexer-configfiles
             defaultMode: 0644
-        - name:  indexer-metacat-pv
+        - name: indexer-metacat-pv
+          {{- if and .Values.persistence.hostPath .Values.persistence.hostPath.path }}
+          hostPath:
+            path: {{ tpl .Values.persistence.hostPath.path . }}
+            type: {{ .Values.persistence.hostPath.type }}
+          {{- else }}
           persistentVolumeClaim:
             claimName: {{ include "idxworker.shared.claimName" . }}
             readOnly: true
+          {{- end }}
         - name: {{ .Release.Name }}-temp-tripledb-volume
+          {{- if .Values.idxworker.tripleDbStorageDefinition }}
+          {{- tpl (toYaml .Values.idxworker.tripleDbStorageDefinition) . | nindent 10 }}
+          {{- else }}
           ephemeral:
             volumeClaimTemplate:
               spec:
@@ -148,3 +219,4 @@ spec:
                 resources:
                   requests:
                     storage: 1Gi
+         {{- end }}

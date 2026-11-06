@@ -26,7 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dataone.cn.indexer.parser.utility.SpatialBoxParsingUtility;
 import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.w3c.dom.Document;
@@ -34,8 +35,8 @@ import org.w3c.dom.Document;
 public class DublinCoreSpatialBoxBoundingCoordinatesSolrField extends SolrField implements
         ISolrField {
 
-    private static Logger logger = Logger
-            .getLogger(DublinCoreSpatialBoxBoundingCoordinatesSolrField.class.getName());
+    private static Log logger = LogFactory
+            .getLog(DublinCoreSpatialBoxBoundingCoordinatesSolrField.class.getName());
 
     private static SpatialBoxParsingUtility boxParsingUtility = new SpatialBoxParsingUtility();
 
