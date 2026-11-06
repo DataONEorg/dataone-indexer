@@ -23,8 +23,10 @@ package org.dataone.cn.index;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -36,9 +38,12 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.dataone.cn.indexer.parser.JsonLdSubprocessor;
 import org.dataone.cn.indexer.resourcemap.RdfXmlProcessorTest;
+import org.dataone.cn.indexer.solrhttp.SolrDoc;
+import org.dataone.cn.indexer.solrhttp.SolrElementField;
 import org.dataone.service.types.v1.NodeReference;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -90,6 +95,8 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
     private String schemaOrgTestDocDryad2Pid = "doi.org_10.5061_dryad.41sk145.jsonld";
     private Resource schemaOrgTesHakaiDeep;
     private String schemaOrgTesHakaiDeepPid = "hakai-deep-schema.jsonld";
+    private Resource schemaOrgTestGeoCoordinates;
+    private String schemaOrgTestGeoCoordinatesPid = "geocoordinates.jsonld";
 
     /* An instance of the RDF/XML Subprocessor */
     private JsonLdSubprocessor jsonLdSubprocessor;
@@ -122,6 +129,7 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
         schemaOrgTestDocDryad1 = (Resource) context.getBean("schemaOrgTestDryad1");
         schemaOrgTestDocDryad2 = (Resource) context.getBean("schemaOrgTestDryad2");
         schemaOrgTesHakaiDeep = (Resource) context.getBean("schemaOrgTesHakaiDeep");
+        schemaOrgTestGeoCoordinates = (Resource) context.getBean("schemaOrgTestGeoCoordinates");
 
         // instantiate the subprocessor
         jsonLdSubprocessor = (JsonLdSubprocessor) context.getBean("jsonLdSubprocessor");
@@ -541,6 +549,85 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
         assertTrue(compareFieldValue(id, "serviceEndpoint", urls));
         String[] license = {"https://creativecommons.org/licenses/by/4.0/"};
         assertTrue(compareFieldValue(id, "licenseUrl", license));
+    }
+    
+    /**
+     * Test that the JsonLdSubprocessor can sucessfully index JSONLD Dataset description documents from Dryad.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGeoCoordinates() throws Exception {
+        String id = schemaOrgTestGeoCoordinatesPid;
+        indexObjectToSolr(id, schemaOrgTestGeoCoordinates);
+
+        //Thread.sleep(2*SLEEPTIME);
+        // now process the tasks
+        //processor.processIndexTaskQueue();
+        int TIMES = 2*8 + 10*2;
+        int SLEEP = 500;
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(id);
+                break;
+            } catch (Throwable e) {
+                
+            }
+        }
+        String [] coord = {"36.7016"};
+        assertTrue(compareFieldValue(id, "southBoundCoord", coord));
+        coord[0] = "-121.90504";
+        assertTrue(compareFieldValue(id, "westBoundCoord", coord));
+        coord[0] = "36.7016";
+        assertTrue(compareFieldValue(id, "northBoundCoord", coord));
+        coord[0] = "-121.90504";
+        assertTrue(compareFieldValue(id, "eastBoundCoord", coord));
+        assertTrue(compareFieldValue(id, "geohash_9", new String[] {
+                ch.hsr.geohash.GeoHash.withCharacterPrecision(36.7016, -121.90504, 9).toBase32()
+        }));
+    }
+
+    @Test
+    public void testMixedSpatialGeometryWithConfiguredProcessor() throws Exception {
+        String json = "{\"@context\":\"https://schema.org/\",\"@type\":\"Dataset\","
+                + "\"spatialCoverage\":{\"@type\":\"Place\",\"geo\":["
+                + "{\"@type\":\"GeoCoordinates\",\"latitude\":-19,\"longitude\":51},"
+                + "{\"@type\":\"GeoShape\",\"line\":\"-18 49 -17 52\"}]}}";
+        Map<String, SolrDoc> docs = new HashMap<String, SolrDoc>();
+        jsonLdSubprocessor.processDocument("mixed", docs,
+                new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
+        SolrDoc doc = docs.get("mixed");
+        assertEquals(Collections.singletonList("-19.0"), doc.getAllFieldValues("southBoundCoord"));
+        assertEquals(Collections.singletonList("51.0"), doc.getAllFieldValues("westBoundCoord"));
+        assertEquals(Collections.singletonList("-19.0"), doc.getAllFieldValues("northBoundCoord"));
+        assertEquals(Collections.singletonList("51.0"), doc.getAllFieldValues("eastBoundCoord"));
+        List<String> expectedHashes = Arrays.asList(
+                ch.hsr.geohash.GeoHash.withCharacterPrecision(-19, 51, 9).toBase32(),
+                ch.hsr.geohash.GeoHash.withCharacterPrecision(-17.5, 50.5, 9).toBase32());
+        List<String> actualHashes = doc.getAllFieldValues("geohash_9");
+        Collections.sort(expectedHashes);
+        Collections.sort(actualHashes);
+        assertEquals(expectedHashes, actualHashes);
+
+        SolrInputDocument solrDoc = new SolrInputDocument();
+        solrDoc.addField("id", "mixed");
+        for (SolrElementField field : doc.getFieldList()) {
+            if (field.getName().endsWith("BoundCoord") || field.getName().startsWith("geohash_")) {
+                solrDoc.addField(field.getName(), field.getValue());
+            }
+        }
+        getSolrClient().add(solrDoc);
+        getSolrClient().commit();
+        SolrDocument indexed = assertPresentInSolrIndex("mixed");
+        assertEquals(-19.0f, (Float) indexed.getFieldValue("southBoundCoord"), 0.0f);
+        assertEquals(51.0f, (Float) indexed.getFieldValue("westBoundCoord"), 0.0f);
+        List<String> indexedHashes = new ArrayList<String>();
+        for (Object value : indexed.getFieldValues("geohash_9")) {
+            indexedHashes.add((String) value);
+        }
+        Collections.sort(indexedHashes);
+        assertEquals(expectedHashes, indexedHashes);
     }
     
 }

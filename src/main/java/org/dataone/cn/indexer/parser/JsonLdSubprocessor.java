@@ -351,6 +351,11 @@ public class JsonLdSubprocessor implements IDocumentSubprocessor {
                         log.trace("JsonLdSubprocessor.process process the concat field " + field.getName() + " with value " + fullValue);
                         metaDocument.addField(f);
                     }
+                } else if (field instanceof SchemaOrgSpatialField) {
+                    List<SolrElementField> fields = ((SchemaOrgSpatialField) field).getFields(dataset);
+                    for (SolrElementField spatialField : fields) {
+                        metaDocument.addField(spatialField);
+                    }
                 } else if (field instanceof DerivedSolrField) {
                     //Get the Sparql query for this field
                     SolrDoc solrDoc = null;

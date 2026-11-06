@@ -455,6 +455,9 @@
         </constructor-arg>
     </bean>
 
+    <bean id="schema_org_spatial_bounds" class="org.dataone.cn.indexer.parser.SchemaOrgSpatialField" />
+
+    <!-- Legacy per-coordinate query beans (460-684); the JSON-LD processor uses schema_org_spatial_bounds. -->
     <!-- Extract bounding box coordinates from a 'SO:spatialCoverage' property. -->
     <bean id="schema_org_geoShape_box_south" class="org.dataone.cn.indexer.annotation.SparqlField">
         <constructor-arg name="name" value="southBoundCoord" />
