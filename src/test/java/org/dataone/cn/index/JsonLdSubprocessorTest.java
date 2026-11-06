@@ -90,6 +90,8 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
     private String schemaOrgTestDocDryad2Pid = "doi.org_10.5061_dryad.41sk145.jsonld";
     private Resource schemaOrgTesHakaiDeep;
     private String schemaOrgTesHakaiDeepPid = "hakai-deep-schema.jsonld";
+    private Resource schemaOrgTestPangaea;
+    private String schemaOrgTestPangaeaPid = "doi_10.1594_PANGAEA.991434.jsonld";
 
     /* An instance of the RDF/XML Subprocessor */
     private JsonLdSubprocessor jsonLdSubprocessor;
@@ -122,6 +124,7 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
         schemaOrgTestDocDryad1 = (Resource) context.getBean("schemaOrgTestDryad1");
         schemaOrgTestDocDryad2 = (Resource) context.getBean("schemaOrgTestDryad2");
         schemaOrgTesHakaiDeep = (Resource) context.getBean("schemaOrgTesHakaiDeep");
+        schemaOrgTestPangaea = (Resource) context.getBean("schemaOrgTestPangaea");
 
         // instantiate the subprocessor
         jsonLdSubprocessor = (JsonLdSubprocessor) context.getBean("jsonLdSubprocessor");
@@ -542,5 +545,34 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
         String[] license = {"https://creativecommons.org/licenses/by/4.0/"};
         assertTrue(compareFieldValue(id, "licenseUrl", license));
     }
-    
+
+    /**
+     * Pangaea records declare "@language": "en" in the context. Indexed values must not
+     * carry a "@en" language tag suffix.
+     */
+    @Test
+    public void testPangaeaLanguageTag() throws Exception {
+        String id = schemaOrgTestPangaeaPid;
+        indexObjectToSolr(id, schemaOrgTestPangaea);
+
+        Thread.sleep(2*SLEEPTIME);
+        for (int i=0; i<TIMES; i++) {
+            try {
+                Thread.sleep(SLEEP);
+                assertPresentInSolrIndex(id);
+                break;
+            } catch (Throwable e) {
+
+            }
+        }
+        assertTrue(compareFieldValue(id, "title",
+                "Quality controlled data for the low-resolution scans of IODP Site 403-U1618"));
+        assertTrue(compareFieldValue(id, "author", "Olga Libman-Roshal"));
+        assertTrue(compareFieldValue(id, "keywords", new String[] {
+                "Arctic; Eastern Fram Strait; Geochemistry; IODP; JOIDES Resolution; "
+                + "Paleoclimate; Quaternary; Vestnesa Ridge; West Spitsbergen Current; XRF"}));
+        assertTrue(compareFieldValue(id, "licenseUrl",
+                new String[] {"https://creativecommons.org/licenses/by/4.0/"}));
+    }
+
 }

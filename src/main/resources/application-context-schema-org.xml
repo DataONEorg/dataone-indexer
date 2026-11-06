@@ -41,7 +41,7 @@
                 PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
                 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                 PREFIX SO:   <http://schema.org/>
-                SELECT ( ?name as ?title )
+                SELECT ( str(?name) as ?title )
                 WHERE {
                     ?datasetId rdf:type SO:Dataset .
                     ?datasetId SO:name ?name .
@@ -63,10 +63,10 @@
                 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                 PREFIX SO:   <http://schema.org/>
 
-                SELECT ?label
+                SELECT (str(?alternateName) as ?label)
                 WHERE {
                     ?datasetId rdf:type SO:Dataset .
-                    ?datasetId SO:alternateName ?label .
+                    ?datasetId SO:alternateName ?alternateName .
                     # Don't include referenced sub-Datasets (i.e. a Dataset in a 'hasPart' property)
                     FILTER NOT EXISTS { ?id SO:hasPart ?datasetId . }
                 }
@@ -151,7 +151,7 @@
                 PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
                 PREFIX SO:   <http://schema.org/>
 
-                SELECT (?name as ?author)
+                SELECT (str(?name) as ?author)
                 WHERE {
                     ?dsId rdf:type SO:Dataset .
                     ?dsId SO:creator ?list .
@@ -199,7 +199,7 @@
                 PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
                 PREFIX SO:   <http://schema.org/>
 
-                SELECT (?givenName as ?authorGivenName)
+                SELECT (str(?givenName) as ?authorGivenName)
                 WHERE {
                     ?dsId rdf:type SO:Dataset .
                     ?dsId SO:creator ?list .
@@ -222,7 +222,7 @@
                     PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
                     PREFIX SO:  <http://schema.org/>
 
-                    SELECT (?familyName as ?authorLastName)
+                    SELECT (str(?familyName) as ?authorLastName)
                     WHERE {
                         ?dsId rdf:type SO:Dataset .
                         ?dsId SO:creator ?list .
@@ -245,7 +245,7 @@
                     PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
                     PREFIX SO:  <http://schema.org/>
 
-                    SELECT (?familyName as ?investigator)
+                    SELECT (str(?familyName) as ?investigator)
                     WHERE {
                         ?dsId rdf:type SO:Dataset .
                         ?dsId SO:creator ?list .
@@ -268,7 +268,7 @@
                     PREFIX SO:   <http://schema.org/>
 
                     SELECT
-                        (?identifier as ?funderIdentifier)
+                        (str(?identifier) as ?funderIdentifier)
                     WHERE {
                         ?datasetId rdf:type SO:Dataset .
                         ?datasetId SO:funder ?funderId .
@@ -290,7 +290,7 @@
                     PREFIX SO:   <http://schema.org/>
 
                     SELECT
-                        (?name as ?funderName)
+                        (str(?name) as ?funderName)
                     WHERE {
                         ?datasetId rdf:type SO:Dataset .
                         ?datasetId SO:funder ?funderId .
@@ -310,7 +310,7 @@
                 PREFIX list: <http://jena.hpl.hp.com/ARQ/list#>
                 PREFIX SO:   <http://schema.org/>
 
-                SELECT (?name as ?origin)
+                SELECT (str(?name) as ?origin)
                 WHERE {
                     ?dsId rdf:type SO:Dataset .
                     ?dsId SO:creator ?list .
@@ -383,10 +383,10 @@
                     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                     PREFIX SO:   <http://schema.org/>
 
-                    SELECT ?keywords
+                    SELECT (str(?kw) as ?keywords)
                       WHERE {
                         ?datasetId rdf:type    SO:Dataset .
-                        ?datasetId SO:keywords ?keywords .
+                        ?datasetId SO:keywords ?kw .
                       }
                 ]]>
             </value>
@@ -403,22 +403,22 @@
                     PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
                     PREFIX SO:   <http://schema.org/>
 
-                    SELECT ?licenseUrl
+                    SELECT (str(?licenseUrlRaw) as ?licenseUrl)
                       WHERE {
                         ?datasetId rdf:type    SO:Dataset .
                         ?datasetId SO:license ?license .
                         # Don't include referenced sub-Datasets (i.e. a Dataset in a 'hasPart' property)
                         FILTER NOT EXISTS { ?id SO:hasPart ?datasetId . }
                         {
-                            BIND(STR(?license) AS ?licenseUrl) .
+                            BIND(STR(?license) AS ?licenseUrlRaw) .
                         }
                         UNION
                         {
-                            ?license rdf:id ?licenseUrl .
+                            ?license rdf:id ?licenseUrlRaw .
                         }
                         UNION
                         {
-                            ?license SO:license ?licenseUrl .
+                            ?license SO:license ?licenseUrlRaw .
                         }
                       }
                 ]]>
@@ -436,18 +436,18 @@
                     PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
                     PREFIX SO:   <http://schema.org/>
 
-                    SELECT ?licenseName
+                    SELECT (str(?licenseNameRaw) as ?licenseName)
                       WHERE {
                         ?datasetId rdf:type    SO:Dataset .
                         ?datasetId SO:license ?license .
                         # Don't include referenced sub-Datasets (i.e. a Dataset in a 'hasPart' property)
                         FILTER NOT EXISTS { ?id SO:hasPart ?datasetId . }
                         {
-                            BIND(STR(?license) AS ?licenseName) .
+                            BIND(STR(?license) AS ?licenseNameRaw) .
                         }
                         UNION
                         {
-                            ?license SO:name ?licenseName .
+                            ?license SO:name ?licenseNameRaw .
                         }
                       }
                 ]]>
@@ -590,11 +590,11 @@
                     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                     PREFIX SO:   <http://schema.org/>
 
-                    SELECT ?namedLocation
+                    SELECT (str(?location) as ?namedLocation)
                     WHERE {
                         ?datasetId rdf:type SO:Dataset .
-                        ?datasetId SO:spatialCoverage ?namedLocation .
-                        FILTER NOT EXISTS { ?namedLocation rdf:type SO:Place . }
+                      ?datasetId SO:spatialCoverage ?location .
+                      FILTER NOT EXISTS { ?location rdf:type SO:Place . }
                     }
                 ]]>
             </value>
@@ -612,7 +612,7 @@
 
                     SELECT
                         # possible formats: "start/end", "start/..", "start"
-                        (if(contains(?dates, "/"), strbefore(?dates, "/"), ?dates) as ?beginDate)
+                        (if(contains(str(?dates), "/"), strbefore(str(?dates), "/"), str(?dates)) as ?beginDate)
                     WHERE {
                         ?datasetId rdf:type SO:Dataset .
                         ?datasetId SO:temporalCoverage ?dates .
@@ -635,7 +635,7 @@
 
                     SELECT
                         # possible formats: "start/end", "start/..", "start"
-                        (if(contains(?dates, "/"), strafter(?dates, "/"), "") as ?endDate)
+                        (if(contains(str(?dates), "/"), strafter(str(?dates), "/"), "") as ?endDate)
                     WHERE {
                         ?datasetId rdf:type SO:Dataset .
                         ?datasetId SO:temporalCoverage ?dates .
@@ -656,7 +656,7 @@
                     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                     PREFIX SO:   <http://schema.org/>
 
-                    SELECT (?variableMeasured as ?parameter)
+                    SELECT (str(?variableMeasured) as ?parameter)
                     WHERE {
                        ?datasetId rdf:type SO:Dataset .
                        {
@@ -959,7 +959,7 @@
                     WHERE {
                         {
                             ?a ?b ?string .
-                            filter(datatype(?string) = xsd:string) .
+                            filter(datatype(?string) = xsd:string || lang(?string) != "") .
                         }
                         UNION
                         {
