@@ -39,7 +39,14 @@ Solr Prometheus metrics can be accessed via port {{ .Values.metrics.service.port
 RABBITMQ QUEUE MONITOR (checkmk):
 =================================
 CronJob {{ include "idxworker.fullname" . }}-rmq-queue-monitor runs on schedule "{{ .Values.queueMonitor.schedule }}" and writes
-checkmk local-check data to the file {{ .Values.queueMonitor.maxAgeSeconds }}_{{ .Release.Name }}_rmq_queues in queueMonitor.outputVolume.
+checkmk local-check data to the file {{ .Values.queueMonitor.maxAgeSeconds }}_{{ .Release.Name }}_rmq_queues in:
+
+  {{- if .Values.queueMonitor.outputVolume }}
+    queueMonitor.outputVolume, subdirectory "{{ .Values.queueMonitor.subPath }}"
+  {{- else }}
+    {{ .Values.persistence.mountPath }}/{{ .Values.queueMonitor.subPath | trimPrefix "/" | trimSuffix "/" }}  (on the volume shared with metacat, as seen by the index workers)
+  {{- end }}
+
 Point a checkmk agent's spool directory at that location. To test immediately:
 
     kubectl -n {{ .Release.Namespace }} create job --from=cronjob/{{ include "idxworker.fullname" . }}-rmq-queue-monitor rmq-queue-monitor-test

@@ -111,6 +111,25 @@ Either use the value set in .Values.persistence.claimName, or if blank, autopopu
 {{- end }}
 
 {{/*
+Volume source for the volume shared with metacat: hostPath if persistence.hostPath.path is set,
+otherwise the PVC from 'idxworker.shared.claimName'. Used by the index worker deployment
+(read-only) and the queue monitor CronJob (read-write).
+Usage: include "idxworker.shared.volumeSource" (dict "context" $ "readOnly" true)
+*/}}
+{{- define "idxworker.shared.volumeSource" -}}
+{{- $ctx := .context }}
+{{- if and $ctx.Values.persistence.hostPath $ctx.Values.persistence.hostPath.path -}}
+hostPath:
+  path: {{ tpl $ctx.Values.persistence.hostPath.path $ctx }}
+  type: {{ $ctx.Values.persistence.hostPath.type }}
+{{- else -}}
+persistentVolumeClaim:
+  claimName: {{ include "idxworker.shared.claimName" $ctx }}
+  readOnly: {{ .readOnly }}
+{{- end }}
+{{- end }}
+
+{{/*
 Create a default fully qualified app name for the embedded RabbitMQ Cluster Operator Deployment.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}

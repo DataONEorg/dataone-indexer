@@ -2,16 +2,26 @@
 ### RabbitMQ queue monitor for checkmk
 ## --------------------------------------
 ## Periodically queries the RabbitMQ management API (from inside the cluster only) and writes the
-## queue sizes as a checkmk "local check" spool file to queueMonitor.outputVolume. A checkmk agent
-## on a host that can see that volume reports the data; no services are exposed outside the
-## cluster. See the queueMonitor section in values.yaml, and helm/config/rmq-queue-check.py
-{{- if not .Values.queueMonitor.outputVolume }}
-{{- fail "queueMonitor.outputVolume is REQUIRED when queueMonitor.enabled is true" }}
+## queue sizes as a checkmk "local check" spool file, by default to the "checkmk" subdirectory of
+## the volume shared with metacat (/var/metacat/checkmk), or to queueMonitor.outputVolume if set.
+## A checkmk agent on a host that can see that directory reports the data; no services are
+## exposed outside the cluster. See the queueMonitor section in values.yaml, and
+## helm/config/rmq-queue-check.py
+{{- /* subPaths must be relative: strip any leading/trailing slashes, and reject ".." */}}
+{{- $subPath := .Values.queueMonitor.subPath | default "" | trimPrefix "/" | trimSuffix "/" }}
+{{- if has ".." (splitList "/" $subPath) }}
+{{- fail "queueMonitor.subPath must be a path inside the volume, and must not contain '..'" }}
 {{- end }}
-{{- /* subPath must be relative: strip any leading/trailing slashes, and reject ".." */}}
-{{- $outputSubPath := .Values.queueMonitor.outputSubPath | default "" | trimPrefix "/" | trimSuffix "/" }}
-{{- if has ".." (splitList "/" $outputSubPath) }}
-{{- fail "queueMonitor.outputSubPath must be a path inside the volume, and must not contain '..'" }}
+{{- if not .Values.queueMonitor.outputVolume }}
+{{- /* Shared metacat volume: confine the job to its own subdirectory, inside persistence.subPath
+       (if any), so the path matches what the index workers see under persistence.mountPath */}}
+{{- if not $subPath }}
+{{- fail "queueMonitor.subPath is REQUIRED when writing to the shared metacat volume (i.e. when queueMonitor.outputVolume is not set)" }}
+{{- end }}
+{{- $parent := .Values.persistence.subPath | default "" | trimPrefix "/" | trimSuffix "/" }}
+{{- if $parent }}
+{{- $subPath = printf "%s/%s" $parent $subPath }}
+{{- end }}
 {{- end }}
 apiVersion: batch/v1
 kind: CronJob
@@ -100,7 +110,7 @@ spec:
                   readOnly: true
                 - name: spool
                   mountPath: /spool
-                  {{- with $outputSubPath }}
+                  {{- with $subPath }}
                   subPath: {{ . | quote }}
                   {{- end }}
           volumes:
@@ -109,5 +119,9 @@ spec:
                 name: {{ .Release.Name }}-indexer-configfiles
                 defaultMode: 0644
             - name: spool
+              {{- if .Values.queueMonitor.outputVolume }}
               {{- tpl (toYaml .Values.queueMonitor.outputVolume) . | nindent 14 }}
+              {{- else }}
+              {{- include "idxworker.shared.volumeSource" (dict "context" $ "readOnly" false) | nindent 14 }}
+              {{- end }}
 {{- end }}

@@ -473,9 +473,12 @@ rabbitmq:
 ##   "<serviceNamePrefix> consumers <name>"  CRIT if messages are waiting but there are no consumers
 ## plus "<serviceNamePrefix> API", which goes CRIT if the management API is unreachable.
 ##
-## The file is written atomically to: <outputVolume>/<outputSubPath>/<maxAgeSeconds>_<release>_rmq_queues
-## The agent reads it from its spool dir (normally /var/lib/check_mk_agent/spool), and ignores it
-## if it is older than maxAgeSeconds, so the services go stale if the CronJob stops running.
+## By default, the file is written atomically to the volume shared with metacat, i.e. as seen by
+## the index workers (with the default persistence.mountPath):
+##     /var/metacat/checkmk/<maxAgeSeconds>_<release>_rmq_queues
+## The checkmk agent reads it from its spool dir (normally /var/lib/check_mk_agent/spool; symlink
+## or bind-mount it to the directory above), and ignores it if it is older than maxAgeSeconds, so
+## the services go stale if the CronJob stops running.
 ##
 queueMonitor:
   ## @param queueMonitor.enabled Enable the RabbitMQ queue monitor CronJob
@@ -523,33 +526,40 @@ queueMonitor:
     messagesWarn: 200
     messagesCrit: 1000
 
-  ## @param queueMonitor.outputVolume REQUIRED if enabled. Volume definition for the spool output.
-  ## Any k8s volume source; rendered with 'tpl'. Examples:
+  ## @param queueMonitor.subPath Subdirectory to write the output file into
+  ## A RELATIVE path; any leading "/" is stripped, and ".." is not allowed.
+  ## - If outputVolume is NOT set (the default), this is the subdirectory of the volume shared with
+  ##   metacat (see 'persistence' above, and inside persistence.subPath if that is set), so the
+  ##   default "checkmk" results in /var/metacat/checkmk, as seen by the index workers. It is
+  ##   REQUIRED in this case, and the job's mount is confined to this subdirectory, so it cannot
+  ##   see or modify any other metacat data.
+  ## - If outputVolume IS set, this is relative to the root of that volume, and may be "".
+  ## IMPORTANT: create this directory ahead of time, writable by the uid/gid in the top-level
+  ## podSecurityContext (which the CronJob shares with the index workers), e.g.:
+  ##     mkdir /var/metacat/checkmk && chgrp 1000 /var/metacat/checkmk && chmod 2775 /var/metacat/checkmk
+  ## The output file is written with mode 0644, so the checkmk agent can read it. If the directory
+  ## does not exist, the kubelet creates it owned by root, and fsGroup does not fix ownership for
+  ## hostPath (and some other) volumes, so the job will fail with "permission denied".
   ##
-  ## 1. hostPath on a node that runs a checkmk agent (combine with queueMonitor.nodeSelector):
+  subPath: "checkmk"
+
+  ## @param queueMonitor.outputVolume Optional volume definition, if the output should NOT go to
+  ## the volume shared with metacat (the default). Any k8s volume source; rendered with 'tpl'.
+  ## Examples:
+  ##
+  ## 1. hostPath on a node that runs a checkmk agent (combine with queueMonitor.nodeSelector,
+  ##    and set queueMonitor.subPath: ""):
   ##   outputVolume:
   ##     hostPath:
   ##       path: /var/lib/check_mk_agent/spool
   ##       type: Directory
   ##
-  ## 2. An existing PVC (e.g. CephFS) whose directory is also mounted on a monitored host, with the
-  ##    agent's spool dir symlinked or bind-mounted to that directory:
+  ## 2. A different existing PVC (e.g. CephFS) that is also mounted on a monitored host:
   ##   outputVolume:
   ##     persistentVolumeClaim:
   ##       claimName: my-monitoring-pvc
   ##
   outputVolume: {}
-
-  ## @param queueMonitor.outputSubPath Optional subdirectory of outputVolume to write into
-  ## A path RELATIVE to the root of outputVolume (e.g. "checkmk/spool"); any leading "/" is
-  ## stripped, and ".." is not allowed.
-  ## IMPORTANT: create this directory ahead of time, writable by the uid/gid in the top-level
-  ## podSecurityContext (which the CronJob shares with the index workers). The output file is
-  ## written with mode 0644, so the checkmk agent can read it. If the directory does not exist, the kubelet creates it owned by root,
-  ## and fsGroup does not fix ownership for hostPath (and some other) volumes, so the job will
-  ## fail with "permission denied".
-  ##
-  outputSubPath: ""
 
   ## @param queueMonitor.nodeSelector Node selector for the CronJob pods (e.g. for hostPath output)
   ##
