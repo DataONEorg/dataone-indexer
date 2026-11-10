@@ -38,7 +38,23 @@ COLUMNS = "name,messages,messages_ready,messages_unacknowledged,consumers,messag
 
 
 def fetch_queues():
-    url = "http://%s:%s/api/queues/%s?columns=%s" % (
+    """Fetch per-queue statistics from the RabbitMQ management HTTP API.
+
+    Calls GET /api/queues/<vhost> on RMQ_HOST:RMQ_PORT using HTTP basic auth, and requests only
+    the fields listed in COLUMNS, to keep the response small.
+
+    Returns:
+        list[dict]: One dict per queue in the vhost, containing the COLUMNS fields (e.g.
+        "name", "messages", "consumers"). Fields may be missing or None for a queue that
+        RabbitMQ has not yet collected stats for.
+
+    Raises:
+        urllib.error.URLError: If the API cannot be reached, or returns an HTTP error status
+            (urllib.error.HTTPError is a subclass), e.g. 401 for bad credentials.
+        TimeoutError: If the API does not respond within 20 seconds.
+        json.JSONDecodeError: If the response body is not valid JSON.
+    """
+    url ="http://%s:%s/api/queues/%s?columns=%s" % (
         host, port, urllib.parse.quote(vhost, safe=""), COLUMNS)
     token = base64.b64encode(("%s:%s" % (user, password)).encode()).decode()
     req = urllib.request.Request(url, headers={"Authorization": "Basic " + token})
@@ -47,11 +63,39 @@ def fetch_queues():
 
 
 def clean(name):
-    # checkmk service names are quoted; strip characters that would break the line
+    """Make a string safe to embed in a checkmk local-check line.
+
+    checkmk service names are enclosed in double quotes, and each check must fit on one line, so
+    double quotes and non-printable characters (including newlines) are replaced.
+
+    Args:
+        name (str): The text to sanitize, e.g. a queue name or an error message.
+
+    Returns:
+        str: ``name`` with each double quote and non-printable character replaced by "_".
+    """
     return "".join(c if c.isprintable() and c != '"' else "_" for c in name)
 
 
 def render(queues):
+    """Convert queue statistics into checkmk local-check lines.
+
+    Produces two services per queue, sorted by queue name:
+
+    * "<prefix> queue <name>": state "P", so that checkmk computes OK/WARN/CRIT from the
+      MESSAGES_WARN/MESSAGES_CRIT levels on the "messages" metric. Also reports ready, unacked,
+      consumers and message_bytes as metrics, for graphing.
+    * "<prefix> consumers <name>": CRIT (2) if messages are waiting but no consumers are
+      attached, otherwise OK (0).
+
+    Args:
+        queues (list[dict]): Queue statistics, as returned by fetch_queues(). Missing or None
+            numeric fields are treated as 0.
+
+    Returns:
+        list[str]: The local-check lines, without the section header or trailing newlines.
+        Empty if ``queues`` is empty.
+    """
     lines = []
     for q in sorted(queues, key=lambda q: q.get("name", "")):
         name = clean(q.get("name", "?"))
@@ -77,6 +121,20 @@ def render(queues):
 
 
 def write_atomic(content):
+    """Atomically write the spool file OUTPUT_DIR/OUTPUT_NAME.
+
+    Writes to a hidden temporary file in the same directory, then renames it over the target, so
+    the checkmk agent never reads a partially written file. The file is made world-readable
+    (0644) so the agent can read it regardless of its uid. The temporary file is removed if
+    anything fails.
+
+    Args:
+        content (str): The complete file content, including the <<<local>>> section header.
+
+    Raises:
+        OSError: If OUTPUT_DIR cannot be created, or the file cannot be written or renamed,
+            e.g. because the directory is not writable by this process.
+    """
     os.makedirs(output_dir, exist_ok=True)
     fd, tmp = tempfile.mkstemp(prefix=".%s." % output_name, suffix=".tmp", dir=output_dir)
     try:
@@ -91,6 +149,21 @@ def write_atomic(content):
 
 
 def main():
+    """Query RabbitMQ, write the checkmk spool file, and echo it to stdout (for the job log).
+
+    In addition to the per-queue services from render(), always reports a "<prefix> API"
+    service, which is:
+
+    * OK (0) if the management API responded and at least one queue exists,
+    * WARN (1) if it responded but the vhost has no queues,
+    * CRIT (2) if the API could not be queried. In this case, only the API service is written,
+      so the per-queue services go stale in checkmk instead of reporting old values.
+
+    Returns:
+        int: Process exit code; 0 on success, 1 if the API query failed (so that the k8s Job is
+        marked as failed). A failure to write the spool file is not caught, and propagates as
+        an exception (also failing the Job).
+    """
     try:
         lines = render(fetch_queues())
         if not lines:
