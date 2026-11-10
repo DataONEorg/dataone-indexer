@@ -1,7 +1,12 @@
 .idea
+.vscode
 target
 .java-version
 tlog/
 charts/
 src/test/resources/org/dataone/cn/index/resources/solr9home/collection1/conf/schema.xml.bak
 src/test/resources/org/dataone/cn/index/resources/solr9home/collection1/data
+misc
+helm/admin
+helm/values-dev.yaml
+helm/values-rd.yaml
