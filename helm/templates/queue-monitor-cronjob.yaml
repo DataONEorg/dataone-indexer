@@ -1,0 +1,113 @@
+{{- if .Values.queueMonitor.enabled }}
+### RabbitMQ queue monitor for checkmk
+## --------------------------------------
+## Periodically queries the RabbitMQ management API (from inside the cluster only) and writes the
+## queue sizes as a checkmk "local check" spool file to queueMonitor.outputVolume. A checkmk agent
+## on a host that can see that volume reports the data; no services are exposed outside the
+## cluster. See the queueMonitor section in values.yaml, and helm/config/rmq-queue-check.py
+{{- if not .Values.queueMonitor.outputVolume }}
+{{- fail "queueMonitor.outputVolume is REQUIRED when queueMonitor.enabled is true" }}
+{{- end }}
+{{- /* subPath must be relative: strip any leading/trailing slashes, and reject ".." */}}
+{{- $outputSubPath := .Values.queueMonitor.outputSubPath | default "" | trimPrefix "/" | trimSuffix "/" }}
+{{- if has ".." (splitList "/" $outputSubPath) }}
+{{- fail "queueMonitor.outputSubPath must be a path inside the volume, and must not contain '..'" }}
+{{- end }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "idxworker.fullname" . }}-rmq-queue-monitor
+  labels:
+    {{- include "idxworker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rmq-queue-monitor
+spec:
+  schedule: {{ .Values.queueMonitor.schedule | quote }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 120
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 60
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            {{- include "idxworker.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: rmq-queue-monitor
+        spec:
+          restartPolicy: Never
+          automountServiceAccountToken: false
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.queueMonitor.nodeSelector }}
+          nodeSelector: {{- include "idxhelpers.tplvalues.render" (dict "value" .Values.queueMonitor.nodeSelector "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.queueMonitor.tolerations }}
+          tolerations: {{- include "idxhelpers.tplvalues.render" (dict "value" .Values.queueMonitor.tolerations "context" $) | nindent 12 }}
+          {{- end }}
+          {{- with .Values.podSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+            - name: rmq-queue-monitor
+              image: "{{ .Values.queueMonitor.image.repository }}:{{ .Values.queueMonitor.image.tag }}"
+              imagePullPolicy: {{ .Values.queueMonitor.image.pullPolicy }}
+              command: ["python3", "/scripts/rmq-queue-check.py"]
+              securityContext:
+                runAsNonRoot: true
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              env:
+                - name: RMQ_HOST
+                  value: {{ include "idxworker.rabbitmq.hostname" . | quote }}
+                - name: RMQ_PORT
+                  value: "15672"  # RabbitMQ operator's management API port
+                - name: RMQ_VHOST
+                  value: {{ .Values.queueMonitor.vhost | quote }}
+                - name: RMQ_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "idxworker.rabbitmq.secret.name" . }}
+                      key: {{ required "idxworker.rabbitmqUserKey IS REQUIRED" .Values.idxworker.rabbitmqUserKey }}
+                - name: RMQ_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "idxworker.rabbitmq.secret.name" . }}
+                      key: {{ required "idxworker.rabbitmqPasswordKey IS REQUIRED" .Values.idxworker.rabbitmqPasswordKey }}
+                - name: OUTPUT_DIR
+                  value: /spool
+                - name: OUTPUT_NAME
+                  value: {{ printf "%d_%s_rmq_queues" (int .Values.queueMonitor.maxAgeSeconds) .Release.Name | quote }}
+                - name: SERVICE_PREFIX
+                  value: {{ .Values.queueMonitor.serviceNamePrefix | quote }}
+                - name: MESSAGES_WARN
+                  value: {{ .Values.queueMonitor.thresholds.messagesWarn | quote }}
+                - name: MESSAGES_CRIT
+                  value: {{ .Values.queueMonitor.thresholds.messagesCrit | quote }}
+              resources:
+                {{- toYaml .Values.queueMonitor.resources | nindent 16 }}
+              volumeMounts:
+                - name: scripts
+                  mountPath: /scripts/rmq-queue-check.py
+                  subPath: rmq-queue-check.py
+                  readOnly: true
+                - name: spool
+                  mountPath: /spool
+                  {{- with $outputSubPath }}
+                  subPath: {{ . | quote }}
+                  {{- end }}
+          volumes:
+            - name: scripts
+              configMap:
+                name: {{ .Release.Name }}-indexer-configfiles
+                defaultMode: 0644
+            - name: spool
+              {{- tpl (toYaml .Values.queueMonitor.outputVolume) . | nindent 14 }}
+{{- end }}

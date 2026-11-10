@@ -462,6 +462,112 @@ rabbitmq:
     ##
     disk_free_limit.absolute: 1500MB
 
+## @section RabbitMQ Queue Monitor (checkmk) Configuration
+## A CronJob that periodically queries the RabbitMQ management API from inside the cluster, and
+## writes the queue sizes as a checkmk "local check" spool file to a volume that is also visible
+## to a host running a checkmk agent. Nothing is exposed outside the cluster.
+##
+## For each queue, checkmk discovers two services:
+##   "<serviceNamePrefix> queue <name>"      WARN/CRIT on total messages (see thresholds), with
+##                                           perfdata for ready, unacked, consumers, message_bytes
+##   "<serviceNamePrefix> consumers <name>"  CRIT if messages are waiting but there are no consumers
+## plus "<serviceNamePrefix> API", which goes CRIT if the management API is unreachable.
+##
+## The file is written atomically to: <outputVolume>/<outputSubPath>/<maxAgeSeconds>_<release>_rmq_queues
+## The agent reads it from its spool dir (normally /var/lib/check_mk_agent/spool), and ignores it
+## if it is older than maxAgeSeconds, so the services go stale if the CronJob stops running.
+##
+queueMonitor:
+  ## @param queueMonitor.enabled Enable the RabbitMQ queue monitor CronJob
+  ##
+  enabled: false
+
+  ## @param queueMonitor.serviceNamePrefix Prefix for checkmk service names
+  ## Include something unique (e.g. the environment) if several releases report to the same host
+  ##
+  serviceNamePrefix: "DataONE Indexer RMQ"
+
+  ## @param queueMonitor.schedule Cron schedule for the queue check
+  ##
+  schedule: "*/5 * * * *"
+
+  ## @param queueMonitor.image.repository Image for the queue check (needs only python3 stdlib)
+  ## @param queueMonitor.image.tag Image tag
+  ## @param queueMonitor.image.pullPolicy Image pull policy
+  ## Uses the newest Python minor release (longest support window; ~5 years from release), and the
+  ## Debian-based "slim" variant (glibc) rather than alpine (musl), to avoid musl DNS-resolver
+  ## quirks in k8s. Bump the minor version when a new Python release comes out (each October).
+  ##
+  image:
+    repository: python
+    tag: "3.15-slim"
+    pullPolicy: IfNotPresent
+
+  ## NOTE: The RabbitMQ hostname and credentials are the same ones used by the index workers (see
+  ## idxworker.rabbitmqHostname, idxworker.rabbitmqSecret, etc.), and the management API is reached
+  ## on the RabbitMQ operator's standard in-cluster port, 15672.
+
+  ## @param queueMonitor.vhost RabbitMQ vhost whose queues are reported
+  ##
+  vhost: "/"
+
+  ## @param queueMonitor.maxAgeSeconds Max age of the spool file before checkmk ignores it.
+  ## Should be comfortably longer than the schedule interval
+  ##
+  maxAgeSeconds: 600
+
+  ## @param queueMonitor.thresholds.messagesWarn WARN when a queue holds at least this many messages
+  ## @param queueMonitor.thresholds.messagesCrit CRIT when a queue holds at least this many messages
+  ##
+  thresholds:
+    messagesWarn: 200
+    messagesCrit: 1000
+
+  ## @param queueMonitor.outputVolume REQUIRED if enabled. Volume definition for the spool output.
+  ## Any k8s volume source; rendered with 'tpl'. Examples:
+  ##
+  ## 1. hostPath on a node that runs a checkmk agent (combine with queueMonitor.nodeSelector):
+  ##   outputVolume:
+  ##     hostPath:
+  ##       path: /var/lib/check_mk_agent/spool
+  ##       type: Directory
+  ##
+  ## 2. An existing PVC (e.g. CephFS) whose directory is also mounted on a monitored host, with the
+  ##    agent's spool dir symlinked or bind-mounted to that directory:
+  ##   outputVolume:
+  ##     persistentVolumeClaim:
+  ##       claimName: my-monitoring-pvc
+  ##
+  outputVolume: {}
+
+  ## @param queueMonitor.outputSubPath Optional subdirectory of outputVolume to write into
+  ## A path RELATIVE to the root of outputVolume (e.g. "checkmk/spool"); any leading "/" is
+  ## stripped, and ".." is not allowed.
+  ## IMPORTANT: create this directory ahead of time, writable by the uid/gid in the top-level
+  ## podSecurityContext (which the CronJob shares with the index workers). The output file is
+  ## written with mode 0644, so the checkmk agent can read it. If the directory does not exist, the kubelet creates it owned by root,
+  ## and fsGroup does not fix ownership for hostPath (and some other) volumes, so the job will
+  ## fail with "permission denied".
+  ##
+  outputSubPath: ""
+
+  ## @param queueMonitor.nodeSelector Node selector for the CronJob pods (e.g. for hostPath output)
+  ##
+  nodeSelector: {}
+
+  ## @param queueMonitor.tolerations Tolerations for the CronJob pods
+  ##
+  tolerations: []
+
+  ## @param queueMonitor.resources Resource requests and limits for the CronJob pods
+  ##
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 64Mi
+
 ## @section Solr Bitnami Sub-Chart Configuration
 ##
 solr:
