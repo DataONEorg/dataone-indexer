@@ -23,14 +23,31 @@ import tempfile
 import urllib.parse
 import urllib.request
 
-host = os.environ.get("RMQ_HOST", "localhost")
+
+def clean(name):
+    """Make a string safe to embed in a checkmk local-check line.
+
+    checkmk service names are enclosed in double quotes, and each check must fit on one line, so
+    double quotes and non-printable characters (including newlines) are replaced.
+
+    Args:
+        name (str): The text to sanitize, e.g. a queue name, the service prefix, or an error
+            message.
+
+    Returns:
+        str: ``name`` with each double quote and non-printable character replaced by "_".
+    """
+    return "".join(c if c.isprintable() and c != '"' else "_" for c in name)
+
+
+host =os.environ.get("RMQ_HOST", "localhost")
 port = os.environ.get("RMQ_PORT", "15672")
 vhost = os.environ.get("RMQ_VHOST", "/")
 user = os.environ.get("RMQ_USER", "guest")
 password = os.environ.get("RMQ_PASS", "guest")
 output_dir = os.environ.get("OUTPUT_DIR", "/spool")
 output_name = os.environ.get("OUTPUT_NAME", "600_rmq_queues")
-prefix = os.environ.get("SERVICE_PREFIX", "DataONE Indexer RMQ")
+prefix = clean(os.environ.get("SERVICE_PREFIX", "DataONE Indexer RMQ"))
 warn = int(os.environ.get("MESSAGES_WARN", "200"))
 crit = int(os.environ.get("MESSAGES_CRIT", "1000"))
 
@@ -60,21 +77,6 @@ def fetch_queues():
     req = urllib.request.Request(url, headers={"Authorization": "Basic " + token})
     with urllib.request.urlopen(req, timeout=20) as resp:
         return json.load(resp)
-
-
-def clean(name):
-    """Make a string safe to embed in a checkmk local-check line.
-
-    checkmk service names are enclosed in double quotes, and each check must fit on one line, so
-    double quotes and non-printable characters (including newlines) are replaced.
-
-    Args:
-        name (str): The text to sanitize, e.g. a queue name or an error message.
-
-    Returns:
-        str: ``name`` with each double quote and non-printable character replaced by "_".
-    """
-    return "".join(c if c.isprintable() and c != '"' else "_" for c in name)
 
 
 def render(queues):

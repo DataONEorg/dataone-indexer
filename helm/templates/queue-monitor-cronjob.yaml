@@ -14,7 +14,12 @@
 {{- end }}
 {{- if not .Values.queueMonitor.outputVolume }}
 {{- /* Shared metacat volume: confine the job to its own subdirectory, inside persistence.subPath
-       (if any), so the path matches what the index workers see under persistence.mountPath */}}
+       (if any), so the path matches what the index workers see under persistence.mountPath.
+       Only supported when that volume is a PVC: a hostPath is node-local, so the job could
+       write to a different node's disk than the one the workers and checkmk agent see. */}}
+{{- if and .Values.persistence.hostPath .Values.persistence.hostPath.path }}
+{{- fail "queueMonitor requires the shared metacat volume to be a PVC, but persistence.hostPath is set. Set queueMonitor.outputVolume to write the output elsewhere, or disable queueMonitor" }}
+{{- end }}
 {{- if not $subPath }}
 {{- fail "queueMonitor.subPath is REQUIRED when writing to the shared metacat volume (i.e. when queueMonitor.outputVolume is not set)" }}
 {{- end }}
@@ -26,10 +31,9 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "idxworker.fullname" . }}-rmq-queue-monitor
+  name: {{ include "idxworker.queueMonitor.name" . }}
   labels:
-    {{- include "idxworker.labels" . | nindent 4 }}
-    app.kubernetes.io/component: rmq-queue-monitor
+    {{- include "idxworker.queueMonitor.labels" . | nindent 4 }}
 spec:
   schedule: {{ .Values.queueMonitor.schedule | quote }}
   concurrencyPolicy: Forbid
@@ -44,8 +48,7 @@ spec:
       template:
         metadata:
           labels:
-            {{- include "idxworker.selectorLabels" . | nindent 12 }}
-            app.kubernetes.io/component: rmq-queue-monitor
+            {{- include "idxworker.queueMonitor.selectorLabels" . | nindent 12 }}
         spec:
           restartPolicy: Never
           automountServiceAccountToken: false
@@ -53,16 +56,13 @@ spec:
           imagePullSecrets:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.queueMonitor.nodeSelector }}
-          nodeSelector: {{- include "idxhelpers.tplvalues.render" (dict "value" .Values.queueMonitor.nodeSelector "context" $) | nindent 12 }}
-          {{- end }}
-          {{- if .Values.queueMonitor.tolerations }}
-          tolerations: {{- include "idxhelpers.tplvalues.render" (dict "value" .Values.queueMonitor.tolerations "context" $) | nindent 12 }}
-          {{- end }}
-          {{- with .Values.podSecurityContext }}
+          ## Same uid as the index workers, with their fsGroup as the PRIMARY group, so the job can
+          ## write to a pre-created, group-writable output dir. Deliberately NO fsGroup: on a
+          ## read-write mount, fsGroup can make the kubelet recursively change group ownership of
+          ## the ENTIRE shared metacat volume (not just the subPath) every time the job runs.
           securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            runAsUser: {{ required "podSecurityContext.runAsUser is REQUIRED" .Values.podSecurityContext.runAsUser }}
+            runAsGroup: {{ required "podSecurityContext.fsGroup is REQUIRED" .Values.podSecurityContext.fsGroup }}
           containers:
             - name: rmq-queue-monitor
               image: "{{ .Values.queueMonitor.image.repository }}:{{ .Values.queueMonitor.image.tag }}"
@@ -122,6 +122,7 @@ spec:
               {{- if .Values.queueMonitor.outputVolume }}
               {{- tpl (toYaml .Values.queueMonitor.outputVolume) . | nindent 14 }}
               {{- else }}
-              {{- include "idxworker.shared.volumeSource" (dict "context" $ "readOnly" false) | nindent 14 }}
+              persistentVolumeClaim:
+                claimName: {{ include "idxworker.shared.claimName" . }}
               {{- end }}
 {{- end }}

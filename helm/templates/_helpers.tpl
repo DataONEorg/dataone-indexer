@@ -111,25 +111,6 @@ Either use the value set in .Values.persistence.claimName, or if blank, autopopu
 {{- end }}
 
 {{/*
-Volume source for the volume shared with metacat: hostPath if persistence.hostPath.path is set,
-otherwise the PVC from 'idxworker.shared.claimName'. Used by the index worker deployment
-(read-only) and the queue monitor CronJob (read-write).
-Usage: include "idxworker.shared.volumeSource" (dict "context" $ "readOnly" true)
-*/}}
-{{- define "idxworker.shared.volumeSource" -}}
-{{- $ctx := .context }}
-{{- if and $ctx.Values.persistence.hostPath $ctx.Values.persistence.hostPath.path -}}
-hostPath:
-  path: {{ tpl $ctx.Values.persistence.hostPath.path $ctx }}
-  type: {{ $ctx.Values.persistence.hostPath.type }}
-{{- else -}}
-persistentVolumeClaim:
-  claimName: {{ include "idxworker.shared.claimName" $ctx }}
-  readOnly: {{ .readOnly }}
-{{- end }}
-{{- end }}
-
-{{/*
 Create a default fully qualified app name for the embedded RabbitMQ Cluster Operator Deployment.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
@@ -194,3 +175,32 @@ Usage:
         {{- tpl (.value | toYaml) .context }}
     {{- end }}
 {{- end -}}
+
+{{/*
+Name of the RabbitMQ queue monitor CronJob. CronJob names are limited to 52 chars (k8s appends an
+11-char suffix to the name of each Job it creates), so truncate the base name to leave room for
+the 12-char "-rmq-monitor" suffix.
+*/}}
+{{- define "idxworker.queueMonitor.name" -}}
+{{- printf "%s-rmq-monitor" (include "idxworker.fullname" . | trunc 40 | trimSuffix "-") }}
+{{- end }}
+
+{{/*
+Labels for the RabbitMQ queue monitor. These must NOT match the worker Deployment's selector
+('idxworker.selectorLabels'), so the monitor pods are not counted as index workers (e.g. by the
+HPA), hence the different app.kubernetes.io/name.
+*/}}
+{{- define "idxworker.queueMonitor.selectorLabels" -}}
+app.kubernetes.io/name: {{ printf "%s-rmq-monitor" (include "idxworker.name" . | trunc 51 | trimSuffix "-") }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/component: rmq-queue-monitor
+{{- end }}
+
+{{- define "idxworker.queueMonitor.labels" -}}
+helm.sh/chart: {{ include "idxworker.chart" . }}
+{{ include "idxworker.queueMonitor.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
