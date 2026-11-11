@@ -1,0 +1,128 @@
+{{- if .Values.queueMonitor.enabled }}
+### RabbitMQ queue monitor for checkmk
+## --------------------------------------
+## Periodically queries the RabbitMQ management API (from inside the cluster only) and writes the
+## queue sizes as a checkmk "local check" spool file, by default to the "checkmk" subdirectory of
+## the volume shared with metacat (/var/metacat/checkmk), or to queueMonitor.outputVolume if set.
+## A checkmk agent on a host that can see that directory reports the data; no services are
+## exposed outside the cluster. See the queueMonitor section in values.yaml, and
+## helm/config/rmq-queue-check.py
+{{- /* subPaths must be relative: strip any leading/trailing slashes, and reject ".." */}}
+{{- $subPath := .Values.queueMonitor.subPath | default "" | trimPrefix "/" | trimSuffix "/" }}
+{{- if has ".." (splitList "/" $subPath) }}
+{{- fail "queueMonitor.subPath must be a path inside the volume, and must not contain '..'" }}
+{{- end }}
+{{- if not .Values.queueMonitor.outputVolume }}
+{{- /* Shared metacat volume: confine the job to its own subdirectory, inside persistence.subPath
+       (if any), so the path matches what the index workers see under persistence.mountPath.
+       Only supported when that volume is a PVC: a hostPath is node-local, so the job could
+       write to a different node's disk than the one the workers and checkmk agent see. */}}
+{{- if and .Values.persistence.hostPath .Values.persistence.hostPath.path }}
+{{- fail "queueMonitor requires the shared metacat volume to be a PVC, but persistence.hostPath is set. Set queueMonitor.outputVolume to write the output elsewhere, or disable queueMonitor" }}
+{{- end }}
+{{- if not $subPath }}
+{{- fail "queueMonitor.subPath is REQUIRED when writing to the shared metacat volume (i.e. when queueMonitor.outputVolume is not set)" }}
+{{- end }}
+{{- $parent := .Values.persistence.subPath | default "" | trimPrefix "/" | trimSuffix "/" }}
+{{- if $parent }}
+{{- $subPath = printf "%s/%s" $parent $subPath }}
+{{- end }}
+{{- end }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "idxworker.queueMonitor.name" . }}
+  labels:
+    {{- include "idxworker.queueMonitor.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.queueMonitor.schedule | quote }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 120
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 60
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            {{- include "idxworker.queueMonitor.selectorLabels" . | nindent 12 }}
+        spec:
+          restartPolicy: Never
+          automountServiceAccountToken: false
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ## Same uid as the index workers, with their fsGroup as the PRIMARY group, so the job can
+          ## write to a pre-created, group-writable output dir. Deliberately NO fsGroup: on a
+          ## read-write mount, fsGroup can make the kubelet recursively change group ownership of
+          ## the ENTIRE shared metacat volume (not just the subPath) every time the job runs.
+          securityContext:
+            runAsUser: {{ required "podSecurityContext.runAsUser is REQUIRED" .Values.podSecurityContext.runAsUser }}
+            runAsGroup: {{ required "podSecurityContext.fsGroup is REQUIRED" .Values.podSecurityContext.fsGroup }}
+          containers:
+            - name: rmq-queue-monitor
+              image: "{{ .Values.queueMonitor.image.repository }}:{{ .Values.queueMonitor.image.tag }}"
+              imagePullPolicy: {{ .Values.queueMonitor.image.pullPolicy }}
+              command: ["python3", "/scripts/rmq-queue-check.py"]
+              securityContext:
+                runAsNonRoot: true
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              env:
+                - name: RMQ_HOST
+                  value: {{ include "idxworker.rabbitmq.hostname" . | quote }}
+                - name: RMQ_PORT
+                  value: "15672"  # RabbitMQ operator's management API port
+                - name: RMQ_VHOST
+                  value: {{ .Values.queueMonitor.vhost | quote }}
+                - name: RMQ_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "idxworker.rabbitmq.secret.name" . }}
+                      key: {{ required "idxworker.rabbitmqUserKey IS REQUIRED" .Values.idxworker.rabbitmqUserKey }}
+                - name: RMQ_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "idxworker.rabbitmq.secret.name" . }}
+                      key: {{ required "idxworker.rabbitmqPasswordKey IS REQUIRED" .Values.idxworker.rabbitmqPasswordKey }}
+                - name: OUTPUT_DIR
+                  value: /spool
+                - name: OUTPUT_NAME
+                  value: {{ printf "%d_%s_rmq_queues" (int .Values.queueMonitor.maxAgeSeconds) .Release.Name | quote }}
+                - name: SERVICE_PREFIX
+                  value: {{ .Values.queueMonitor.serviceNamePrefix | quote }}
+                - name: MESSAGES_WARN
+                  value: {{ .Values.queueMonitor.thresholds.messagesWarn | quote }}
+                - name: MESSAGES_CRIT
+                  value: {{ .Values.queueMonitor.thresholds.messagesCrit | quote }}
+              resources:
+                {{- toYaml .Values.queueMonitor.resources | nindent 16 }}
+              volumeMounts:
+                - name: scripts
+                  mountPath: /scripts/rmq-queue-check.py
+                  subPath: rmq-queue-check.py
+                  readOnly: true
+                - name: spool
+                  mountPath: /spool
+                  {{- with $subPath }}
+                  subPath: {{ . | quote }}
+                  {{- end }}
+          volumes:
+            - name: scripts
+              configMap:
+                name: {{ .Release.Name }}-indexer-configfiles
+                defaultMode: 0644
+            - name: spool
+              {{- if .Values.queueMonitor.outputVolume }}
+              {{- tpl (toYaml .Values.queueMonitor.outputVolume) . | nindent 14 }}
+              {{- else }}
+              persistentVolumeClaim:
+                claimName: {{ include "idxworker.shared.claimName" . }}
+              {{- end }}
+{{- end }}

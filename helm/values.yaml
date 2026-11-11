@@ -462,6 +462,110 @@ rabbitmq:
     ##
     disk_free_limit.absolute: 1500MB
 
+## @section RabbitMQ Queue Monitor (checkmk) Configuration
+## A CronJob that periodically queries the RabbitMQ management API from inside the cluster, and
+## writes the queue sizes as a checkmk "local check" spool file to a volume that is also visible
+## to a host running a checkmk agent. Nothing is exposed outside the cluster.
+##
+## For each queue, checkmk discovers two services:
+##   "<serviceNamePrefix> queue <name>"      WARN/CRIT on total messages (see thresholds), with
+##                                           perfdata for ready, unacked, consumers, message_bytes
+##   "<serviceNamePrefix> consumers <name>"  CRIT if messages are waiting but there are no consumers
+## plus "<serviceNamePrefix> API", which goes CRIT if the management API is unreachable.
+##
+## By default, the file is written atomically to the volume shared with metacat, i.e. as seen by
+## the index workers (with the default persistence.mountPath):
+##     /var/metacat/checkmk/<maxAgeSeconds>_<release>_rmq_queues
+## The checkmk agent reads it from its spool dir (normally /var/lib/check_mk_agent/spool; symlink
+## or bind-mount it to the directory above), and ignores it if it is older than maxAgeSeconds, so
+## the services go stale if the CronJob stops running.
+##
+queueMonitor:
+  ## @param queueMonitor.enabled Enable the RabbitMQ queue monitor CronJob
+  ##
+  enabled: false
+
+  ## @param queueMonitor.serviceNamePrefix Prefix for checkmk service names
+  ## Include something unique (e.g. the environment) if several releases report to the same host
+  ##
+  serviceNamePrefix: "DataONE Indexer RMQ"
+
+  ## @param queueMonitor.schedule Cron schedule for the queue check
+  ##
+  schedule: "*/5 * * * *"
+
+  ## @param queueMonitor.image.repository Image for the queue check (needs only python3 stdlib)
+  ## @param queueMonitor.image.tag Image tag
+  ## @param queueMonitor.image.pullPolicy Image pull policy
+  ## Uses the newest Python minor release (longest support window; ~5 years from release), and the
+  ## Debian-based "slim" variant (glibc) rather than alpine (musl), to avoid musl DNS-resolver
+  ## quirks in k8s. Bump the minor version when a new Python release comes out (each October).
+  ##
+  image:
+    repository: python
+    tag: "3.15-slim"
+    pullPolicy: IfNotPresent
+
+  ## NOTE: The RabbitMQ hostname and credentials are the same ones used by the index workers (see
+  ## idxworker.rabbitmqHostname, idxworker.rabbitmqSecret, etc.), and the management API is reached
+  ## on the RabbitMQ operator's standard in-cluster port, 15672.
+
+  ## @param queueMonitor.vhost RabbitMQ vhost whose queues are reported
+  ##
+  vhost: "/"
+
+  ## @param queueMonitor.maxAgeSeconds Max age of the spool file before checkmk ignores it.
+  ## Should be comfortably longer than the schedule interval
+  ##
+  maxAgeSeconds: 600
+
+  ## @param queueMonitor.thresholds.messagesWarn WARN when a queue holds at least this many messages
+  ## @param queueMonitor.thresholds.messagesCrit CRIT when a queue holds at least this many messages
+  ##
+  thresholds:
+    messagesWarn: 200
+    messagesCrit: 1000
+
+  ## @param queueMonitor.subPath Subdirectory to write the output file into
+  ## A RELATIVE path; any leading "/" is stripped, and ".." is not allowed.
+  ## - If outputVolume is NOT set (the default), this is the subdirectory of the volume shared with
+  ##   metacat (see 'persistence' above, and inside persistence.subPath if that is set), so the
+  ##   default "checkmk" results in /var/metacat/checkmk, as seen by the index workers. It is
+  ##   REQUIRED in this case, and the job's mount is confined to this subdirectory, so it cannot
+  ##   see or modify any other metacat data. This mode requires the shared volume to be a PVC
+  ##   (rendering fails if persistence.hostPath is set; use outputVolume instead).
+  ## - If outputVolume IS set, this is relative to the root of that volume, and may be "".
+  ## IMPORTANT: create this directory ahead of time, writable by the group given by the top-level
+  ## podSecurityContext.fsGroup, e.g.:
+  ##     mkdir /var/metacat/checkmk && chgrp 1000 /var/metacat/checkmk && chmod 2775 /var/metacat/checkmk
+  ## The job runs as podSecurityContext.runAsUser, with fsGroup as its primary group, but
+  ## deliberately does NOT set fsGroup on its pod (which could make the kubelet recursively change
+  ## ownership across the whole shared volume), so the directory permissions must be right. If the
+  ## directory does not exist, the kubelet creates it owned by root, and the job will fail with
+  ## "permission denied". The output file is written with mode 0644, so the checkmk agent can
+  ## read it.
+  ##
+  subPath: "checkmk"
+
+  ## @param queueMonitor.outputVolume Optional volume definition, if the output should NOT go to
+  ## the volume shared with metacat (the default). Any k8s volume source; rendered with 'tpl'.
+  ## Use a volume that is reachable from any node (e.g. a ReadWriteMany CephFS PVC), since the
+  ## job may be scheduled on any node. Example, for a PVC that is also mounted on a monitored host:
+  ##   outputVolume:
+  ##     persistentVolumeClaim:
+  ##       claimName: my-monitoring-pvc
+  ##
+  outputVolume: {}
+
+  ## @param queueMonitor.resources Resource requests and limits for the CronJob pods
+  ##
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 64Mi
+
 ## @section Solr Bitnami Sub-Chart Configuration
 ##
 solr:

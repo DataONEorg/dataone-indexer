@@ -175,3 +175,32 @@ Usage:
         {{- tpl (.value | toYaml) .context }}
     {{- end }}
 {{- end -}}
+
+{{/*
+Name of the RabbitMQ queue monitor CronJob. CronJob names are limited to 52 chars (k8s appends an
+11-char suffix to the name of each Job it creates), so truncate the base name to leave room for
+the 12-char "-rmq-monitor" suffix.
+*/}}
+{{- define "idxworker.queueMonitor.name" -}}
+{{- printf "%s-rmq-monitor" (include "idxworker.fullname" . | trunc 40 | trimSuffix "-") }}
+{{- end }}
+
+{{/*
+Labels for the RabbitMQ queue monitor. These must NOT match the worker Deployment's selector
+('idxworker.selectorLabels'), so the monitor pods are not counted as index workers (e.g. by the
+HPA), hence the different app.kubernetes.io/name.
+*/}}
+{{- define "idxworker.queueMonitor.selectorLabels" -}}
+app.kubernetes.io/name: {{ printf "%s-rmq-monitor" (include "idxworker.name" . | trunc 51 | trimSuffix "-") }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/component: rmq-queue-monitor
+{{- end }}
+
+{{- define "idxworker.queueMonitor.labels" -}}
+helm.sh/chart: {{ include "idxworker.chart" . }}
+{{ include "idxworker.queueMonitor.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
