@@ -154,9 +154,28 @@
                 SELECT (?name as ?author)
                 WHERE {
                     ?dsId rdf:type SO:Dataset .
-                    ?dsId SO:creator ?list .
-                    ?list list:index (?pos ?member) .
-                    ?member SO:name ?name .
+                    {
+                        SELECT ?dsId ?pos ?member
+                        WHERE {
+                            ?dsId SO:creator ?creatorList .
+                            ?creatorList rdf:first ?head .
+                            ?creatorList list:index (?pos ?member) .
+                        }
+                    } UNION {
+                        ?dsId SO:creator ?member .
+                        FILTER NOT EXISTS { ?member rdf:first ?head }
+                        BIND(0 AS ?pos)
+                    }
+                    {
+                        ?member SO:name ?name .
+                    } UNION {
+                        ?member SO:creator/rdf:first ?person .
+                        ?person SO:name ?name .
+                    } UNION {
+                        ?member SO:creator ?person .
+                        FILTER NOT EXISTS { ?person rdf:first ?first }
+                        ?person SO:name ?name .
+                    }
                 }
                 order by (?pos)
                 limit 1
@@ -202,9 +221,28 @@
                 SELECT (?givenName as ?authorGivenName)
                 WHERE {
                     ?dsId rdf:type SO:Dataset .
-                    ?dsId SO:creator ?list .
-                    ?list list:index (?pos ?member) .
-                    ?member SO:givenName ?givenName .
+                    {
+                        SELECT ?dsId ?pos ?member
+                        WHERE {
+                            ?dsId SO:creator ?creatorList .
+                            ?creatorList rdf:first ?head .
+                            ?creatorList list:index (?pos ?member) .
+                        }
+                    } UNION {
+                        ?dsId SO:creator ?member .
+                        FILTER NOT EXISTS { ?member rdf:first ?head }
+                        BIND(0 AS ?pos)
+                    }
+                    {
+                        ?member SO:givenName ?givenName .
+                    } UNION {
+                        ?member SO:creator/rdf:first ?person .
+                        ?person SO:givenName ?givenName .
+                    } UNION {
+                        ?member SO:creator ?person .
+                        FILTER NOT EXISTS { ?person rdf:first ?first }
+                        ?person SO:givenName ?givenName .
+                    }
                 }
                 order by (?pos)
                 limit 1
@@ -225,9 +263,28 @@
                     SELECT (?familyName as ?authorLastName)
                     WHERE {
                         ?dsId rdf:type SO:Dataset .
-                        ?dsId SO:creator ?list .
-                        ?list list:index (?pos ?member) .
-                        ?member SO:familyName ?familyName .
+                        {
+                            SELECT ?dsId ?pos ?member
+                            WHERE {
+                                ?dsId SO:creator ?creatorList .
+                                ?creatorList rdf:first ?head .
+                                ?creatorList list:index (?pos ?member) .
+                            }
+                        } UNION {
+                            ?dsId SO:creator ?member .
+                            FILTER NOT EXISTS { ?member rdf:first ?head }
+                            BIND(0 AS ?pos)
+                        }
+                        {
+                            ?member SO:familyName ?familyName .
+                        } UNION {
+                            ?member SO:creator/rdf:first ?person .
+                            ?person SO:familyName ?familyName .
+                        } UNION {
+                            ?member SO:creator ?person .
+                            FILTER NOT EXISTS { ?person rdf:first ?first }
+                            ?person SO:familyName ?familyName .
+                        }
                     }
                     order by (?pos)
                 ]]>
@@ -248,9 +305,28 @@
                     SELECT (?familyName as ?investigator)
                     WHERE {
                         ?dsId rdf:type SO:Dataset .
-                        ?dsId SO:creator ?list .
-                        ?list list:index (?pos ?member) .
-                        ?member SO:familyName ?familyName .
+                        {
+                            SELECT ?dsId ?pos ?member
+                            WHERE {
+                                ?dsId SO:creator ?creatorList .
+                                ?creatorList rdf:first ?head .
+                                ?creatorList list:index (?pos ?member) .
+                            }
+                        } UNION {
+                            ?dsId SO:creator ?member .
+                            FILTER NOT EXISTS { ?member rdf:first ?head }
+                            BIND(0 AS ?pos)
+                        }
+                        {
+                            ?member SO:familyName ?familyName .
+                        } UNION {
+                            ?member SO:creator/rdf:first ?person .
+                            ?person SO:familyName ?familyName .
+                        } UNION {
+                            ?member SO:creator ?person .
+                            FILTER NOT EXISTS { ?person rdf:first ?first }
+                            ?person SO:familyName ?familyName .
+                        }
                     }
                     order by (?pos)
                 ]]>
@@ -313,8 +389,18 @@
                 SELECT (?name as ?origin)
                 WHERE {
                     ?dsId rdf:type SO:Dataset .
-                    ?dsId SO:creator ?list .
-                    ?list list:index (?pos ?member) .
+                    {
+                        SELECT ?dsId ?pos ?member
+                        WHERE {
+                            ?dsId SO:creator ?creatorList .
+                            ?creatorList rdf:first ?head .
+                            ?creatorList list:index (?pos ?member) .
+                        }
+                    } UNION {
+                        ?dsId SO:creator ?member .
+                        FILTER NOT EXISTS { ?member rdf:first ?head }
+                        BIND(0 AS ?pos)
+                    }
                     ?member SO:name ?name .
                 }
                 order by (?pos)
@@ -353,9 +439,15 @@
                 SELECT (?name as ?origin)
                 WHERE {
                     ?dsId rdf:type SO:Dataset .
-                    ?dsId SO:creator $creator .
-                    $creator SO:creator ?role .
-                    $role SO:name ?name .
+                    ?dsId SO:creator ?creator .
+                    FILTER NOT EXISTS { ?creator rdf:first ?head }
+                    {
+                        ?creator SO:creator/rdf:first ?person .
+                    } UNION {
+                        ?creator SO:creator ?person .
+                        FILTER NOT EXISTS { ?person rdf:first ?first }
+                    }
+                    ?person SO:name ?name .
                 }
                 ]]>
             </value>
@@ -402,11 +494,25 @@
                 SELECT (?name as ?origin)
                 WHERE {
                     ?dsId rdf:type SO:Dataset .
-                    ?dsId SO:creator ?creatorList .
-                    ?creatorList list:member ?creator .
-                    ?creatorList list:index ?pos .
-                    ?creator SO:creator ?role .
-                    ?role SO:name ?name .
+                    {
+                        SELECT ?dsId ?pos ?creator
+                        WHERE {
+                            ?dsId SO:creator ?creatorList .
+                            ?creatorList rdf:first ?head .
+                            ?creatorList list:index (?pos ?creator) .
+                        }
+                    } UNION {
+                        ?dsId SO:creator ?creator .
+                        FILTER NOT EXISTS { ?creator rdf:first ?head }
+                        BIND(0 AS ?pos)
+                    }
+                    {
+                        ?creator SO:creator/rdf:first ?person .
+                    } UNION {
+                        ?creator SO:creator ?person .
+                        FILTER NOT EXISTS { ?person rdf:first ?first }
+                    }
+                    ?person SO:name ?name .
                 }
                 order by (?pos)
                 ]]>

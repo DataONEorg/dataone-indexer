@@ -550,22 +550,9 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
         String id = schemaOrgTestCreatorRolePid;
         indexObjectToSolr(id, schemaOrgTestCreatorRole);
 
-        //Thread.sleep(2*SLEEPTIME);
-        // now process the tasks
-        //processor.processIndexTaskQueue();
-        int TIMES = 2*8 + 10*2;
-        int SLEEP = 500;
-        for (int i=0; i<TIMES; i++) {
-            try {
-                Thread.sleep(SLEEP);
-                assertPresentInSolrIndex(id);
-                break;
-            } catch (Throwable e) {
-                
-            }
-        }
+        SolrDocument document = assertPresentInSolrIndex(id);
         assertTrue(compareFieldValue(id, "authorGivenName", "Ian"));
-        assertTrue(compareFieldValue(id, "authorLastName", "Nesbitt"));
+        assertEquals(Arrays.asList("Nesbitt"), new ArrayList<>(document.getFieldValues("authorLastName")));
     }
 
     /**
@@ -578,22 +565,10 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
         String id = schemaOrgTestCreatorRoleListPid;
         indexObjectToSolr(id, schemaOrgTestCreatorRoleList);
 
-        //Thread.sleep(2*SLEEPTIME);
-        // now process the tasks
-        //processor.processIndexTaskQueue();
-        int TIMES = 2*8 + 10*2;
-        int SLEEP = 500;
-        for (int i=0; i<TIMES; i++) {
-            try {
-                Thread.sleep(SLEEP);
-                assertPresentInSolrIndex(id);
-                break;
-            } catch (Throwable e) {
-                
-            }
-        }
+        SolrDocument document = assertPresentInSolrIndex(id);
         assertTrue(compareFieldValue(id, "authorGivenName", "Ian"));
-        assertTrue(compareFieldValue(id, "authorLastName", "Nesbitt"));
+        assertEquals(Arrays.asList("Nesbitt", "Tao"),
+                new ArrayList<>(document.getFieldValues("authorLastName")));
     }
 
 }

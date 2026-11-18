@@ -7,18 +7,20 @@
         "@type": "Role",
         "creator": {
             "@type": "Person",
-            "Affiliation": {
+            "affiliation": {
                 "@type": "Organization",
                 "name": "National Center for Ecological Analaysis and Synthesis"
             },
-            "Email": "nesbitt@nceas.ucsb.edu",
-            "Identifier": {
+            "email": "nesbitt@nceas.ucsb.edu",
+            "identifier": {
                 "@type": "PropertyValue",
                 "propertyID": "https://registry.identifiers.org/registry/orcid",
                 "url": "http://orcid.org/0000-0001-5828-6070",
                 "value": "0000-0001-5828-6070"
             },
-            "Name": "Nesbitt, Ian\t"
+            "name": "Ian Nesbitt",
+            "givenName": "Ian",
+            "familyName": "Nesbitt"
         }
     }
 }
