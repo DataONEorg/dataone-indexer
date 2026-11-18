@@ -90,6 +90,11 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
     private String schemaOrgTestDocDryad2Pid = "doi.org_10.5061_dryad.41sk145.jsonld";
     private Resource schemaOrgTesHakaiDeep;
     private String schemaOrgTesHakaiDeepPid = "hakai-deep-schema.jsonld";
+    private Resource schemaOrgTestCreatorRole;
+    private String schemaOrgTestCreatorRolePid = "creator-role.jsonld";
+    private Resource schemaOrgTestCreatorRoleList;
+    private String schemaOrgTestCreatorRoleListPid = "creator-role-list.jsonld";
+
 
     /* An instance of the RDF/XML Subprocessor */
     private JsonLdSubprocessor jsonLdSubprocessor;
@@ -122,6 +127,8 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
         schemaOrgTestDocDryad1 = (Resource) context.getBean("schemaOrgTestDryad1");
         schemaOrgTestDocDryad2 = (Resource) context.getBean("schemaOrgTestDryad2");
         schemaOrgTesHakaiDeep = (Resource) context.getBean("schemaOrgTesHakaiDeep");
+        schemaOrgTestCreatorRole = (Resource) context.getBean("schemaOrgTestCreatorRole");
+        schemaOrgTestCreatorRoleList = (Resource) context.getBean("schemaOrgTestCreatorRoleList");
 
         // instantiate the subprocessor
         jsonLdSubprocessor = (JsonLdSubprocessor) context.getBean("jsonLdSubprocessor");
@@ -542,5 +549,36 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
         String[] license = {"https://creativecommons.org/licenses/by/4.0/"};
         assertTrue(compareFieldValue(id, "licenseUrl", license));
     }
-    
+
+    /**
+     * Test that the JsonLdSubprocessor can successfully index JSONLD documents with creator roles.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testCreatorRole() throws Exception {
+        String id = schemaOrgTestCreatorRolePid;
+        indexObjectToSolr(id, schemaOrgTestCreatorRole);
+
+        SolrDocument document = assertPresentInSolrIndex(id);
+        assertTrue(compareFieldValue(id, "authorGivenName", "Ian"));
+        assertEquals(Arrays.asList("Nesbitt"), new ArrayList<>(document.getFieldValues("authorLastName")));
+    }
+
+    /**
+     * Test that the JsonLdSubprocessor can successfully index JSONLD documents with creator role lists.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testCreatorRoleList() throws Exception {
+        String id = schemaOrgTestCreatorRoleListPid;
+        indexObjectToSolr(id, schemaOrgTestCreatorRoleList);
+
+        SolrDocument document = assertPresentInSolrIndex(id);
+        assertTrue(compareFieldValue(id, "authorGivenName", "Ian"));
+        assertEquals(Arrays.asList("Nesbitt", "Tao"),
+                new ArrayList<>(document.getFieldValues("authorLastName")));
+    }
+
 }
