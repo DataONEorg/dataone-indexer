@@ -1,0 +1,449 @@
+{
+  "@type": "Dataset",
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "cr": "http://mlcommons.org/croissant/",
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "dct": "http://purl.org/dc/terms/",
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "recordSet": "cr:recordSet",
+    "sc": "https://schema.org/",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "transform": "cr:transform"
+  },
+  "conformsTo": "http://mlcommons.org/croissant/1.0",
+  "identifier": "https://doi.org/10.1594/PANGAEA.751137",
+  "url": "https://doi.pangaea.de/10.1594/PANGAEA.751137",
+  "creator": [
+    {
+      "@type": "Person",
+      "name": "Ricardo García-Herrera",
+      "familyName": "García-Herrera",
+      "givenName": "Ricardo",
+      "email": "rgarciah@fis.ucm.es"
+    },
+    {
+      "@type": "Person",
+      "name": "Gunther P Können",
+      "familyName": "Können",
+      "givenName": "Gunther P"
+    },
+    {
+      "@type": "Person",
+      "name": "Dennis A Wheeler",
+      "familyName": "Wheeler",
+      "givenName": "Dennis A",
+      "email": "denniswheeler@beeb.net"
+    },
+    {
+      "@type": "Person",
+      "name": "Maria del Rosario Prieto",
+      "familyName": "Prieto",
+      "givenName": "Maria del Rosario"
+    },
+    {
+      "@id": "https://orcid.org/0000-0001-5032-5493",
+      "@type": "Person",
+      "name": "Philip D Jones",
+      "familyName": "Jones",
+      "givenName": "Philip D",
+      "identifier": "https://orcid.org/0000-0001-5032-5493",
+      "url": "http://www.cru.uea.ac.uk/cru/people/pjones/",
+      "email": "p.jones@uea.ac.uk"
+    },
+    {
+      "@type": "Person",
+      "name": "Frits B Koek",
+      "familyName": "Koek",
+      "givenName": "Frits B"
+    }
+  ],
+  "name": "Meteorological observations during PENELOPE cruise from Anguilla to Halifax started at 1808-06-23",
+  "publisher": {
+    "@type": "Organization",
+    "name": "PANGAEA",
+    "disambiguatingDescription": "Data Publisher for Earth & Environmental Science",
+    "url": "https://www.pangaea.de/"
+  },
+  "includedInDataCatalog": {
+    "@type": "DataCatalog",
+    "name": "PANGAEA",
+    "disambiguatingDescription": "Data Publisher for Earth & Environmental Science",
+    "url": "https://www.pangaea.de/"
+  },
+  "datePublished": "2010-10-31",
+  "isPartOf": "https://doi.org/10.1594/PANGAEA.611088",
+  "sourceOrganization": {
+    "@id": "https://ror.org/01f3njc68",
+    "@type": "Organization",
+    "identifier": "https://ror.org/01f3njc68",
+    "name": "National Maritime Museum, Greenwich, United Kingdom"
+  },
+  "additionalType": "dataset",
+  "description": "This dataset is about: Meteorological observations during PENELOPE cruise from Anguilla to Halifax started at 1808-06-23. Please consult parent dataset @ https://doi.org/10.1594/PANGAEA.611088 for more information.",
+  "citation": {
+    "@id": "https://doi.org/10.1007/s10584-005-6952-6",
+    "@type": [
+      "CreativeWork",
+      "ScholarlyArticle"
+    ],
+    "identifier": "https://doi.org/10.1007/s10584-005-6952-6",
+    "url": "https://doi.org/10.1007/s10584-005-6952-6",
+    "creator": [
+      {
+        "@type": "Person",
+        "name": "Ricardo García-Herrera",
+        "familyName": "García-Herrera",
+        "givenName": "Ricardo",
+        "email": "rgarciah@fis.ucm.es"
+      },
+      {
+        "@type": "Person",
+        "name": "Gunther P Können",
+        "familyName": "Können",
+        "givenName": "Gunther P"
+      },
+      {
+        "@type": "Person",
+        "name": "Dennis A Wheeler",
+        "familyName": "Wheeler",
+        "givenName": "Dennis A",
+        "email": "denniswheeler@beeb.net"
+      },
+      {
+        "@type": "Person",
+        "name": "Maria del Rosario Prieto",
+        "familyName": "Prieto",
+        "givenName": "Maria del Rosario"
+      },
+      {
+        "@id": "https://orcid.org/0000-0001-5032-5493",
+        "@type": "Person",
+        "name": "Philip D Jones",
+        "familyName": "Jones",
+        "givenName": "Philip D",
+        "identifier": "https://orcid.org/0000-0001-5032-5493",
+        "url": "http://www.cru.uea.ac.uk/cru/people/pjones/",
+        "email": "p.jones@uea.ac.uk"
+      },
+      {
+        "@type": "Person",
+        "name": "Frits B Koek",
+        "familyName": "Koek",
+        "givenName": "Frits B"
+      }
+    ],
+    "name": "CLIWOC: A Climatological Database for the World's Oceans 1750–1854 (and 10 more publications about CLIWOC results in the same volume)",
+    "datePublished": "2005",
+    "pagination": "1-12ff",
+    "isPartOf": {
+      "@type": [
+        "Periodical",
+        "PublicationVolume"
+      ],
+      "volumeNumber": "73(1-2)",
+      "name": "Climatic Change"
+    },
+    "additionalType": "journal article"
+  },
+  "spatialCoverage": {
+    "@type": "Place",
+    "geo": {
+      "@type": "GeoShape",
+      "box": "19.3 -73.83 43.6 -61.53"
+    }
+  },
+  "temporalCoverage": "1808-06-21T16:00:00/1808-07-12T16:00:00",
+  "funding": {
+    "@type": "MonetaryGrant",
+    "identifier": "EVK2-CT-2000-00090",
+    "name": "Climatological Database for the Worlds Oceans: 1750-1854",
+    "url": "https://cordis.europa.eu/project/id/EVK2-CT-2000-00090",
+    "funder": {
+      "@id": "doi:10.13039/100011104",
+      "@type": "Organization",
+      "identifier": "doi:10.13039/100011104",
+      "name": "Fifth Framework Programme",
+      "alternateName": "FP5"
+    }
+  },
+  "size": {
+    "@type": "QuantitativeValue",
+    "value": 419.0,
+    "unitText": "data points"
+  },
+  "variableMeasured": [
+    {
+      "@type": "PropertyValue",
+      "name": "DATE/TIME",
+      "url": "http://en.wikipedia.org/wiki/ISO_8601",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": {
+          "@id": "http://qudt.org/1.1/vocab/quantity#Time",
+          "@type": "DefinedTerm",
+          "identifier": "http://qudt.org/1.1/vocab/quantity#Time",
+          "name": "Time",
+          "alternateName": "T",
+          "url": "http://dbpedia.org/resource/Time"
+        }
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "LATITUDE",
+      "url": "http://en.wikipedia.org/wiki/ISO_6709"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "LONGITUDE",
+      "url": "http://en.wikipedia.org/wiki/ISO_6709"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Wind direction",
+      "unitText": "deg",
+      "description": "Wind direction (from which the wind is blowing) in whole degrees from: 1-360; 361 = calm, 362 = variable. It is not clear from many logbook entries whether the wind direction has been corrected for the magnetic variation (or declination). To avoid any misunderstanding, all winds from reports that included a valid position in the period 1750-1854 were corrected. All other wind directions are given without being corrected.",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "http://qudt.org/1.1/vocab/quantity#Angle",
+            "@type": "DefinedTerm",
+            "identifier": "http://qudt.org/1.1/vocab/quantity#Angle",
+            "name": "Angle",
+            "url": "http://dbpedia.org/resource/Angle"
+          },
+          {
+            "@id": "http://qudt.org/1.1/vocab/quantity#PlaneAngle",
+            "@type": "DefinedTerm",
+            "identifier": "http://qudt.org/1.1/vocab/quantity#PlaneAngle",
+            "name": "Plane Angle",
+            "url": "http://dbpedia.org/resource/Plane_angle"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Wind speed",
+      "unitText": "m/s",
+      "description": "calculated from the descriptive terms of wind force given in the observations",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "http://qudt.org/1.1/vocab/quantity#LinearVelocity",
+            "@type": "DefinedTerm",
+            "identifier": "http://qudt.org/1.1/vocab/quantity#LinearVelocity",
+            "name": "Linear Velocity",
+            "url": "http://dbpedia.org/resource/Velocity"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "wind speed"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Landmark",
+      "description": "Name of first landmark"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Bearing",
+      "description": "Bearing of the first landmark"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Distance to landmark",
+      "unitText": "arbitrary units",
+      "description": "Distance to the first landmark",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": {
+          "@id": "urn:obo:pato:term:0000040",
+          "@type": "DefinedTerm",
+          "identifier": "urn:obo:pato:term:0000040",
+          "name": "distance",
+          "url": "http://purl.obolibrary.org/obo/PATO_0000040"
+        }
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "-",
+      "description": "1 If position is considered to be coastal (in port or near coastal disturbances)",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": {
+          "@type": "DefinedTerm",
+          "name": "Molar Concentration"
+        }
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Course",
+      "description": "Course of the ship during the past 24 hours"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Distance",
+      "unitText": "arbitrary units",
+      "description": "Distance travelled during the previous 24 hours",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": {
+          "@id": "urn:obo:pato:term:0000040",
+          "@type": "DefinedTerm",
+          "identifier": "urn:obo:pato:term:0000040",
+          "name": "distance",
+          "url": "http://purl.obolibrary.org/obo/PATO_0000040"
+        }
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Declination",
+      "unitText": "deg",
+      "description": "It is generally accepted by the CLIWOC team that the wind directions, reported by the ships officers, were relative to the magnetic North direction. Navigators were well aware of the difference between the true and magnetic north direction, but the compasses (we assumed that the bearing-compasses were mostly used for determining the wind direction) were not always adjusted. Therefore the wind direction has to be corrected. The magnetic declination (or variation, as it is known on board ships) is given for the whole CLIWOC period (1750-1850) for every 5x5 degree square. The number was added to the wind direction to get the true wind direction.",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "http://qudt.org/1.1/vocab/quantity#Angle",
+            "@type": "DefinedTerm",
+            "identifier": "http://qudt.org/1.1/vocab/quantity#Angle",
+            "name": "Angle",
+            "url": "http://dbpedia.org/resource/Angle"
+          },
+          {
+            "@id": "http://qudt.org/1.1/vocab/quantity#PlaneAngle",
+            "@type": "DefinedTerm",
+            "identifier": "http://qudt.org/1.1/vocab/quantity#PlaneAngle",
+            "name": "Plane Angle",
+            "url": "http://dbpedia.org/resource/Plane_angle"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Wind direction description",
+      "description": "All reported wind directions on this day. The wind direction is the direction that points to where the wind comes from."
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Wind force description",
+      "description": "All reported wind forces on this day"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Present weather",
+      "description": "Weather description"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Precipitation description"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Clearness"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Gusts",
+      "description": "1 If wind gusts are reported"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Precipitation/Rain",
+      "description": "1 If rain was reported"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Fog",
+      "description": "1 If fog was reported"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Snow type",
+      "description": "1 If snow was reported",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": {
+          "@type": "DefinedTerm",
+          "name": "snow"
+        }
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Thunder",
+      "description": "1 If thunder and or lightning was reported"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Hail",
+      "description": "1 If hail was reported"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Sea ice",
+      "description": "1 If sea-ice or icebergs were reported",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": {
+          "@id": "http://purl.obolibrary.org/obo/ENVO_00002200",
+          "@type": "DefinedTerm",
+          "identifier": "http://purl.obolibrary.org/obo/ENVO_00002200",
+          "name": "sea ice",
+          "url": "http://purl.obolibrary.org/obo/ENVO_00002200"
+        }
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Identification",
+      "description": "CLIWOC 2.1 line number"
+    }
+  ],
+  "license": "https://creativecommons.org/licenses/by/3.0/",
+  "conditionsOfAccess": "unrestricted",
+  "isAccessibleForFree": true,
+  "inLanguage": "en",
+  "distribution": [
+    {
+      "@type": [
+        "cr:FileObject",
+        "DataDownload"
+      ],
+      "@id": "data_matrix.tab",
+      "contentUrl": "https://doi.pangaea.de/10.1594/PANGAEA.751137?format=textfile",
+      "encodingFormat": "text/tab-separated-values"
+    },
+    {
+      "@type": [
+        "cr:FileObject",
+        "DataDownload"
+      ],
+      "contentUrl": "https://doi.pangaea.de/10.1594/PANGAEA.751137?format=html",
+      "encodingFormat": "text/html"
+    }
+  ]
+}
