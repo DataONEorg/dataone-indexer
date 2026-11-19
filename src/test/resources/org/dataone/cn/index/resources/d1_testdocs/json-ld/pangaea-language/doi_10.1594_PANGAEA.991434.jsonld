@@ -1,0 +1,1643 @@
+{
+  "@type": "Dataset",
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "cr": "http://mlcommons.org/croissant/",
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "dct": "http://purl.org/dc/terms/",
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "recordSet": "cr:recordSet",
+    "sc": "https://schema.org/",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "transform": "cr:transform"
+  },
+  "conformsTo": "http://mlcommons.org/croissant/1.0",
+  "identifier": "https://doi.org/10.1594/PANGAEA.991434",
+  "url": "https://doi.pangaea.de/10.1594/PANGAEA.991434",
+  "creator": [
+    {
+      "@id": "https://orcid.org/0009-0000-4470-2870",
+      "@type": "Person",
+      "name": "Olga Libman-Roshal",
+      "familyName": "Libman-Roshal",
+      "givenName": "Olga",
+      "identifier": "https://orcid.org/0009-0000-4470-2870",
+      "email": "olivineolga@gmail.com",
+      "affiliation": {
+        "@id": "https://ror.org/01nxc2t48",
+        "@type": "Organization",
+        "identifier": "https://ror.org/01nxc2t48",
+        "name": "Department of Earth and Environmental Studies, Montclair State University"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0003-1468-8056",
+      "@type": "Person",
+      "name": "Lucinda Cameron Duxbury",
+      "familyName": "Duxbury",
+      "givenName": "Lucinda Cameron",
+      "identifier": "https://orcid.org/0000-0003-1468-8056",
+      "email": "lucinda.duxbury@adelaide.edu.au",
+      "affiliation": {
+        "@id": "https://ror.org/01nfmeh72",
+        "@type": "Organization",
+        "identifier": "https://ror.org/01nfmeh72",
+        "name": "Institute for Marine and Antarctic Studies, University of Tasmania",
+        "alternateName": "IMAS",
+        "url": "https://www.imas.utas.edu.au/"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0002-3227-0676",
+      "@type": "Person",
+      "name": "Andrea Catalina Gebhardt",
+      "familyName": "Gebhardt",
+      "givenName": "Andrea Catalina",
+      "identifier": "https://orcid.org/0000-0002-3227-0676",
+      "url": "https://www.awi.de/en/about-us/organisation/staff/single-view/catalina-gebhardt.html",
+      "email": "catalina.gebhardt@awi.de",
+      "affiliation": {
+        "@id": "https://ror.org/032e6b942",
+        "@type": "Organization",
+        "identifier": "https://ror.org/032e6b942",
+        "name": "Alfred Wegener Institute, Helmholtz Centre for Polar and Marine Research, Bremerhaven",
+        "alternateName": "AWI",
+        "url": "https://www.awi.de/"
+      }
+    },
+    {
+      "@type": "Person",
+      "name": "Alba Gonzalez-Lanchas",
+      "familyName": "Gonzalez-Lanchas",
+      "givenName": "Alba",
+      "email": "alba.gonzalez-lanchas@earth.ox.ac.uk",
+      "affiliation": {
+        "@id": "https://ror.org/052gg0110",
+        "@type": "Organization",
+        "identifier": "https://ror.org/052gg0110",
+        "name": "Department of Earth Sciences, University of Oxford"
+      }
+    },
+    {
+      "@type": "Person",
+      "name": "Aruggoda K I U Kapuge",
+      "familyName": "Kapuge",
+      "givenName": "Aruggoda K I U",
+      "email": "kapuge@udel.edu",
+      "affiliation": {
+        "@id": "https://ror.org/01sbq1a82",
+        "@type": "Organization",
+        "identifier": "https://ror.org/01sbq1a82",
+        "name": "Department of Earth Sciences, University of Delaware"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0002-4263-8630",
+      "@type": "Person",
+      "name": "Lindsey Monito",
+      "familyName": "Monito",
+      "givenName": "Lindsey",
+      "identifier": "https://orcid.org/0000-0002-4263-8630",
+      "affiliation": {
+        "@id": "https://ror.org/02y3ad647",
+        "@type": "Organization",
+        "identifier": "https://ror.org/02y3ad647",
+        "name": "Department of Geological Sciences, University of Florida",
+        "alternateName": "UFL",
+        "url": "http://web.geology.ufl.edu/"
+      }
+    },
+    {
+      "@type": "Person",
+      "name": "Lauren Haygood",
+      "familyName": "Haygood",
+      "givenName": "Lauren",
+      "email": "lauren.haygood@okstate.edu",
+      "affiliation": {
+        "@id": "https://ror.org/01g9vbr38",
+        "@type": "Organization",
+        "identifier": "https://ror.org/01g9vbr38",
+        "name": "Boone Pickens School of Geology, Oklahoma State University"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0001-5007-4671",
+      "@type": "Person",
+      "name": "Gryphen Goss",
+      "familyName": "Goss",
+      "givenName": "Gryphen",
+      "identifier": "https://orcid.org/0000-0001-5007-4671",
+      "email": "gryphen.goss@yale.edu",
+      "affiliation": {
+        "@id": "https://ror.org/03v76x132",
+        "@type": "Organization",
+        "identifier": "https://ror.org/03v76x132",
+        "name": "Department of Earth and Planetary Sciences, Yale University",
+        "url": "https://www.yale.edu"
+      }
+    },
+    {
+      "@type": "Person",
+      "name": "Jesse Yeon",
+      "familyName": "Yeon",
+      "givenName": "Jesse",
+      "email": "jesse.yeon@exchange.tamu.edu",
+      "affiliation": {
+        "@id": "https://ror.org/01f5ytq51",
+        "@type": "Organization",
+        "identifier": "https://ror.org/01f5ytq51",
+        "name": "Texas A&M University",
+        "alternateName": "TAMU",
+        "url": "http://www.tamu.edu/"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0003-3666-4338",
+      "@type": "Person",
+      "name": "Brendan T Reilly",
+      "familyName": "Reilly",
+      "givenName": "Brendan T",
+      "identifier": "https://orcid.org/0000-0003-3666-4338",
+      "email": "breilly@ldeo.columbia.edu",
+      "affiliation": {
+        "@id": "https://ror.org/02e2tgs60",
+        "@type": "Organization",
+        "identifier": "https://ror.org/02e2tgs60",
+        "name": "Lamont-Doherty Earth Observatory of Columbia University, New York",
+        "alternateName": "LDEO",
+        "url": "http://www.ldgo.columbia.edu/"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0001-7045-7485",
+      "@type": "Person",
+      "name": "Kristen E Kudless St. John",
+      "familyName": "St. John",
+      "givenName": "Kristen E Kudless",
+      "identifier": "https://orcid.org/0000-0001-7045-7485",
+      "url": "http://www.geology.appstate.edu/",
+      "email": "stjohnke@appstate.edu",
+      "affiliation": {
+        "@id": "https://ror.org/028pmsz77",
+        "@type": "Organization",
+        "identifier": "https://ror.org/028pmsz77",
+        "name": "Department of Geology and Environmental Science, James Madison University",
+        "alternateName": "JMU",
+        "url": "https://www.jmu.edu"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0001-5111-6968",
+      "@type": "Person",
+      "name": "Renata G Lucchi",
+      "familyName": "Lucchi",
+      "givenName": "Renata G",
+      "identifier": "https://orcid.org/0000-0001-5111-6968",
+      "email": "rglucchi@ogs.trieste.it",
+      "affiliation": {
+        "@id": "https://ror.org/04y4t7k95",
+        "@type": "Organization",
+        "identifier": "https://ror.org/04y4t7k95",
+        "name": "Istituto Nazionale di Oceanografia e di Geofisica Sperimentale, Sgonico",
+        "alternateName": "OGS",
+        "url": "http://www.ogs.trieste.it"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0003-2625-719X",
+      "@type": "Person",
+      "name": "Thomas A Ronge",
+      "familyName": "Ronge",
+      "givenName": "Thomas A",
+      "identifier": "https://orcid.org/0000-0003-2625-719X",
+      "email": "ronge@iodp.tamu.edu",
+      "affiliation": {
+        "@id": "https://ror.org/01f5ytq51",
+        "@type": "Organization",
+        "identifier": "https://ror.org/01f5ytq51",
+        "name": "Texas A&M University",
+        "alternateName": "TAMU",
+        "url": "http://www.tamu.edu/"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0002-4131-1767",
+      "@type": "Person",
+      "name": "Adriane R Lam",
+      "familyName": "Lam",
+      "givenName": "Adriane R",
+      "identifier": "https://orcid.org/0000-0002-4131-1767",
+      "email": "alam@binghamton.edu",
+      "affiliation": {
+        "@id": "https://ror.org/008rmbt77",
+        "@type": "Organization",
+        "identifier": "https://ror.org/008rmbt77",
+        "name": "Earth Sciences Department, Binghamton University",
+        "alternateName": "BU",
+        "url": "https://www.binghamton.edu"
+      }
+    },
+    {
+      "@type": "Person",
+      "name": "Brancen Redman",
+      "familyName": "Redman",
+      "givenName": "Brancen",
+      "email": "brancenredman1176@gmail.com",
+      "affiliation": {
+        "@id": "https://ror.org/01g9vbr38",
+        "@type": "Organization",
+        "identifier": "https://ror.org/01g9vbr38",
+        "name": "Boone Pickens School of Geology, Oklahoma State University"
+      }
+    },
+    {
+      "@type": "Person",
+      "name": "Larry St. John",
+      "familyName": "St. John",
+      "givenName": "Larry",
+      "email": "las2xa@virginia.edu",
+      "affiliation": {
+        "@id": "https://ror.org/0153tk833",
+        "@type": "Organization",
+        "identifier": "https://ror.org/0153tk833",
+        "name": "Department of Physics, University of Virginia",
+        "alternateName": "UVA",
+        "url": "https://virginia.edu"
+      }
+    },
+    {
+      "@type": "Person",
+      "name": "Maria A Bárcena",
+      "familyName": "Bárcena",
+      "givenName": "Maria A",
+      "email": "mbarcena@usal.es",
+      "affiliation": {
+        "@id": "https://ror.org/02f40zc51",
+        "@type": "Organization",
+        "identifier": "https://ror.org/02f40zc51",
+        "name": "Department of Geology, University of Salamanca",
+        "alternateName": "USAL",
+        "url": "https://www.usal.es"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0002-6934-0914",
+      "@type": "Person",
+      "name": "Stijn De Schepper",
+      "familyName": "De Schepper",
+      "givenName": "Stijn",
+      "identifier": "https://orcid.org/0000-0002-6934-0914",
+      "email": "stde@norceresearch.no",
+      "affiliation": {
+        "@id": "https://ror.org/02gagpf75",
+        "@type": "Organization",
+        "identifier": "https://ror.org/02gagpf75",
+        "name": "NORCE Norwegian Research Centre AS",
+        "alternateName": "NORCE",
+        "url": "https://www.norceresearch.no"
+      }
+    },
+    {
+      "@type": "Person",
+      "name": "Nicole Greco",
+      "familyName": "Greco",
+      "givenName": "Nicole",
+      "email": "greco@nceas.ucsb.edu",
+      "affiliation": {
+        "@id": "https://ror.org/0146z4r19",
+        "@type": "Organization",
+        "identifier": "https://ror.org/0146z4r19",
+        "name": "National Center for Ecological Analysis and Synthesis",
+        "alternateName": "NCEAS",
+        "url": "https://www.nceas.ucsb.edu/"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0001-5445-2393",
+      "@type": "Person",
+      "name": "Jens Gruetzner",
+      "familyName": "Gruetzner",
+      "givenName": "Jens",
+      "identifier": "https://orcid.org/0000-0001-5445-2393",
+      "email": "Jens.Gruetzner@awi.de",
+      "affiliation": {
+        "@id": "https://ror.org/032e6b942",
+        "@type": "Organization",
+        "identifier": "https://ror.org/032e6b942",
+        "name": "Alfred Wegener Institute, Helmholtz Centre for Polar and Marine Research, Bremerhaven",
+        "alternateName": "AWI",
+        "url": "https://www.awi.de/"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0003-1380-5900",
+      "@type": "Person",
+      "name": "Katrine Husum",
+      "familyName": "Husum",
+      "givenName": "Katrine",
+      "identifier": "https://orcid.org/0000-0003-1380-5900",
+      "email": "katrine.husum@npolar.no",
+      "affiliation": {
+        "@id": "https://ror.org/03avf6522",
+        "@type": "Organization",
+        "identifier": "https://ror.org/03avf6522",
+        "name": "Norwegian Polar Institute, Tromso",
+        "alternateName": "NPI"
+      }
+    },
+    {
+      "@type": "Person",
+      "name": "Mutsumi Iizuka",
+      "familyName": "Iizuka",
+      "givenName": "Mutsumi",
+      "affiliation": {
+        "@id": "https://ror.org/01703db54",
+        "@type": "Organization",
+        "identifier": "https://ror.org/01703db54",
+        "name": "Geological Survey of Japan, National Institute of Advanced Industrial Science and Technology"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0002-4524-2930",
+      "@type": "Person",
+      "name": "Yanguang Liu",
+      "familyName": "Liu",
+      "givenName": "Yanguang",
+      "identifier": "https://orcid.org/0000-0002-4524-2930",
+      "email": "yanguangliu@fio.org.cn",
+      "affiliation": {
+        "@id": "https://ror.org/01y34t753",
+        "@type": "Organization",
+        "identifier": "https://ror.org/01y34t753",
+        "name": "Key Laboratory of Marine Geology and Metallogeny, First Institute of Oceanography",
+        "alternateName": "FIO",
+        "url": "http://en.fio.org.cn"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0002-7546-6011",
+      "@type": "Person",
+      "name": "Yair Rosenthal",
+      "familyName": "Rosenthal",
+      "givenName": "Yair",
+      "identifier": "https://orcid.org/0000-0002-7546-6011",
+      "email": "rosentha@marine.rutgers.edu",
+      "affiliation": {
+        "@id": "https://ror.org/05vt9qd57",
+        "@type": "Organization",
+        "identifier": "https://ror.org/05vt9qd57",
+        "name": "Institute of Marine and Coastal Sciences, Rutgers University",
+        "alternateName": "IMCS",
+        "url": "http://www.imcs.rutgers.edu/"
+      }
+    },
+    {
+      "@type": "Person",
+      "name": "Yuhi Sakai",
+      "familyName": "Sakai",
+      "givenName": "Yuhi",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "Graduate School of Engineering, Kyoto University",
+        "url": "https://www.t.kyoto-u.ac.jp/en"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0003-3516-1317",
+      "@type": "Person",
+      "name": "Yusuke Suganuma",
+      "familyName": "Suganuma",
+      "givenName": "Yusuke",
+      "identifier": "https://orcid.org/0000-0003-3516-1317",
+      "affiliation": {
+        "@id": "https://ror.org/05k6m5t95",
+        "@type": "Organization",
+        "identifier": "https://ror.org/05k6m5t95",
+        "name": "National Institute of Polar Research, Tokyo",
+        "alternateName": "NIPR"
+      }
+    },
+    {
+      "@type": "Person",
+      "name": "A V Sijinkumar",
+      "familyName": "Sijinkumar",
+      "givenName": "A V",
+      "affiliation": {
+        "@id": "https://ror.org/00cy1zs35",
+        "@type": "Organization",
+        "identifier": "https://ror.org/00cy1zs35",
+        "name": "Department of Geology, Central University of Kerala",
+        "alternateName": "CUK",
+        "url": "https://www.cukerala.ac.in"
+      }
+    },
+    {
+      "@id": "https://orcid.org/0000-0002-4298-8737",
+      "@type": "Person",
+      "name": "Yi Zhong",
+      "familyName": "Zhong",
+      "givenName": "Yi",
+      "identifier": "https://orcid.org/0000-0002-4298-8737",
+      "affiliation": {
+        "@id": "https://ror.org/049tv2d57",
+        "@type": "Organization",
+        "identifier": "https://ror.org/049tv2d57",
+        "name": "Southern University of Science and Technology",
+        "alternateName": "SUSTech",
+        "url": "http://www.sustech.edu.cn/"
+      }
+    }
+  ],
+  "name": "Quality controlled data for the low-resolution scans of IODP Site 403-U1618",
+  "publisher": {
+    "@type": "Organization",
+    "name": "PANGAEA",
+    "disambiguatingDescription": "Data Publisher for Earth & Environmental Science",
+    "url": "https://www.pangaea.de/"
+  },
+  "includedInDataCatalog": {
+    "@type": "DataCatalog",
+    "name": "PANGAEA",
+    "disambiguatingDescription": "Data Publisher for Earth & Environmental Science",
+    "url": "https://www.pangaea.de/"
+  },
+  "datePublished": "2026-06-15",
+  "additionalType": "dataset",
+  "description": "Here we present the X-ray fluorescence (XRF) scanned intervals from sediment cores from Vestnesa Ridge, eastern Fram Strait in the Arctic. The cores were retrieved from site U1618 on the International Ocean Discovery Program (IODP) Expedition 403, Eastern Fram Strait Paleoarchive. The expedition took place between June 4 and August 2, 2024. XRF scanning was conducted on the first ~85 m of the record from this site, all of which represent Quaternary deposition. XRF scanning took place post-cruise in the boreal fall of 2024 using the fourth generation Avaatech XRF core scanner at the IODP Gulf Coast Repository, College Station, Texas. Records for downcore elemental abundance were obtained at sampling intervals of approximately 5 cm. Data presented here have been quality controlled and are described in Libman-Roshal, Duxbury et al. (under review).",
+  "abstract": "Here we present the X-ray fluorescence (XRF) scanned intervals from sediment cores from Vestnesa Ridge, eastern Fram Strait in the Arctic. The cores were retrieved from site U1618 on the International Ocean Discovery Program (IODP) Expedition 403, Eastern Fram Strait Paleoarchive. The expedition took place between June 4 and August 2, 2024. XRF scanning was conducted on the first ~85 m of the record from this site, all of which represent Quaternary deposition. XRF scanning took place post-cruise in the boreal fall of 2024 using the fourth generation Avaatech XRF core scanner at the IODP Gulf Coast Repository, College Station, Texas. Records for downcore elemental abundance were obtained at sampling intervals of approximately 5 cm. Data presented here have been quality controlled and are described in Libman-Roshal, Duxbury et al. (under review).",
+  "citation": {
+    "@id": "https://doi.org/10.14379/iodp.proc.403.2026",
+    "@type": [
+      "CreativeWork",
+      "Book"
+    ],
+    "identifier": "https://doi.org/10.14379/iodp.proc.403.2026",
+    "url": "https://doi.org/10.14379/iodp.proc.403.2026",
+    "creator": [
+      {
+        "@id": "https://orcid.org/0000-0001-5111-6968",
+        "@type": "Person",
+        "name": "Renata G Lucchi",
+        "familyName": "Lucchi",
+        "givenName": "Renata G",
+        "identifier": "https://orcid.org/0000-0001-5111-6968",
+        "email": "rglucchi@ogs.trieste.it"
+      },
+      {
+        "@id": "https://orcid.org/0000-0001-7045-7485",
+        "@type": "Person",
+        "name": "Kristen E Kudless St. John",
+        "familyName": "St. John",
+        "givenName": "Kristen E Kudless",
+        "identifier": "https://orcid.org/0000-0001-7045-7485",
+        "url": "http://www.geology.appstate.edu/",
+        "email": "stjohnke@appstate.edu"
+      },
+      {
+        "@id": "https://orcid.org/0000-0003-2625-719X",
+        "@type": "Person",
+        "name": "Thomas A Ronge",
+        "familyName": "Ronge",
+        "givenName": "Thomas A",
+        "identifier": "https://orcid.org/0000-0003-2625-719X",
+        "email": "ronge@iodp.tamu.edu"
+      },
+      {
+        "@type": "Organization",
+        "name": "IODP Expedition 403 Scientists"
+      }
+    ],
+    "name": "Eastern Fram Strait Paleo-Archive",
+    "datePublished": "2026",
+    "isPartOf": {
+      "@type": [
+        "CreativeWorkSeries",
+        "PublicationVolume"
+      ],
+      "volumeNumber": "403",
+      "name": "Proceedings of the International Ocean Discovery Program, International Ocean Discovery Program"
+    },
+    "additionalType": "book"
+  },
+  "@reverse": {
+    "isBasedOn": {
+      "@id": "https://doi.org/10.14379/iodp.proc.403.202.2026",
+      "@type": [
+        "CreativeWork",
+        "Chapter"
+      ],
+      "identifier": "https://doi.org/10.14379/iodp.proc.403.202.2026",
+      "url": "https://doi.org/10.14379/iodp.proc.403.202.2026",
+      "creator": [
+        {
+          "@id": "https://orcid.org/0009-0000-4470-2870",
+          "@type": "Person",
+          "name": "Olga Libman-Roshal",
+          "familyName": "Libman-Roshal",
+          "givenName": "Olga",
+          "identifier": "https://orcid.org/0009-0000-4470-2870",
+          "email": "olivineolga@gmail.com"
+        },
+        {
+          "@id": "https://orcid.org/0000-0003-1468-8056",
+          "@type": "Person",
+          "name": "Lucinda Cameron Duxbury",
+          "familyName": "Duxbury",
+          "givenName": "Lucinda Cameron",
+          "identifier": "https://orcid.org/0000-0003-1468-8056",
+          "email": "lucinda.duxbury@adelaide.edu.au"
+        },
+        {
+          "@id": "https://orcid.org/0000-0002-3227-0676",
+          "@type": "Person",
+          "name": "Andrea Catalina Gebhardt",
+          "familyName": "Gebhardt",
+          "givenName": "Andrea Catalina",
+          "identifier": "https://orcid.org/0000-0002-3227-0676",
+          "url": "https://www.awi.de/en/about-us/organisation/staff/single-view/catalina-gebhardt.html",
+          "email": "catalina.gebhardt@awi.de"
+        },
+        {
+          "@type": "Person",
+          "name": "Alba Gonzalez-Lanchas",
+          "familyName": "Gonzalez-Lanchas",
+          "givenName": "Alba",
+          "email": "alba.gonzalez-lanchas@earth.ox.ac.uk"
+        },
+        {
+          "@type": "Person",
+          "name": "Aruggoda K I U Kapuge",
+          "familyName": "Kapuge",
+          "givenName": "Aruggoda K I U",
+          "email": "kapuge@udel.edu"
+        },
+        {
+          "@id": "https://orcid.org/0000-0002-4263-8630",
+          "@type": "Person",
+          "name": "Lindsey Monito",
+          "familyName": "Monito",
+          "givenName": "Lindsey",
+          "identifier": "https://orcid.org/0000-0002-4263-8630"
+        },
+        {
+          "@type": "Person",
+          "name": "Lauren Haygood",
+          "familyName": "Haygood",
+          "givenName": "Lauren",
+          "email": "lauren.haygood@okstate.edu"
+        },
+        {
+          "@id": "https://orcid.org/0000-0001-5007-4671",
+          "@type": "Person",
+          "name": "Gryphen Goss",
+          "familyName": "Goss",
+          "givenName": "Gryphen",
+          "identifier": "https://orcid.org/0000-0001-5007-4671",
+          "email": "gryphen.goss@yale.edu"
+        },
+        {
+          "@type": "Person",
+          "name": "Jesse Yeon",
+          "familyName": "Yeon",
+          "givenName": "Jesse",
+          "email": "jesse.yeon@exchange.tamu.edu"
+        },
+        {
+          "@id": "https://orcid.org/0000-0003-3666-4338",
+          "@type": "Person",
+          "name": "Brendan T Reilly",
+          "familyName": "Reilly",
+          "givenName": "Brendan T",
+          "identifier": "https://orcid.org/0000-0003-3666-4338",
+          "email": "breilly@ldeo.columbia.edu"
+        },
+        {
+          "@id": "https://orcid.org/0000-0001-7045-7485",
+          "@type": "Person",
+          "name": "Kristen E Kudless St. John",
+          "familyName": "St. John",
+          "givenName": "Kristen E Kudless",
+          "identifier": "https://orcid.org/0000-0001-7045-7485",
+          "url": "http://www.geology.appstate.edu/",
+          "email": "stjohnke@appstate.edu"
+        },
+        {
+          "@id": "https://orcid.org/0000-0001-5111-6968",
+          "@type": "Person",
+          "name": "Renata G Lucchi",
+          "familyName": "Lucchi",
+          "givenName": "Renata G",
+          "identifier": "https://orcid.org/0000-0001-5111-6968",
+          "email": "rglucchi@ogs.trieste.it"
+        },
+        {
+          "@id": "https://orcid.org/0000-0003-2625-719X",
+          "@type": "Person",
+          "name": "Thomas A Ronge",
+          "familyName": "Ronge",
+          "givenName": "Thomas A",
+          "identifier": "https://orcid.org/0000-0003-2625-719X",
+          "email": "ronge@iodp.tamu.edu"
+        },
+        {
+          "@id": "https://orcid.org/0000-0002-4131-1767",
+          "@type": "Person",
+          "name": "Adriane R Lam",
+          "familyName": "Lam",
+          "givenName": "Adriane R",
+          "identifier": "https://orcid.org/0000-0002-4131-1767",
+          "email": "alam@binghamton.edu"
+        },
+        {
+          "@type": "Person",
+          "name": "Brancen Redman",
+          "familyName": "Redman",
+          "givenName": "Brancen",
+          "email": "brancenredman1176@gmail.com"
+        },
+        {
+          "@type": "Person",
+          "name": "Larry St. John",
+          "familyName": "St. John",
+          "givenName": "Larry",
+          "email": "las2xa@virginia.edu"
+        },
+        {
+          "@type": "Person",
+          "name": "Maria A Bárcena",
+          "familyName": "Bárcena",
+          "givenName": "Maria A",
+          "email": "mbarcena@usal.es"
+        },
+        {
+          "@id": "https://orcid.org/0000-0002-6934-0914",
+          "@type": "Person",
+          "name": "Stijn De Schepper",
+          "familyName": "De Schepper",
+          "givenName": "Stijn",
+          "identifier": "https://orcid.org/0000-0002-6934-0914",
+          "email": "stde@norceresearch.no"
+        },
+        {
+          "@id": "https://orcid.org/0000-0003-2348-2164",
+          "@type": "Person",
+          "name": "N M Greco",
+          "familyName": "Greco",
+          "givenName": "N M",
+          "identifier": "https://orcid.org/0000-0003-2348-2164"
+        },
+        {
+          "@id": "https://orcid.org/0000-0001-5445-2393",
+          "@type": "Person",
+          "name": "Jens Gruetzner",
+          "familyName": "Gruetzner",
+          "givenName": "Jens",
+          "identifier": "https://orcid.org/0000-0001-5445-2393",
+          "email": "Jens.Gruetzner@awi.de"
+        },
+        {
+          "@id": "https://orcid.org/0000-0003-1380-5900",
+          "@type": "Person",
+          "name": "Katrine Husum",
+          "familyName": "Husum",
+          "givenName": "Katrine",
+          "identifier": "https://orcid.org/0000-0003-1380-5900",
+          "email": "katrine.husum@npolar.no"
+        },
+        {
+          "@type": "Person",
+          "name": "Mutsumi Iizuka",
+          "familyName": "Iizuka",
+          "givenName": "Mutsumi"
+        },
+        {
+          "@id": "https://orcid.org/0000-0002-4524-2930",
+          "@type": "Person",
+          "name": "Yanguang Liu",
+          "familyName": "Liu",
+          "givenName": "Yanguang",
+          "identifier": "https://orcid.org/0000-0002-4524-2930",
+          "email": "yanguangliu@fio.org.cn"
+        },
+        {
+          "@id": "https://orcid.org/0000-0002-7546-6011",
+          "@type": "Person",
+          "name": "Yair Rosenthal",
+          "familyName": "Rosenthal",
+          "givenName": "Yair",
+          "identifier": "https://orcid.org/0000-0002-7546-6011",
+          "email": "rosentha@marine.rutgers.edu"
+        },
+        {
+          "@type": "Person",
+          "name": "Yuhi Sakai",
+          "familyName": "Sakai",
+          "givenName": "Yuhi"
+        },
+        {
+          "@id": "https://orcid.org/0000-0003-3516-1317",
+          "@type": "Person",
+          "name": "Yusuke Suganuma",
+          "familyName": "Suganuma",
+          "givenName": "Yusuke",
+          "identifier": "https://orcid.org/0000-0003-3516-1317"
+        },
+        {
+          "@type": "Person",
+          "name": "A V Sijinkumar",
+          "familyName": "Sijinkumar",
+          "givenName": "A V"
+        },
+        {
+          "@id": "https://orcid.org/0000-0002-4298-8737",
+          "@type": "Person",
+          "name": "Yi Zhong",
+          "familyName": "Zhong",
+          "givenName": "Yi",
+          "identifier": "https://orcid.org/0000-0002-4298-8737"
+        }
+      ],
+      "name": "Data report: X-ray fluorescence scanning of sediment cores from Site U1618, IODP Expedition 403, Eastern Fram Strait Paleo-Archive",
+      "datePublished": "2026",
+      "isPartOf": {
+        "@type": "Book",
+        "name": "Lucchi, RG, St. John, KEK, Ronge, TA, Expedition 403 Scientists, Eastern Fram Strait Paleo-Archive, Proceedings of the International Ocean Discovery Program, 403, International Ocean Discovery\nProgram"
+      },
+      "additionalType": "book chapter"
+    }
+  },
+  "spatialCoverage": {
+    "@type": "Place",
+    "geo": {
+      "@type": "GeoShape",
+      "box": "78.9483 7.4731 78.9484 7.4739"
+    }
+  },
+  "funding": {
+    "@type": "MonetaryGrant",
+    "identifier": "OCE-1326927",
+    "name": "Management and Operations of the JOIDES Resolution as a Facility for the International Ocean Discovery Program (IODP)",
+    "url": "https://www.nsf.gov/awardsearch/show-award/?AWD_ID=1326927",
+    "funder": {
+      "@id": "http://doi.org/10.13039/100000001",
+      "@type": "Organization",
+      "identifier": "http://doi.org/10.13039/100000001",
+      "name": "National Science Foundation",
+      "alternateName": "NSF"
+    }
+  },
+  "size": {
+    "@type": "QuantitativeValue",
+    "value": 68120.0,
+    "unitText": "data points"
+  },
+  "variableMeasured": [
+    {
+      "@type": "PropertyValue",
+      "name": "Event label"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Sample code/label",
+      "measurementTechnique": "DSDP/ODP/IODP sample designation"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Half"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "DEPTH, sediment/rock",
+      "unitText": "m",
+      "measurementTechnique": "IODP Depth Scale Terminology",
+      "description": "CSF-A",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "urn:obo:pato:term:0001595",
+            "@type": "DefinedTerm",
+            "identifier": "urn:obo:pato:term:0001595",
+            "name": "depth",
+            "url": "http://purl.obolibrary.org/obo/PATO_0001595"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "sediment",
+            "url": "http://purl.obolibrary.org/obo/ENVO_00002007"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "rock"
+          },
+          {
+            "@id": "http://qudt.org/1.1/vocab/quantity#Length",
+            "@type": "DefinedTerm",
+            "identifier": "http://qudt.org/1.1/vocab/quantity#Length",
+            "name": "Length",
+            "alternateName": "L",
+            "url": "http://dbpedia.org/resource/Length"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "DEPTH, sediment/rock",
+      "unitText": "m",
+      "measurementTechnique": "IODP Depth Scale Terminology",
+      "description": "CCSF",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "urn:obo:pato:term:0001595",
+            "@type": "DefinedTerm",
+            "identifier": "urn:obo:pato:term:0001595",
+            "name": "depth",
+            "url": "http://purl.obolibrary.org/obo/PATO_0001595"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "sediment",
+            "url": "http://purl.obolibrary.org/obo/ENVO_00002007"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "rock"
+          },
+          {
+            "@id": "http://qudt.org/1.1/vocab/quantity#Length",
+            "@type": "DefinedTerm",
+            "identifier": "http://qudt.org/1.1/vocab/quantity#Length",
+            "name": "Length",
+            "alternateName": "L",
+            "url": "http://dbpedia.org/resource/Length"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Total counts",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": {
+          "@type": "DefinedTerm",
+          "name": "Abundance or Count"
+        }
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Magnesium, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "magnesium"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Aluminum, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": {
+          "@type": "DefinedTerm",
+          "name": "Abundance or Count"
+        }
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Silicon, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "http://purl.obolibrary.org/obo/CHEBI_27573",
+            "@type": "DefinedTerm",
+            "identifier": "http://purl.obolibrary.org/obo/CHEBI_27573",
+            "name": "silicon",
+            "alternateName": "Si",
+            "url": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:27573"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Phosphorus, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "phosphorus"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Sulfur, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "sulfur"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Chlorine, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "chlorine",
+            "alternateName": "Cl"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Argon, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "argon"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Potassium, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "potassium",
+            "alternateName": "K"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Calcium, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "http://purl.obolibrary.org/obo/CHEBI_22984",
+            "@type": "DefinedTerm",
+            "identifier": "http://purl.obolibrary.org/obo/CHEBI_22984",
+            "name": "calcium",
+            "alternateName": "Ca",
+            "url": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:22984"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Titanium, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "http://purl.obolibrary.org/obo/CHEBI_33341",
+            "@type": "DefinedTerm",
+            "identifier": "http://purl.obolibrary.org/obo/CHEBI_33341",
+            "name": "titanium",
+            "alternateName": "Ti",
+            "url": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:33341"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Chromium, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "chromium"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Manganese, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "http://purl.obolibrary.org/obo/CHEBI_18291",
+            "@type": "DefinedTerm",
+            "identifier": "http://purl.obolibrary.org/obo/CHEBI_18291",
+            "name": "manganese",
+            "alternateName": "Mn",
+            "url": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:18291"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Iron, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "urn:lsid:itis.gov:itis_tsn:100628",
+            "@type": "DefinedTerm",
+            "identifier": "urn:lsid:itis.gov:itis_tsn:100628",
+            "name": "Iron",
+            "url": "https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=100628"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Rhodium, L-alpha area, coherent scattering intensity",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:33359",
+            "@type": "DefinedTerm",
+            "identifier": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:33359",
+            "name": "rhodium",
+            "alternateName": "Rh"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Instrument",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [10kV]"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Total counts",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": {
+          "@type": "DefinedTerm",
+          "name": "Abundance or Count"
+        }
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Potassium, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "potassium",
+            "alternateName": "K"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Calcium, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "http://purl.obolibrary.org/obo/CHEBI_22984",
+            "@type": "DefinedTerm",
+            "identifier": "http://purl.obolibrary.org/obo/CHEBI_22984",
+            "name": "calcium",
+            "alternateName": "Ca",
+            "url": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:22984"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Titanium, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "http://purl.obolibrary.org/obo/CHEBI_33341",
+            "@type": "DefinedTerm",
+            "identifier": "http://purl.obolibrary.org/obo/CHEBI_33341",
+            "name": "titanium",
+            "alternateName": "Ti",
+            "url": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:33341"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Manganese, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "http://purl.obolibrary.org/obo/CHEBI_18291",
+            "@type": "DefinedTerm",
+            "identifier": "http://purl.obolibrary.org/obo/CHEBI_18291",
+            "name": "manganese",
+            "alternateName": "Mn",
+            "url": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:18291"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Iron, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "urn:lsid:itis.gov:itis_tsn:100628",
+            "@type": "DefinedTerm",
+            "identifier": "urn:lsid:itis.gov:itis_tsn:100628",
+            "name": "Iron",
+            "url": "https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=100628"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Cobalt, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "cobalt"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Nickel, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "nickel"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Copper, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "copper"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Zinc, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "zinc"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Gallium, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "gallium"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Arsenic, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "arsenic"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Bromine, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "bromine",
+            "alternateName": "Br"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Rubidium, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "rubidium"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Strontium, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "strontium"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Yttrium, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "yttrium",
+            "alternateName": "Y"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Zirconium, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "zirconium",
+            "alternateName": "Zr"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Niobium, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "niobium"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Molybdenum, K-alpha area",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@type": "DefinedTerm",
+            "name": "molybdenum"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Rhodium, K-alpha area, coherent scattering intensity",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:33359",
+            "@type": "DefinedTerm",
+            "identifier": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:33359",
+            "name": "rhodium",
+            "alternateName": "Rh"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Rhodium, K-alpha area, incoherent scattering intensity",
+      "unitText": "cts",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]",
+      "subjectOf": {
+        "@type": "DefinedTermSet",
+        "hasDefinedTerm": [
+          {
+            "@id": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:33359",
+            "@type": "DefinedTerm",
+            "identifier": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:33359",
+            "name": "rhodium",
+            "alternateName": "Rh"
+          },
+          {
+            "@type": "DefinedTerm",
+            "name": "Abundance or Count"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "Instrument",
+      "measurementTechnique": "X-ray fluorescence core scanner (XRF), AVAATECH, GEN-4 [30kV]"
+    }
+  ],
+  "keywords": "Arctic; Eastern Fram Strait; Geochemistry; IODP; JOIDES Resolution; Paleoclimate; Quaternary; Vestnesa Ridge; West Spitsbergen Current; XRF",
+  "comment": "Dr. Olga Libman-Roshal and Lucinda Duxbury have contributed equally to the preparation of this work.\nTravel funding and Projects:\n• Travel funding for US-based scientists participating in XRF scanning, Web: https://www.nsf.gov/funding/opportunities/usssp-iodp-us-science-support-program-associated-international-ocean/6682/nsf14-549, Award: NSF in agreement with the US Science Support Program (USSSP)\n• Travel funding for LD, Web: https://www.iodp.org.au/, Award: Australian and New Zealand IODP Consortium (ANZIC)\n• Travel funding for AGL, Web: https://gotw.nerc.ac.uk/list_full.asp?pcode=NE%2FZ000300%2F1, Award: IODPUK NERC Postdoctoral Postcruise Moratorium Award NE/Z000300/1\n• Travel funding for RGL, Web: https://www.iodp-italia.cnr.it/ https://dta.cnr.it/project/iodp3-icdp/, Award: MUR through ECORD-IODP Italia",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "conditionsOfAccess": "unrestricted",
+  "isAccessibleForFree": true,
+  "inLanguage": "en",
+  "distribution": [
+    {
+      "@type": [
+        "cr:FileObject",
+        "DataDownload"
+      ],
+      "@id": "data_matrix.tab",
+      "contentUrl": "https://doi.pangaea.de/10.1594/PANGAEA.991434?format=textfile",
+      "encodingFormat": "text/tab-separated-values"
+    },
+    {
+      "@type": [
+        "cr:FileObject",
+        "DataDownload"
+      ],
+      "contentUrl": "https://doi.pangaea.de/10.1594/PANGAEA.991434?format=html",
+      "encodingFormat": "text/html"
+    }
+  ]
+}
