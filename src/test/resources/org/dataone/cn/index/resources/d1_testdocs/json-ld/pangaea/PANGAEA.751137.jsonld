@@ -84,6 +84,10 @@
     "url": "https://www.pangaea.de/"
   },
   "datePublished": "2010-10-31",
+  "workExample": {
+     "@type": "Dataset",
+     "datePublished": "2005"
+  },
   "isPartOf": "https://doi.org/10.1594/PANGAEA.611088",
   "sourceOrganization": {
     "@id": "https://ror.org/01f3njc68",
