@@ -50,6 +50,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
@@ -133,6 +134,22 @@ public class JsonLdSubprocessorTest extends DataONESolrJettyTestBase {
     @After
     public void tearDown() throws Exception {
         super.tearDown();
+    }
+
+    @Test
+    public void testDatasetPublicationDateTakesPrecedenceOverCitation() throws Exception {
+        String id = "PANGAEA.751137.jsonld";
+        Resource document = new ClassPathResource(
+                "org/dataone/cn/index/resources/d1_testdocs/json-ld/pangaea/" + id);
+
+        indexObjectToSolr(id, document);
+        getSolrClient().commit();
+
+        assertPresentInSolrIndex(id);
+        assertTrue("Solr must use the dataset's 2010 publication date, not the citation's 2005 date",
+                compareFieldValue(id, "pubDate", new String[] {"2010-10-31T00:00:00Z"}));
+        assertTrue("The copied Solr datePublished field must contain the dataset date",
+                compareFieldValue(id, "datePublished", new String[] {"2010-10-31T00:00:00Z"}));
     }
 
     /**
