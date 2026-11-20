@@ -157,6 +157,12 @@ public class SchemaOrgSpatialField implements ISolrDataField {
 
     private double coordinate(String value, boolean latitude) {
         String converted = latitude ? latitudeConverter.convert(value) : longitudeConverter.convert(value);
+        if (!latitude && converted != null) {
+            double originalLongitude = Double.parseDouble(value.trim());
+            if (originalLongitude > 180) {
+                converted = Double.toString(originalLongitude - 360);
+            }
+        }
         if (converted == null) {
             throw new IllegalArgumentException("invalid coordinate " + value);
         }
