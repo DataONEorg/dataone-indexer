@@ -101,21 +101,6 @@
           "@type": "GeoCoordinates",
           "latitude": "36.7016",
           "longitude": "-121.90504"
-        },
-        {
-          "@type": "GeoCoordinates",
-          "latitude": "36.837017",
-          "longitude": "-121.88215"
-        },
-        {
-          "@type": "GeoCoordinates",
-          "latitude": "36.873",
-          "longitude": "-122.03484"
-        },
-        {
-          "@type": "GeoCoordinates",
-          "latitude": "37.04653",
-          "longitude": "-122.404"
         }
       ]
     },

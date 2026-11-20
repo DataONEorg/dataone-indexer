@@ -3,8 +3,8 @@
     <serialVersion>1</serialVersion>
   <identifier>geocoordinates.jsonld</identifier>
   <formatId>science-on-schema.org/Dataset;ld+json</formatId>
-  <size>4207</size>
-  <checksum algorithm="MD5"></checksum>
+  <size>3749</size>
+  <checksum algorithm="MD5">e1b0f48197f404a87bba3d578db6528b</checksum>
   <submitter>dataone_integration_test_user</submitter>
   <rightsHolder>dataone_integration_test_user</rightsHolder>
   <accessPolicy>
