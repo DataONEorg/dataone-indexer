@@ -1,6 +1,7 @@
 package org.dataone.cn.indexer.parser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -149,10 +150,33 @@ public class SchemaOrgSpatialField implements ISolrDataField {
             }
             return new Bounds(first.south, first.west, last.north, last.east);
         }
+        List<Double> longitudes = new ArrayList<Double>();
+        longitudes.add(first.west);
         for (int i = 2; i < parts.length; i += 2) {
-            first.include(point(parts[i], parts[i + 1]));
+            Bounds vertex = point(parts[i], parts[i + 1]);
+            first.include(vertex);
+            longitudes.add(vertex.west);
         }
+        setWrapAwareLongitudeBounds(first, longitudes);
         return first;
+    }
+
+    private void setWrapAwareLongitudeBounds(Bounds bounds, List<Double> longitudes) {
+        List<Double> sorted = new ArrayList<Double>(longitudes);
+        Collections.sort(sorted);
+        double largestGap = -1;
+        int gapAfter = sorted.size() - 1;
+        for (int i = 0; i < sorted.size(); i++) {
+            double current = sorted.get(i);
+            double next = i + 1 < sorted.size() ? sorted.get(i + 1) : sorted.get(0) + 360;
+            double gap = next - current;
+            if (gap > largestGap) {
+                largestGap = gap;
+                gapAfter = i;
+            }
+        }
+        bounds.west = sorted.get((gapAfter + 1) % sorted.size());
+        bounds.east = sorted.get(gapAfter);
     }
 
     private double coordinate(String value, boolean latitude) {

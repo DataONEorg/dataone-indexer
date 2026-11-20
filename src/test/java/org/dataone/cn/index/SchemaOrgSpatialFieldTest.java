@@ -115,6 +115,18 @@ public class SchemaOrgSpatialFieldTest {
     }
 
     @Test
+    public void crossingLineUsesWrapAwareLongitudeBounds() throws Exception {
+        assertBounds(process(place(shape("line", "10 179 10 -179"))),
+                10, 179, 10, -179, 10, 180);
+    }
+
+    @Test
+    public void crossingPolygonUsesWrapAwareLongitudeBounds() throws Exception {
+        assertBounds(process(place(shape("polygon", "10 179 12 -179 11 -178 10 179"))),
+                10, 179, 12, -178, 11, -179.5);
+    }
+
+    @Test
     public void invalidGeometriesAreExcludedWithoutPartialBounds() throws Exception {
         String geos = "[" + shape("line", "1 2 3") + "," + point("91", "3") + ","
                 + "{\"@type\":\"GeoCoordinates\",\"latitude\":4}," + point("1", "2") + "]";
