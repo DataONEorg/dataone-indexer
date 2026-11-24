@@ -1,6 +1,6 @@
 /**
  * This work was created by participants in the DataONE project, and is
- * jointly copyrighted by participating institutions in DataONE. For 
+ * jointly copyrighted by participating institutions in DataONE. For
  * more information on DataONE, see our web site at http://dataone.org.
  *
  *   Copyright ${year}
@@ -14,20 +14,22 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * $Id$
  */
 
 package org.dataone.cn.indexer.annotation;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.solr.common.SolrDocument;
 import org.dataone.cn.index.DataONESolrJettyTestBase;
 import org.dataone.cn.indexer.XmlDocumentUtility;
 import org.dataone.cn.indexer.parser.BaseXPathDocumentSubprocessor;
+import org.dataone.cn.indexer.parser.IDocumentSubprocessor;
 import org.dataone.cn.indexer.parser.ISolrField;
 import org.dataone.cn.indexer.parser.ScienceMetadataDocumentSubprocessor;
 import org.junit.After;
@@ -41,14 +43,17 @@ import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
 /**
  * Solr unit test framework is dependent on JUnit 4.7. Later versions of junit
  * will break the base test classes.
- * 
+ *
  * @author sroseboo
- * 
+ *
  */
 @ThreadLeakScope(ThreadLeakScope.Scope.NONE)
 public class SolrIndexAnnotatorTest extends DataONESolrJettyTestBase {
 
     protected BaseXPathDocumentSubprocessor systemMetadata200Subprocessor;
+    private List<IDocumentSubprocessor> processors;
+    private int annotatorIndex = -1;
+    private IDocumentSubprocessor originalAnnotator;
 
     @Test
     public void testSystemMetadataEml210AndAnnotation() throws Exception {
@@ -70,7 +75,7 @@ public class SolrIndexAnnotatorTest extends DataONESolrJettyTestBase {
         ScienceMetadataDocumentSubprocessor eml210 = (ScienceMetadataDocumentSubprocessor) context
                 .getBean("eml210Subprocessor");
 
-        
+
         Document scienceMetadataDoc = XmlDocumentUtility
                 .generateXmlDocument(scienceMetadataResource.getInputStream());
         for (ISolrField field : eml210.getFieldList()) {
@@ -120,13 +125,31 @@ public class SolrIndexAnnotatorTest extends DataONESolrJettyTestBase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        systemMetadata200Subprocessor = (BaseXPathDocumentSubprocessor) context
-                .getBean("systemMetadata200Subprocessor");
+
+        processors = solrIndexService.getSubprocessors();
+        for (int i = 0; i < processors.size(); i++) {
+            if (processors.get(i) instanceof AnnotatorSubprocessor) {
+                annotatorIndex = i;
+                originalAnnotator = processors.set(
+                    i, context.getBean("annotatorSubprocessor", AnnotatorSubprocessor.class));
+                break;
+            }
+        }
+        assertTrue("Annotator subprocessor not found", annotatorIndex >= 0);
+
+        systemMetadata200Subprocessor =
+            (BaseXPathDocumentSubprocessor) context.getBean("systemMetadata200Subprocessor");
         sendSolrDeleteAll();
     }
 
     @After
     public void tearDown() throws Exception {
-        super.tearDown();
+        try {
+            if (annotatorIndex >= 0) {
+                processors.set(annotatorIndex, originalAnnotator);
+            }
+        } finally {
+            super.tearDown();
+        }
     }
 }
